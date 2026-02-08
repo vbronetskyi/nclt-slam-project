@@ -129,7 +129,7 @@ def generate_pairs(
     # Load all poses
     session_poses: dict[str, np.ndarray] = {}
     for session in sessions:
-        session_dir = data_path / "sessions" / session
+        session_dir = data_path / session
         df = load_session_poses(session_dir)
         if not df.empty:
             session_poses[session] = df[["x", "y", "z"]].values
@@ -192,11 +192,16 @@ def compute_statistics(data_path: Path) -> dict:
     """
     stats: dict = {"sessions": {}}
 
-    sessions_dir = data_path / "sessions"
-    if not sessions_dir.exists():
-        return stats
+    known_sessions = [
+        "2012-01-08", "2012-01-22", "2012-02-12", "2012-02-18",
+        "2012-03-31", "2012-05-26", "2012-08-04", "2012-10-28",
+        "2012-11-04", "2012-12-01",
+    ]
 
-    for session_dir in sorted(sessions_dir.iterdir()):
+    for session_dir in sorted(
+        p for p in data_path.iterdir()
+        if p.is_dir() and p.name in known_sessions
+    ):
         if not session_dir.is_dir():
             continue
 

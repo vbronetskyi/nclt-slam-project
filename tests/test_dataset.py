@@ -43,7 +43,7 @@ nclt:
 def sample_data(tmp_path: Path) -> Path:
     """Create minimal sample data for testing."""
     data_root = tmp_path / "NCLT_preprocessed"
-    session_dir = data_root / "sessions" / "2012-01-08"
+    session_dir = data_root / "2012-01-08"
     velodyne_dir = session_dir / "velodyne"
     velodyne_dir.mkdir(parents=True)
 

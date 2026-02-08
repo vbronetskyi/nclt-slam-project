@@ -480,13 +480,13 @@ class NCLTPairsDataset(Dataset):
             List of pose dicts with keys ``timestamp``, ``x``, ``y``, ``z``,
             ``roll``, ``pitch``, ``yaw``, ``session``, and ``path``.
         """
-        track_path = self.data_root / "sessions" / session / "track.csv"
+        track_path = self.data_root / session / "track.csv"
         if not track_path.exists():
             logger.warning("Track file not found: %s", track_path)
             return []
 
         poses: list[dict[str, Any]] = []
-        velodyne_dir = self.data_root / "sessions" / session / "velodyne"
+        velodyne_dir = self.data_root / session / "velodyne"
 
         with open(track_path, "r", newline="") as f:
             reader = csv.reader(f)

@@ -583,7 +583,7 @@ class NCLTDataset(Dataset):
         are included.
         """
         for session in self.sessions:
-            session_dir = self.data_root / "sessions" / session
+            session_dir = self.data_root / session
 
             if not session_dir.exists():
                 logger.warning(

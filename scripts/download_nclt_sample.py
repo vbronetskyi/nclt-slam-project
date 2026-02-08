@@ -152,7 +152,7 @@ def download_nclt_groundtruth(output_dir: Path) -> bool:
     success = True
 
     for session, url in NCLT_GT_URLS.items():
-        session_dir = output_dir / "sessions" / session
+        session_dir = output_dir / session
         session_dir.mkdir(parents=True, exist_ok=True)
         dest = session_dir / "track.csv"
         if not download_file(url, dest):
@@ -188,12 +188,11 @@ def show_manual_instructions() -> None:
         "  ├── train.csv\n"
         "  ├── val.csv\n"
         "  ├── test.csv\n"
-        "  └── sessions/\n"
-        "      ├── 2012-01-08/\n"
-        "      │   ├── velodyne/\n"
-        "      │   ├── images_small/\n"
-        "      │   └── track.csv\n"
-        "      └── ...\n"
+        "  ├── 2012-01-08/\n"
+        "  │   ├── velodyne_data/\n"
+        "  │   ├── images_small/\n"
+        "  │   └── track.csv\n"
+        "  └── ...\n"
         "\n"
         "=" * 60
     )
@@ -219,20 +218,24 @@ def verify_dataset(data_dir: Path) -> bool:
         if not (data_dir / csv_name).exists():
             issues.append(f"Missing {csv_name}")
 
-    # Check for session directories
-    sessions_dir = data_dir / "sessions"
-    if not sessions_dir.exists():
-        issues.append("Missing sessions/ directory")
+    # Check for session directories (directly under data_dir)
+    known_sessions = [
+        "2012-01-08", "2012-01-22", "2012-02-12", "2012-02-18",
+        "2012-03-31", "2012-05-26", "2012-08-04", "2012-10-28",
+        "2012-11-04", "2012-12-01",
+    ]
+    sessions = sorted(
+        p.name for p in data_dir.iterdir()
+        if p.is_dir() and p.name in known_sessions
+    )
+    if not sessions:
+        issues.append("No session directories found")
     else:
-        sessions = sorted(p.name for p in sessions_dir.iterdir() if p.is_dir())
-        if not sessions:
-            issues.append("No session directories found")
-        else:
-            logger.info("Found %d sessions: %s", len(sessions), ", ".join(sessions))
-            for session in sessions:
-                session_dir = sessions_dir / session
-                if not (session_dir / "track.csv").exists():
-                    issues.append(f"Missing track.csv in {session}")
+        logger.info("Found %d sessions: %s", len(sessions), ", ".join(sessions))
+        for session in sessions:
+            session_dir = data_dir / session
+            if not (session_dir / "track.csv").exists():
+                issues.append(f"Missing track.csv in {session}")
 
     if issues:
         logger.warning("Dataset verification issues:")
