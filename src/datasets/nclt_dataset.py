@@ -2,7 +2,9 @@
 
 Provides a PyTorch Dataset implementation for the NCLT dataset, supporting
 both Kaggle and local data paths. Handles point cloud loading from binary
-Velodyne files, pose parsing from track.csv, and optional image loading.
+Velodyne files, pose parsing from track.csv, optional image loading, and
+optional sensor data from the NCLT sensors addon dataset (IMU, GPS,
+odometry, gyro, ground truth).
 
 Reference:
     N. Carlevaris-Bianco, A. K. Ushani, and R. M. Eustice,
@@ -82,24 +84,32 @@ class DatasetConfig:
     Attributes:
         kaggle_path: Path to dataset on Kaggle.
         local_path: Path to dataset on local filesystem.
+        sensors_kaggle_path: Path to sensors addon dataset on Kaggle.
+        sensors_local_path: Path to sensors addon dataset locally.
         sessions: All available session date strings.
+        sensor_sessions: Sessions that have sensor addon data.
         train_sessions: Sessions assigned to the training split.
         val_sessions: Sessions assigned to the validation split.
         test_sessions: Sessions assigned to the test split.
         positive_threshold: Distance in meters for positive pair matching.
         negative_threshold: Distance in meters for negative pair matching.
         point_cloud: Point cloud preprocessing parameters.
+        sensors: Sensor configuration dictionary.
     """
 
     kaggle_path: str = ""
     local_path: str = ""
+    sensors_kaggle_path: str = ""
+    sensors_local_path: str = ""
     sessions: list[str] = field(default_factory=list)
+    sensor_sessions: list[str] = field(default_factory=list)
     train_sessions: list[str] = field(default_factory=list)
     val_sessions: list[str] = field(default_factory=list)
     test_sessions: list[str] = field(default_factory=list)
     positive_threshold: float = 10.0
     negative_threshold: float = 25.0
     point_cloud: PointCloudConfig = field(default_factory=PointCloudConfig)
+    sensors: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
     def from_dict(cls, raw: dict[str, Any]) -> DatasetConfig:
@@ -121,13 +131,17 @@ class DatasetConfig:
         return cls(
             kaggle_path=raw.get("kaggle_path", ""),
             local_path=raw.get("local_path", ""),
+            sensors_kaggle_path=raw.get("sensors_kaggle_path", ""),
+            sensors_local_path=raw.get("sensors_local_path", ""),
             sessions=raw.get("sessions", []),
+            sensor_sessions=raw.get("sensor_sessions", []),
             train_sessions=raw.get("train_sessions", []),
             val_sessions=raw.get("val_sessions", []),
             test_sessions=raw.get("test_sessions", []),
             positive_threshold=raw.get("positive_threshold", 10.0),
             negative_threshold=raw.get("negative_threshold", 25.0),
             point_cloud=pc_config,
+            sensors=raw.get("sensors", {}),
         )
 
 
@@ -135,15 +149,21 @@ class NCLTDataset(Dataset):
     """PyTorch Dataset for the NCLT LiDAR place recognition benchmark.
 
     Loads Velodyne point clouds, ground-truth poses, and optionally camera
-    images from the NCLT preprocessed dataset. Automatically resolves the
-    data root by checking the Kaggle path first, then falling back to the
-    local path specified in the configuration YAML.
+    images from the NCLT preprocessed dataset. Can also load synchronized
+    sensor data (IMU, GPS, odometry, gyro) from the sensors addon dataset.
+
+    Automatically resolves the data root by checking the Kaggle path first,
+    then falling back to the local path specified in the configuration YAML.
 
     Args:
         config_path: Path to the dataset configuration YAML file.
         split: One of ``"train"``, ``"val"``, or ``"test"``.
         transform: Optional callable applied to the sample dict before
             returning from ``__getitem__``.
+        load_sensors: Whether to load sensor addon data (IMU, GPS, etc.).
+        sensors_root: Override path to sensors addon dataset root. If None,
+            resolved from config (Kaggle first, then local).
+        sensor_window_ms: Time window in ms for sensor synchronization.
 
     Raises:
         FileNotFoundError: If neither the Kaggle nor local data path exists.
@@ -165,6 +185,9 @@ class NCLTDataset(Dataset):
         config_path: str | Path,
         split: str = "train",
         transform: Callable[[dict[str, Any]], dict[str, Any]] | None = None,
+        load_sensors: bool = False,
+        sensors_root: str | Path | None = None,
+        sensor_window_ms: int = 50,
     ) -> None:
         super().__init__()
 
@@ -181,14 +204,27 @@ class NCLTDataset(Dataset):
         self.pc_config = self.config.point_cloud
         self.samples: list[SampleRecord] = []
 
+        # Sensor addon support
+        self.load_sensors = load_sensors
+        self.sensor_window_ms = sensor_window_ms
+        self._sensor_managers: dict[str, Any] = {}
+
+        if self.load_sensors:
+            self._sensors_root = self._resolve_sensors_path(sensors_root)
+            self._init_sensor_managers()
+        else:
+            self._sensors_root = None
+
         self._build_index()
 
         logger.info(
-            "NCLTDataset initialized: split=%s, sessions=%d, samples=%d, root=%s",
+            "NCLTDataset initialized: split=%s, sessions=%d, samples=%d, "
+            "root=%s, sensors=%s",
             self.split,
             len(self.sessions),
             len(self.samples),
             self.data_root,
+            self._sensors_root is not None,
         )
 
     # ------------------------------------------------------------------
@@ -242,6 +278,11 @@ class NCLTDataset(Dataset):
         if image is not None:
             sample["image"] = torch.from_numpy(image)
 
+        # Optionally load sensor data ----------------------------------------
+        if self.load_sensors and record.session in self._sensor_managers:
+            sensor_data = self._load_sensor_data(record)
+            sample.update(sensor_data)
+
         if self.transform is not None:
             sample = self.transform(sample)
 
@@ -277,6 +318,12 @@ class NCLTDataset(Dataset):
         subset.sessions = [session]
         subset.pc_config = self.pc_config
         subset.samples = [s for s in self.samples if s.session == session]
+        subset.load_sensors = self.load_sensors
+        subset.sensor_window_ms = self.sensor_window_ms
+        subset._sensors_root = self._sensors_root
+        subset._sensor_managers = {
+            k: v for k, v in self._sensor_managers.items() if k == session
+        }
 
         logger.info(
             "Session subset created: session=%s, samples=%d",
@@ -675,6 +722,138 @@ class NCLTDataset(Dataset):
                 return self.load_image(candidate)
 
         return None
+
+    # ------------------------------------------------------------------
+    # Sensor addon helpers
+    # ------------------------------------------------------------------
+
+    def _resolve_sensors_path(
+        self, override: str | Path | None = None,
+    ) -> Path | None:
+        """Determine the sensors addon dataset root.
+
+        Args:
+            override: Explicit path override. If provided, used directly.
+
+        Returns:
+            Resolved path, or None if not available.
+        """
+        if override is not None:
+            p = Path(override)
+            if p.exists() and p.is_dir():
+                logger.info("Using sensor override path: %s", p)
+                return p
+            logger.warning("Sensor override path not found: %s", p)
+            return None
+
+        kaggle = Path(self.config.sensors_kaggle_path)
+        if kaggle.exists() and kaggle.is_dir():
+            logger.info("Using Kaggle sensors path: %s", kaggle)
+            return kaggle
+
+        local = Path(self.config.sensors_local_path)
+        if local.exists() and local.is_dir():
+            logger.info("Using local sensors path: %s", local)
+            return local
+
+        logger.warning(
+            "Sensors addon dataset not found. "
+            "Checked: %s, %s", kaggle, local,
+        )
+        return None
+
+    def _init_sensor_managers(self) -> None:
+        """Initialize sensor managers for sessions that have addon data."""
+        if self._sensors_root is None:
+            return
+
+        try:
+            from src.datasets.sensor_loader import SessionSensorManager
+        except ImportError:
+            logger.warning(
+                "sensor_loader module not available. "
+                "Sensor data will not be loaded."
+            )
+            return
+
+        sensor_config = self.config.sensors
+        sensor_sessions = set(self.config.sensor_sessions)
+
+        for session in self.sessions:
+            if session not in sensor_sessions:
+                continue
+
+            session_dir = self._sensors_root / session
+            if not session_dir.exists():
+                logger.debug(
+                    "Sensor session directory not found: %s", session_dir
+                )
+                continue
+
+            self._sensor_managers[session] = SessionSensorManager(
+                session_dir=session_dir,
+                config=sensor_config,
+            )
+            logger.debug("Sensor manager initialized for session %s", session)
+
+        logger.info(
+            "Sensor managers: %d/%d sessions",
+            len(self._sensor_managers),
+            len(self.sessions),
+        )
+
+    def _load_sensor_data(self, record: SampleRecord) -> dict[str, Any]:
+        """Load synchronized sensor readings for a sample.
+
+        Args:
+            record: The sample record (provides session and timestamp).
+
+        Returns:
+            Dictionary with sensor arrays keyed by sensor name.
+            Missing sensors are omitted rather than set to None.
+        """
+        manager = self._sensor_managers.get(record.session)
+        if manager is None:
+            return {}
+
+        window_us = self.sensor_window_ms * 1000
+        result: dict[str, Any] = {}
+
+        # IMU
+        if manager.imu is not None:
+            imu_val = manager.imu.query(record.timestamp, window_us=window_us)
+            if imu_val is not None:
+                result["imu"] = torch.from_numpy(imu_val).float()
+
+        # GPS
+        if manager.gps is not None:
+            gps_val = manager.gps.query(record.timestamp, window_us=window_us)
+            if gps_val is not None:
+                result["gps"] = torch.from_numpy(gps_val).float()
+
+        # Wheel odometry
+        if manager.odometry is not None:
+            odo_val = manager.odometry.query(
+                record.timestamp, window_us=window_us,
+            )
+            if odo_val is not None:
+                result["odometry"] = torch.from_numpy(odo_val).float()
+
+        # Fiber optic gyro
+        if manager.kvh is not None:
+            kvh_val = manager.kvh.query(record.timestamp, window_us=window_us)
+            if kvh_val is not None:
+                result["kvh"] = torch.from_numpy(kvh_val).float()
+
+        # Ground truth from sensors addon
+        if manager.ground_truth is not None:
+            gt_val = manager.ground_truth.query(
+                record.timestamp, window_us=window_us,
+            )
+            if gt_val is not None:
+                result["sensor_gt"] = torch.from_numpy(gt_val).float()
+
+        return result
 
     # ------------------------------------------------------------------
     # Dunder helpers
