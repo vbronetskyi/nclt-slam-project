@@ -404,47 +404,93 @@ class NCLTDataset(Dataset):
             return None
 
     @staticmethod
-    def load_poses(session_dir: Path) -> np.ndarray:
+    def load_poses(session_dir: Path) -> dict[int, np.ndarray]:
         """Parse ``track.csv`` for a session directory.
 
-        Each row of the CSV is expected to contain seven comma-separated
-        values: ``timestamp, x, y, z, roll, pitch, yaw``.
+        Supports two CSV formats:
+
+        * **Kaggle format** — header row with columns ``pointcloud``,
+          ``tx``, ``ty``, ``tz``, ``qx``, ``qy``, ``qz``, ``qw``.
+          Rotation is stored as a quaternion.
+        * **Original format** — headerless, seven numeric columns:
+          ``timestamp, x, y, z, roll, pitch, yaw`` (Euler angles).
 
         Args:
             session_dir: Path to the session directory containing
                 ``track.csv``.
 
         Returns:
-            ``(N, 7)`` float64 numpy array with columns
-            ``[timestamp, x, y, z, roll, pitch, yaw]``.
+            Dictionary mapping integer timestamps to ``(4, 4)`` float32
+            SE(3) transformation matrices.
 
         Raises:
             FileNotFoundError: If ``track.csv`` is not found.
         """
+        import csv as csv_mod
+
         track_path = Path(session_dir) / "track.csv"
         if not track_path.exists():
             raise FileNotFoundError(f"Track file not found: {track_path}")
 
-        try:
-            poses = np.loadtxt(str(track_path), delimiter=",", dtype=np.float64)
-        except Exception as exc:
-            raise RuntimeError(
-                f"Failed to parse track file {track_path}: {exc}"
-            ) from exc
+        # Detect format by inspecting the first line.
+        with open(track_path, "r", encoding="utf-8") as fh:
+            first_line = fh.readline().strip()
 
-        if poses.ndim == 1:
-            # Single-row file: reshape to (1, 7).
-            poses = poses.reshape(1, -1)
+        kaggle_headers = {
+            "timestamp", "pointcloud", "tx", "ty", "tz",
+            "qx", "qy", "qz", "qw", "image",
+        }
+        is_kaggle = False
+        if first_line:
+            parts = [p.strip().lower() for p in first_line.split(",")]
+            if any(p in kaggle_headers for p in parts):
+                is_kaggle = True
 
-        if poses.shape[1] != 7:
-            raise ValueError(
-                f"Expected 7 columns in track.csv, got {poses.shape[1]}. "
-                f"File: {track_path}"
-            )
+        poses: dict[int, np.ndarray] = {}
 
-        logger.debug(
-            "Loaded %d poses from %s", poses.shape[0], track_path
-        )
+        if is_kaggle:
+            with open(track_path, "r", newline="", encoding="utf-8") as fh:
+                reader = csv_mod.DictReader(fh)
+                for row in reader:
+                    ts_str = (
+                        row.get("pointcloud")
+                        or row.get("timestamp", "0")
+                    )
+                    ts = int(float(ts_str))
+                    pose = NCLTDataset.quaternion_to_matrix(
+                        float(row["tx"]), float(row["ty"]), float(row["tz"]),
+                        float(row["qx"]), float(row["qy"]),
+                        float(row["qz"]), float(row["qw"]),
+                    )
+                    poses[ts] = pose
+        else:
+            try:
+                data = np.loadtxt(
+                    str(track_path), delimiter=",", dtype=np.float64,
+                )
+            except Exception as exc:
+                raise RuntimeError(
+                    f"Failed to parse track file {track_path}: {exc}"
+                ) from exc
+
+            if data.ndim == 1:
+                data = data.reshape(1, -1)
+
+            if data.shape[1] != 7:
+                raise ValueError(
+                    f"Expected 7 columns in track.csv, got {data.shape[1]}. "
+                    f"File: {track_path}"
+                )
+
+            for i in range(data.shape[0]):
+                ts = int(data[i, 0])
+                x, y, z = data[i, 1], data[i, 2], data[i, 3]
+                roll, pitch, yaw = data[i, 4], data[i, 5], data[i, 6]
+                poses[ts] = NCLTDataset.pose_to_matrix(
+                    x, y, z, roll, pitch, yaw,
+                )
+
+        logger.debug("Loaded %d poses from %s", len(poses), track_path)
         return poses
 
     @staticmethod
@@ -487,6 +533,45 @@ class NCLTDataset(Dataset):
         T[0, 3] = x
         T[1, 3] = y
         T[2, 3] = z
+        return T
+
+    @staticmethod
+    def quaternion_to_matrix(
+        tx: float, ty: float, tz: float,
+        qx: float, qy: float, qz: float, qw: float,
+    ) -> np.ndarray:
+        """Convert quaternion + translation to a 4x4 SE(3) matrix.
+
+        Args:
+            tx: Translation along the X axis in meters.
+            ty: Translation along the Y axis in meters.
+            tz: Translation along the Z axis in meters.
+            qx: Quaternion x component.
+            qy: Quaternion y component.
+            qz: Quaternion z component.
+            qw: Quaternion w (scalar) component.
+
+        Returns:
+            ``(4, 4)`` float32 homogeneous transformation matrix.
+        """
+        # Normalise quaternion to guard against small numeric drift.
+        q = np.array([qx, qy, qz, qw], dtype=np.float64)
+        q /= np.linalg.norm(q) + 1e-12
+
+        x, y, z, w = q
+        T = np.eye(4, dtype=np.float32)
+        T[0, 0] = 1 - 2 * (y * y + z * z)
+        T[0, 1] = 2 * (x * y - z * w)
+        T[0, 2] = 2 * (x * z + y * w)
+        T[1, 0] = 2 * (x * y + z * w)
+        T[1, 1] = 1 - 2 * (x * x + z * z)
+        T[1, 2] = 2 * (y * z - x * w)
+        T[2, 0] = 2 * (x * z - y * w)
+        T[2, 1] = 2 * (y * z + x * w)
+        T[2, 2] = 1 - 2 * (x * x + y * y)
+        T[0, 3] = tx
+        T[1, 3] = ty
+        T[2, 3] = tz
         return T
 
     # ------------------------------------------------------------------
@@ -578,9 +663,9 @@ class NCLTDataset(Dataset):
         """Scan the filesystem and build the flat sample index.
 
         For each session in the current split, loads poses from ``track.csv``
-        and matches them to ``.bin`` files in the ``velodyne/`` directory by
-        timestamp. Only timestamps that have a corresponding point cloud file
-        are included.
+        and matches them to ``.bin`` files in the ``velodyne_data/`` (Kaggle)
+        or ``velodyne/`` directory by timestamp. Only timestamps that have a
+        corresponding point cloud file are included.
         """
         for session in self.sessions:
             session_dir = self.data_root / session
@@ -593,15 +678,17 @@ class NCLTDataset(Dataset):
 
             # Load poses ---------------------------------------------------
             try:
-                poses_array = self.load_poses(session_dir)
+                poses_dict = self.load_poses(session_dir)
             except (FileNotFoundError, RuntimeError, ValueError) as exc:
                 logger.warning(
                     "Could not load poses for session %s: %s", session, exc
                 )
                 continue
 
-            # Build timestamp -> pose lookup --------------------------------
-            velodyne_dir = session_dir / "velodyne"
+            # Resolve velodyne directory (Kaggle uses velodyne_data/) -------
+            velodyne_dir = session_dir / "velodyne_data"
+            if not velodyne_dir.exists():
+                velodyne_dir = session_dir / "velodyne"
             image_dir = session_dir / "images_small"
 
             if not velodyne_dir.exists():
@@ -610,12 +697,6 @@ class NCLTDataset(Dataset):
                     session,
                 )
                 continue
-
-            # Create a mapping from timestamp (int) to row index for fast
-            # look-up. Timestamps are the first column of track.csv.
-            timestamp_to_idx: dict[int, int] = {
-                int(poses_array[i, 0]): i for i in range(poses_array.shape[0])
-            }
 
             # Enumerate .bin files and match to poses -----------------------
             bin_files = sorted(velodyne_dir.glob("*.bin"))
@@ -630,13 +711,8 @@ class NCLTDataset(Dataset):
                     )
                     continue
 
-                if ts not in timestamp_to_idx:
-                    # Point cloud exists but no matching pose; skip.
+                if ts not in poses_dict:
                     continue
-
-                row = poses_array[timestamp_to_idx[ts]]
-                _, x, y, z, roll, pitch, yaw = row
-                pose_matrix = self.pose_to_matrix(x, y, z, roll, pitch, yaw)
 
                 self.samples.append(
                     SampleRecord(
@@ -644,7 +720,7 @@ class NCLTDataset(Dataset):
                         timestamp=ts,
                         velodyne_path=bin_path,
                         image_dir=image_dir,
-                        pose=pose_matrix,
+                        pose=poses_dict[ts],
                     )
                 )
                 matched += 1

@@ -473,6 +473,13 @@ class NCLTPairsDataset(Dataset):
     ) -> list[dict[str, Any]]:
         """Load poses from a session's ``track.csv``.
 
+        Supports two CSV formats:
+
+        * **Kaggle format** — header with ``pointcloud``, ``tx``, ``ty``,
+          ``tz``, ``qx``, ``qy``, ``qz``, ``qw`` columns.
+        * **Original format** — headerless with seven numeric columns:
+          ``timestamp, x, y, z, roll, pitch, yaw``.
+
         Args:
             session: Session date string, e.g. ``"2012-01-08"``.
 
@@ -485,51 +492,82 @@ class NCLTPairsDataset(Dataset):
             logger.warning("Track file not found: %s", track_path)
             return []
 
+        # Resolve velodyne directory (Kaggle uses velodyne_data/)
+        velodyne_dir = self.data_root / session / "velodyne_data"
+        if not velodyne_dir.exists():
+            velodyne_dir = self.data_root / session / "velodyne"
+
         poses: list[dict[str, Any]] = []
-        velodyne_dir = self.data_root / session / "velodyne"
 
         with open(track_path, "r", newline="") as f:
             reader = csv.reader(f)
             header = next(reader, None)
 
-            # Determine column indices. Accept both ordered and named headers.
+            is_kaggle = False
             if header and not header[0].replace(".", "", 1).lstrip("-").isdigit():
-                # Named header row.
-                col_map = {name.strip().lower(): i for i, name in enumerate(header)}
-                idx_ts = col_map.get("timestamp", 0)
-                idx_x = col_map.get("x", 1)
-                idx_y = col_map.get("y", 2)
-                idx_z = col_map.get("z", 3)
-                idx_roll = col_map.get("roll", 4)
-                idx_pitch = col_map.get("pitch", 5)
-                idx_yaw = col_map.get("yaw", 6)
+                col_map = {
+                    name.strip().lower(): i for i, name in enumerate(header)
+                }
+                # Kaggle format has "qw" column
+                is_kaggle = "qw" in col_map
             else:
-                # No header — first row is data; rewind is not possible with
-                # csv.reader, so we parse the first row as data below.
-                idx_ts, idx_x, idx_y, idx_z = 0, 1, 2, 3
-                idx_roll, idx_pitch, idx_yaw = 4, 5, 6
-                if header:
-                    # Re-process the first data row.
-                    poses.append(
-                        self._parse_pose_row(
-                            header,
-                            idx_ts, idx_x, idx_y, idx_z,
-                            idx_roll, idx_pitch, idx_yaw,
-                            session, velodyne_dir,
-                        )
-                    )
+                col_map = None
 
-            for row in reader:
-                if not row or not row[0].strip():
-                    continue
-                pose = self._parse_pose_row(
-                    row,
-                    idx_ts, idx_x, idx_y, idx_z,
-                    idx_roll, idx_pitch, idx_yaw,
-                    session, velodyne_dir,
-                )
-                if pose is not None:
-                    poses.append(pose)
+            if is_kaggle:
+                idx_ts = col_map.get("pointcloud", col_map.get("timestamp", 0))
+                idx_tx = col_map["tx"]
+                idx_ty = col_map["ty"]
+                idx_tz = col_map["tz"]
+                idx_qx = col_map["qx"]
+                idx_qy = col_map["qy"]
+                idx_qz = col_map["qz"]
+                idx_qw = col_map["qw"]
+
+                for row in reader:
+                    if not row or not row[0].strip():
+                        continue
+                    pose = self._parse_kaggle_row(
+                        row,
+                        idx_ts, idx_tx, idx_ty, idx_tz,
+                        idx_qx, idx_qy, idx_qz, idx_qw,
+                        session, velodyne_dir,
+                    )
+                    if pose is not None:
+                        poses.append(pose)
+            else:
+                # Original format (headerless or named x/y/z/roll/pitch/yaw)
+                if col_map is not None:
+                    idx_ts = col_map.get("timestamp", 0)
+                    idx_x = col_map.get("x", 1)
+                    idx_y = col_map.get("y", 2)
+                    idx_z = col_map.get("z", 3)
+                    idx_roll = col_map.get("roll", 4)
+                    idx_pitch = col_map.get("pitch", 5)
+                    idx_yaw = col_map.get("yaw", 6)
+                else:
+                    idx_ts, idx_x, idx_y, idx_z = 0, 1, 2, 3
+                    idx_roll, idx_pitch, idx_yaw = 4, 5, 6
+                    if header:
+                        poses.append(
+                            self._parse_pose_row(
+                                header,
+                                idx_ts, idx_x, idx_y, idx_z,
+                                idx_roll, idx_pitch, idx_yaw,
+                                session, velodyne_dir,
+                            )
+                        )
+
+                for row in reader:
+                    if not row or not row[0].strip():
+                        continue
+                    pose = self._parse_pose_row(
+                        row,
+                        idx_ts, idx_x, idx_y, idx_z,
+                        idx_roll, idx_pitch, idx_yaw,
+                        session, velodyne_dir,
+                    )
+                    if pose is not None:
+                        poses.append(pose)
 
         logger.debug(
             "Session %s: loaded %d poses from %s.", session, len(poses), track_path
@@ -549,9 +587,9 @@ class NCLTPairsDataset(Dataset):
         session: str,
         velodyne_dir: Path,
     ) -> dict[str, Any] | None:
-        """Parse a single row of ``track.csv`` into a pose dict."""
+        """Parse a single row of original-format ``track.csv``."""
         try:
-            timestamp = int(row[idx_ts].strip())
+            timestamp = int(float(row[idx_ts].strip()))
             return {
                 "timestamp": timestamp,
                 "x": float(row[idx_x]),
@@ -565,6 +603,58 @@ class NCLTPairsDataset(Dataset):
             }
         except (IndexError, ValueError) as exc:
             logger.debug("Skipping malformed track row: %s (%s)", row, exc)
+            return None
+
+    @staticmethod
+    def _parse_kaggle_row(
+        row: list[str],
+        idx_ts: int,
+        idx_tx: int, idx_ty: int, idx_tz: int,
+        idx_qx: int, idx_qy: int, idx_qz: int, idx_qw: int,
+        session: str,
+        velodyne_dir: Path,
+    ) -> dict[str, Any] | None:
+        """Parse a single row of Kaggle-format ``track.csv``.
+
+        Converts quaternion to Euler angles (roll, pitch, yaw) so the
+        downstream pose dict interface stays the same.
+        """
+        try:
+            timestamp = int(float(row[idx_ts].strip()))
+            tx = float(row[idx_tx])
+            ty = float(row[idx_ty])
+            tz = float(row[idx_tz])
+            qx = float(row[idx_qx])
+            qy = float(row[idx_qy])
+            qz = float(row[idx_qz])
+            qw = float(row[idx_qw])
+
+            # Quaternion to Euler (ZYX convention)
+            sinr = 2.0 * (qw * qx + qy * qz)
+            cosr = 1.0 - 2.0 * (qx * qx + qy * qy)
+            roll = np.arctan2(sinr, cosr)
+
+            sinp = 2.0 * (qw * qy - qz * qx)
+            sinp = np.clip(sinp, -1.0, 1.0)
+            pitch = np.arcsin(sinp)
+
+            siny = 2.0 * (qw * qz + qx * qy)
+            cosy = 1.0 - 2.0 * (qy * qy + qz * qz)
+            yaw = np.arctan2(siny, cosy)
+
+            return {
+                "timestamp": timestamp,
+                "x": tx,
+                "y": ty,
+                "z": tz,
+                "roll": float(roll),
+                "pitch": float(pitch),
+                "yaw": float(yaw),
+                "session": session,
+                "path": velodyne_dir / f"{timestamp}.bin",
+            }
+        except (IndexError, ValueError) as exc:
+            logger.debug("Skipping malformed Kaggle track row: %s (%s)", row, exc)
             return None
 
     def _resolve_pose(
