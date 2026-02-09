@@ -204,12 +204,26 @@ class TestPointCloudLoading:
         with pytest.raises(FileNotFoundError):
             NCLTDataset.load_point_cloud(Path("/nonexistent/file.bin"))
 
+    def test_load_xyz_format(self, tmp_path: Path):
+        """Test loading XYZ-only .bin file (3 floats per point)."""
+        from src.datasets.nclt_dataset import NCLTDataset
+
+        xyz = np.random.randn(150, 3).astype(np.float32)
+        bin_path = tmp_path / "xyz.bin"
+        xyz.tofile(str(bin_path))
+
+        loaded = NCLTDataset.load_point_cloud(bin_path)
+        assert loaded.shape == (150, 4)
+        assert loaded.dtype == np.float32
+        np.testing.assert_array_equal(loaded[:, :3], xyz)
+        np.testing.assert_array_equal(loaded[:, 3], 1.0)
+
     def test_load_corrupted_file_raises(self, tmp_path: Path):
         """Test that a file with wrong size raises ValueError."""
         from src.datasets.nclt_dataset import NCLTDataset
 
         bad_path = tmp_path / "bad.bin"
-        bad_path.write_bytes(b"\x00" * 17)  # Not multiple of 16
+        bad_path.write_bytes(b"\x00" * 17)  # Not multiple of 12 or 16
 
         with pytest.raises(ValueError):
             NCLTDataset.load_point_cloud(bad_path)

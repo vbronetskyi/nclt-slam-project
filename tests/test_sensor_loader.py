@@ -16,7 +16,7 @@ MOCK_DATA_DIR = Path(__file__).resolve().parent.parent / "data" / "nclt_mock" / 
 
 SENSOR_CONFIG = {
     "imu": {"filename": "ms25.csv", "rate_hz": 100},
-    "gps": {"filename": "gps.csv", "rate_hz": 1},
+    "gps": {"filename": "gps_rtk.csv", "rate_hz": 1},
     "odometry": {"filename": "odometry_mu_100hz.csv", "rate_hz": 100},
     "kvh": {"filename": "kvh.csv", "rate_hz": 100},
     "ground_truth": {"filename": "groundtruth.csv"},
@@ -50,10 +50,10 @@ def imu_loader(data_dir: Path):
 
 @pytest.fixture
 def gps_loader(data_dir: Path):
-    """Return a fresh GPSLoader pointed at mock gps.csv."""
+    """Return a fresh GPSLoader pointed at mock gps_rtk.csv."""
     from src.datasets.sensor_loader import GPSLoader
 
-    return GPSLoader(data_dir / "gps.csv")
+    return GPSLoader(data_dir / "gps_rtk.csv")
 
 
 @pytest.fixture
@@ -197,11 +197,11 @@ class TestIndividualLoaders:
         ]
 
     def test_odometry_loader(self, odometry_loader):
-        """Odometry loader: 3 value columns (x, y, z)."""
+        """Odometry loader: 6 value columns (x, y, z, roll, pitch, yaw)."""
         data = odometry_loader.load()
 
-        assert data.values.shape[1] == 3
-        assert data.columns == ["x", "y", "z"]
+        assert data.values.shape[1] == 6
+        assert data.columns == ["x", "y", "z", "roll", "pitch", "yaw"]
 
     def test_kvh_loader(self, kvh_loader):
         """KVH loader: 1 value column (heading)."""
@@ -547,7 +547,7 @@ class TestGPSUtils:
         """Parse mock gps.csv and verify output keys and shapes."""
         from src.utils.gps_utils import parse_gps_csv
 
-        result = parse_gps_csv(data_dir / "gps.csv")
+        result = parse_gps_csv(data_dir / "gps_rtk.csv")
 
         assert "timestamps" in result
         assert "latitude" in result
@@ -565,7 +565,7 @@ class TestGPSUtils:
         """Filtering by mode should keep only rows with mode >= min_mode."""
         from src.utils.gps_utils import filter_gps_by_fix, parse_gps_csv
 
-        gps = parse_gps_csv(data_dir / "gps.csv")
+        gps = parse_gps_csv(data_dir / "gps_rtk.csv")
 
         ts_out, lat_out, lon_out, alt_out = filter_gps_by_fix(
             gps["timestamps"],

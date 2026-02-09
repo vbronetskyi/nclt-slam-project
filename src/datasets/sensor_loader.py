@@ -307,10 +307,10 @@ class GPSLoader(BaseSensorLoader):
 class OdometryLoader(BaseSensorLoader):
     """Loader for ``odometry_mu_100hz.csv`` wheel odometry (Segway RMP).
 
-    Columns (after utime): x, y, z.
+    Columns (after utime): x, y, z, roll, pitch, yaw.
     """
 
-    COLUMNS: list[str] = ["x", "y", "z"]
+    COLUMNS: list[str] = ["x", "y", "z", "roll", "pitch", "yaw"]
 
     def __init__(self, csv_path: Path) -> None:
         super().__init__(csv_path, self.COLUMNS)

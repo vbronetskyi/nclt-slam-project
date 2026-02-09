@@ -7,7 +7,7 @@ nclt_mock/2012-01-08/ directory under the project data root.
 
 Sensors generated:
     - ms25.csv        : IMU (accelerometer, gyroscope, magnetometer) at 100Hz
-    - gps.csv         : GPS fix at 1Hz
+    - gps_rtk.csv     : GPS fix at 1Hz
     - odometry_mu_100hz.csv : Wheel odometry at 100Hz
     - kvh.csv         : Fiber optic gyro heading at 100Hz
     - groundtruth.csv : Ground truth pose at 10Hz
@@ -85,7 +85,7 @@ def generate_mock_sensors(output_dir: str) -> None:
     print(f"  ms25.csv          : {imu_data.shape[0]} rows, {imu_data.shape[1]} cols")
 
     # ----------------------------------------------------------------
-    # 2. gps.csv - GPS at 1Hz (10 rows)
+    # 2. gps_rtk.csv - GPS at 1Hz (10 rows)
     #    Columns: utime, mode, num_satell, latitude, longitude,
     #             altitude, track, speed
     # ----------------------------------------------------------------
@@ -112,26 +112,32 @@ def generate_mock_sensors(output_dir: str) -> None:
     ])
 
     np.savetxt(
-        str(out / "gps.csv"), gps_data, delimiter=",",
+        str(out / "gps_rtk.csv"), gps_data, delimiter=",",
         fmt=["%d", "%d", "%d", "%.10f", "%.10f", "%.4f", "%.4f", "%.4f"],
     )
-    print(f"  gps.csv           : {gps_data.shape[0]} rows, {gps_data.shape[1]} cols")
+    print(f"  gps_rtk.csv       : {gps_data.shape[0]} rows, {gps_data.shape[1]} cols")
 
     # ----------------------------------------------------------------
     # 3. odometry_mu_100hz.csv - Wheel odometry at 100Hz (1000 rows)
-    #    Columns: utime, x, y, z
+    #    Columns: utime, x, y, z, roll, pitch, yaw
     # ----------------------------------------------------------------
     t_100hz_s = np.arange(n_100hz) * 0.01  # 0..9.99 seconds
 
     odom_x = vx * t_100hz_s + rng.normal(0, 0.005, n_100hz)
     odom_y = vy * t_100hz_s + rng.normal(0, 0.005, n_100hz)
     odom_z = rng.normal(0, 0.002, n_100hz)
+    odom_roll = np.zeros(n_100hz)
+    odom_pitch = np.zeros(n_100hz)
+    odom_yaw = np.full(n_100hz, heading_start)
 
-    odom_data = np.column_stack([utimes_100hz, odom_x, odom_y, odom_z])
+    odom_data = np.column_stack([
+        utimes_100hz, odom_x, odom_y, odom_z,
+        odom_roll, odom_pitch, odom_yaw,
+    ])
 
     np.savetxt(
         str(out / "odometry_mu_100hz.csv"), odom_data, delimiter=",",
-        fmt=["%d", "%.6f", "%.6f", "%.6f"],
+        fmt=["%d", "%.6f", "%.6f", "%.6f", "%.6f", "%.6f", "%.6f"],
     )
     print(f"  odometry_mu_100hz : {odom_data.shape[0]} rows, {odom_data.shape[1]} cols")
 

@@ -340,18 +340,21 @@ class NCLTDataset(Dataset):
     def load_point_cloud(path: Path) -> np.ndarray:
         """Load a Velodyne binary point cloud file.
 
-        The file is expected to contain ``N`` points stored as contiguous
-        ``float32`` values in ``(x, y, z, intensity)`` order.
+        Supports two formats:
+
+        * **XYZI** — 4 floats per point (16 bytes), original NCLT.
+        * **XYZ** — 3 floats per point (12 bytes), Kaggle preprocessed.
+          A constant intensity of 1.0 is appended.
 
         Args:
             path: Absolute path to the ``.bin`` file.
 
         Returns:
-            ``(N, 4)`` float32 numpy array.
+            ``(N, 4)`` float32 numpy array (x, y, z, intensity).
 
         Raises:
             FileNotFoundError: If the file does not exist.
-            ValueError: If the file size is not a multiple of 16 bytes.
+            ValueError: If the file size is not a multiple of 12 or 16.
         """
         path = Path(path)
         if not path.exists():
@@ -362,13 +365,20 @@ class NCLTDataset(Dataset):
             logger.warning("Empty point cloud file: %s", path)
             return np.empty((0, 4), dtype=np.float32)
 
-        if file_size % 16 != 0:
+        if file_size % 16 == 0:
+            # XYZI format (4 floats per point)
+            points = np.fromfile(str(path), dtype=np.float32).reshape(-1, 4)
+        elif file_size % 12 == 0:
+            # XYZ format (3 floats per point) — pad with intensity=1.0
+            xyz = np.fromfile(str(path), dtype=np.float32).reshape(-1, 3)
+            intensity = np.ones((xyz.shape[0], 1), dtype=np.float32)
+            points = np.hstack([xyz, intensity])
+        else:
             raise ValueError(
-                f"Point cloud file size ({file_size} bytes) is not a multiple of "
-                f"16 (4 floats x 4 bytes). File may be corrupt: {path}"
+                f"Point cloud file size ({file_size} bytes) is not a multiple "
+                f"of 12 or 16. File may be corrupt: {path}"
             )
 
-        points = np.fromfile(str(path), dtype=np.float32).reshape(-1, 4)
         return points
 
     @staticmethod
@@ -780,8 +790,13 @@ class NCLTDataset(Dataset):
         """Attempt to load the camera image matching a sample's timestamp.
 
         Searches for common image extensions in the session's
-        ``images_small/`` directory using the sample's timestamp as the
-        filename stem.
+        ``images_small/`` directory. Handles two layouts:
+
+        * Flat: ``images_small/{timestamp}.png``
+        * Kaggle (per-camera): ``images_small/Cam0/{timestamp}.png``, etc.
+
+        When camera subdirectories exist, ``Cam1`` is preferred (front camera
+        on the NCLT Segway platform).
 
         Args:
             record: The sample record to find an image for.
@@ -792,10 +807,27 @@ class NCLTDataset(Dataset):
         if not record.image_dir.exists():
             return None
 
-        for ext in (".png", ".jpg", ".jpeg", ".tif", ".tiff"):
+        extensions = (".png", ".jpg", ".jpeg", ".tif", ".tiff")
+
+        # Try flat layout first
+        for ext in extensions:
             candidate = record.image_dir / f"{record.timestamp}{ext}"
             if candidate.exists():
                 return self.load_image(candidate)
+
+        # Try camera subdirectories (prefer Cam1, then any)
+        cam_dirs = sorted(
+            d for d in record.image_dir.iterdir()
+            if d.is_dir() and d.name.startswith("Cam")
+        )
+        preferred = [d for d in cam_dirs if d.name == "Cam1"]
+        search_order = preferred + [d for d in cam_dirs if d.name != "Cam1"]
+
+        for cam_dir in search_order:
+            for ext in extensions:
+                candidate = cam_dir / f"{record.timestamp}{ext}"
+                if candidate.exists():
+                    return self.load_image(candidate)
 
         return None
 
@@ -859,11 +891,8 @@ class NCLTDataset(Dataset):
             if session not in sensor_sessions:
                 continue
 
-            session_dir = self._sensors_root / session
-            if not session_dir.exists():
-                logger.debug(
-                    "Sensor session directory not found: %s", session_dir
-                )
+            session_dir = self._find_sensor_session_dir(session)
+            if session_dir is None:
                 continue
 
             self._sensor_managers[session] = SessionSensorManager(
@@ -877,6 +906,34 @@ class NCLTDataset(Dataset):
             len(self._sensor_managers),
             len(self.sessions),
         )
+
+    def _find_sensor_session_dir(self, session: str) -> Path | None:
+        """Locate the sensor directory for a session.
+
+        Handles the Kaggle artifact where the sensors addon dataset has an
+        extra nested directory level:
+        ``/kaggle/input/nclt-sensors-addon/nclt-sensors-addon/2012-01-08/``
+        """
+        if self._sensors_root is None:
+            return None
+
+        # Direct path
+        direct = self._sensors_root / session
+        if direct.exists():
+            return direct
+
+        # Kaggle nested path
+        for subdir in self._sensors_root.iterdir():
+            if subdir.is_dir() and not subdir.name.startswith("."):
+                nested = subdir / session
+                if nested.exists():
+                    return nested
+
+        logger.debug(
+            "Sensor session directory not found: %s/%s",
+            self._sensors_root, session,
+        )
+        return None
 
     def _load_sensor_data(self, record: SampleRecord) -> dict[str, Any]:
         """Load synchronized sensor readings for a sample.

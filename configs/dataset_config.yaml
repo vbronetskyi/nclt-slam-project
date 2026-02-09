@@ -63,9 +63,9 @@ nclt:
         - "rot_y"
         - "rot_z"
 
-    # GPS (Trimble)
+    # GPS (Trimble) — Kaggle addon uses gps_rtk.csv
     gps:
-      filename: "gps.csv"
+      filename: "gps_rtk.csv"
       rate_hz: 1
       columns:
         - "utime"
@@ -86,6 +86,9 @@ nclt:
         - "x"               # meters
         - "y"
         - "z"
+        - "roll"            # radians
+        - "pitch"
+        - "yaw"
 
     # Fiber optic gyro
     kvh:
