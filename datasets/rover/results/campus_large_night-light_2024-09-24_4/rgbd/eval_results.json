@@ -1,0 +1,21 @@
+{
+  "recording": "campus_large_night-light_2024-09-24_4",
+  "mode": "rgbd",
+  "config": "default",
+  "num_estimated": 21064,
+  "num_gt": 1218,
+  "num_matched": 1208,
+  "tracking_rate_pct": 99.2,
+  "sim3_scale": 0.975842,
+  "ate_sim3": {
+    "rmse": 0.5331,
+    "mean": 0.5004,
+    "median": 0.4665,
+    "std": 0.1839,
+    "max": 1.0391
+  },
+  "rpe": {
+    "rmse": 0.3467,
+    "mean": 0.3318
+  }
+}
