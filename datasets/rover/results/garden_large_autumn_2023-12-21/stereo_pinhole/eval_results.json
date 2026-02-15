@@ -1,0 +1,25 @@
+{
+  "recording": "garden_large_autumn_2023-12-21",
+  "mode": "stereo_pinhole",
+  "num_estimated": 3651,
+  "num_gt": 997,
+  "num_matched": 3645,
+  "tracking_rate_pct": 26.4,
+  "sim3_scale": 1.257026,
+  "ate_sim3": {
+    "rmse": 0.5808,
+    "mean": 0.4969,
+    "median": 0.4172,
+    "std": 0.3008,
+    "max": 2.067
+  },
+  "ate_se3": {
+    "rmse": 1.7337,
+    "mean": 1.6769,
+    "median": 1.6846
+  },
+  "rpe": {
+    "rmse": 0.0932,
+    "mean": 0.0623
+  }
+}
