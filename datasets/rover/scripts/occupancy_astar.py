@@ -17,7 +17,7 @@ import time
 
 import cv2
 import matplotlib
-matplotlib.use("Agg")
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import numpy as np
@@ -30,7 +30,7 @@ from scipy.spatial.transform import Rotation
 # ============================================================
 TRAJ_PATH = "/workspace/datasets/rover/results/garden_large_day_2024-05-29_1/rgbd/trajectory_rgbd.txt"
 DEPTH_DIR = "/workspace/data/rover/garden_large_day_2024-05-29_1/realsense_D435i/depth/"
-GT_PATH   = "/workspace/data/rover/garden_large_day_2024-05-29_1/groundtruth.txt"
+GT_PATH   = '/workspace/data/rover/garden_large_day_2024-05-29_1/groundtruth.txt'
 OUTPUT_DIR = "/workspace/datasets/rover/results/path_planning/"
 
 # d435i intrinsics
@@ -57,6 +57,7 @@ y_rel = y_point - y_camera
 #   y_rel > 0  → below camera (ground)
 #   y_rel < 0  → above camera (walls, objects)
 # empirical: ground median y_rel ≈ +0.20, obstacles y_rel < +0.10
+# n_workers = 4  # 3 seems to be the sweet spot, more = OOM
 FLOOR_REL_MIN    =  0.10   # floor: y_rel > 0.10  (ground below camera)
 OBSTACLE_REL_MIN = -1.0    # obstacle: -1.0 < y_rel < 0.10
 OBSTACLE_REL_MAX =  0.10
@@ -94,7 +95,6 @@ def load_poses(path):
 
 
 def load_gt(path):
-    """load GT trajectory (TUM format)"""
     stamps, positions = [], []
     with open(path) as f:
         for line in f:
@@ -241,6 +241,7 @@ def find_nearest_free(grid, r, c, max_search=60):
 
 
 def astar(grid, start_rc, goal_rc):
+    # XXX: magic number, tuned by trial and error
     """A* on 2D grid (8-connected), cells > 0 are blocked
 
     returns list of (row, col) or None
@@ -329,7 +330,6 @@ def umeyama_alignment(source, target):
 
 
 def align_gt_to_slam(slam_ts, slam_positions, gt_ts, gt_positions):
-    """align GT positions into SLAM frame via Sim3"""
     matched_slam, matched_gt = [], []
     for i, ts in enumerate(gt_ts):
         idx = np.argmin(np.abs(slam_ts - ts))
@@ -640,7 +640,9 @@ def main():
     log(f"  Grid:       {nx} x {nz} cells @ {GRID_RES*100:.0f} cm")
     log(f"  Free:       {(occupancy==0).sum():,}")
     log(f"  Occupied:   {(occupancy==1).sum():,}")
+    # print(f">>> {rec}: attempt {attempt}")
     log(f"  Inflation:  {best_inflate} cells ({best_inflate * GRID_RES:.2f}m)")
+    # print("DEBUG: about to call orbslam")
     log(f"  Routes:")
     for rname, s_xyz, g_xyz, rpath, rlen, rcol in routes:
         short = rname.split(":")[0]

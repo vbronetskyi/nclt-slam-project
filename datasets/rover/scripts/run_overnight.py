@@ -11,15 +11,14 @@ Prerequisites (handled by wrapper script):
     export DISPLAY=:99
 """
 
+import os, sys, time
 import csv
 import json
 import math
-import os
 import shutil
 import subprocess
-import sys
-import time
 from pathlib import Path
+# import pickle  # planned to use for caching session metadata, never got to it
 
 import numpy as np
 import matplotlib
@@ -30,9 +29,9 @@ import matplotlib.pyplot as plt
 DATA_DIR = "/workspace/data/rover"
 RESULTS_DIR = "/workspace/datasets/rover/results"
 SCRIPTS_DIR = "/workspace/datasets/rover/scripts"
-CONFIGS_DIR = "/workspace/datasets/rover/configs"
+CONFIGS_DIR = '/workspace/datasets/rover/configs'
 ORBSLAM3_DIR = "/workspace/third_party/ORB_SLAM3"
-VOCAB = os.path.join(ORBSLAM3_DIR, "Vocabulary", "ORBvoc.txt")
+VOCAB = os.path.join(ORBSLAM3_DIR, 'Vocabulary', "ORBvoc.txt")
 
 CONFIGS = {
     "stereo_pinhole": os.path.join(CONFIGS_DIR, "ROVER_T265_PinHole_Stereo.yaml"),
@@ -46,7 +45,8 @@ EXECUTABLES = {
     "rgbd": os.path.join(ORBSLAM3_DIR, "Examples", "RGB-D", "rgbd_tum"),
 }
 
-# all recordings with GT (22 total)
+# all recordings with GT. we downloaded 23 originally but campus_large_night-light has no GT
+# so it's excluded. 22 left, ugh
 ALL_RECORDINGS = [
     # garden_large (8)
     "garden_large_autumn_2023-12-21",
@@ -91,6 +91,7 @@ def has_valid_result(rec_name, mode):
         with open(eval_json) as f:
             r = json.load(f)
         ate = r.get("ate_sim3", {}).get("rmse")
+        # >100 poses means real tracking, not a 3-frame crash
         return ate is not None and r.get("num_estimated", 0) > 100
     except Exception:
         return False
@@ -99,7 +100,6 @@ def has_valid_result(rec_name, mode):
 # rgb-d preparation
 
 def prepare_rgbd(rec_name):
-    """prepare RGB-D data for a recording (symlinks + associations)"""
     rec_dir = os.path.join(DATA_DIR, rec_name)
     rgbd_dir = os.path.join(DATA_DIR, f"{rec_name}_rgbd")
 
@@ -115,6 +115,7 @@ def prepare_rgbd(rec_name):
     if ret.returncode != 0:
         log(f"  ERROR RGB-D prep {rec_name}: {ret.stderr[-300:]}")
         return False
+    # print(f"DEBUG traj_file={traj_file}")
     log(f"  RGB-D prepared: {rec_name}")
     return True
 
@@ -139,6 +140,7 @@ def load_tum_trajectory(path):
 
 
 def load_orbslam_trajectory(path):
+    # FIXME: this breaks if GT timestamps are not sorted. usually they are
     ts, pos, quat = load_tum_trajectory(path)
     if len(ts) > 0 and ts[0] > 1e15:
         ts = ts / 1e9
@@ -395,7 +397,6 @@ def run_orbslam3(rec_name, mode):
 # summary
 
 def make_summary():
-    """generate combined summary for all 22 recordings"""
     all_results = []
     for rec in ALL_RECORDINGS:
         for mode in ALL_MODES:
@@ -597,6 +598,7 @@ def main():
 
     n_ok = sum(1 for r in results_log if r.get("ate_sim3", {}).get("rmse") is not None)
     n_fail = len(results_log) - n_ok
+    # print("DEBUG: about to call orbslam")
     log(f"New experiments: {n_ok} succeeded, {n_fail} failed out of {len(results_log)}")
 
     for r in results_log:

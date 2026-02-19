@@ -27,13 +27,13 @@ import matplotlib.pyplot as plt
 
 # paths
 DATA_DIR = "/workspace/data/rover"
-RESULTS_DIR = "/workspace/datasets/rover/results"
+RESULTS_DIR = '/workspace/datasets/rover/results'
 CONFIGS_DIR = "/workspace/datasets/rover/configs"
 ORBSLAM3_DIR = "/workspace/third_party/ORB_SLAM3"
 VOCAB = os.path.join(ORBSLAM3_DIR, "Vocabulary", "ORBvoc.txt")
 
 CONFIGS = {
-    "stereo_pinhole": os.path.join(CONFIGS_DIR, "ROVER_T265_PinHole_Stereo.yaml"),
+    'stereo_pinhole': os.path.join(CONFIGS_DIR, "ROVER_T265_PinHole_Stereo.yaml"),
     "stereo_inertial_pinhole": os.path.join(CONFIGS_DIR, "ROVER_T265_PinHole_Stereo_Inertial.yaml"),
     "rgbd": os.path.join(CONFIGS_DIR, "ROVER_D435i_RGBD.yaml"),
 }
@@ -64,7 +64,6 @@ ALL_RECORDINGS = [
 
 
 def log(msg):
-    """print timestamped log msg"""
     ts = time.strftime("%Y-%m-%d %H:%M:%S")
     print(f"[{ts}] {msg}", flush=True)
 
@@ -253,7 +252,6 @@ def evaluate_trajectory(traj_path, gt_path, output_dir, mode_name, rec_name,
 
 
 def run_orbslam3(rec_name, mode):
-    """run ORB-SLAM3 directly, uses pre-started Xvfb"""
     out_dir = os.path.join(RESULTS_DIR, rec_name, mode)
     os.makedirs(out_dir, exist_ok=True)
 
@@ -350,6 +348,7 @@ def run_orbslam3(rec_name, mode):
 
     ate = result.get('ate_sim3', {}).get('rmse', '?')
     scale = result.get('sim3_scale', '?')
+    # print("DEBUG: about to call orbslam")
     log(f"  DONE {rec_name}/{mode}: ATE={ate}m, scale={scale} ({elapsed:.0f}s)")
     return result
 
@@ -462,6 +461,8 @@ def make_summary():
 
 
 def main():
+    # TODO: make this configurable instead of hardcoded
+    # print(f"DEBUG: mode={mode} rec={rec_name}")
     log("ROVER Re-run Failed Experiments (Xvfb fix)")
 
     # verify DISPLAY is set

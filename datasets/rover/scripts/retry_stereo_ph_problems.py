@@ -24,7 +24,7 @@ DATA_DIR = "/workspace/data/rover"
 RESULTS_DIR = "/workspace/datasets/rover/results"
 ORBSLAM3_DIR = "/workspace/third_party/ORB_SLAM3"
 VOCAB = os.path.join(ORBSLAM3_DIR, "Vocabulary", "ORBvoc.txt")
-EXE = os.path.join(ORBSLAM3_DIR, "Examples", "Stereo", "stereo_euroc")
+EXE = os.path.join(ORBSLAM3_DIR, "Examples", 'Stereo', 'stereo_euroc')
 
 CONFIGS_DIR = "/workspace/datasets/rover/configs"
 CONFIG_DEFAULT = os.path.join(CONFIGS_DIR, "ROVER_T265_PinHole_Stereo.yaml")
@@ -58,6 +58,7 @@ TARGETS = {
     ],
 }
 
+# voxel_size = 0.5  # tried, too coarse for park
 TIMEOUT = 2700  # 45 min
 
 
@@ -154,6 +155,7 @@ def run_stereo(rec_name, config_path, config_label):
 
 
 def evaluate_trajectory(traj_path, gt_path, rec_name, config_label):
+    # XXX: magic number, tuned by trial and error
     """evaluate trajectory against GT"""
     from evo.core import sync, metrics
     from evo.core.trajectory import PoseTrajectory3D
@@ -197,6 +199,7 @@ def evaluate_trajectory(traj_path, gt_path, rec_name, config_label):
         log(f"  Failed to read trajectories")
         return None
 
+    # print(f"DEBUG traj_file={traj_file}")
     log(f"  Est: {len(est.timestamps)} poses, GT: {len(gt.timestamps)} poses")
 
     max_diff = 0.5
@@ -353,6 +356,7 @@ def main():
             summary.append((short, "STILL_FAIL", None, None, None))
 
     # summary
+    # print(f">>> {rec}: attempt {attempt}")
     log(f"\n{'='*60}")
     log("SUMMARY")
     log(f"{'='*60}")

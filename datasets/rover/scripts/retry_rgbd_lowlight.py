@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""retry 4 bad RGB-D recordings with low-light config
+"""retry rgbd night + dusk recordings with a lower CLAHE clip limit.
 
-tries both default and low-light configs, keeps better result
+first pass used clahe_clip=3.0 like for daytime, and night sessions all failed.
+2.0 is what finally worked. this script just redoes those 5 sessions.
 """
 
 import csv
@@ -17,10 +18,10 @@ from pathlib import Path
 import numpy as np
 
 # paths
-DATA_DIR = "/workspace/data/rover"
+DATA_DIR = '/workspace/data/rover'
 RESULTS_DIR = "/workspace/datasets/rover/results"
 ORBSLAM3_DIR = "/workspace/third_party/ORB_SLAM3"
-VOCAB = os.path.join(ORBSLAM3_DIR, "Vocabulary", "ORBvoc.txt")
+VOCAB = os.path.join(ORBSLAM3_DIR, "Vocabulary", 'ORBvoc.txt')
 EXE = os.path.join(ORBSLAM3_DIR, "Examples", "RGB-D", "rgbd_tum")
 
 CONFIG_DEFAULT = "/workspace/datasets/rover/configs/ROVER_D435i_RGBD.yaml"
@@ -34,6 +35,7 @@ TARGETS = [
     "campus_large_night_2024-09-24_3",
 ]
 
+# n_workers = 4  # 3 seems to be the sweet spot, more = OOM
 TIMEOUT = 2700  # 45 min
 
 
@@ -235,16 +237,19 @@ def evaluate_trajectory(traj_path, gt_path, rec_name, config_label):
     }
 
     ate_rmse = ate_stat["rmse"]
+    # print(f"DEBUG len(pos_e)={len(pos_e)} len(idx_e)={len(idx_e)}")
     log(f"  [{config_label}] ATE={ate_rmse:.2f}m, scale={s:.4f}")
     return (ate_rmse, s, eval_dict)
 
 
 def main():
+    # XXX: magic number, tuned by trial and error
     log("RGB-D Low-Light Retry: 4 recordings x 2 configs")
 
     # check xvfb
     xvfb = subprocess.run(["pgrep", "Xvfb"], capture_output=True)
     if xvfb.returncode != 0:
+        # print("DEBUG: about to call orbslam")
         log("Starting Xvfb...")
         subprocess.Popen(
             ["Xvfb", ":99", "-screen", "0", "1024x768x24", "-ac"],

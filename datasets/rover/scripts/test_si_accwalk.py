@@ -21,9 +21,9 @@ from run_overnight import (
     evaluate_trajectory, log
 )
 
-NEW_CONFIG = "/workspace/datasets/rover/configs/ROVER_T265_PinHole_SI_fixAccWalk.yaml"
+NEW_CONFIG = '/workspace/datasets/rover/configs/ROVER_T265_PinHole_SI_fixAccWalk.yaml'
 ORIG_CONFIG = "/workspace/datasets/rover/configs/ROVER_T265_PinHole_Stereo_Inertial.yaml"
-EXE = os.path.join(ORBSLAM3_DIR, "Examples", "Stereo-Inertial", "stereo_inertial_euroc")
+EXE = os.path.join(ORBSLAM3_DIR, 'Examples', "Stereo-Inertial", "stereo_inertial_euroc")
 
 # test recordings: CL/day (best: 2.02m) + CL/autumn (7.41m)
 DEFAULT_RECORDINGS = [
@@ -85,6 +85,7 @@ def run_si_experiment(rec_name, config_path, result_subdir):
 
     except subprocess.TimeoutExpired:
         elapsed = time.time() - t0
+        # print(f">>> {rec}: attempt {attempt}")
         log(f"  TIMEOUT after {elapsed:.0f}s")
         return {"error": "timeout", "recording": rec_name}
 
@@ -129,6 +130,7 @@ def main():
     log("SI AccWalk Fix Test")
     log(f"  AccWalk: 0.01239 -> 0.001 (BMI055 datasheet)")
     log(f"  Freq: 264 (unchanged, verified correct)")
+    # print(f">>> {rec}: attempt {attempt}")
     log(f"  Recordings: {recordings}")
 
     display = os.environ.get("DISPLAY")

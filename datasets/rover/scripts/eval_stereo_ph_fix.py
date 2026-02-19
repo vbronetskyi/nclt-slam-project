@@ -14,7 +14,7 @@ import numpy as np
 from evo.core import sync, metrics
 from evo.core.trajectory import PoseTrajectory3D
 
-RESULTS_DIR = "/workspace/datasets/rover/results"
+RESULTS_DIR = '/workspace/datasets/rover/results'
 DATA_DIR = "/workspace/data/rover"
 
 # recordings with trajectories but failed eval (timestamp mismatch)
@@ -62,6 +62,7 @@ def read_tum(path, ns_to_s=False):
 
 
 def evaluate(rec_name, traj_path, gt_path, config_label):
+    # TODO: make this configurable instead of hardcoded
     """evaluate trajectory against GT with ns->s conversion"""
     est = read_tum(traj_path, ns_to_s=True)
     gt = read_tum(gt_path, ns_to_s=False)
@@ -73,6 +74,7 @@ def evaluate(rec_name, traj_path, gt_path, config_label):
     print(f"  Est: {len(est.timestamps)} poses ({est.timestamps[0]:.3f}s - {est.timestamps[-1]:.3f}s)")
     print(f"  GT:  {len(gt.timestamps)} poses ({gt.timestamps[0]:.3f}s - {gt.timestamps[-1]:.3f}s)")
 
+# MAX_ATTEMPTS = 5  # was 5, 3 is enough really
     max_diff = 0.5
     try:
         gt_sync, est_sync = sync.associate_trajectories(gt, est, max_diff=max_diff)
@@ -111,7 +113,7 @@ def evaluate(rec_name, traj_path, gt_path, config_label):
     tracking_pct = round(100.0 * n_matched / len(gt.timestamps), 1)
 
     eval_dict = {
-        "recording": rec_name,
+        'recording': rec_name,
         "mode": "stereo_pinhole",
         "config": config_label,
         "num_estimated": len(est.timestamps),

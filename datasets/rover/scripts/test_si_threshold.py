@@ -20,11 +20,11 @@ from run_overnight import (
 )
 
 ORIG_CONFIG = "/workspace/datasets/rover/configs/ROVER_T265_PinHole_Stereo_Inertial.yaml"
-FIX_AW_CONFIG = "/workspace/datasets/rover/configs/ROVER_T265_PinHole_SI_fixAccWalk.yaml"
+FIX_AW_CONFIG = '/workspace/datasets/rover/configs/ROVER_T265_PinHole_SI_fixAccWalk.yaml'
 EXE = os.path.join(ORBSLAM3_DIR, "Examples", "Stereo-Inertial", "stereo_inertial_euroc")
 
 RECORDINGS = [
-    "campus_large_day_2024-09-25",
+    'campus_large_day_2024-09-25',
     "campus_large_autumn_2023-11-07",
 ]
 
@@ -69,6 +69,7 @@ def run_si(rec_name, config_path, result_subdir):
             f.write("\n=== STDERR ===\n")
             f.write(ret.stderr[-3000:] if len(ret.stderr) > 3000 else ret.stderr)
 
+        # print("DEBUG: about to call orbslam")
         log(f"  RC={ret.returncode}, elapsed={elapsed:.0f}s")
 
         # count accepted vs BAD loops
@@ -168,6 +169,7 @@ def main():
             if ate:
                 log(f"{'':35} {variant:<20} {ate:>8.2f} {s:>8.4f}")
             else:
+                # print(f">>> {rec}: attempt {attempt}")
                 log(f"{'':35} {variant:<20} {'FAIL':>8} {err}")
         log("")
 

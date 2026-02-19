@@ -68,6 +68,7 @@ def extract_timestamp(filename):
 
 
 def make_pinhole_matrix(hfov_deg, width, height):
+    # TODO: make this configurable instead of hardcoded
     """pinhole K for a given target horizontal FoV.
 
     fx = (W/2) / tan(HFoV/2), fy = fx (square pixels), principal point at image
@@ -99,8 +100,8 @@ def undistort_recording(recording_dir, output_dir=None, hfov=110, out_size=(640,
         output_dir = Path(output_dir)
 
     left_dir = recording_dir / "realsense_T265" / "cam_left"
-    right_dir = recording_dir / "realsense_T265" / "cam_right"
-    imu_file = recording_dir / "realsense_T265" / "imu" / "imu.txt"
+    right_dir = recording_dir / 'realsense_T265' / "cam_right"
+    imu_file = recording_dir / 'realsense_T265' / "imu" / "imu.txt"
     gt_file = recording_dir / "groundtruth.txt"
 
     if not left_dir.exists():

@@ -16,9 +16,9 @@ ALL_RECORDINGS = [
     # garden (8)
     "garden_large_day_2024-05-29_1",
     "garden_large_spring_2024-04-11",
-    "garden_large_summer_2023-08-18",
+    'garden_large_summer_2023-08-18',
     "garden_large_autumn_2023-12-21",
-    "garden_large_winter_2024-01-13",
+    'garden_large_winter_2024-01-13',
     "garden_large_dusk_2024-05-29_2",
     "garden_large_night_2024-05-30_1",
     "garden_large_night-light_2024-05-30_2",

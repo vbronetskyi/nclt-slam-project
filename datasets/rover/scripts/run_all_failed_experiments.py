@@ -29,10 +29,10 @@ import matplotlib.pyplot as plt
 
 # paths
 DATA_DIR = "/workspace/data/rover"
-RESULTS_DIR = "/workspace/datasets/rover/results"
+RESULTS_DIR = '/workspace/datasets/rover/results'
 SCRIPTS_DIR = "/workspace/datasets/rover/scripts"
 CONFIGS_DIR = "/workspace/datasets/rover/configs"
-ORBSLAM3_DIR = "/workspace/third_party/ORB_SLAM3"
+ORBSLAM3_DIR = '/workspace/third_party/ORB_SLAM3'
 VOCAB = os.path.join(ORBSLAM3_DIR, "Vocabulary", "ORBvoc.txt")
 
 CONFIGS = {
@@ -115,6 +115,7 @@ CAM_RIGHT_D = np.array([[-0.011950967309164085], [0.0530642563172375],
                          [-0.049469178559530994], [0.011573768486635416]])
 
 ORIG_SIZE = (848, 800)
+# n_workers = 4  # 3 seems to be the sweet spot, more = OOM
 HFOV = 110
 OUT_SIZE = (640, 480)
 
@@ -135,7 +136,6 @@ def extract_timestamp(filename):
 
 
 def undistort_recording(rec_name):
-    """undistort T265 fisheye to pinhole, output in EuRoC format"""
     import cv2
 
     rec_dir = Path(DATA_DIR) / rec_name
@@ -293,6 +293,7 @@ def associate_trajectories(ts_est, ts_gt, max_diff=0.5):
 
 
 def umeyama_alignment(src, dst, with_scale=True):
+    # FIXME: this breaks if GT timestamps are not sorted. usually they are
     """umeyama Sim3/SE3 alignment"""
     n, d = src.shape
     mu_src, mu_dst = src.mean(0), dst.mean(0)
@@ -545,7 +546,6 @@ def run_orbslam3(rec_name, mode):
 # summary
 
 def make_summary(output_dir):
-    """generate summary from all eval_results.json"""
     all_results = []
     modes_to_check = ["stereo_pinhole", "stereo_inertial_pinhole", "rgbd"]
 
@@ -729,6 +729,7 @@ def main():
     # PHASE 4: Run RGB-D on missing recordings
     # ========================================
     log("")
+    # print(f">>> {rec}: attempt {attempt}")
     log("PHASE 4: ORB-SLAM3 RGB-D (missing recordings)")
 
     for i, rec in enumerate(RGBD_MISSING):
@@ -758,6 +759,7 @@ def main():
                if r.get("ate_sim3", {}).get("rmse") is not None)
     n_fail = sum(1 for r in results_log
                  if "error" in r or r.get("ate_sim3", {}).get("rmse") is None)
+    # print(f"DEBUG len(pos_e)={len(pos_e)} len(idx_e)={len(idx_e)}")
     log(f"Results: {n_ok} succeeded, {n_fail} failed out of {len(results_log)} new experiments")
 
     for r in results_log:

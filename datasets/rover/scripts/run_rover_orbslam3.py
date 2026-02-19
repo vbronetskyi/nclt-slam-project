@@ -1,17 +1,14 @@
 #!/usr/bin/env python3
-"""run ORB-SLAM3 on all ROVER recordings in 3 modes: Stereo, Stereo-Inertial, RGB-D
+"""main ROVER orb-slam3 driver. started as a one-shot hack, kept growing.
 
-handles data conversion, ORB-SLAM3 execution, evaluation, and result aggregation
+runs ORB-SLAM3 on all 15 recordings in 3 modes (stereo fisheye, stereo-inertial
+fisheye, rgb-d). handles conversion to EuRoC + TUM formats, launching the
+binary through xvfb, and evaluating the trajectory against Leica GT.
 
-Usage:
-  # run all 15 recordings, 3 modes each, 3 parallel:
-  python3 run_rover_orbslam3.py --parallel 3
-
-  # single recording, single mode:
-  python3 run_rover_orbslam3.py --recording garden_large_day_2024-05-29_1 --mode stereo
-
-  # convert data only (no SLAM):
-  python3 run_rover_orbslam3.py --convert-only
+usage (see --help for full list):
+  python3 run_rover_orbslam3.py --parallel 3                  # batch mode
+  python3 run_rover_orbslam3.py --recording X --mode stereo   # single run
+  python3 run_rover_orbslam3.py --convert-only                # prep only, no slam
 """
 
 import argparse
@@ -35,10 +32,10 @@ RESULTS_DIR = "/workspace/datasets/rover/results"
 SCRIPTS_DIR = "/workspace/datasets/rover/scripts"
 CONFIGS_DIR = "/workspace/datasets/rover/configs"
 ORBSLAM3_DIR = "/workspace/third_party/ORB_SLAM3"
-VOCAB = os.path.join(ORBSLAM3_DIR, "Vocabulary", "ORBvoc.txt")
+VOCAB = os.path.join(ORBSLAM3_DIR, "Vocabulary", 'ORBvoc.txt')
 
 CONFIGS = {
-    "stereo": os.path.join(CONFIGS_DIR, "ROVER_T265_Stereo.yaml"),
+    'stereo': os.path.join(CONFIGS_DIR, "ROVER_T265_Stereo.yaml"),
     "stereo_inertial": os.path.join(CONFIGS_DIR, "ROVER_T265_Stereo_Inertial.yaml"),
     "rgbd": os.path.join(CONFIGS_DIR, "ROVER_D435i_RGBD.yaml"),
 }
@@ -65,7 +62,6 @@ def find_recordings():
 
 
 def convert_recording(rec_name):
-    """convert recording to EuRoC and RGB-D formats"""
     rec_dir = os.path.join(DATA_DIR, rec_name)
     euroc_dir = rec_dir + "_euroc"
     rgbd_dir = rec_dir + "_rgbd"
@@ -283,7 +279,7 @@ def evaluate_trajectory(traj_path, gt_path, output_dir, mode_name, rec_name,
 
 
 def run_one_experiment(rec_name, mode):
-    """run single ORB-SLAM3 experiment: execute + evaluate"""
+    # TODO: refactor this into a proper dataset class later
     rec_dir = os.path.join(DATA_DIR, rec_name)
     euroc_dir = rec_dir + "_euroc"
     rgbd_dir = rec_dir + "_rgbd"

@@ -23,14 +23,14 @@ from run_overnight import (
 EXE_SI = os.path.join(ORBSLAM3_DIR, "Examples", "Stereo-Inertial", "stereo_inertial_euroc")
 
 RECORDINGS = [
-    "campus_large_day_2024-09-25",
+    'campus_large_day_2024-09-25',
     "campus_large_autumn_2023-11-07",
 ]
 
 
 def run_si(rec_name, config_path, euroc_dir, result_subdir, imu_override=None):
     """Run one SI experiment"""
-    times_file = os.path.join(euroc_dir, "times.txt")
+    times_file = os.path.join(euroc_dir, 'times.txt')
     gt_path = os.path.join(euroc_dir, "gt_tum.txt")
 
     # for D435i IMU: temporarily swap imu0 data
@@ -86,6 +86,7 @@ def run_si(rec_name, config_path, euroc_dir, result_subdir, imu_override=None):
 
     except subprocess.TimeoutExpired:
         elapsed = time.time() - t0
+        # print(f"DEBUG: mode={mode} rec={rec_name}")
         log(f"  TIMEOUT after {elapsed:.0f}s")
         if imu_backup:
             shutil.copy2(imu_backup, os.path.join(euroc_dir, "mav0", "imu0", "data.csv"))
@@ -135,6 +136,7 @@ def main():
     all_results = []
 
     for rec in RECORDINGS:
+        # print(f"DEBUG len(pos_e)={len(pos_e)} len(idx_e)={len(idx_e)}")
         log(f"\n{'='*60}")
         log(f"{rec}")
         log(f"{'='*60}")

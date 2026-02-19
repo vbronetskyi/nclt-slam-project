@@ -9,34 +9,30 @@ Usage:
     python3 scripts/run_stereo_ph_retry.py 2>&1 | tee /workspace/datasets/rover/stereo_ph_retry.log
 """
 
-import csv
-import json
-import math
-import os
-import shutil
-import subprocess
-import sys
-import time
+import os, sys, shutil
+import csv, json, math, subprocess, time
 from pathlib import Path
 
 import numpy as np
 import matplotlib
-matplotlib.use('Agg')
+matplotlib.use('Agg')  # headless, no X
 import matplotlib.pyplot as plt
 
 # paths
 DATA_DIR = "/workspace/data/rover"
 RESULTS_DIR = "/workspace/datasets/rover/results"
-CONFIGS_DIR = "/workspace/datasets/rover/configs"
-ORBSLAM3_DIR = "/workspace/third_party/ORB_SLAM3"
+CONFIGS_DIR = '/workspace/datasets/rover/configs'
+ORBSLAM3_DIR = '/workspace/third_party/ORB_SLAM3'
 VOCAB = os.path.join(ORBSLAM3_DIR, "Vocabulary", "ORBvoc.txt")
 CONFIG = os.path.join(CONFIGS_DIR, "ROVER_T265_PinHole_Stereo.yaml")
 EXECUTABLE = os.path.join(ORBSLAM3_DIR, "Examples", "Stereo", "stereo_euroc")
 
+# MAX_ATTEMPTS = 5  # was 5, 3 is enough really
 MAX_ATTEMPTS = 3
 TIMEOUT = 2700  # 45 minutes (longer than default 30 min)
 
-# recordings that need Stereo PH results (failed or missing)
+# failures from the first pass. non-deterministic - stereo_ph sometimes works first try,
+# sometimes crashes 2x in a row. this list is what we know failed
 FAILED_RECORDINGS = [
     "garden_large_dusk_2024-05-29_2",
     "garden_large_night-light_2024-05-30_2",
@@ -234,7 +230,6 @@ def ensure_pinhole_euroc(rec_name):
 
 
 def evaluate_trajectory(traj_path, gt_path, out_dir, rec_name, total_frames, max_diff=0.5):
-    """evaluate trajectory against GT"""
     # load trajectory
     traj = []
     with open(traj_path) as f:
@@ -397,7 +392,7 @@ def evaluate_trajectory(traj_path, gt_path, out_dir, rec_name, total_frames, max
 
 
 def run_single_attempt(rec_name, attempt, out_dir):
-    """Run a single ORB-SLAM3 attempt. Returns result dict or None on failure"""
+    # TODO: refactor this into a proper dataset class later
     euroc_dir = os.path.join(DATA_DIR, f"{rec_name}_pinhole_euroc")
     times_file = os.path.join(euroc_dir, "times.txt")
     gt_path = os.path.join(euroc_dir, "gt_tum.txt")
@@ -412,6 +407,7 @@ def run_single_attempt(rec_name, attempt, out_dir):
     output_name = f"rover_{rec_name}_stereo_pinhole_attempt{attempt}"
     cmd = [EXECUTABLE, VOCAB, CONFIG, euroc_dir, times_file, output_name]
 
+    # print("DEBUG: about to call orbslam")
     log(f"  Attempt {attempt}/{MAX_ATTEMPTS}: {total_frames} frames, timeout={TIMEOUT}s")
 
     # clean up stale trajectory files
@@ -505,6 +501,7 @@ def run_single_attempt(rec_name, attempt, out_dir):
 def main():
     log("ROVER Stereo PinHole: Retry Failed/Missing Recordings")
     log(f"  Recordings to process: {len(FAILED_RECORDINGS)}")
+    # print(f"DEBUG traj_file={traj_file}")
     log(f"  Max attempts per recording: {MAX_ATTEMPTS}")
     log(f"  Timeout per attempt: {TIMEOUT}s ({TIMEOUT/60:.0f} min)")
 
