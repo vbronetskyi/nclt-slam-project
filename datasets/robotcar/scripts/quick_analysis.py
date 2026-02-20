@@ -32,7 +32,6 @@ print(f"Found {len(methods)} method results: {method_names}")
 # table comparison
 print("\n" + "="*80)
 print(f"{'Method':<20} {'0.25m/2d':>10} {'0.5m/5d':>10} {'5m/10d':>10} {'Med.t':>8} {'Med.r':>8}")
-print("-"*80)
 for mn, dn in zip(method_names, display_names):
     ov = methods[mn]['overall']
     print(f"{dn:<20} {ov['0.25m_2deg']:>9.1f}% {ov['0.5m_5deg']:>9.1f}% {ov['5.0m_10deg']:>9.1f}% "
@@ -40,7 +39,6 @@ for mn, dn in zip(method_names, display_names):
 
 print("\n--- Day vs Night ---")
 print(f"{'Method':<20} {'Day 0.25m':>10} {'Day 0.5m':>10} {'Day 5m':>10} | {'Ngt 0.25m':>10} {'Ngt 0.5m':>10} {'Ngt 5m':>10}")
-print("-"*95)
 for mn, dn in zip(method_names, display_names):
     d = methods[mn].get('day', {})
     n = methods[mn].get('night', {})
@@ -53,7 +51,6 @@ print(f"{'Condition':<20}", end='')
 for dn in display_names:
     print(f" {dn:>15}", end='')
 print(f" {'Diff':>8}")
-print("-"*70)
 for cond in CONDITIONS:
     print(f"{cond:<20}", end='')
     vals = []

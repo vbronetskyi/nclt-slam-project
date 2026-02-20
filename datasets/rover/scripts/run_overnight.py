@@ -26,7 +26,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-# === Paths ===
+# paths
 DATA_DIR = "/workspace/data/rover"
 RESULTS_DIR = "/workspace/datasets/rover/results"
 SCRIPTS_DIR = "/workspace/datasets/rover/scripts"
@@ -96,7 +96,7 @@ def has_valid_result(rec_name, mode):
         return False
 
 
-# === RGB-D Preparation ===
+# rgb-d preparation
 
 def prepare_rgbd(rec_name):
     """prepare RGB-D data for a recording (symlinks + associations)"""
@@ -119,7 +119,7 @@ def prepare_rgbd(rec_name):
     return True
 
 
-# === Evaluation ===
+# evaluation
 
 def load_tum_trajectory(path):
     data = []
@@ -287,7 +287,7 @@ def evaluate_trajectory(traj_path, gt_path, output_dir, mode_name, rec_name,
     return results
 
 
-# === ORB-SLAM3 Runner ===
+# orb-slam3 runner
 
 def run_orbslam3(rec_name, mode):
     """run ORB-SLAM3 directly, uses pre-started Xvfb"""
@@ -392,7 +392,7 @@ def run_orbslam3(rec_name, mode):
     return result
 
 
-# === Summary ===
+# summary
 
 def make_summary():
     """generate combined summary for all 22 recordings"""
@@ -537,15 +537,12 @@ def make_summary():
         log(f"Plot error: {e}")
 
 
-# === Main ===
 
 def main():
-    log("=" * 70)
     log("ROVER Overnight Batch Runner: All Routes, All Modes")
     log(f"  Recordings: {len(ALL_RECORDINGS)}")
     log(f"  Modes: {ALL_MODES}")
     log(f"  Max experiments: {len(ALL_RECORDINGS) * len(ALL_MODES)}")
-    log("=" * 70)
 
     display = os.environ.get("DISPLAY")
     if not display:
@@ -560,7 +557,6 @@ def main():
     # PHASE 1: Prepare RGB-D data
     # ==============================
     log("\nPHASE 1: Preparing RGB-D data for all recordings")
-    log("-" * 50)
     for rec in ALL_RECORDINGS:
         prepare_rgbd(rec)
 
@@ -568,7 +564,6 @@ def main():
     # PHASE 2: Run all experiments
     # ==============================
     log("\nPHASE 2: Running ORB-SLAM3 experiments")
-    log("-" * 50)
 
     experiments = []
     for rec in ALL_RECORDINGS:
@@ -594,14 +589,11 @@ def main():
     # PHASE 3: Summary
     # ==============================
     log("\nPHASE 3: Generating summary")
-    log("-" * 50)
     make_summary()
 
     total_elapsed = time.time() - total_start
     log("")
-    log("=" * 70)
     log(f"ALL DONE! Total: {total_elapsed/60:.1f} min ({total_elapsed/3600:.1f} hours)")
-    log("=" * 70)
 
     n_ok = sum(1 for r in results_log if r.get("ate_sim3", {}).get("rmse") is not None)
     n_fail = len(results_log) - n_ok

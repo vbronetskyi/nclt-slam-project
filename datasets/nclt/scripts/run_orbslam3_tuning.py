@@ -398,9 +398,7 @@ def load_tum_trajectory(traj_path):
 # PHASE 0: Camera Investigation
 def phase0_camera_investigation():
     """Investigate all 6 Ladybug3 cameras to find best ones for SLAM"""
-    log("=" * 70)
     log("PHASE 0: Camera Investigation")
-    log("=" * 70)
 
     CAMERA_SAMPLES_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -508,9 +506,7 @@ def phase0_camera_investigation():
 # PHASE 1: Quick Validation
 def phase1_quick_validation(camera_ids):
     """Quick validation runs on 1000 frames per camera"""
-    log("=" * 70)
     log("PHASE 1: Quick Validation (1000 frames)")
-    log("=" * 70)
 
     N_FRAMES = 1000
     validation_results = []
@@ -639,9 +635,7 @@ def phase1_quick_validation(camera_ids):
 # PHASE 2: Systematic Parameter Tuning
 def phase2_parameter_tuning(cam_id, preprocess="none"):
     """Systematic parameter sweep on 3000 frames"""
-    log("=" * 70)
     log(f"PHASE 2: Systematic Parameter Tuning (Cam{cam_id}, preprocess={preprocess})")
-    log("=" * 70)
 
     N_FRAMES = 3000
     gt_data = load_ground_truth()
@@ -966,9 +960,7 @@ def phase2_parameter_tuning(cam_id, preprocess="none"):
 # PHASE 3: Full Session Run
 def phase3_full_run(best_config):
     """Run ORB-SLAM3 on the full spring session with best config"""
-    log("=" * 70)
     log("PHASE 3: Full Session Run")
-    log("=" * 70)
 
     cam_id = best_config["cam_id"]
     preprocess = best_config["preprocess"]
@@ -1084,9 +1076,7 @@ def phase3_full_run(best_config):
 # PHASE 4: Plots and Reporting
 def phase4_plots_and_report(full_results, all_runs, camera_stats):
     """Generate plots and summary report"""
-    log("=" * 70)
     log("PHASE 4: Generating Plots and Report")
-    log("=" * 70)
 
     import matplotlib
     matplotlib.use("Agg")

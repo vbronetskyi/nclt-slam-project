@@ -29,7 +29,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-# === Paths ===
+# paths
 DATA_DIR = "/workspace/data/rover"
 RESULTS_DIR = "/workspace/datasets/rover/results"
 SCRIPTS_DIR = "/workspace/datasets/rover/scripts"
@@ -105,7 +105,7 @@ def convert_recording(rec_name):
     return results
 
 
-# === evaluation (from evaluate_4seasons.py) ===
+# evaluation (from evaluate_4seasons.py)
 
 def load_tum_trajectory(path):
     """load TUM-format trajectory: timestamp tx ty tz qx qy qz qw"""

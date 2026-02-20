@@ -56,14 +56,11 @@ PG_ODOM_WEIGHT = 1.0
 PG_LC_WEIGHT = 5.0
 PG_DAMPING = 1e-3             # LM damping factor
 
-print("=" * 80)
 print("  ICP + LOOP CLOSURE + POSE GRAPH (v3 - FPFH+RANSAC)")
-print("=" * 80)
 print(f"Session: {SESSION}, every {SUBSAMPLE}nd scan")
 print(f"LC: SC_thresh={LC_SC_THRESH}, RANSAC_fitness>{LC_RANSAC_FITNESS}, "
       f"ICP_fitness>{LC_ICP_REFINE_FITNESS}")
 print(f"Dedup window: {LC_DEDUP_WINDOW} frames")
-print("=" * 80)
 
 
 # ============================================================================
@@ -292,7 +289,6 @@ def compute_rpe(e, g, d=1):
 
 # --- Load data ---
 print("\nSTEP 0: LOADING DATA")
-print("=" * 80)
 gt_loader = GroundTruthLoader()
 gt_df = gt_loader.load_ground_truth(SESSION)
 gt_all = np.column_stack([
@@ -308,7 +304,6 @@ print(f"Scans: {len(files)} (every {SUBSAMPLE}nd of {len(all_files)})")
 
 # --- ICP Odometry + Scan Context ---
 print("\nSTEP 1: ICP ODOMETRY + SCAN CONTEXT")
-print("=" * 80)
 
 sc = ScanContext(SC_SECTORS, SC_RINGS, SC_MAX_RANGE)
 descriptors = []
@@ -360,7 +355,6 @@ print(f"PCD cache: {len(pcd_cache)} clouds")
 
 # --- Loop Closure Detection (Scan Context ONLY) ---
 print("\nSTEP 2: LOOP CLOSURE DETECTION (Scan Context)")
-print("=" * 80)
 
 rk_mat = np.array(ring_keys)
 candidates = []  # (query, candidate, sc_dist)
@@ -398,7 +392,6 @@ print(f"After dedup ({LC_DEDUP_WINDOW}-frame windows): {len(candidates)} candida
 
 # --- FPFH + RANSAC Verification ---
 print("\nSTEP 3: FPFH + RANSAC VERIFICATION")
-print("=" * 80)
 
 def get_pcd(idx):
     if idx in pcd_cache:
@@ -456,7 +449,6 @@ if verified:
 
 # --- Pose Graph ---
 print("\nSTEP 4: POSE GRAPH OPTIMIZATION")
-print("=" * 80)
 
 poses_2d = np.array([pose_to_2d(p) for p in poses_4x4])
 z_vals = [p[2,3] for p in poses_4x4]
@@ -487,7 +479,6 @@ else:
 
 # --- Evaluate ---
 print("\nSTEP 5: EVALUATION")
-print("=" * 80)
 
 icp_traj = []
 for ts, pose in zip(timestamps, poses_4x4):
@@ -548,7 +539,6 @@ print(f"{'='*81}")
 
 # --- Plots ---
 print("\nSTEP 6: PLOTS")
-print("=" * 80)
 
 # 1. Trajectory comparison
 fig, ax = plt.subplots(figsize=(14,12))

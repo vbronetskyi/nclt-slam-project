@@ -127,9 +127,7 @@ def run_si(rec_name, config_path, euroc_dir, result_subdir, imu_override=None):
 
 
 def main():
-    log("=" * 70)
     log("SI Variants Test: D435i IMU + KB8 Fisheye")
-    log("=" * 70)
 
     d435i_config = "/workspace/datasets/rover/configs/ROVER_T265_PinHole_SI_D435iIMU.yaml"
     kb8_config = "/workspace/datasets/rover/configs/ROVER_T265_Stereo_Inertial.yaml"
@@ -157,7 +155,6 @@ def main():
     log("FULL COMPARISON (all SI variants)")
     log(f"{'='*70}")
     log(f"{'Recording':<35} {'Variant':<25} {'ATE':>8} {'Scale':>8}")
-    log("-" * 80)
 
     variants_to_show = [
         "stereo_inertial_pinhole",

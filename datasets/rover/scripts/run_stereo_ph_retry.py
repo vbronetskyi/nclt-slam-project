@@ -24,7 +24,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-# === Paths ===
+# paths
 DATA_DIR = "/workspace/data/rover"
 RESULTS_DIR = "/workspace/datasets/rover/results"
 CONFIGS_DIR = "/workspace/datasets/rover/configs"
@@ -503,12 +503,10 @@ def run_single_attempt(rec_name, attempt, out_dir):
 
 
 def main():
-    log("=" * 70)
     log("ROVER Stereo PinHole: Retry Failed/Missing Recordings")
     log(f"  Recordings to process: {len(FAILED_RECORDINGS)}")
     log(f"  Max attempts per recording: {MAX_ATTEMPTS}")
     log(f"  Timeout per attempt: {TIMEOUT}s ({TIMEOUT/60:.0f} min)")
-    log("=" * 70)
 
     total_start = time.time()
     summary = []
@@ -516,7 +514,6 @@ def main():
     for i, rec in enumerate(FAILED_RECORDINGS):
         log("")
         log(f"[{i+1}/{len(FAILED_RECORDINGS)}] {rec}")
-        log("-" * 50)
 
         # check pinhole EuRoC data exists
         if not ensure_pinhole_euroc(rec):
@@ -565,13 +562,11 @@ def main():
             with open(os.path.join(out_dir, "eval_results.json"), 'w') as f:
                 json.dump(fail_result, f, indent=2)
 
-    # === final summary ===
+    # final summary
     total_elapsed = time.time() - total_start
 
     log("")
-    log("=" * 70)
     log("FINAL SUMMARY")
-    log("=" * 70)
 
     n_ok = sum(1 for s in summary if s["status"] == "OK")
     n_fail = sum(1 for s in summary if s["status"] == "FAILED_ALL_ATTEMPTS")
@@ -593,7 +588,6 @@ def main():
 
     log("")
     log(f"Total time: {total_elapsed/60:.1f} min ({total_elapsed/3600:.1f} hours)")
-    log("=" * 70)
 
     # regenerate heatmap
     log("Regenerating heatmap...")

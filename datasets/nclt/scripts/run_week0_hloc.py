@@ -998,9 +998,7 @@ def plot_ablation_features(results, output_dir):
 
 def run_experiment(mode='full'):
     """Run the full hloc experiment. mode: 'sanity', 'small', or 'full'"""
-    print('=' * 70)
     print('EXPERIMENT 0.7: hloc Visual Localization, Cross-Season on NCLT')
-    print('=' * 70)
     print(f'Mode: {mode}')
     print(f'GPU: {os.popen("nvidia-smi --query-gpu=name --format=csv,noheader").read().strip()}')
     t_start = time.time()

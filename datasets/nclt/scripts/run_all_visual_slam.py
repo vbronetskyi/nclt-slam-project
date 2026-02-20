@@ -660,9 +660,7 @@ def install_base_deps():
 
 def install_droid_slam():
     """Clone and build DROID-SLAM. Returns True on success"""
-    log("="*60)
     log("Installing DROID-SLAM")
-    log("="*60)
 
     droid_dir = INSTALL_DIR / "DROID-SLAM"
     INSTALL_DIR.mkdir(parents=True, exist_ok=True)
@@ -751,9 +749,7 @@ def install_droid_slam():
 
 def install_dpvo():
     """Clone and build DPVO (also provides DPV-SLAM). Returns True on success"""
-    log("="*60)
     log("Installing DPVO / DPV-SLAM")
-    log("="*60)
 
     dpvo_dir = INSTALL_DIR / "DPVO"
     INSTALL_DIR.mkdir(parents=True, exist_ok=True)
@@ -888,9 +884,7 @@ def install_dpvo():
 
 def phase1_install():
     """Phase 1: Install all methods"""
-    log("=" * 60)
     log("PHASE 1: INSTALLATION")
-    log("=" * 60)
 
     installed = {}
 
@@ -1046,9 +1040,7 @@ def prepare_ground_truth_tum(session):
 
 def phase2_prepare():
     """Phase 2: Prepare images, calibration, ground truth"""
-    log("=" * 60)
     log("PHASE 2: DATA PREPARATION")
-    log("=" * 60)
 
     image_dirs = {}
     gt_files = {}
@@ -1198,9 +1190,7 @@ def run_single_method(method_key, session, image_dir, calib_file):
 
 def phase3_run(installed, image_dirs, calib_file):
     """phase 3: Run all installed methods on all sessions"""
-    log("=" * 60)
     log("PHASE 3: RUNNING METHODS")
-    log("=" * 60)
 
     all_stats = {}
 
@@ -1532,9 +1522,7 @@ def generate_plots(all_results):
 
 def phase4_evaluate(gt_files):
     """phase 4: Evaluate all trajectories and generate plots"""
-    log("=" * 60)
     log("PHASE 4: EVALUATION")
-    log("=" * 60)
 
     all_results = {}
 
@@ -1710,9 +1698,7 @@ def git_commit():
 
 def phase5_save(all_results, all_stats):
     """Phase 5: Save summary, update changelog, git commit"""
-    log("=" * 60)
     log("PHASE 5: SAVING RESULTS")
-    log("=" * 60)
 
     try:
         save_summary(all_results, all_stats)
@@ -1738,12 +1724,10 @@ def main():
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     LOG_FILE = str(RESULTS_DIR / "run_log.txt")
 
-    log("=" * 60)
     log("OVERNIGHT VISUAL SLAM BENCHMARK")
     log(f"Start: {START_TIME.strftime('%Y-%m-%d %H:%M:%S')}")
     log(f"Sessions: {SESSIONS}")
     log(f"Methods: {list(METHODS.keys())}")
-    log("=" * 60)
 
     # phase 1: Install
     try:
@@ -1792,10 +1776,8 @@ def main():
         log(traceback.format_exc(), level="ERROR")
 
     elapsed = datetime.now() - START_TIME
-    log("=" * 60)
     log(f"BENCHMARK COMPLETE, elapsed {str(elapsed).split('.')[0]}")
     log(f"Results: {RESULTS_DIR}")
-    log("=" * 60)
 
 
 if __name__ == "__main__":

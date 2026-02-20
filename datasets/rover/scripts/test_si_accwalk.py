@@ -126,12 +126,10 @@ def run_si_experiment(rec_name, config_path, result_subdir):
 def main():
     recordings = sys.argv[1:] if len(sys.argv) > 1 else DEFAULT_RECORDINGS
 
-    log("=" * 70)
     log("SI AccWalk Fix Test")
     log(f"  AccWalk: 0.01239 -> 0.001 (BMI055 datasheet)")
     log(f"  Freq: 264 (unchanged, verified correct)")
     log(f"  Recordings: {recordings}")
-    log("=" * 70)
 
     display = os.environ.get("DISPLAY")
     if not display:
@@ -161,7 +159,6 @@ def main():
     log("COMPARISON SUMMARY")
     log(f"{'='*70}")
     log(f"{'Recording':<45} {'Original ATE':>12} {'New ATE':>12} {'Orig Scale':>10} {'New Scale':>10}")
-    log("-" * 89)
 
     for rec, result in results:
         orig_json = os.path.join(RESULTS_DIR, rec, "stereo_inertial_pinhole", "eval_results.json")

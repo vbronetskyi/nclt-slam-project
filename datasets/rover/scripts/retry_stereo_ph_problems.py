@@ -264,9 +264,7 @@ def evaluate_trajectory(traj_path, gt_path, rec_name, config_label):
 
 
 def main():
-    log("=" * 60)
     log("Stereo PH Problem Fix: 5 recordings x 2 configs")
-    log("=" * 60)
 
     # check xvfb
     xvfb = subprocess.run(["pgrep", "Xvfb"], capture_output=True)

@@ -116,9 +116,7 @@ def run_si(rec_name, config_path, result_subdir):
 
 
 def main():
-    log("=" * 70)
     log("SI Test: Relaxed BAD LOOP threshold (0.008 -> 0.1 rad)")
-    log("=" * 70)
 
     all_results = []
 
@@ -140,7 +138,6 @@ def main():
     log("FULL COMPARISON")
     log(f"{'='*70}")
     log(f"{'Recording':<35} {'Variant':<20} {'ATE':>8} {'Scale':>8}")
-    log("-" * 75)
 
     for rec in RECORDINGS:
         # load original

@@ -21,14 +21,11 @@ PLOTS_DIR = RESULTS_DIR / 'plots'
 
 PLOTS_DIR.mkdir(parents=True, exist_ok=True)
 
-print("="*60)
 print("  SLAM Evaluation: KISS-ICP vs Custom ICP")
-print("="*60)
 print(f"Session: {SESSION}")
 print(f"Subsample rate: every {SUBSAMPLE}th scan")
 print(f"Max scans: {MAX_SCANS}")
 print(f"Results: {RESULTS_DIR}")
-print("="*60)
 
 
 class CustomICP:
@@ -117,7 +114,6 @@ def load_velodyne_scans(session, subsample=1, max_scans=None):
 def run_custom_icp(scans, timestamps):
     print("\n" + "="*60)
     print("Running Custom ICP Odometry")
-    print("="*60)
 
     icp = CustomICP()
 
@@ -142,7 +138,6 @@ def run_custom_icp(scans, timestamps):
 def load_ground_truth(session, timestamps):
     print("\n" + "="*60)
     print("Loading Ground Truth")
-    print("="*60)
 
     loader = GroundTruthLoader()
     gt_full = loader.load_ground_truth(session)
@@ -170,7 +165,6 @@ def load_ground_truth(session, timestamps):
 def try_kiss_icp(scans, timestamps):
     print("\n" + "="*60)
     print("Attempting KISS-ICP")
-    print("="*60)
 
     try:
         # try to import kiss_icp
@@ -267,7 +261,6 @@ def compute_ate(traj_est, traj_gt):
 def plot_results(gt_traj, custom_traj, kiss_traj=None):
     print("\n" + "="*60)
     print("Generating Plots")
-    print("="*60)
 
     # 1. Trajectory comparison (bird's eye view)
     plt.figure(figsize=(12, 10))
@@ -350,7 +343,6 @@ def plot_results(gt_traj, custom_traj, kiss_traj=None):
 def save_trajectories(gt_traj, custom_traj, kiss_traj=None):
     print("\n" + "="*60)
     print("Saving Trajectories (TUM format)")
-    print("="*60)
 
     def save_tum(traj, filename):
         # TUM format: timestamp x y z qx qy qz qw
@@ -387,7 +379,6 @@ def main():
     # 5. Compute metrics
     print("\n" + "="*60)
     print("EVALUATION RESULTS")
-    print("="*60)
 
     custom_ate = compute_ate(custom_traj, gt_traj)
     print(f"\nCustom ICP:")
@@ -408,7 +399,6 @@ def main():
     # 7. List generated files
     print("\n" + "="*60)
     print("GENERATED FILES")
-    print("="*60)
 
     for item in sorted(PLOTS_DIR.glob('*.png')):
         print(f"  {item}")
@@ -418,7 +408,6 @@ def main():
 
     print("\n" + "="*60)
     print("EVALUATION COMPLETE!")
-    print("="*60)
 
 
 if __name__ == '__main__':

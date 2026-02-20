@@ -78,13 +78,10 @@ PG_ODOM_W = 1.0
 PG_LC_W = 10.0
 PG_DAMPING = 1e-3
 
-print("=" * 80)
 print("  WEEK 3: ODOM-AIDED ICP + LOCAL MAP + GPS LOOP CLOSURE")
-print("=" * 80)
 print(f"Session: {SESSION}, every {SUBSAMPLE}nd scan")
 print(f"Local map: {LOCALMAP_SIZE} scans, {LOCALMAP_VOXEL}m voxel")
 print(f"GPS LC: radius={GPS_LC_RADIUS}m, min_gap={GPS_LC_MIN_GAP}")
-print("=" * 80)
 
 
 # Odometry predictor.
@@ -384,7 +381,6 @@ def compute_rpe(e, g, d=1):
 
 # --- Step 0: Load data ---
 print("\nSTEP 0: LOADING DATA")
-print("=" * 80)
 
 gt_loader = GroundTruthLoader()
 gt_df = gt_loader.load_ground_truth(SESSION)
@@ -415,7 +411,6 @@ gps_lc = GPSLoopClosureDetector(gps_df, GPS_LC_MIN_GAP, GPS_LC_RADIUS, GPS_LC_DE
 
 # --- Step 1: Odometry-aided ICP with local map matching ---
 print("\nSTEP 1: ODOMETRY-AIDED ICP + LOCAL MAP + GROUND REMOVAL")
-print("=" * 80)
 
 poses_4x4 = []
 timestamps_us = []
@@ -497,7 +492,6 @@ print(f"\nOdometry: {len(poses_4x4)} poses in {t_odom:.1f}s "
 
 # --- Step 2: GPS-aided loop closure detection ---
 print("\nSTEP 2: GPS-AIDED LOOP CLOSURE DETECTION")
-print("=" * 80)
 
 t0 = time.time()
 gps_candidates = gps_lc.find_candidates(timestamps_us)
@@ -506,7 +500,6 @@ print(f"GPS candidates: {len(gps_candidates)} in {t_detect:.1f}s")
 
 # ICP verification
 print("\nSTEP 3: ICP VERIFICATION OF GPS LOOP CLOSURES")
-print("=" * 80)
 
 def get_pcd(idx):
     """Get cached or freshly loaded point cloud for loop closure verification"""
@@ -561,7 +554,6 @@ if verified_lc:
 
 # --- Step 4: Pose graph optimization ---
 print("\nSTEP 4: POSE GRAPH OPTIMIZATION")
-print("=" * 80)
 
 def pose_to_2d(p4):
     """Extract (x, y, yaw) from 4x4 transform"""
@@ -601,7 +593,6 @@ else:
 
 # --- Step 5: Evaluation ---
 print("\nSTEP 5: EVALUATION")
-print("=" * 80)
 
 odom_traj = []
 for ts, pose in zip(timestamps_us, poses_4x4):
@@ -665,7 +656,6 @@ print(f"\nWeek 2 → Week 3 ATE improvement: "
 
 # --- Step 6: Plots ---
 print("\nSTEP 6: GENERATING PLOTS")
-print("=" * 80)
 
 # 1. Trajectory comparison
 fig, ax = plt.subplots(figsize=(14,12))

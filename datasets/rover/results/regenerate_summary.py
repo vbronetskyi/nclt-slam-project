@@ -168,9 +168,7 @@ def format_cell(entry: dict) -> str:
 
 
 def main():
-    print("=" * 70)
     print("ROVER ORB-SLAM3 Summary Regeneration")
-    print("=" * 70)
     print()
 
     # =========================================================================

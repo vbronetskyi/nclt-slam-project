@@ -23,14 +23,11 @@ PLOTS_DIR = RESULTS_DIR / 'plots'
 
 PLOTS_DIR.mkdir(parents=True, exist_ok=True)
 
-print("="*80)
 print("  SLAM PRACTICAL EVALUATION: KISS-ICP vs Custom ICP+IMU")
-print("="*80)
 print(f"Session: {SESSION}")
 print(f"KISS-ICP: every {KISS_ICP_SUBSAMPLE}th scan (~2,594 scans - practical for performance)")
 print(f"Custom ICP: every {CUSTOM_ICP_SUBSAMPLE}nd scan (~6,486 scans - denser sampling)")
 print(f"Results: {RESULTS_DIR}")
-print("="*80)
 
 
 class CustomICPWithIMU:
@@ -147,7 +144,6 @@ def load_velodyne_scans(session, subsample=1, max_scans=None):
 def run_custom_icp_with_imu(scans, timestamps, imu_data=None):
     print("\n" + "="*80)
     print("Running Custom ICP+IMU Odometry")
-    print("="*80)
 
     start_time = time.time()
     icp = CustomICPWithIMU(imu_data=imu_data)
@@ -180,7 +176,6 @@ def try_kiss_icp(scans, timestamps):
     """Run KISS-ICP on all scans"""
     print("\n" + "="*80)
     print("Running KISS-ICP")
-    print("="*80)
 
     try:
         from kiss_icp.kiss_icp import KissICP
@@ -252,7 +247,6 @@ def try_kiss_icp(scans, timestamps):
 def load_ground_truth(session, timestamps):
     print("\n" + "="*80)
     print("Loading Ground Truth")
-    print("="*80)
 
     loader = GroundTruthLoader()
     gt_full = loader.load_ground_truth(session)
@@ -379,7 +373,6 @@ def compute_rpe(traj_est, traj_gt, delta=1):
 def save_trajectories(gt_traj, custom_traj, custom_time, kiss_traj=None, kiss_time=0):
     print("\n" + "="*80)
     print("Saving Trajectories (TUM format)")
-    print("="*80)
 
     def save_tum(traj, filename):
         # TUM format: timestamp x y z qx qy qz qw
@@ -408,7 +401,6 @@ def save_trajectories(gt_traj, custom_traj, custom_time, kiss_traj=None, kiss_ti
 def plot_results(gt_traj, custom_traj, kiss_traj=None):
     print("\n" + "="*80)
     print("Generating Plots")
-    print("="*80)
 
     # 1. Trajectory comparison
     plt.figure(figsize=(14, 12))
@@ -458,7 +450,6 @@ def plot_results(gt_traj, custom_traj, kiss_traj=None):
 def print_metrics_table(custom_traj, gt_traj, custom_time, kiss_traj=None, kiss_time=0):
     print("\n" + "="*80)
     print("EVALUATION METRICS - FULL DATASET")
-    print("="*80)
 
     # compute metrics for Custom ICP
     custom_ate = compute_ate(custom_traj, gt_traj)
@@ -466,7 +457,6 @@ def print_metrics_table(custom_traj, gt_traj, custom_time, kiss_traj=None, kiss_
     custom_traj_length = np.linalg.norm(np.diff(custom_traj[:, 1:4], axis=0), axis=1).sum()
 
     print(f"\n{'Method':<20} {'ATE RMSE':<12} {'RPE Trans':<15} {'RPE Rot':<15} {'Traj Len':<12} {'Time':<12} {'Rate':<12}")
-    print("-" * 110)
 
     print(f"{'Custom ICP+IMU':<20} "
           f"{custom_ate['rmse']:<12.3f} "
@@ -498,7 +488,6 @@ def print_metrics_table(custom_traj, gt_traj, custom_time, kiss_traj=None, kiss_
           f"{'---':<12} "
           f"{'---':<12}")
 
-    print("-" * 110)
     print(f"\nUnits: ATE RMSE (m), RPE Trans (m/frame), RPE Rot (deg/frame), ")
     print(f"       Traj Len (m), Time (s), Rate (scans/s)")
     print(f"\nDataset: {len(custom_traj)} scans for Custom ICP, {len(kiss_traj) if kiss_traj is not None else 0} scans for KISS-ICP")
@@ -544,7 +533,6 @@ def main():
 
     print("\n" + "="*80)
     print("EVALUATION COMPLETE!")
-    print("="*80)
     print(f"\nResults saved to: {RESULTS_DIR}")
     print(f"Plots saved to: {PLOTS_DIR}")
 

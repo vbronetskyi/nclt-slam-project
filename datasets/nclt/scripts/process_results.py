@@ -14,11 +14,8 @@ RESULTS_DIR = Path(__file__).resolve().parent.parent / 'results' / 'week2_icp_ba
 PLOTS_DIR = Path(__file__).resolve().parent.parent / 'results' / 'week2_icp_loop_closure' / 'plots'
 PLOTS_DIR.mkdir(parents=True, exist_ok=True)
 
-print("="*80)
 print("CUSTOM ICP BASELINE RESULTS (Subsampled Data)")
-print("="*80)
 print("NOTE: Using every 10th scan (500 scans) from preliminary evaluation")
-print("="*80)
 
 # load trajectoriesprint("\nLoading trajectories...")
 custom_traj = np.loadtxt(RESULTS_DIR / 'custom_icp_trajectory.txt')
@@ -141,10 +138,8 @@ gt_traj_length = np.linalg.norm(np.diff(gt_traj_converted[:, 1:4], axis=0), axis
 
 print("\n" + "="*80)
 print("EVALUATION METRICS - CUSTOM ICP+IMU")
-print("="*80)
 
 print(f"\n{'Metric':<25} {'Value':<15}")
-print("-" * 40)
 print(f"{'ATE RMSE (m)':<25} {ate['rmse']:<15.3f}")
 print(f"{'ATE Mean (m)':<25} {ate['mean']:<15.3f}")
 print(f"{'ATE Median (m)':<25} {ate['median']:<15.3f}")
@@ -168,11 +163,9 @@ print(f"{'Num Poses':<25} {len(custom_traj_converted):<15}")
 print(f"{'Processing Time (s)':<25} {'~15':<15}  # (estimated for 500 scans)")
 print(f"{'Processing Rate (sc/s)':<25} {'~33':<15}  # (from previous run)")
 print(f"{'Data Subsampling':<25} {'Every 10th':<15}")
-print("-" * 40)
 
 print("\n" + "="*80)
 print("GENERATING PLOTS")
-print("="*80)
 
 # 1. Trajectory comparison
 plt.figure(figsize=(14, 12))
@@ -254,6 +247,5 @@ plt.close()
 
 print("\n" + "="*80)
 print("COMPLETE!")
-print("="*80)
 print(f"\nResults directory: {RESULTS_DIR}")
 print(f"Plots directory: {PLOTS_DIR}")

@@ -25,7 +25,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-# === Paths ===
+# paths
 DATA_DIR = "/workspace/data/rover"
 RESULTS_DIR = "/workspace/datasets/rover/results"
 CONFIGS_DIR = "/workspace/datasets/rover/configs"
@@ -83,7 +83,7 @@ def has_valid_result(rec_name, mode):
         return False
 
 
-# === Evaluation (same as before) ===
+# evaluation (same as before)
 
 def load_tum_trajectory(path):
     data = []
@@ -462,9 +462,7 @@ def make_summary():
 
 
 def main():
-    log("=" * 70)
     log("ROVER Re-run Failed Experiments (Xvfb fix)")
-    log("=" * 70)
 
     # verify DISPLAY is set
     display = os.environ.get("DISPLAY")

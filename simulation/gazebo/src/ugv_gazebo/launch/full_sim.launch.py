@@ -59,7 +59,7 @@ def generate_launch_description():
     nav2_common = {'use_sim_time': True}
     nav2_remappings = [('/tf', 'tf'), ('/tf_static', 'tf_static')]
 
-    # ===================== Gazebo =====================
+    # gazebo
     gz_sim = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             PathJoinSubstitution([pkg_ros_gz_sim, 'launch', 'gz_sim.launch.py'])
@@ -83,7 +83,7 @@ def generate_launch_description():
         output='screen',
     )
 
-    # ===================== TF =====================
+    # tf
     robot_state_publisher = Node(
         package='robot_state_publisher', executable='robot_state_publisher',
         parameters=[{
@@ -93,7 +93,7 @@ def generate_launch_description():
         output='screen',
     )
 
-    # ===================== SLAM =====================
+    # slam
     use_slam_toolbox = PythonExpression(["'", slam_type, "' == 'slam_toolbox'"])
     slam_toolbox_node = Node(
         condition=IfCondition(use_slam_toolbox),
@@ -132,7 +132,7 @@ def generate_launch_description():
         additional_env={'OMP_NUM_THREADS': '2'},
     )
 
-    # ===================== Nav2 Core =====================
+    # nav2 core
     controller_server = Node(
         package='nav2_controller', executable='controller_server',
         name='controller_server', output='screen',
@@ -199,7 +199,7 @@ def generate_launch_description():
         }],
     )
 
-    # ===================== RViz =====================
+    # rviz
     rviz = Node(
         package='rviz2', executable='rviz2',
         arguments=['-d', rviz_config],

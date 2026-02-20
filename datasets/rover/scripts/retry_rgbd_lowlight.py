@@ -16,7 +16,7 @@ from pathlib import Path
 
 import numpy as np
 
-# === Paths ===
+# paths
 DATA_DIR = "/workspace/data/rover"
 RESULTS_DIR = "/workspace/datasets/rover/results"
 ORBSLAM3_DIR = "/workspace/third_party/ORB_SLAM3"
@@ -240,9 +240,7 @@ def evaluate_trajectory(traj_path, gt_path, rec_name, config_label):
 
 
 def main():
-    log("=" * 60)
     log("RGB-D Low-Light Retry: 4 recordings x 2 configs")
-    log("=" * 60)
 
     # check xvfb
     xvfb = subprocess.run(["pgrep", "Xvfb"], capture_output=True)

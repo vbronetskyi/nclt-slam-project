@@ -1292,14 +1292,12 @@ def main():
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     setup_logging(RESULTS_DIR / "run_log.txt")
 
-    log("=" * 70)
     log("VINS-Fusion Mono-Inertial Experiment on NCLT")
     log(f"Sessions: {args.sessions}")
     log(f"Max images: {args.max_images if args.max_images > 0 else 'all'}")
     log(f"Timeout: {args.timeout}s ({args.timeout/60:.0f} min)")
     log(f"Skip VINS: {args.skip_vins}")
     log(f"Results: {RESULTS_DIR}")
-    log("=" * 70)
 
     # copy ground truth
     copy_ground_truth(args.sessions, RESULTS_DIR)

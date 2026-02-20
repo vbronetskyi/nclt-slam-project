@@ -119,7 +119,7 @@ if len(slam) > 10:
         }
         json.dump(results, open('/workspace/simulation/experiments/02_slam_comparison/results.json','w'), indent=2)
 
-# === plot ===
+# plot
 img = PILImage.open(TEX_FILE).resize((SZ_X, SZ_Y))
 draw = ImageDraw.Draw(img)
 

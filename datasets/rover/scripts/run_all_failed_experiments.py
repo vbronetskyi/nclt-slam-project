@@ -27,7 +27,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-# === Paths ===
+# paths
 DATA_DIR = "/workspace/data/rover"
 RESULTS_DIR = "/workspace/datasets/rover/results"
 SCRIPTS_DIR = "/workspace/datasets/rover/scripts"
@@ -95,7 +95,7 @@ def has_valid_result(rec_name, mode):
         return False
 
 
-# === T265 Fisheye Undistortion ===
+# t265 fisheye undistortion
 
 # T265 calibration from calib_t265.yaml
 CAM_LEFT_K = np.array([
@@ -244,7 +244,7 @@ def undistort_recording(rec_name):
     return True
 
 
-# === Evaluation functions ===
+# evaluation functions
 
 def load_tum_trajectory(path):
     """load TUM-format trajectory"""
@@ -428,7 +428,7 @@ def evaluate_trajectory(traj_path, gt_path, output_dir, mode_name, rec_name,
     return results
 
 
-# === ORB-SLAM3 Runner ===
+# orb-slam3 runner
 
 def run_orbslam3(rec_name, mode):
     """run single ORB-SLAM3 experiment"""
@@ -542,7 +542,7 @@ def run_orbslam3(rec_name, mode):
     return result
 
 
-# === Summary ===
+# summary
 
 def make_summary(output_dir):
     """generate summary from all eval_results.json"""
@@ -673,15 +673,12 @@ def make_summary(output_dir):
         log(f"Plot error: {e}")
 
 
-# === Main ===
 
 def main():
-    log("=" * 70)
     log("ROVER Batch Experiment Runner")
     log(f"  Stereo PinHole: {len(ALL_RECORDINGS)} recordings")
     log(f"  Stereo-Inertial PinHole: {len(ALL_RECORDINGS)} recordings")
     log(f"  RGB-D (missing): {len(RGBD_MISSING)} recordings")
-    log("=" * 70)
 
     total_start = time.time()
     results_log = []
@@ -691,7 +688,6 @@ def main():
     # ========================================
     log("")
     log("PHASE 1: Undistorting T265 fisheye -> pinhole")
-    log("-" * 50)
 
     for i, rec in enumerate(ALL_RECORDINGS):
         log(f"[{i+1}/{len(ALL_RECORDINGS)}] {rec}")
@@ -704,7 +700,6 @@ def main():
     # ========================================
     log("")
     log("PHASE 2: ORB-SLAM3 Stereo PinHole")
-    log("-" * 50)
 
     for i, rec in enumerate(ALL_RECORDINGS):
         mode = "stereo_pinhole"
@@ -720,7 +715,6 @@ def main():
     # ========================================
     log("")
     log("PHASE 3: ORB-SLAM3 Stereo-Inertial PinHole")
-    log("-" * 50)
 
     for i, rec in enumerate(ALL_RECORDINGS):
         mode = "stereo_inertial_pinhole"
@@ -736,7 +730,6 @@ def main():
     # ========================================
     log("")
     log("PHASE 4: ORB-SLAM3 RGB-D (missing recordings)")
-    log("-" * 50)
 
     for i, rec in enumerate(RGBD_MISSING):
         mode = "rgbd"
@@ -754,14 +747,11 @@ def main():
     # ========================================
     log("")
     log("PHASE 5: Generating summary")
-    log("-" * 50)
     make_summary(RESULTS_DIR)
 
     total_elapsed = time.time() - total_start
     log("")
-    log("=" * 70)
     log(f"ALL DONE! Total time: {total_elapsed/60:.1f} min ({total_elapsed/3600:.1f} hours)")
-    log("=" * 70)
 
     # print quick summary
     n_ok = sum(1 for r in results_log

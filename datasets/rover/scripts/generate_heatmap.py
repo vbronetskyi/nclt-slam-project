@@ -115,7 +115,7 @@ def main():
                 else:
                     status[i][j] = "NO_ATE"
 
-    # === heatmap ===
+    # heatmap
     fig, axes = plt.subplots(1, 2, figsize=(14, 12), gridspec_kw={'width_ratios': [3, 1.2]})
 
     # left: ATE heatmap

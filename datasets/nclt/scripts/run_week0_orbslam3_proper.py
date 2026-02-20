@@ -1018,9 +1018,7 @@ def phase_a(session="2012-04-29"):
 
     Returns dict with calibrations, IMU paths, etc.
     """
-    log("=" * 70)
     log("PHASE A: CALIBRATION AND DATA PREPARATION")
-    log("=" * 70)
 
     CALIB_DIR.mkdir(parents=True, exist_ok=True)
     IMU_DIR.mkdir(parents=True, exist_ok=True)
@@ -1098,7 +1096,6 @@ def phase_b(session, calib):
     """
     log("\n" + "=" * 70)
     log("PHASE B: MONO-INERTIAL SWEEP (3000 frames)")
-    log("=" * 70)
 
     phase_dir = RESULTS_DIR / "phase_b"
     phase_dir.mkdir(parents=True, exist_ok=True)
@@ -1203,7 +1200,6 @@ def phase_b(session, calib):
     # summary table
     log("\n=== Phase B Summary ===")
     log(f"{'Run':<35} {'Track%':>7} {'KF':>5} {'ATE':>8} {'Scale':>7} {'IMU':>4} {'Time':>6}")
-    log("-" * 80)
     for r in all_results:
         label = r.get("label", "?")[:35]
         tr = f"{r.get('tracking_rate', 0):.1f}%"
@@ -1232,7 +1228,6 @@ def phase_c(session, calib, best_imu):
     """Phase C: Stereo-inertial on 3000 frames"""
     log("\n" + "=" * 70)
     log("PHASE C: STEREO-INERTIAL (3000 frames)")
-    log("=" * 70)
 
     phase_dir = RESULTS_DIR / "phase_c"
     phase_dir.mkdir(parents=True, exist_ok=True)
@@ -1323,7 +1318,6 @@ def phase_d(session, calib, best_config):
     """Phase D: Run best config on full spring session"""
     log("\n" + "=" * 70)
     log("PHASE D: FULL SPRING SESSION")
-    log("=" * 70)
 
     phase_dir = RESULTS_DIR / "phase_d"
     phase_dir.mkdir(parents=True, exist_ok=True)
@@ -1401,7 +1395,6 @@ def phase_e(session, phase_d_results):
     """Phase E: Fuse best ORB-SLAM3 trajectory with wheel odometry"""
     log("\n" + "=" * 70)
     log("PHASE E: WHEEL ODOMETRY FUSION")
-    log("=" * 70)
 
     phase_dir = RESULTS_DIR / "phase_e"
     phase_dir.mkdir(parents=True, exist_ok=True)
@@ -1536,7 +1529,6 @@ def phase_f(calib, best_config):
     """Phase F: Run best config on summer session"""
     log("\n" + "=" * 70)
     log("PHASE F: SUMMER SESSION (2012-08-04)")
-    log("=" * 70)
 
     session = "2012-08-04"
     phase_dir = RESULTS_DIR / "phase_f"
@@ -1616,7 +1608,6 @@ def phase_g():
     """Phase G: Generate summary plots and report"""
     log("\n" + "=" * 70)
     log("PHASE G: RESULTS AND REPORT")
-    log("=" * 70)
 
     import matplotlib
     matplotlib.use("Agg")
@@ -1848,10 +1839,8 @@ def main():
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     LOG_FILE = str(RESULTS_DIR / "experiment_log.txt")
 
-    log("=" * 70)
     log("EXPERIMENT 0.6: DEFINITIVE ORB-SLAM3 EVALUATION ON NCLT")
     log(f"Started: {SCRIPT_START.strftime('%Y-%m-%d %H:%M:%S')}")
-    log("=" * 70)
 
     session = SESSIONS["spring"]
 
@@ -1908,9 +1897,7 @@ def main():
 
     elapsed = (datetime.now() - SCRIPT_START).total_seconds()
     log(f"\nTotal runtime: {elapsed/3600:.1f} hours ({elapsed:.0f}s)")
-    log("=" * 70)
     log("EXPERIMENT 0.6 COMPLETE")
-    log("=" * 70)
 
 
 if __name__ == "__main__":

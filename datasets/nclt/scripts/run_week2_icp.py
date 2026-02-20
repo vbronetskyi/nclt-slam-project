@@ -26,14 +26,11 @@ PLOTS_DIR = RESULTS_DIR / 'plots'
 
 PLOTS_DIR.mkdir(parents=True, exist_ok=True)
 
-print("="*80)
 print("  DENSE CUSTOM ICP EVALUATION")
-print("="*80)
 print(f"Session: {SESSION}")
 print(f"Sampling: every {SUBSAMPLE}nd scan (~6,486 scans)")
 print(f"Settings: 0.3m voxel, 100 iterations, 1.5m threshold")
 print(f"Results: {RESULTS_DIR}")
-print("="*80)
 
 
 class CustomICP:
@@ -218,7 +215,6 @@ def compute_rpe(traj_est, traj_gt, delta=1):
 
 print("\n" + "="*80)
 print("LOADING GROUND TRUTH")
-print("="*80)
 gt_loader = GroundTruthLoader()
 gt_df = gt_loader.load_ground_truth(SESSION)
 # convert to numpy array: utime (in seconds), x, y, z, qx, qy, qz, qw
@@ -239,7 +235,6 @@ print(f"\nLoaded {len(scans)} scans")
 
 print("\n" + "="*80)
 print("RUNNING CUSTOM ICP")
-print("="*80)
 
 odometry = CustomICP()
 start_time = time.time()
@@ -272,7 +267,6 @@ print(f"Trajectory: {len(custom_traj)} poses")
 
 print("\n" + "="*80)
 print("SYNCHRONIZING WITH GROUND TRUTH")
-print("="*80)
 
 gt_synced = []
 for i, timestamp in enumerate(custom_traj[:, 0]):
@@ -295,7 +289,6 @@ print(f"Final trajectory length: {min_len} poses")
 
 print("\n" + "="*80)
 print("COMPUTING METRICS")
-print("="*80)
 
 # convert to consistent format for metrics (timestamp, x, y, z, qw, qx, qy, qz)
 custom_traj_metrics = np.column_stack([
@@ -320,10 +313,8 @@ gt_traj_length = np.linalg.norm(np.diff(gt_traj[:, 1:4], axis=0), axis=1).sum()
 
 print("\n" + "="*80)
 print("EVALUATION METRICS - CUSTOM ICP (DENSE)")
-print("="*80)
 
 print(f"\n{'Metric':<30} {'Value':<15}")
-print("-" * 45)
 print(f"{'ATE RMSE (m)':<30} {ate['rmse']:<15.3f}")
 print(f"{'ATE Mean (m)':<30} {ate['mean']:<15.3f}")
 print(f"{'ATE Median (m)':<30} {ate['median']:<15.3f}")
@@ -347,11 +338,9 @@ print(f"{'Num Poses':<30} {len(custom_traj):<15}")
 print(f"{'Processing Time (s)':<30} {processing_time:<15.1f}")
 print(f"{'Processing Rate (scans/s)':<30} {processing_rate:<15.1f}")
 print(f"{'Data Subsampling':<30} {'Every 2nd':<15}")
-print("-" * 45)
 
 print("\n" + "="*80)
 print("SAVING TRAJECTORIES")
-print("="*80)
 
 np.savetxt(RESULTS_DIR / 'custom_icp_dense_trajectory.txt', custom_traj,
            fmt='%.6f', header='timestamp x y z qx qy qz qw')
@@ -363,7 +352,6 @@ print(f"✓ Saved: {RESULTS_DIR / 'gt_dense_trajectory.txt'}")
 
 print("\n" + "="*80)
 print("GENERATING PLOTS")
-print("="*80)
 
 # 1. Trajectory comparison
 plt.figure(figsize=(14, 12))
@@ -445,7 +433,6 @@ plt.close()
 
 print("\n" + "="*80)
 print("EVALUATION COMPLETE!")
-print("="*80)
 print(f"\nResults saved to: {RESULTS_DIR}")
 print(f"Plots saved to: {PLOTS_DIR}")
 print("\nGenerated files:")

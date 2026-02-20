@@ -25,11 +25,9 @@ MODES = ["stereo_inertial_pinhole", "stereo_pinhole"]
 
 def main():
     import time
-    log("=" * 70)
     log("ROVER Stereo Batch Runner: Stereo-Inertial + Stereo PinHole")
     log(f"  Recordings: {len(ALL_RECORDINGS)}")
     log(f"  Modes: {MODES}")
-    log("=" * 70)
 
     display = os.environ.get("DISPLAY")
     if not display:
@@ -67,9 +65,7 @@ def main():
 
     total_elapsed = time.time() - total_start
     log("")
-    log("=" * 70)
     log(f"ALL DONE! Total: {total_elapsed/60:.1f} min ({total_elapsed/3600:.1f} hours)")
-    log("=" * 70)
 
     n_ok = sum(1 for r in results_log if r.get("ate_sim3", {}).get("rmse") is not None)
     n_fail = len(results_log) - n_ok

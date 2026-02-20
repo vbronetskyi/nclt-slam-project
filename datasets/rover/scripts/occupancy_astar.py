@@ -636,9 +636,7 @@ def main():
 
     # summary
     log("")
-    log("=" * 50)
     log("SUMMARY")
-    log("=" * 50)
     log(f"  Grid:       {nx} x {nz} cells @ {GRID_RES*100:.0f} cm")
     log(f"  Free:       {(occupancy==0).sum():,}")
     log(f"  Occupied:   {(occupancy==1).sum():,}")

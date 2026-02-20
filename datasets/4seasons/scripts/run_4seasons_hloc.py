@@ -592,16 +592,13 @@ def run_pipeline(args):
     #  summary table 
     print('\n' + '='*70)
     print('4Seasons hloc Visual Localization Results')
-    print('='*70)
     print(f'{"Query":<20} {"Method":<15} {"0.25m/2°":<10} {"0.5m/5°":<10} {"5m/10°":<10} {"Med.t(m)":<10}')
-    print('-'*70)
     for key, m in eval_results.items():
         qn, mn = key.split('/')
         acc = m['accuracy']
         print(f'{qn:<20} {mn:<15} {acc.get("0.25m/2deg","N/A"):<10} '
               f'{acc.get("0.5m/5deg","N/A"):<10} {acc.get("5.0m/10deg","N/A"):<10} '
               f'{m["median_trans_m"]:<10.3f}')
-    print('='*70)
 
     try:
         import matplotlib

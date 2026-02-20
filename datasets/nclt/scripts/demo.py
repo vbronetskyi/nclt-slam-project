@@ -185,7 +185,6 @@ def demo_summary():
 
     print("\n" + "="*60)
     print("Quick Commands:")
-    print("="*60)
 
     commands = [
         ("Visualize Velodyne scan",
@@ -204,7 +203,6 @@ def demo_summary():
 
     print("\n" + "="*60)
     print("Next Steps:")
-    print("="*60)
     print("1. Implement point cloud registration")
     print("2. Odometry estimation from LiDAR")
     print("3. Loop closure detection")
