@@ -1,0 +1,60 @@
+# simulation - clearpath husky a200
+
+simulation environments for visual-inertial navigation experiments on the
+clearpath husky a200 UGV with d435i rgb-d camera and phidgets imu
+
+## simulators
+
+### [gazebo/](gazebo/) - gazebo harmonic
+
+primary simulation env for SLAM and navigation experiments.
+procedurally generated 220x150m outdoor world with 370 models (trees, rocks,
+buildings). integrated with ROS 2 Jazzy, Nav2, RTAB-Map, and ORB-SLAM3
+
+- full ros2 sensor pipeline (camera, imu, lidar, odometry)
+- ground truth from gazebo pose plugin
+- web UI for click-to-drive navigation
+- 3 completed experiments with quantitative results
+
+### [isaac/](isaac/) - nvidia isaac sim 6.0.0
+
+secondary sim env using NVIDIA PhysX for higher-fidelity physics.
+husky a200 imported from URDF with d435i camera and imu in a procedural outdoor
+scene. runs headless on RTX 3090
+
+- RTX-accelerated rendering and physics
+- URDF import with automatic USD conversion
+- procedural outdoor terrain with obstacles and buildings
+- ros2 bridge support (requires full isaac sim runtime, not pip install)
+
+## folder structure
+
+```
+simulation/
+├── gazebo/
+│   ├── src/              ROS 2 packages (ugv_description, ugv_gazebo, ugv_navigation)
+│   ├── tools/            web_nav.py, drive_route.py, record_drive.py
+│   ├── scripts/          world generators (v1, v2)
+│   ├── routes/           route definitions (JSON)
+│   ├── docs/             environment, robot, simulation docs
+│   ├── experiments/
+│   │   ├── 00_navigation_test/
+│   │   ├── 01_autonomous_drive/
+│   │   └── 02_slam_comparison/
+│   └── README.md
+├── isaac/
+│   ├── assets/           USD scene files, URDF, textures
+│   ├── scripts/          scene building, testing, ros2 bridge
+│   ├── experiments/
+│   └── README.md
+└── README.md             (you are here)
+```
+
+## references
+
+- Gazebo Harmonic, open source physics simulator, [website](https://gazebosim.org/)
+- NVIDIA Isaac Sim, GPU-accelerated simulation, [docs](https://docs.isaacsim.omniverse.nvidia.com)
+- ROS 2 Jazzy, robot middleware, [docs](https://docs.ros.org/en/jazzy/)
+- Nav2, Macenski et al., 2020, [paper](https://arxiv.org/abs/2003.00368), [code](https://github.com/ros-navigation/navigation2)
+- Clearpath Husky A200, [product page](https://clearpathrobotics.com/husky-unmanned-ground-vehicle-robot/)
+- Intel RealSense D435i, [product page](https://www.intelrealsense.com/depth-camera-d435i/)

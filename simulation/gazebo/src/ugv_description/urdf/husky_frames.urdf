@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<!--
+  Minimal URDF for Husky A200 TF frame tree.
+  Used by robot_state_publisher to publish all static TFs in ONE node.
+  Gazebo uses the SDF model for physics/rendering, this is TF-only.
+
+  Frame tree:
+    base_footprint
+      └─ base_link (z=0.165)
+           ├─ camera_link (x=0.48, z=0.05)
+           │    └─ camera_optical_frame (rotated -90° yaw, -90° roll)
+           │         └─ husky_a200/camera_link/rgbd_camera (identity, Gazebo frame)
+           ├─ imu_link (z=0.08)
+           │    └─ husky_a200/imu_link/phidgets_imu (identity, Gazebo frame)
+           └─ lidar_link (z=0.24)
+                └─ husky_a200/lidar_link/gpu_lidar (identity, Gazebo frame)
+-->
+<robot name="husky_a200_frames">
+
+  <!-- Base footprint (ground projection) -->
+  <link name="base_footprint"/>
+
+  <!-- Base link (center of chassis) -->
+  <link name="base_link"/>
+  <joint name="base_footprint_to_base_link" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 0.165" rpy="0 0 0"/>
+  </joint>
+
+  <!-- D435i camera mount -->
+  <link name="camera_link"/>
+  <joint name="base_to_camera" type="fixed">
+    <parent link="base_link"/>
+    <child link="camera_link"/>
+    <origin xyz="0.48 0 0.05" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Camera optical frame (Z forward, X right, Y down) -->
+  <link name="camera_optical_frame"/>
+  <joint name="camera_to_optical" type="fixed">
+    <parent link="camera_link"/>
+    <child link="camera_optical_frame"/>
+    <origin xyz="0 0 0" rpy="-1.5707963 0 -1.5707963"/>
+  </joint>
+
+  <!-- Gazebo camera sensor frame (identity to optical) -->
+  <link name="husky_a200/camera_link/rgbd_camera"/>
+  <joint name="optical_to_gz_camera" type="fixed">
+    <parent link="camera_optical_frame"/>
+    <child link="husky_a200/camera_link/rgbd_camera"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Phidgets IMU -->
+  <link name="imu_link"/>
+  <joint name="base_to_imu" type="fixed">
+    <parent link="base_link"/>
+    <child link="imu_link"/>
+    <origin xyz="0 0 0.08" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Gazebo IMU sensor frame -->
+  <link name="husky_a200/imu_link/phidgets_imu"/>
+  <joint name="imu_to_gz_imu" type="fixed">
+    <parent link="imu_link"/>
+    <child link="husky_a200/imu_link/phidgets_imu"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <!-- LiDAR on sensor arch -->
+  <link name="lidar_link"/>
+  <joint name="base_to_lidar" type="fixed">
+    <parent link="base_link"/>
+    <child link="lidar_link"/>
+    <origin xyz="0 0 0.24" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Gazebo LiDAR sensor frame -->
+  <link name="husky_a200/lidar_link/gpu_lidar"/>
+  <joint name="lidar_to_gz_lidar" type="fixed">
+    <parent link="lidar_link"/>
+    <child link="husky_a200/lidar_link/gpu_lidar"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+</robot>
