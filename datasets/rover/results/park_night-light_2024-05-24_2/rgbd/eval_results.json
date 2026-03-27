@@ -1,0 +1,25 @@
+{
+  "recording": "park_night-light_2024-05-24_2",
+  "mode": "rgbd",
+  "num_estimated": 13743,
+  "num_gt": 1127,
+  "num_matched": 13743,
+  "tracking_rate_pct": 100.0,
+  "sim3_scale": 0.992976,
+  "ate_sim3": {
+    "rmse": 0.4513,
+    "mean": 0.4302,
+    "median": 0.4244,
+    "std": 0.1366,
+    "max": 0.8206
+  },
+  "ate_se3": {
+    "rmse": 0.455,
+    "mean": 0.4307,
+    "median": 0.4198
+  },
+  "rpe": {
+    "rmse": 0.0479,
+    "mean": 0.0241
+  }
+}

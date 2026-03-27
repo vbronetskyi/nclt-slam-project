@@ -1,0 +1,25 @@
+{
+  "recording": "garden_large_night-light_2024-05-30_2",
+  "mode": "stereo_pinhole",
+  "num_estimated": 8742,
+  "num_gt": 705,
+  "num_matched": 8737,
+  "tracking_rate_pct": 73.1,
+  "sim3_scale": 0.584206,
+  "ate_sim3": {
+    "rmse": 6.3633,
+    "mean": 6.1468,
+    "median": 5.7826,
+    "std": 1.6455,
+    "max": 9.8416
+  },
+  "ate_se3": {
+    "rmse": 6.6147,
+    "mean": 6.3291,
+    "median": 6.1749
+  },
+  "rpe": {
+    "rmse": 0.0679,
+    "mean": 0.0205
+  }
+}

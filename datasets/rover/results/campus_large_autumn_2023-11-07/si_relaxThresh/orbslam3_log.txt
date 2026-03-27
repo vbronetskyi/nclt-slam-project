@@ -1,0 +1,327 @@
+CMD: /workspace/third_party/ORB_SLAM3/Examples/Stereo-Inertial/stereo_inertial_euroc /workspace/third_party/ORB_SLAM3/Vocabulary/ORBvoc.txt /workspace/rover_pipeline/configs/ROVER_T265_PinHole_Stereo_Inertial.yaml /workspace/data/rover/campus_large_autumn_2023-11-07_pinhole_euroc /workspace/data/rover/campus_large_autumn_2023-11-07_pinhole_euroc/times.txt rover_campus_large_autumn_2023-11-07_si_relaxThresh
+ELAPSED: 1107.5s
+RETURN_CODE: 0
+
+=== STDOUT (first 5000) ===
+num_seq = 1
+file name: rover_campus_large_autumn_2023-11-07_si_relaxThresh
+Loading images for sequence 0...LOADED!
+Loading IMU for sequence 0...LOADED!
+
+-------
+
+ORB-SLAM3 Copyright (C) 2017-2020 Carlos Campos, Richard Elvira, Juan J. Gómez, José M.M. Montiel and Juan D. Tardós, University of Zaragoza.
+ORB-SLAM2 Copyright (C) 2014-2016 Raúl Mur-Artal, José M.M. Montiel and Juan D. Tardós, University of Zaragoza.
+This program comes with ABSOLUTELY NO WARRANTY;
+This is free software, and you are welcome to redistribute it
+under certain conditions. See LICENSE.txt.
+
+Input sensor was set to: Stereo-Inertial
+Loading settings from /workspace/rover_pipeline/configs/ROVER_T265_PinHole_Stereo_Inertial.yaml
+	-Loaded camera 1
+	-Loaded camera 2
+	-Loaded image info
+	-Loaded IMU calibration
+	-Loaded ORB settings
+	-Loaded viewer settings
+	-Loaded Atlas settings
+	-Loaded misc parameters
+	-Computed rectification maps
+----------------------------------
+SLAM settings: 
+	-Camera 1 parameters (Pinhole): [ 224.07000732421875 224.07000732421875 320 240 ]
+	-Camera 1 distortion parameters: [  0 0 0 0 ]
+	-Camera 2 parameters (Pinhole: [ 224.07000732421875 224.07000732421875 320 240 ]
+	-Camera 1 distortion parameters: [  0 0 0 0 ]
+	-Original image size: [ 640 , 480 ]
+	-Current image size: [ 640 , 480 ]
+	-Camera 1 parameters after rectification: [  224.07000732421875 224.07000732421875 312.03756713867188 239.95811462402344 ]
+	-Sequence FPS: 30
+	-Stereo baseline: 0.063482001423835754
+	-Stereo depth threshold : 30
+	-Gyro noise: 0.0032356434967368841
+	-Accelerometer noise: 0.017406273633241653
+	-Gyro walk: 7.0567788498010486e-05
+	-Accelerometer walk: 0.012393509037792683
+	-IMU frequency: 264
+	-Features per image: 2000
+	-ORB scale factor: 1.2000000476837158
+	-ORB number of scales: 8
+	-Initial FAST threshold: 15
+	-Min FAST threshold: 5
+
+
+Loading ORB Vocabulary. This could take a while...
+Vocabulary loaded!
+
+Initialization of Atlas from scratch 
+Creation of new map with id: 0
+Creation of new map with last KF id: 0
+Seq. Name: 
+There are 1 cameras in the atlas
+Camera 0 is pinhole
+not IMU meas
+not IMU meas
+First KF:0; Map init KF:0
+New Map created with 786 points
+start VIBA 1
+end VIBA 1
+start VIBA 2
+end VIBA 2
+*Loop detected
+phi = -0.048749606513209261  0.028131170771760378  -0.24735414557142021
+Local Mapping STOP
+Local Mapping RELEASE
+*Loop detected
+phi = 0.0022193702669280786 0.0083326509740076198  -0.48115668450337912
+BAD LOOP!!!
+*Loop detected
+phi = -0.025983466679653712 0.0046157931857094018  -0.45248157280097095
+BAD LOOP!!!
+*Loop detected
+phi = -0.015353179982484689 0.0076109169613502742  -0.48190394598165209
+BAD LOOP!!!
+*Loop detected
+phi = -0.0079276879257840095   0.013316647413372421   -0.45532341231093931
+BAD LOOP!!!
+*Loop detected
+phi = 0.0032550721138560968 0.0080635818939656292  -0.48876384862534739
+BAD LOOP!!!
+*Loop detected
+phi = -0.0035788252750220931   0.012391213262051937   -0.47656611185260966
+BAD LOOP!!!
+*Loop detected
+phi = 0.0044706953524145665 0.0065598513128139113  -0.47527605746203372
+BAD LOOP!!!
+*Loop detected
+phi = -0.011877540670921744  0.012188617206509498  -0.45891604319752793
+BAD LOOP!!!
+*Loop detected
+phi = 0.00086550301052089188   0.011810431744699718   -0.45809949007150902
+BAD LOOP!!!
+*Loop detected
+phi = -0.0061582152919172992   0.011680243181997634   -0.46355485492022647
+BAD LOOP!!!
+*Loop detected
+phi = -0.0019387926178434057   0.010013663020002119   -0.45783942570563396
+BAD LOOP!!!
+*Loop detected
+phi = -0.004858771271247426  0.012223179459622134  -0.47461103101236118
+BAD LOOP!!!
+*Loop detected
+phi = -0.0064689945731091682  0.0092996677367868392   -0.46887345214936743
+BAD LOOP!!!
+*Loop detected
+phi = -0.0077510057455688463  0.0082329018509385982   -0.48074870564591604
+BAD LOOP!!!
+*Loop detected
+phi = -0.010649741848463182 0.0097232685819056922   -0.4745233726844148
+BAD LOOP!!!
+*Loop detected
+phi = -0.018696196352531124 0.0061752452974055683  -0.47190695166190966
+BAD LOOP!!!
+*Loop detected
+phi = -0.016985578656288036 0.0065618810742062456  -0.46207361181745221
+BAD LOOP!!!
+*Loop detected
+phi =  -0.019250784441858453 -0.0016962413386706191   -0.48585784983467839
+BAD LOOP!!!
+*Loop detected
+phi = -0.064121139304996397 -0.014883808224193306  -0.54036835638192005
+BAD LOOP!!!
+*Loop detected
+phi = -0.061323973892668866 -0.011728333479999308  -0.55215762378698052
+BAD LOOP!!!
+*Loop detected
+phi = -0.063745451488897278 -0.010048623439267917  -0.55182216401468442
+BAD LOOP!!!
+*Loop detected
+phi = -0.061666102356320217 -0.010688414392006716  -0.55120170296634308
+BAD LOOP!!!
+*Loop detected
+phi = -0.063463064172427058 -0.012501958250161148  -0.54510282535717314
+BAD LOOP!!!
+*Loop detected
+phi = -0.061705492939301415 -0.010180961970477168  -0.54096237498135014
+BAD LOOP!!!
+*Loop detected
+phi = -0.12366553352281769 0.066730195871901099 -0.68027687512619284
+BAD LOOP!!!
+*Loop detected
+phi = -0.11474787793376616  0.06893718581761038 -0.67445842910920761
+BAD LOOP!!!
+*Loop detected
+phi =  -0.1111200077325776 0.066495435763519586 -0.6
+
+=== STDOUT (last 5000) ===
+shold: 15
+	-Min FAST threshold: 5
+
+
+Loading ORB Vocabulary. This could take a while...
+Vocabulary loaded!
+
+Initialization of Atlas from scratch 
+Creation of new map with id: 0
+Creation of new map with last KF id: 0
+Seq. Name: 
+There are 1 cameras in the atlas
+Camera 0 is pinhole
+not IMU meas
+not IMU meas
+First KF:0; Map init KF:0
+New Map created with 786 points
+start VIBA 1
+end VIBA 1
+start VIBA 2
+end VIBA 2
+*Loop detected
+phi = -0.048749606513209261  0.028131170771760378  -0.24735414557142021
+Local Mapping STOP
+Local Mapping RELEASE
+*Loop detected
+phi = 0.0022193702669280786 0.0083326509740076198  -0.48115668450337912
+BAD LOOP!!!
+*Loop detected
+phi = -0.025983466679653712 0.0046157931857094018  -0.45248157280097095
+BAD LOOP!!!
+*Loop detected
+phi = -0.015353179982484689 0.0076109169613502742  -0.48190394598165209
+BAD LOOP!!!
+*Loop detected
+phi = -0.0079276879257840095   0.013316647413372421   -0.45532341231093931
+BAD LOOP!!!
+*Loop detected
+phi = 0.0032550721138560968 0.0080635818939656292  -0.48876384862534739
+BAD LOOP!!!
+*Loop detected
+phi = -0.0035788252750220931   0.012391213262051937   -0.47656611185260966
+BAD LOOP!!!
+*Loop detected
+phi = 0.0044706953524145665 0.0065598513128139113  -0.47527605746203372
+BAD LOOP!!!
+*Loop detected
+phi = -0.011877540670921744  0.012188617206509498  -0.45891604319752793
+BAD LOOP!!!
+*Loop detected
+phi = 0.00086550301052089188   0.011810431744699718   -0.45809949007150902
+BAD LOOP!!!
+*Loop detected
+phi = -0.0061582152919172992   0.011680243181997634   -0.46355485492022647
+BAD LOOP!!!
+*Loop detected
+phi = -0.0019387926178434057   0.010013663020002119   -0.45783942570563396
+BAD LOOP!!!
+*Loop detected
+phi = -0.004858771271247426  0.012223179459622134  -0.47461103101236118
+BAD LOOP!!!
+*Loop detected
+phi = -0.0064689945731091682  0.0092996677367868392   -0.46887345214936743
+BAD LOOP!!!
+*Loop detected
+phi = -0.0077510057455688463  0.0082329018509385982   -0.48074870564591604
+BAD LOOP!!!
+*Loop detected
+phi = -0.010649741848463182 0.0097232685819056922   -0.4745233726844148
+BAD LOOP!!!
+*Loop detected
+phi = -0.018696196352531124 0.0061752452974055683  -0.47190695166190966
+BAD LOOP!!!
+*Loop detected
+phi = -0.016985578656288036 0.0065618810742062456  -0.46207361181745221
+BAD LOOP!!!
+*Loop detected
+phi =  -0.019250784441858453 -0.0016962413386706191   -0.48585784983467839
+BAD LOOP!!!
+*Loop detected
+phi = -0.064121139304996397 -0.014883808224193306  -0.54036835638192005
+BAD LOOP!!!
+*Loop detected
+phi = -0.061323973892668866 -0.011728333479999308  -0.55215762378698052
+BAD LOOP!!!
+*Loop detected
+phi = -0.063745451488897278 -0.010048623439267917  -0.55182216401468442
+BAD LOOP!!!
+*Loop detected
+phi = -0.061666102356320217 -0.010688414392006716  -0.55120170296634308
+BAD LOOP!!!
+*Loop detected
+phi = -0.063463064172427058 -0.012501958250161148  -0.54510282535717314
+BAD LOOP!!!
+*Loop detected
+phi = -0.061705492939301415 -0.010180961970477168  -0.54096237498135014
+BAD LOOP!!!
+*Loop detected
+phi = -0.12366553352281769 0.066730195871901099 -0.68027687512619284
+BAD LOOP!!!
+*Loop detected
+phi = -0.11474787793376616  0.06893718581761038 -0.67445842910920761
+BAD LOOP!!!
+*Loop detected
+phi =  -0.1111200077325776 0.066495435763519586 -0.67113384627380257
+BAD LOOP!!!
+*Loop detected
+phi = -0.096044168623542731  0.054621620179795966   -0.6871738534583568
+BAD LOOP!!!
+*Loop detected
+phi = -0.10928641156851476 0.059261841136633166  -0.6929723304440436
+BAD LOOP!!!
+*Loop detected
+phi = -0.11853985265084091 0.087380781798499466  -1.0022022433275433
+BAD LOOP!!!
+*Loop detected
+phi = -0.11915220142236489 0.078544556127597781  -1.0098329372618076
+BAD LOOP!!!
+*Loop detected
+phi = -0.12599593497427847 0.098734705356250924  -1.0125664339476854
+BAD LOOP!!!
+*Loop detected
+phi =   0.1228621941151482  0.23488600341513216 -0.42670056931366668
+BAD LOOP!!!
+*Loop detected
+phi =  0.11783614682344515  0.23609482107753604 -0.43082622421269262
+BAD LOOP!!!
+*Loop detected
+phi =  0.11615864281128466  0.23145468146779916 -0.42728889971957068
+BAD LOOP!!!
+*Loop detected
+phi =  0.11490768038038052  0.22747752253861794 -0.42974728489793979
+BAD LOOP!!!
+*Loop detected
+phi =  0.11655532569478814  0.23383300177680896 -0.43066614821276228
+BAD LOOP!!!
+*Loop detected
+phi =  0.12134451457447167  0.22987566612636559 -0.42768114975668553
+BAD LOOP!!!
+*Loop detected
+phi =  0.11976548388302122  0.23336654821201763 -0.42595644227247603
+BAD LOOP!!!
+*Loop detected
+phi =  0.12288380196329554  0.22593001686869268 -0.42814647751732549
+BAD LOOP!!!
+*Loop detected
+phi =  0.13067733787177835  0.21579094075558788 -0.42567260571526322
+BAD LOOP!!!
+*Loop detected
+phi =   0.1268852506750392   0.2220877308373202 -0.42741976743951227
+BAD LOOP!!!
+Shutdown
+
+Saving trajectory to f_rover_campus_large_autumn_2023-11-07_si_relaxThresh.txt ...
+There are 1 maps in the atlas
+  Map 0 has 3792 KFs
+
+End of saving trajectory to f_rover_campus_large_autumn_2023-11-07_si_relaxThresh.txt ...
+
+Saving keyframe trajectory to kf_rover_campus_large_autumn_2023-11-07_si_relaxThresh.txt ...
+
+=== STDERR ===
+Camera1.k3 optional parameter does not exist...
+Camera2.k3 optional parameter does not exist...
+Camera.newHeight optional parameter does not exist...
+Camera.newWidth optional parameter does not exist...
+IMU.InsertKFsWhenLost optional parameter does not exist...
+Viewer.imageViewScale optional parameter does not exist...
+System.LoadAtlasFromFile optional parameter does not exist...
+System.SaveAtlasToFile optional parameter does not exist...
+System.thFarPoints optional parameter does not exist...

@@ -1,0 +1,25 @@
+{
+  "recording": "park_day_2024-05-08",
+  "mode": "stereo_pinhole",
+  "num_estimated": 5831,
+  "num_gt": 1046,
+  "num_matched": 5831,
+  "tracking_rate_pct": 40.4,
+  "sim3_scale": 1.186302,
+  "ate_sim3": {
+    "rmse": 1.1398,
+    "mean": 0.9239,
+    "median": 0.7029,
+    "std": 0.6674,
+    "max": 3.1829
+  },
+  "ate_se3": {
+    "rmse": 1.7403,
+    "mean": 1.6606,
+    "median": 1.6059
+  },
+  "rpe": {
+    "rmse": 0.0755,
+    "mean": 0.0496
+  }
+}

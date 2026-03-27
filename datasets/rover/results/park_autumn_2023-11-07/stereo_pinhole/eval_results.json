@@ -1,0 +1,25 @@
+{
+  "recording": "park_autumn_2023-11-07",
+  "mode": "stereo_pinhole",
+  "num_estimated": 2354,
+  "num_gt": 1290,
+  "num_matched": 2353,
+  "tracking_rate_pct": 15.8,
+  "sim3_scale": 1.220892,
+  "ate_sim3": {
+    "rmse": 0.3716,
+    "mean": 0.3475,
+    "median": 0.3381,
+    "std": 0.1316,
+    "max": 0.8707
+  },
+  "ate_se3": {
+    "rmse": 1.5507,
+    "mean": 1.5266,
+    "median": 1.5224
+  },
+  "rpe": {
+    "rmse": 0.0876,
+    "mean": 0.0753
+  }
+}

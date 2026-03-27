@@ -1,0 +1,180 @@
+CMD: /workspace/third_party/ORB_SLAM3/Examples/Stereo-Inertial/stereo_inertial_euroc /workspace/third_party/ORB_SLAM3/Vocabulary/ORBvoc.txt /workspace/robotcar_pipeline/configs/ROVER_T265_Stereo_Inertial.yaml /workspace/data/rover/park_night_2024-05-13_2_euroc /workspace/data/rover/park_night_2024-05-13_2_euroc/times.txt rover_park_night_2024-05-13_2_stereo_inertial
+ELAPSED: 582.0s
+
+=== STDOUT ===
+:4710
+New Map created with 0 points
+TRACK_REF_KF: Less than 15 matches!!
+Fail to track local map!
+LM: Active map reset recieved
+LM: Active map reset, waiting...
+LM: Reseting current map in Local Mapping...
+LM: End reseting Local Mapping...
+LM: Reset free the mutex
+LM: Active map reset, Done!!!
+mnFirstFrameId = 14145
+mnInitialFrameId = 14143
+4713 Frames set to lost
+not IMU meas
+First KF:4712; Map init KF:4711
+New Map created with 1 points
+TRACK_REF_KF: Less than 15 matches!!
+Fail to track local map!
+LM: Active map reset recieved
+LM: Active map reset, waiting...
+LM: Reseting current map in Local Mapping...
+LM: End reseting Local Mapping...
+LM: Reset free the mutex
+LM: Active map reset, Done!!!
+mnFirstFrameId = 14148
+mnInitialFrameId = 14146
+4714 Frames set to lost
+not IMU meas
+First KF:4713; Map init KF:4712
+New Map created with 0 points
+TRACK_REF_KF: Less than 15 matches!!
+Fail to track local map!
+LM: Active map reset recieved
+LM: Active map reset, waiting...
+LM: Reseting current map in Local Mapping...
+LM: End reseting Local Mapping...
+LM: Reset free the mutex
+LM: Active map reset, Done!!!
+mnFirstFrameId = 14151
+mnInitialFrameId = 14149
+4715 Frames set to lost
+not IMU meas
+First KF:4714; Map init KF:4713
+New Map created with 0 points
+TRACK_REF_KF: Less than 15 matches!!
+Fail to track local map!
+LM: Active map reset recieved
+LM: Active map reset, waiting...
+LM: Reseting current map in Local Mapping...
+LM: End reseting Local Mapping...
+LM: Reset free the mutex
+LM: Active map reset, Done!!!
+mnFirstFrameId = 14154
+mnInitialFrameId = 14152
+4716 Frames set to lost
+not IMU meas
+First KF:4715; Map init KF:4714
+New Map created with 0 points
+TRACK_REF_KF: Less than 15 matches!!
+Fail to track local map!
+LM: Active map reset recieved
+LM: Active map reset, waiting...
+LM: Reseting current map in Local Mapping...
+LM: End reseting Local Mapping...
+LM: Reset free the mutex
+LM: Active map reset, Done!!!
+mnFirstFrameId = 14157
+mnInitialFrameId = 14155
+4717 Frames set to lost
+not IMU meas
+First KF:4716; Map init KF:4715
+New Map created with 0 points
+TRACK_REF_KF: Less than 15 matches!!
+Fail to track local map!
+LM: Active map reset recieved
+LM: Active map reset, waiting...
+LM: Reseting current map in Local Mapping...
+LM: End reseting Local Mapping...
+LM: Reset free the mutex
+LM: Active map reset, Done!!!
+mnFirstFrameId = 14160
+mnInitialFrameId = 14158
+4718 Frames set to lost
+not IMU meas
+First KF:4717; Map init KF:4716
+New Map created with 1 points
+TRACK_REF_KF: Less than 15 matches!!
+Fail to track local map!
+LM: Active map reset recieved
+LM: Active map reset, waiting...
+LM: Reseting current map in Local Mapping...
+LM: End reseting Local Mapping...
+LM: Reset free the mutex
+LM: Active map reset, Done!!!
+mnFirstFrameId = 14163
+mnInitialFrameId = 14161
+4719 Frames set to lost
+not IMU meas
+First KF:4718; Map init KF:4717
+New Map created with 0 points
+TRACK_REF_KF: Less than 15 matches!!
+Fail to track local map!
+LM: Active map reset recieved
+LM: Active map reset, waiting...
+LM: Reseting current map in Local Mapping...
+LM: End reseting Local Mapping...
+LM: Reset free the mutex
+LM: Active map reset, Done!!!
+mnFirstFrameId = 14166
+mnInitialFrameId = 14164
+4720 Frames set to lost
+not IMU meas
+First KF:4719; Map init KF:4718
+New Map created with 0 points
+TRACK_REF_KF: Less than 15 matches!!
+Fail to track local map!
+LM: Active map reset recieved
+LM: Active map reset, waiting...
+LM: Reseting current map in Local Mapping...
+LM: End reseting Local Mapping...
+LM: Reset free the mutex
+LM: Active map reset, Done!!!
+mnFirstFrameId = 14169
+mnInitialFrameId = 14167
+4721 Frames set to lost
+not IMU meas
+First KF:4720; Map init KF:4719
+New Map created with 0 points
+TRACK_REF_KF: Less than 15 matches!!
+Fail to track local map!
+LM: Active map reset recieved
+LM: Active map reset, waiting...
+LM: Reseting current map in Local Mapping...
+LM: End reseting Local Mapping...
+LM: Reset free the mutex
+LM: Active map reset, Done!!!
+mnFirstFrameId = 14172
+mnInitialFrameId = 14170
+4722 Frames set to lost
+not IMU meas
+First KF:4721; Map init KF:4720
+New Map created with 0 points
+TRACK_REF_KF: Less than 15 matches!!
+Fail to track local map!
+LM: Active map reset recieved
+LM: Active map reset, waiting...
+LM: Reseting current map in Local Mapping...
+LM: End reseting Local Mapping...
+LM: Reset free the mutex
+LM: Active map reset, Done!!!
+mnFirstFrameId = 14175
+mnInitialFrameId = 14173
+4723 Frames set to lost
+not IMU meas
+First KF:4722; Map init KF:4721
+New Map created with 0 points
+TRACK_REF_KF: Less than 15 matches!!
+Fail to track local map!
+LM: Active map reset recieved
+LM: Active map reset, waiting...
+LM: Reseting current map in Local Mapping...
+LM: End reseting Local Mapping...
+LM: Reset free the mutex
+LM: Active map reset, Done!!!
+mnFirstFrameId = 14178
+mnInitialFrameId = 14176
+4724 Frames set to lost
+not IMU meas
+Shutdown
+
+Saving trajectory to f_rover_park_night_2024-05-13_2_stereo_inertial.txt ...
+There are 1 maps in the atlas
+  Map 0 has 0 KFs
+Segmentation fault
+
+=== STDERR ===

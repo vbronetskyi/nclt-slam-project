@@ -1,0 +1,25 @@
+{
+  "recording": "park_summer_2023-07-31",
+  "mode": "stereo_inertial_pinhole",
+  "num_estimated": 1498,
+  "num_gt": 837,
+  "num_matched": 1498,
+  "tracking_rate_pct": 11.4,
+  "sim3_scale": 1.178073,
+  "ate_sim3": {
+    "rmse": 0.446,
+    "mean": 0.3958,
+    "median": 0.3744,
+    "std": 0.2056,
+    "max": 1.6997
+  },
+  "ate_se3": {
+    "rmse": 1.2939,
+    "mean": 1.2492,
+    "median": 1.2177
+  },
+  "rpe": {
+    "rmse": 0.1219,
+    "mean": 0.1034
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "dataset": "4Seasons",
+  "method": "ORB-SLAM3 Stereo-Inertial",
+  "num_estimated": 3536,
+  "num_gt": 4037,
+  "num_matched": 3127,
+  "tracking_rate_pct": 23.3,
+  "sim3_scale": 0.996695,
+  "ate_sim3": {
+    "rmse": 0.9267,
+    "mean": 0.8188,
+    "median": 0.7475,
+    "std": 0.4341,
+    "max": 3.0566
+  },
+  "ate_se3": {
+    "rmse": 1.3469,
+    "mean": 1.2008,
+    "median": 1.1604
+  },
+  "rpe": {
+    "rmse": 0.3971,
+    "mean": 0.323
+  }
+}

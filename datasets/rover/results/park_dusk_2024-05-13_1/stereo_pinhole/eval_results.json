@@ -1,0 +1,25 @@
+{
+  "recording": "park_dusk_2024-05-13_1",
+  "mode": "stereo_pinhole",
+  "num_estimated": 7671,
+  "num_gt": 1315,
+  "num_matched": 7671,
+  "tracking_rate_pct": 53.5,
+  "sim3_scale": 1.284943,
+  "ate_sim3": {
+    "rmse": 1.5092,
+    "mean": 1.4366,
+    "median": 1.4624,
+    "std": 0.4623,
+    "max": 2.7486
+  },
+  "ate_se3": {
+    "rmse": 2.3927,
+    "mean": 2.3155,
+    "median": 2.4422
+  },
+  "rpe": {
+    "rmse": 0.0602,
+    "mean": 0.0389
+  }
+}

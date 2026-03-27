@@ -1,59 +1,47 @@
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-*.egg-info/
-dist/
+# build artifacts
 build/
-*.egg
+install/
+log/
+__pycache__/
+*.pyc
 
-# Virtual environments
-venv/
-env/
-.venv/
+# large data
+data/
+bags/
+**/orb_slam3_data/
+**/recordings/
+*.db
+*.mcap
 
-# IDE
+# large result files (hloc features, pickles, numpy)
+*.h5
+*.pkl
+*.npz
+**/sfm/*.bin
+**/ground_truth/*.tum
+**/imu_data/*.csv
+**/sfm/colmap.LOG.*
+
+# caches and local config
+.hf_home/
+.venv-backups/
+.claude/
+.local/
+
+# third party (clone separately)
+third_party/
+
+# OS/editor
+.DS_Store
+*.swp
+*~
 .vscode/
 .idea/
-*.swp
-*.swo
-*~
 
-# Data files
-data/nclt_sample/
-data/NCLT_preprocessed/
-data/*.bin
-data/*.csv
-data/*.pcd
-data/*.ply
-*.h5
-*.hdf5
-
-# Model checkpoints
-checkpoints/
-*.pth
-*.pt
-*.ckpt
-*.onnx
-
-# Logs
-logs/
-runs/
-wandb/
+# logs
 *.log
 
-# Jupyter
-.ipynb_checkpoints/
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Kaggle
-/kaggle/
-
-# Misc
-*.zip
-*.tar.gz
-*.tar
+# simulation loose artifacts
+**/world_scene.glb
+**/map_routes.png
+**/worlds_backup/

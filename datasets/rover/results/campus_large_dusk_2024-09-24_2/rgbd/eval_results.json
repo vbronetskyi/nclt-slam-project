@@ -1,0 +1,25 @@
+{
+  "recording": "campus_large_dusk_2024-09-24_2",
+  "mode": "rgbd",
+  "num_estimated": 21292,
+  "num_gt": 1506,
+  "num_matched": 21237,
+  "tracking_rate_pct": 100.0,
+  "sim3_scale": 0.91338,
+  "ate_sim3": {
+    "rmse": 4.5966,
+    "mean": 2.3107,
+    "median": 1.4131,
+    "std": 3.9736,
+    "max": 24.1362
+  },
+  "ate_se3": {
+    "rmse": 4.7069,
+    "mean": 2.1472,
+    "median": 1.2901
+  },
+  "rpe": {
+    "rmse": 0.2272,
+    "mean": 0.033
+  }
+}
