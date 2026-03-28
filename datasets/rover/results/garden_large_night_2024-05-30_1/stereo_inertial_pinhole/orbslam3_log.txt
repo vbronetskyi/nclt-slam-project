@@ -1,0 +1,188 @@
+CMD: /workspace/third_party/ORB_SLAM3/Examples/Stereo-Inertial/stereo_inertial_euroc /workspace/third_party/ORB_SLAM3/Vocabulary/ORBvoc.txt /workspace/rover_pipeline/configs/ROVER_T265_PinHole_Stereo_Inertial.yaml /workspace/data/rover/garden_large_night_2024-05-30_1_pinhole_euroc /workspace/data/rover/garden_large_night_2024-05-30_1_pinhole_euroc/times.txt rover_garden_large_night_2024-05-30_1_stereo_inertial_pinhole
+ELAPSED: 468.4s
+RETURN_CODE: 0
+
+=== STDOUT (last 5000 chars) ===
+o track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+*Loop detected
+phi =  -0.01480898825265815 -0.012659415713050548 -0.055310713886916087
+BAD LOOP!!!
+*Loop detected
+phi = 0.0044584624082704676   0.01614941623945362 -0.053294717456936903
+BAD LOOP!!!
+*Loop detected
+phi = 0.0092570196503560485  0.023456605298692746 -0.049035621301703615
+BAD LOOP!!!
+*Loop detected
+phi = 0.0072741039169488403 -0.012515740218195048 -0.037946837831500185
+BAD LOOP!!!
+*Loop detected
+phi = 0.0066802424689925794  0.002760407443023599 -0.046952932996976497
+Local Mapping STOP
+Local Mapping RELEASE
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+*Loop detected
+phi = -0.018585918587124172  0.025998358636659547 -0.074168716133937787
+BAD LOOP!!!
+*Loop detected
+phi = -0.014362273771805977  0.018379913226705871 -0.065169027037070962
+BAD LOOP!!!
+*Loop detected
+phi = -0.021156681464176128  0.029023890774051465 -0.059803245678917837
+BAD LOOP!!!
+*Loop detected
+phi = -0.022606840358737525  0.022181192841517504  -0.05384100243562432
+BAD LOOP!!!
+*Loop detected
+phi = -0.024267790433133849  0.027796947093024982  -0.05459375490573333
+BAD LOOP!!!
+*Loop detected
+phi = -0.018361917992150919   0.01718021810561773 -0.062624413172494134
+BAD LOOP!!!
+*Loop detected
+phi = -0.024278104150632744  0.025151687950378615 -0.065205028803687393
+BAD LOOP!!!
+*Loop detected
+phi = -0.028593005774991256  0.027104166767426933 -0.070823068952061613
+BAD LOOP!!!
+*Loop detected
+phi = -0.0042575223586692398  0.0069117789323737263  -0.064140783735171764
+Local Mapping STOP
+Local Mapping RELEASE
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Shutdown
+
+Saving trajectory to f_rover_garden_large_night_2024-05-30_1_stereo_inertial_pinhole.txt ...
+There are 1 maps in the atlas
+  Map 0 has 1251 KFs
+
+End of saving trajectory to f_rover_garden_large_night_2024-05-30_1_stereo_inertial_pinhole.txt ...
+
+Saving keyframe trajectory to kf_rover_garden_large_night_2024-05-30_1_stereo_inertial_pinhole.txt ...
+
+=== STDERR (last 5000 chars) ===

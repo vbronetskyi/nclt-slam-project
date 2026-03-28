@@ -1,0 +1,195 @@
+=== default ===
+Config: /workspace/rover_pipeline/configs/ROVER_D435i_RGBD.yaml
+Exit code: 0
+Elapsed: 1173.8s
+
+=== STDOUT ===
+ve map reset, Done!!!
+mnFirstFrameId = 0
+mnInitialFrameId = 20379
+0 Frames set to lost
+First KF:5919; Map init KF:5918
+New Map created with 229 points
+TRACK_REF_KF: Less than 15 matches!!
+Fail to track local map!
+LM: Active map reset recieved
+LM: Active map reset, waiting...
+LM: Reseting current map in Local Mapping...
+LM: End reseting Local Mapping...
+LM: Reset free the mutex
+LM: Active map reset, Done!!!
+mnFirstFrameId = 0
+mnInitialFrameId = 20391
+0 Frames set to lost
+First KF:5920; Map init KF:5919
+New Map created with 222 points
+TRACK_REF_KF: Less than 15 matches!!
+Fail to track local map!
+LM: Active map reset recieved
+LM: Active map reset, waiting...
+LM: Reseting current map in Local Mapping...
+LM: End reseting Local Mapping...
+LM: Reset free the mutex
+LM: Active map reset, Done!!!
+mnFirstFrameId = 0
+mnInitialFrameId = 20409
+0 Frames set to lost
+First KF:5921; Map init KF:5920
+New Map created with 237 points
+TRACK_REF_KF: Less than 15 matches!!
+Fail to track local map!
+LM: Active map reset recieved
+LM: Active map reset, waiting...
+LM: Reseting current map in Local Mapping...
+LM: End reseting Local Mapping...
+LM: Reset free the mutex
+LM: Active map reset, Done!!!
+mnFirstFrameId = 0
+mnInitialFrameId = 20415
+0 Frames set to lost
+First KF:5922; Map init KF:5921
+New Map created with 228 points
+TRACK_REF_KF: Less than 15 matches!!
+Fail to track local map!
+LM: Active map reset recieved
+LM: Active map reset, waiting...
+LM: Reseting current map in Local Mapping...
+LM: End reseting Local Mapping...
+LM: Reset free the mutex
+LM: Active map reset, Done!!!
+mnFirstFrameId = 0
+mnInitialFrameId = 20433
+0 Frames set to lost
+First KF:5923; Map init KF:5922
+New Map created with 207 points
+TRACK_REF_KF: Less than 15 matches!!
+Fail to track local map!
+LM: Active map reset recieved
+LM: Active map reset, waiting...
+LM: Reseting current map in Local Mapping...
+LM: End reseting Local Mapping...
+LM: Reset free the mutex
+LM: Active map reset, Done!!!
+mnFirstFrameId = 0
+mnInitialFrameId = 20439
+0 Frames set to lost
+First KF:5924; Map init KF:5923
+New Map created with 233 points
+TRACK_REF_KF: Less than 15 matches!!
+Fail to track local map!
+LM: Active map reset recieved
+LM: Active map reset, waiting...
+LM: Reseting current map in Local Mapping...
+LM: End reseting Local Mapping...
+LM: Reset free the mutex
+LM: Active map reset, Done!!!
+mnFirstFrameId = 0
+mnInitialFrameId = 20511
+0 Frames set to lost
+First KF:5925; Map init KF:5924
+New Map created with 203 points
+TRACK_REF_KF: Less than 15 matches!!
+Fail to track local map!
+LM: Active map reset recieved
+LM: Active map reset, waiting...
+LM: Reseting current map in Local Mapping...
+LM: End reseting Local Mapping...
+LM: Reset free the mutex
+LM: Active map reset, Done!!!
+mnFirstFrameId = 0
+mnInitialFrameId = 20529
+0 Frames set to lost
+First KF:5926; Map init KF:5925
+New Map created with 257 points
+TRACK_REF_KF: Less than 15 matches!!
+Fail to track local map!
+LM: Active map reset recieved
+LM: Active map reset, waiting...
+LM: Reseting current map in Local Mapping...
+LM: End reseting Local Mapping...
+LM: Reset free the mutex
+LM: Active map reset, Done!!!
+mnFirstFrameId = 0
+mnInitialFrameId = 20547
+0 Frames set to lost
+First KF:5927; Map init KF:5926
+New Map created with 234 points
+TRACK_REF_KF: Less than 15 matches!!
+Fail to track local map!
+LM: Active map reset recieved
+LM: Active map reset, waiting...
+LM: Reseting current map in Local Mapping...
+LM: End reseting Local Mapping...
+LM: Reset free the mutex
+LM: Active map reset, Done!!!
+mnFirstFrameId = 0
+mnInitialFrameId = 20577
+0 Frames set to lost
+First KF:5928; Map init KF:5927
+New Map created with 219 points
+TRACK_REF_KF: Less than 15 matches!!
+Fail to track local map!
+LM: Active map reset recieved
+LM: Active map reset, waiting...
+LM: Reseting current map in Local Mapping...
+LM: End reseting Local Mapping...
+LM: Reset free the mutex
+LM: Active map reset, Done!!!
+mnFirstFrameId = 0
+mnInitialFrameId = 20589
+0 Frames set to lost
+First KF:5929; Map init KF:5928
+New Map created with 236 points
+TRACK_REF_KF: Less than 15 matches!!
+Fail to track local map!
+LM: Active map reset recieved
+LM: Active map reset, waiting...
+LM: Reseting current map in Local Mapping...
+LM: End reseting Local Mapping...
+LM: Reset free the mutex
+LM: Active map reset, Done!!!
+mnFirstFrameId = 0
+mnInitialFrameId = 20601
+0 Frames set to lost
+First KF:5930; Map init KF:5929
+New Map created with 330 points
+TRACK_REF_KF: Less than 15 matches!!
+Fail to track local map!
+LM: Active map reset recieved
+LM: Active map reset, waiting...
+LM: Reseting current map in Local Mapping...
+LM: End reseting Local Mapping...
+LM: Reset free the mutex
+LM: Active map reset, Done!!!
+mnFirstFrameId = 0
+mnInitialFrameId = 20643
+0 Frames set to lost
+First KF:5931; Map init KF:5930
+New Map created with 528 points
+Shutdown
+-------
+
+median tracking time: 0.00918813
+mean tracking time: 0.0237713
+
+Saving camera trajectory to CameraTrajectory.txt ...
+
+Saving keyframe trajectory to KeyFrameTrajectory.txt ...
+
+=== STDERR ===
+Camera1.k3 optional parameter does not exist...
+Camera.newHeight optional parameter does not exist...
+Camera.newWidth optional parameter does not exist...
+Viewer.imageViewScale optional parameter does not exist...
+System.LoadAtlasFromFile optional parameter does not exist...
+System.SaveAtlasToFile optional parameter does not exist...
+System.thFarPoints optional parameter does not exist...
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+libEGL warning: DRI3 error: Could not get DRI3 device
+libEGL warning: Ensure your X server supports DRI3 to get accelerated rendering
+QStandardPaths: XDG_RUNTIME_DIR not set, defaulting to '/tmp/runtime-root'
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+Sophus ensure warning in void Sophus::SO3Base<Derived>::normalize() [with Derived = Sophus::SO3<float>] (/workspace/third_party/ORB_SLAM3/Thirdparty/Sophus/sophus/so3.hpp:299)
+Sophus ensure warning in void Sophus::SO3Base<Derived>::normalize() [with Derived = Sophus::SO3<float>] (/workspace/third_party/ORB_SLAM3/Thirdparty/Sophus/sophus/so3.hpp:299)
+Sophus ensure warning in void Sophus::SO3Base<Derived>::normalize() [with Derived = Sophus::SO3<float>] (/workspace/third_party/ORB_SLAM3/Thirdparty/Sophus/sophus/so3.hpp:299)

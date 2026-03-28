@@ -1,0 +1,25 @@
+{
+  "recording": "garden_large_dusk_2024-05-29_2",
+  "mode": "stereo_pinhole",
+  "num_estimated": 5789,
+  "num_gt": 824,
+  "num_matched": 5788,
+  "tracking_rate_pct": 48.2,
+  "sim3_scale": 1.33603,
+  "ate_sim3": {
+    "rmse": 0.8397,
+    "mean": 0.7173,
+    "median": 0.6208,
+    "std": 0.4365,
+    "max": 2.862
+  },
+  "ate_se3": {
+    "rmse": 1.8707,
+    "mean": 1.8104,
+    "median": 1.8465
+  },
+  "rpe": {
+    "rmse": 0.0703,
+    "mean": 0.0406
+  }
+}

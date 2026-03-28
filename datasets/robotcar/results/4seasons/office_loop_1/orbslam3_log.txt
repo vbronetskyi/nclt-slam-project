@@ -1,0 +1,141 @@
+num_seq = 1
+file name: 4seasons_office_loop_1
+Loading images for sequence 0...LOADED!
+Loading IMU for sequence 0...LOADED!
+
+-------
+
+ORB-SLAM3 Copyright (C) 2017-2020 Carlos Campos, Richard Elvira, Juan J. Gómez, José M.M. Montiel and Juan D. Tardós, University of Zaragoza.
+ORB-SLAM2 Copyright (C) 2014-2016 Raúl Mur-Artal, José M.M. Montiel and Juan D. Tardós, University of Zaragoza.
+This program comes with ABSOLUTELY NO WARRANTY;
+This is free software, and you are welcome to redistribute it
+under certain conditions. See LICENSE.txt.
+
+Input sensor was set to: Stereo-Inertial
+Loading settings from /workspace/robotcar_pipeline/configs/4Seasons_Stereo_Inertial.yaml
+Camera1.k3 optional parameter does not exist...
+	-Loaded camera 1
+Camera2.k3 optional parameter does not exist...
+	-Loaded camera 2
+Camera.newHeight optional parameter does not exist...
+Camera.newWidth optional parameter does not exist...
+	-Loaded image info
+	-Loaded IMU calibration
+	-Loaded ORB settings
+Viewer.imageViewScale optional parameter does not exist...
+	-Loaded viewer settings
+System.LoadAtlasFromFile optional parameter does not exist...
+System.SaveAtlasToFile optional parameter does not exist...
+	-Loaded Atlas settings
+	-Loaded misc parameters
+	-Computed rectification maps
+----------------------------------
+SLAM settings: 
+	-Camera 1 parameters (Pinhole): [ 501.47579956054688 501.47579956054688 421.79537963867188 167.65798950195312 ]
+	-Camera 1 distortion parameters: [  0 0 0 0 ]
+	-Camera 2 parameters (Pinhole: [ 501.47579956054688 501.47579956054688 421.79537963867188 167.65798950195312 ]
+	-Camera 1 distortion parameters: [  0 0 0 0 ]
+	-Original image size: [ 800 , 400 ]
+	-Current image size: [ 800 , 400 ]
+	-Camera 1 parameters after rectification: [  501.47579956054688 501.47579956054688 421.79537963867188 167.65798950195312 ]
+	-Sequence FPS: 30
+	-Stereo baseline: 0.30049616098403931
+	-Stereo depth threshold : 40
+	-Gyro noise: 0.00015999999595806003
+	-Accelerometer noise: 0.00279999990016222
+	-Gyro walk: 2.2000000171829015e-05
+	-Accelerometer walk: 0.00085999997099861503
+	-IMU frequency: 2000
+	-Features per image: 1500
+	-ORB scale factor: 1.2000000476837158
+	-ORB number of scales: 8
+	-Initial FAST threshold: 20
+	-Min FAST threshold: 7
+
+
+Loading ORB Vocabulary. This could take a while...
+Vocabulary loaded!
+
+Initialization of Atlas from scratch 
+Creation of new map with id: 0
+Creation of new map with last KF id: 0
+Seq. Name: 
+There are 1 cameras in the atlas
+Camera 0 is pinhole
+Discard points further than 20 m from current camera
+not IMU meas
+not IMU meas
+First KF:0; Map init KF:0
+New Map created with 653 points
+start VIBA 1
+end VIBA 1
+start VIBA 2
+end VIBA 2
+*Loop detected
+phi = 8.4250598192209811e-05  -0.011561005619678672   0.010489292005590513
+BAD LOOP!!!
+*Loop detected
+phi =  -0.001768885463021852 -0.0097657474859319266  0.0096269671457165518
+BAD LOOP!!!
+*Loop detected
+phi = -0.0031826274273593874 -0.0073802317810317342  0.0092315637505180712
+Local Mapping STOP
+Local Mapping RELEASE
+*Loop detected
+phi =  0.0068347814490951645 -0.0085543403203204894 -0.0019307668740103875
+BAD LOOP!!!
+*Loop detected
+phi =  0.0080316714810685762 -0.0073664565729947215 0.00090644853387971823
+BAD LOOP!!!
+*Loop detected
+phi =   0.0069930953068260615  -0.0059255298225215211 -0.00012134736768177561
+Local Mapping STOP
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Local Mapping RELEASE
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+*Loop detected
+phi = 0.0050475143856389621  0.011201784247952885 -0.006388459655458441
+BAD LOOP!!!
+*Loop detected
+phi = 0.0054885683691232425  0.010602798563081965 -0.003048441824751657
+BAD LOOP!!!
+*Loop detected
+phi = 0.0065852428274391379  0.012246778288841974  -0.00375130736354578
+BAD LOOP!!!
+*Loop detected
+phi =   0.005830199324030374   0.010725640508047489 -0.0044153086979838892
+BAD LOOP!!!
+*Loop detected
+phi =   0.005538580629660326   0.010346439473707784 -0.0035820491851758316
+BAD LOOP!!!
+*Loop detected
+phi = 0.00047112131477426499    0.00882724894143023 -0.0059578629142372375
+BAD LOOP!!!
+*Loop detected
+phi = 0.0037762222502664929 0.0052668500377978439 0.0012681328113744699
+Local Mapping STOP
+Local Mapping RELEASE
+*Loop detected
+phi =  0.0047756678277258982 -0.0068099998637987076  -0.025078042532240278
+Local Mapping STOP
+Local Mapping RELEASE
+Shutdown
+
+Saving trajectory to f_4seasons_office_loop_1.txt ...
+There are 1 maps in the atlas
+  Map 0 has 3535 KFs
+
+End of saving trajectory to f_4seasons_office_loop_1.txt ...
+
+Saving keyframe trajectory to kf_4seasons_office_loop_1.txt ...

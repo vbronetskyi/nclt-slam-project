@@ -1,0 +1,25 @@
+{
+  "recording": "park_night_2024-05-13_2",
+  "mode": "rgbd",
+  "num_estimated": 14158,
+  "num_gt": 1005,
+  "num_matched": 14157,
+  "tracking_rate_pct": 99.9,
+  "sim3_scale": 0.929366,
+  "ate_sim3": {
+    "rmse": 6.5534,
+    "mean": 5.8324,
+    "median": 6.1179,
+    "std": 2.9883,
+    "max": 19.3341
+  },
+  "ate_se3": {
+    "rmse": 6.566,
+    "mean": 5.8214,
+    "median": 5.9829
+  },
+  "rpe": {
+    "rmse": 0.4148,
+    "mean": 0.0507
+  }
+}

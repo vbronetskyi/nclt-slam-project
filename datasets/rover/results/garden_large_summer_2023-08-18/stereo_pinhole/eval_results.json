@@ -1,0 +1,25 @@
+{
+  "recording": "garden_large_summer_2023-08-18",
+  "mode": "stereo_pinhole",
+  "num_estimated": 1785,
+  "num_gt": 1816,
+  "num_matched": 1783,
+  "tracking_rate_pct": 12.7,
+  "sim3_scale": 1.2136,
+  "ate_sim3": {
+    "rmse": 0.5122,
+    "mean": 0.4509,
+    "median": 0.391,
+    "std": 0.2429,
+    "max": 1.1401
+  },
+  "ate_se3": {
+    "rmse": 1.4424,
+    "mean": 1.383,
+    "median": 1.4024
+  },
+  "rpe": {
+    "rmse": 0.0739,
+    "mean": 0.062
+  }
+}

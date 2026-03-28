@@ -1,0 +1,25 @@
+{
+  "recording": "campus_large_spring_2024-04-14",
+  "mode": "stereo_pinhole",
+  "num_estimated": 6932,
+  "num_gt": 1842,
+  "num_matched": 6929,
+  "tracking_rate_pct": 24.5,
+  "sim3_scale": 1.204583,
+  "ate_sim3": {
+    "rmse": 1.6301,
+    "mean": 1.5016,
+    "median": 1.5627,
+    "std": 0.6344,
+    "max": 3.4858
+  },
+  "ate_se3": {
+    "rmse": 2.9232,
+    "mean": 2.6398,
+    "median": 2.5957
+  },
+  "rpe": {
+    "rmse": 0.1616,
+    "mean": 0.0766
+  }
+}

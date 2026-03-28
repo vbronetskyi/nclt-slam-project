@@ -1,0 +1,83 @@
+CMD: /workspace/third_party/ORB_SLAM3/Examples/Stereo/stereo_euroc /workspace/third_party/ORB_SLAM3/Vocabulary/ORBvoc.txt /workspace/rover_pipeline/configs/ROVER_T265_PinHole_Stereo.yaml /workspace/data/rover/garden_large_dusk_2024-05-29_2_pinhole_euroc /workspace/data/rover/garden_large_dusk_2024-05-29_2_pinhole_euroc/times.txt rover_garden_large_dusk_2024-05-29_2_stereo_pinhole_attempt3
+ELAPSED: 2.6s
+RETURN_CODE: 134
+
+=== STDOUT (first 5000) ===
+num_seq = 1
+file name: rover_garden_large_dusk_2024-05-29_2_stereo_pinhole_attempt3
+Loading images for sequence 0...LOADED!
+
+-------
+
+ORB-SLAM3 Copyright (C) 2017-2020 Carlos Campos, Richard Elvira, Juan J. Gómez, José M.M. Montiel and Juan D. Tardós, University of Zaragoza.
+ORB-SLAM2 Copyright (C) 2014-2016 Raúl Mur-Artal, José M.M. Montiel and Juan D. Tardós, University of Zaragoza.
+This program comes with ABSOLUTELY NO WARRANTY;
+This is free software, and you are welcome to redistribute it
+under certain conditions. See LICENSE.txt.
+
+Input sensor was set to: Stereo
+Loading settings from /workspace/rover_pipeline/configs/ROVER_T265_PinHole_Stereo.yaml
+Camera1.k3 optional parameter does not exist...
+	-Loaded camera 1
+Camera2.k3 optional parameter does not exist...
+	-Loaded camera 2
+Camera.newHeight optional parameter does not exist...
+Camera.newWidth optional parameter does not exist...
+	-Loaded image info
+	-Loaded ORB settings
+Viewer.imageViewScale optional parameter does not exist...
+	-Loaded viewer settings
+System.LoadAtlasFromFile optional parameter does not exist...
+System.SaveAtlasToFile optional parameter does not exist...
+	-Loaded Atlas settings
+System.thFarPoints optional parameter does not exist...
+	-Loaded misc parameters
+	-Computed rectification maps
+----------------------------------
+SLAM settings: 
+	-Camera 1 parameters (Pinhole): [ 224.07000732421875 224.07000732421875 320 240 ]
+	-Camera 1 distortion parameters: [  0 0 0 0 ]
+	-Camera 2 parameters (Pinhole: [ 224.07000732421875 224.07000732421875 320 240 ]
+	-Camera 1 distortion parameters: [  0 0 0 0 ]
+	-Original image size: [ 640 , 480 ]
+	-Current image size: [ 640 , 480 ]
+	-Camera 1 parameters after rectification: [  224.07000732421875 224.07000732421875 312.03756713867188 239.95811462402344 ]
+	-Sequence FPS: 30
+	-Stereo baseline: 0.063482001423835754
+	-Stereo depth threshold : 30
+	-Features per image: 2000
+	-ORB scale factor: 1.2000000476837158
+	-ORB number of scales: 8
+	-Initial FAST threshold: 15
+	-Min FAST threshold: 5
+
+
+Loading ORB Vocabulary. This could take a while...
+Vocabulary loaded!
+
+Initialization of Atlas from scratch 
+Creation of new map with id: 0
+Creation of new map with last KF id: 0
+Seq. Name: 
+There are 1 cameras in the atlas
+Camera 0 is pinhole
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+First KF:0; Map init KF:0
+New Map created with 469 points
+libEGL warning: DRI3 error: Could not get DRI3 device
+libEGL warning: Ensure your X server supports DRI3 to get accelerated rendering
+QObject::moveToThread: Current thread (0x7f1209ddad20) is not the object's thread (0x7f1209de6b20).
+Cannot move to target thread (0x7f1209ddad20)
+
+qt.qpa.plugin: Could not load the Qt platform plugin "xcb" in "/usr/local/lib/python3.12/dist-packages/cv2/qt/plugins" even though it was found.
+This application failed to start because no Qt platform plugin could be initialized. Reinstalling the application may fix this problem.
+
+Available platform plugins are: xcb, eglfs, linuxfb, minimal, minimalegl, offscreen, vnc, wayland-egl, wayland, wayland-xcomposite-egl, wayland-xcomposite-glx.
+
+Aborted
+
+
+=== STDOUT (last 5000) ===
+
+
+=== STDERR ===

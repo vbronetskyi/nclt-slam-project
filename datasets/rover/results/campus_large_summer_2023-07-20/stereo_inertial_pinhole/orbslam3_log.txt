@@ -1,0 +1,105 @@
+CMD: /workspace/third_party/ORB_SLAM3/Examples/Stereo-Inertial/stereo_inertial_euroc /workspace/third_party/ORB_SLAM3/Vocabulary/ORBvoc.txt /workspace/rover_pipeline/configs/ROVER_T265_PinHole_Stereo_Inertial.yaml /workspace/data/rover/campus_large_summer_2023-07-20_pinhole_euroc /workspace/data/rover/campus_large_summer_2023-07-20_pinhole_euroc/times.txt rover_campus_large_summer_2023-07-20_stereo_inertial_pinhole
+ELAPSED: 1181.8s
+RETURN_CODE: 0
+
+=== STDOUT (last 5000 chars) ===
+num_seq = 1
+file name: rover_campus_large_summer_2023-07-20_stereo_inertial_pinhole
+Loading images for sequence 0...LOADED!
+Loading IMU for sequence 0...LOADED!
+
+-------
+
+ORB-SLAM3 Copyright (C) 2017-2020 Carlos Campos, Richard Elvira, Juan J. Gómez, José M.M. Montiel and Juan D. Tardós, University of Zaragoza.
+ORB-SLAM2 Copyright (C) 2014-2016 Raúl Mur-Artal, José M.M. Montiel and Juan D. Tardós, University of Zaragoza.
+This program comes with ABSOLUTELY NO WARRANTY;
+This is free software, and you are welcome to redistribute it
+under certain conditions. See LICENSE.txt.
+
+Input sensor was set to: Stereo-Inertial
+Loading settings from /workspace/rover_pipeline/configs/ROVER_T265_PinHole_Stereo_Inertial.yaml
+	-Loaded camera 1
+	-Loaded camera 2
+	-Loaded image info
+	-Loaded IMU calibration
+	-Loaded ORB settings
+	-Loaded viewer settings
+	-Loaded Atlas settings
+	-Loaded misc parameters
+	-Computed rectification maps
+----------------------------------
+SLAM settings: 
+	-Camera 1 parameters (Pinhole): [ 224.07000732421875 224.07000732421875 320 240 ]
+	-Camera 1 distortion parameters: [  0 0 0 0 ]
+	-Camera 2 parameters (Pinhole: [ 224.07000732421875 224.07000732421875 320 240 ]
+	-Camera 1 distortion parameters: [  0 0 0 0 ]
+	-Original image size: [ 640 , 480 ]
+	-Current image size: [ 640 , 480 ]
+	-Camera 1 parameters after rectification: [  224.07000732421875 224.07000732421875 312.03756713867188 239.95811462402344 ]
+	-Sequence FPS: 30
+	-Stereo baseline: 0.063482001423835754
+	-Stereo depth threshold : 30
+	-Gyro noise: 0.0032356434967368841
+	-Accelerometer noise: 0.017406273633241653
+	-Gyro walk: 7.0567788498010486e-05
+	-Accelerometer walk: 0.0060000000521540642
+	-IMU frequency: 264
+	-Features per image: 2000
+	-ORB scale factor: 1.2000000476837158
+	-ORB number of scales: 8
+	-Initial FAST threshold: 15
+	-Min FAST threshold: 5
+
+
+Loading ORB Vocabulary. This could take a while...
+Vocabulary loaded!
+
+Initialization of Atlas from scratch 
+Creation of new map with id: 0
+Creation of new map with last KF id: 0
+Seq. Name: 
+There are 1 cameras in the atlas
+Camera 0 is pinhole
+not IMU meas
+not IMU meas
+First KF:0; Map init KF:0
+New Map created with 796 points
+start VIBA 1
+end VIBA 1
+start VIBA 2
+end VIBA 2
+*Loop detected
+phi =  0.084870797492253763 -0.093623644906053086  -0.46547312956023518
+BAD LOOP!!!
+*Loop detected
+phi = 0.096799967991488739 -0.11882791274927045 -0.49913672240888651
+BAD LOOP!!!
+*Loop detected
+phi = 0.087492766298988056  -0.1156635609766989 -0.50728060545550768
+BAD LOOP!!!
+*Loop detected
+phi = 0.090141031977708994 -0.11304383812587748 -0.51017178858509327
+BAD LOOP!!!
+*Loop detected
+phi = 0.081196830250761354 -0.11785700553386898  -0.5144795999088656
+BAD LOOP!!!
+Shutdown
+
+Saving trajectory to f_rover_campus_large_summer_2023-07-20_stereo_inertial_pinhole.txt ...
+There are 1 maps in the atlas
+  Map 0 has 3855 KFs
+
+End of saving trajectory to f_rover_campus_large_summer_2023-07-20_stereo_inertial_pinhole.txt ...
+
+Saving keyframe trajectory to kf_rover_campus_large_summer_2023-07-20_stereo_inertial_pinhole.txt ...
+
+=== STDERR (last 5000 chars) ===
+Camera1.k3 optional parameter does not exist...
+Camera2.k3 optional parameter does not exist...
+Camera.newHeight optional parameter does not exist...
+Camera.newWidth optional parameter does not exist...
+IMU.InsertKFsWhenLost optional parameter does not exist...
+Viewer.imageViewScale optional parameter does not exist...
+System.LoadAtlasFromFile optional parameter does not exist...
+System.SaveAtlasToFile optional parameter does not exist...
+System.thFarPoints optional parameter does not exist...

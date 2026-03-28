@@ -1,0 +1,21 @@
+{
+  "recording": "park_night-light_2024-05-24_2",
+  "mode": "stereo_pinhole",
+  "config": "lowlight",
+  "num_estimated": 9771,
+  "num_gt": 1127,
+  "num_matched": 1071,
+  "tracking_rate_pct": 95.0,
+  "sim3_scale": 1.026846,
+  "ate_sim3": {
+    "rmse": 7.6295,
+    "mean": 7.4353,
+    "median": 7.6827,
+    "std": 1.7104,
+    "max": 11.9464
+  },
+  "rpe": {
+    "rmse": 0.1907,
+    "mean": 0.177
+  }
+}

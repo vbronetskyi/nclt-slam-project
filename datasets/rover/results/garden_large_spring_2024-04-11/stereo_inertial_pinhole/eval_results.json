@@ -1,0 +1,25 @@
+{
+  "recording": "garden_large_spring_2024-04-11",
+  "mode": "stereo_inertial_pinhole",
+  "num_estimated": 1612,
+  "num_gt": 1731,
+  "num_matched": 1612,
+  "tracking_rate_pct": 12.0,
+  "sim3_scale": 1.255327,
+  "ate_sim3": {
+    "rmse": 0.6019,
+    "mean": 0.5421,
+    "median": 0.4953,
+    "std": 0.2615,
+    "max": 1.3169
+  },
+  "ate_se3": {
+    "rmse": 1.5801,
+    "mean": 1.5287,
+    "median": 1.484
+  },
+  "rpe": {
+    "rmse": 0.0725,
+    "mean": 0.0592
+  }
+}

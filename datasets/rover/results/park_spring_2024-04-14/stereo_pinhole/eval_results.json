@@ -1,0 +1,25 @@
+{
+  "recording": "park_spring_2024-04-14",
+  "mode": "stereo_pinhole",
+  "num_estimated": 3473,
+  "num_gt": 752,
+  "num_matched": 3467,
+  "tracking_rate_pct": 25.0,
+  "sim3_scale": 1.227694,
+  "ate_sim3": {
+    "rmse": 0.5103,
+    "mean": 0.4747,
+    "median": 0.4663,
+    "std": 0.1873,
+    "max": 1.1385
+  },
+  "ate_se3": {
+    "rmse": 1.5604,
+    "mean": 1.5079,
+    "median": 1.499
+  },
+  "rpe": {
+    "rmse": 0.1056,
+    "mean": 0.0747
+  }
+}

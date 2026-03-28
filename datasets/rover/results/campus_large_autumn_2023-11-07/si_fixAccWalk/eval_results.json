@@ -1,0 +1,25 @@
+{
+  "recording": "campus_large_autumn_2023-11-07",
+  "mode": "si_fixAccWalk",
+  "num_estimated": 3577,
+  "num_gt": 2383,
+  "num_matched": 3577,
+  "tracking_rate_pct": 12.0,
+  "sim3_scale": 0.161993,
+  "ate_sim3": {
+    "rmse": 14.3419,
+    "mean": 13.2158,
+    "median": 14.045,
+    "std": 5.5706,
+    "max": 22.6107
+  },
+  "ate_se3": {
+    "rmse": 38.2372,
+    "mean": 25.3353,
+    "median": 16.559
+  },
+  "rpe": {
+    "rmse": 0.1604,
+    "mean": 0.113
+  }
+}
