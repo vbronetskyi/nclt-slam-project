@@ -1,234 +1,140 @@
-# Experiment 02: SLAM Comparison -- RTAB-Map vs ORB-SLAM3 (220x150m World)
+# Experiment 02: SLAM Comparison — RTAB-Map vs ORB-SLAM3
 
-## Overview
+Compared two Visual SLAM algorithms on the same 216m route through a procedurally generated Gazebo world. The robot was driven manually via a web UI, recording RGB-D + IMU data for offline evaluation.
 
-Compact outdoor terrain for UGV SLAM testing. Robot drives from dense forest through a curved dirt road to a village with houses.
+![Trajectory comparison](trajectory_comparison.png)
 
-**World size:** 220m (east-west) x 150m (north-south)
-**Route:** (-105, -8) → curved road → (82, -13) village
-**Total models:** 370
-
-## Map Layout
-
-```
-West (-110)          Center (0)           East (110)
-  ┌──────────────────────────────────────────────┐
-  │  DENSE FOREST     Open field    VILLAGE      │  North (+75)
-  │  (200 trees)       (road        (5 houses    │
-  │  oak + pine)        visible)     + ruins)    │
-  │                                              │
-  │  ──────── curved dirt road ──────────────►   │  y ≈ road_y(x)
-  │  Robot                              Goal     │
-  │  spawn                             (82,-13)  │
-  │  (-105,-8)                                   │
-  │                                              │  South (-75)
-  └──────────────────────────────────────────────┘
-```
-
-## Terrain
+## Setup
 
 | Parameter | Value |
 |-----------|-------|
-| Heightmap | 257x257 pixels, 16-bit PNG |
-| Z range | 0-10m (visible hills and bumps) |
-| Mean slope | 13% |
-| Max slope | 51% |
-| Route corridor slope | max 10% (smoothed) |
-| Texture | 2048x2048, procedural (grass/dirt/road) |
-| Visual mesh | 257x257 vertices, OBJ with normals |
-| Collision mesh | 257x257, STL (matches visual exactly) |
+| World | 220 x 150m, 370 models (trees, rocks, buildings) |
+| Route | (-105, -8) → curved dirt road → (82, -13), 216m total |
+| Robot | Husky A200, 50kg, skid-steer, max 0.9 m/s |
+| RGB-D camera | 640x480, fx=fy=382, ~10-15 Hz actual (30 Hz requested) |
+| IMU | 250 Hz (Phidgets Spatial 1042) |
+| LiDAR | disabled to save GPU for camera |
+| Ground truth | Gazebo dynamic_pose, 50 Hz, <1cm accuracy |
+| Drive method | manual click-to-drive via Flask web UI |
+| Rosbag | uncompressed, ~41 GB for a typical 5 min drive |
 
-### Terrain Features
-- **Sharp bumps** at 1-2m scale for rough ground feel
-- **Route corridor** smoothed within 10m of road center
-- **Dirt patches** under tree canopy (brown-green variation in forest)
-- **Dry grass** on elevated/exposed areas
-- **Curved dirt road** with wheel ruts visible on texture
+The world has three zones: dense forest (west), open field with dirt road (center), and a village with houses (east). Camera FPS drops to ~6 Hz during rosbag recording.
 
-### Road Curve
-Road follows bezier curve: `y = (1-t)^2 * (-8) + 2*(1-t)*t * 6 + t^2 * (-3)`
-where `t = (x+105) / 180`, from (-105, -8) to (75, -3).
+## Results
 
-Road ends between houses at approximately (75, -3).
+| Algorithm | Mode | ATE RMSE | Keyframes | Coverage | Status |
+|-----------|------|----------|-----------|----------|--------|
+| RTAB-Map | RGB-D (live) | **9.23 m** | 269 | ~80m (37%) | partial — forest only |
+| ORB-SLAM3 | RGB-D (offline) | n/a | — | 1.2m (<1%) | **failed** — 174 map resets |
+| ORB-SLAM3 | RGB-D Inertial (offline) | n/a | — | ~300 frames | **failed** — IMU never initialized |
 
-## Objects (370 total)
+Ground truth: 108,327 poses over 216m route, recorded at 50 Hz.
 
-| Type | Count | Location | Notes |
-|------|-------|----------|-------|
-| Trees (standing) | 297 | Forest + field + village bg | Oak tree, Pine Tree (Fuel) |
-| Fallen trees | 40 | Forest | Rotated 80-90° (pitch 1.3-1.57) |
-| Rocks | 23 | Along route + village | Falling Rock 1 (Fuel) |
-| Houses | 5 | Village (x=65..105) | Lake House (PBR materials) |
-| Ruins | 1 | Road center (x=-5) | Collapsed House |
-| Barrels | 4 | Village | Construction Barrel |
+### RTAB-Map
 
-### Object Zones
-- **Dense forest** (x=-110 to -10): ~230 trees, 3m min spacing, fallen trees
-- **Transition** (x=-10 to 40): scattered trees, rocks along road
-- **Village** (x=40 to 110): houses, debris, background trees
-- **Road corridor**: 6m clearance from road center (no objects within 6m)
+Ran live during manual drive (not offline replay — rosbag TF conflicts made replay impossible).
 
-### House Models
-- `Lake House` (Gazebo Fuel) — has PBR materials, renders correctly in ogre2
-- `Collapsed House` — ruin model, works in headless mode
-- Note: `House 1` and `House 2` models render BLACK in Gazebo Harmonic ogre2 headless (script-based materials not supported)
+- tracked well through **forest section** (~80m): trees create depth discontinuities at 2-5m range, giving the depth matcher plenty of structure
+- **lost tracking** when exiting forest into open field: flat green terrain with no depth variation
+- scale factor 0.28 indicates significant wheel slip on skid-steer (robot thinks it moved ~3.6x less than it did)
+- 660-690 visual features per frame in forest — drops to <100 on open grass
+- database: 240 MB (rtabmap.db, gitignored)
 
-## Robot & Sensors
+### ORB-SLAM3 RGB-D
 
-| Component | Details |
-|-----------|---------|
-| Robot | Husky A200, 50kg, 4WD skid-steer |
-| Front camera | 640x480 @ 30Hz requested (~10-15Hz actual) |
-| Depth camera | 640x480, synced with RGB |
-| IMU | 250Hz (accel + gyro) |
-| LiDAR | Disabled (GPU savings) |
-| Chase camera | 160x90 @ 2Hz (web display only) |
-| Max speed | 0.9 m/s |
+Ran offline on extracted frames (every 3rd frame = 3024 total).
 
-### Camera Intrinsics
-- fx = fy = 382.0 (with overhead camera) or 554.0 (without)
-- cx = 320.0, cy = 240.0
-- No distortion (simulated)
+- constant tracking loss: ORB detector finds 30-196 map points per map (needs ~500 for stable tracking)
+- created 174 separate maps in one run — essentially re-initializes every few seconds
+- total trajectory coverage: 1.2m x 0.5m (robot barely moves in SLAM's view)
+- root cause: Gazebo ogre2 renderer produces smooth, low-contrast textures — ORB features need corners and edges that simply aren't there
 
-### Actual Frame Rates
-| Configuration | Camera Hz |
-|--------------|-----------|
-| 764 models (old map) | 5-9 Hz |
-| 370 models (this map) | 10-15 Hz |
-| Without web_nav | +1-2 Hz |
-| During rosbag recording | -2-3 Hz |
+### ORB-SLAM3 RGB-D Inertial
 
-## Ground Truth
+Attempted to fix tracking with IMU fusion (250 Hz Phidgets data).
 
-Position tracking via Gazebo `dynamic_pose/info` topic:
-- **Accuracy:** <1cm (verified)
-- **Rate:** 50Hz
-- **Format:** `/tmp/gt_trajectory.csv` (time, x, y, yaw)
-- **Fallback:** Odom + spawn offset (drifts over distance)
+- map resets dropped from **174 to 2** — IMU stabilizes frame-to-frame tracking significantly
+- however, IMU initialization never completes: ORB-SLAM3 needs ~10 seconds of continuous visual tracking to calibrate IMU biases
+- the algorithm can't sustain 10s of tracking in this low-texture environment, so it gets stuck in a loop: track → lose → reset → track → lose
+- tested with multiple configs (lower noise params, aggressive ORB extraction, no usleep) — same result
 
-## Navigation
+## Why ORB-SLAM3 Fails in Gazebo
 
-**Click-to-drive** via web UI (http://localhost:8765):
-- Click on map → robot drives to point
-- P-controller with proportional steering
-- Speed: 0.9 m/s (straight), 0.1-0.5 m/s (turning)
-- No obstacle avoidance — manual driving around trees
+ORB-SLAM3 relies on sparse feature matching (ORB descriptors). It needs:
+- **corners and edges** in the image — Gazebo procedural textures are smooth gradients with very few sharp features
+- **texture repeatability** across frames — ogre2 rendering produces slightly different pixel values between frames due to floating-point shading, breaking descriptor matching
+- **sufficient feature density** — needs ~500 map points for stable tracking; Gazebo scenes typically produce 30-200
 
-## Data Recording
+This is a fundamental limitation of testing feature-based SLAM in simulation, not a configuration issue.
 
-### Rosbag (uncompressed)
-```bash
-ros2 bag record -o bags/route_1_clean \
-  --topics /camera/color/image_raw /camera/depth/image_rect_raw \
-  /camera/camera_info /imu/data /odom /tf /clock /chase_camera/image
-```
+### Would ArUco Markers Help?
 
-### Recorded Data Quality
-| Topic | Count (typical 5min drive) | Rate |
-|-------|---------------------------|------|
-| RGB frames | ~3000 | ~10 Hz |
-| Depth frames | ~3000 | ~10 Hz (synced) |
-| IMU | ~75000 | ~250 Hz |
-| Odom | ~15000 | ~50 Hz |
-| GT trajectory | ~15000 | ~50 Hz |
+ArUco markers are black-and-white fiducial squares designed for easy detection — high contrast, unique IDs, sub-pixel corner localization. Placing them on trees and buildings would give ORB-SLAM3 reliable features. However:
+- we didn't use them because the goal was to evaluate SLAM on natural-looking terrain, not on a marker-augmented lab environment
+- real outdoor environments don't have ArUco markers
+- it would invalidate the comparison with real-world datasets (ROVER, NCLT) where no markers are present
 
-### Video vs Simulation Quality
-- **Rosbag records actual rendered frames** — same quality as what camera sees
-- **Frame drops during lag** — if Gazebo renders at 8Hz, rosbag gets 8Hz (no interpolation)
-- **Lag does NOT corrupt data** — frames are timestamped, SLAM algorithms handle variable frame rate
-- **IMU is NOT affected by render lag** — IMU runs at 250Hz regardless of camera performance
-- **Recommendation:** Stop web_nav during recording to gain +2-3 Hz on camera
+## Why RTAB-Map Partially Works
 
-## Known Issues
+RTAB-Map uses **dense depth matching** rather than sparse features. It doesn't need corners — it matches depth images directly. This works when:
+- objects are at varied distances (2-5m in forest = strong depth signal)
+- there's geometric structure (tree trunks, fallen logs)
 
-| Issue | Status | Notes |
-|-------|--------|-------|
-| Camera 10Hz instead of 30Hz | **Expected** | GPU bottleneck with 370 models |
-| House 1/2 render black | **Fixed** | Replaced with Lake House (PBR) |
-| Robot under terrain | **Fixed** | Spawn Z corrected, Y matched to road |
-| Odom drift | **Mitigated** | GT from dynamic_pose used instead |
-| ORB-SLAM3 tracking loss | **Known** | Monotonic Gazebo textures, 174 re-inits |
+It fails when:
+- terrain is flat (open field = depth image is uniform ~10m plane)
+- no close objects for depth matching
 
-## ORB-SLAM3 Results (previous map)
-
-Tested on 390x390m map with 764 models:
-- **ATE:** 35.4m RMSE (poor -- constant re-initialization)
-- **Map points:** 32-616 per map (insufficient for stable tracking)
-- **Root cause:** Low-texture Gazebo rendering, 9Hz camera
-- See `../01_autonomous_drive/orb_slam3_results.md` for details
-
-Expected improvement with this map:
-- Fewer models -> higher camera Hz (~10-15 vs 5-9)
-- Smaller world -> more features per frame
-- Rocks/barrels near route -> geometric features for tracking
-
-## SLAM Results
-
-Detailed quantitative comparison is in [slam_results.md](slam_results.md).
-
-## ORB-SLAM3 Configs
-
-ORB-SLAM3 configuration files are in the `config/` subdirectory:
-- `gazebo_d435i.yaml` -- camera calibration for simulated D435i
-- `gazebo_aggressive.yaml` -- relaxed thresholds for low-texture environments
-
-## Large Files
-
-`rtabmap.db` (282 MB) is gitignored due to its size. To reproduce it, follow the steps in the Reproducibility section below -- run RTAB-Map live during a drive through the 220x150m world.
-
-## Files
+## Config Files
 
 | File | Description |
 |------|-------------|
-| `slam_results.md` | Detailed SLAM comparison results and analysis |
-| `gt_trajectory.csv` | Ground truth (108,327 points @ 50Hz) |
-| `rtabmap.db` | RTAB-Map database (282 MB, gitignored) |
-| `rtabmap_poses.txt` | RTAB-Map exported poses (TUM format) |
-| `CameraTrajectory.txt` | ORB-SLAM3 output (505 poses) |
-| `trajectory_comparison.png` | Visual comparison plot |
-| `results.json` | Metrics in JSON format |
-| `config/gazebo_d435i.yaml` | ORB-SLAM3 camera config |
-| `config/gazebo_aggressive.yaml` | ORB-SLAM3 aggressive config |
-| `scripts/` | Extraction and evaluation scripts (see Reproducibility) |
+| `config/gazebo_d435i.yaml` | ORB-SLAM3 RGB-D config (fx=fy=382, no distortion) |
+| `config/gazebo_aggressive.yaml` | ORB-SLAM3 with 5000 features, lower FAST thresholds |
+| `config/gazebo_d435i_inertial.yaml` | ORB-SLAM3 RGB-D Inertial with IMU params for Phidgets 1042 |
 
-### Simulation World Files (in parent repo)
-
-| File | Description |
-|------|-------------|
-| `../../worlds/outdoor_terrain.sdf` | World definition (370 models) |
-| `../../worlds/heightmap.png` | 257x257 heightmap, 16-bit |
-| `../../worlds/terrain_texture.png` | 2048x2048 procedural texture |
-| `../../routes/routes.json` | Route waypoints |
-
-## Reproducibility
-
-This world was generated procedurally with `np.random.seed(42)`. The generation script is embedded in the conversation history but not saved as a standalone file.
-
-To regenerate, the key parameters are:
-- World: 220x150m
-- Heightmap: 257x257, Z_SCALE=10, sharp bumps (sigma=0.8-1.5)
-- Road: bezier curve (-105,-8)→(0,6)→(75,-3)
-- Forest: 200+ trees, x=-110..-10, min spacing 3m
-- Village: Lake House models at (65,-12), (85,6), (95,-18)
-- Route clearance: 6m from road center
-
-## Launch
+## Reproduction
 
 ```bash
-# Build
+# 1. launch simulation
 cd /workspace/simulation
-colcon build --symlink-install --packages-select ugv_gazebo ugv_description ugv_navigation
-
-# Launch simulation
 source /opt/ros/jazzy/setup.bash && source install/setup.bash
+export __EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/10_nvidia.json
 ros2 launch ugv_gazebo full_sim.launch.py headless:=true
 
-# Web UI
+# 2. drive and record (in another terminal)
 python3 tools/web_nav.py
-# Open http://localhost:8765
-
-# Record data
 ros2 bag record -o bags/route_1_clean \
   --topics /camera/color/image_raw /camera/depth/image_rect_raw \
   /camera/camera_info /imu/data /odom /tf /clock
+
+# 3. extract frames for ORB-SLAM3
+python3 scripts/01_extract_frames.py
+python3 scripts/02_fix_timestamps.py
+
+# 4. run ORB-SLAM3
+bash scripts/03_run_orb_slam3.sh
+
+# 5. compare results
+python3 scripts/06_compare_all.py
 ```
+
+RTAB-Map runs live during step 2 (add `slam_type:=rtabmap` to launch command). Rosbag replay doesn't work due to TF time conflicts.
+
+## Data Files
+
+| File | Size | Description |
+|------|------|-------------|
+| `gt_trajectory.csv` | 4 MB | ground truth (108k poses) |
+| `rtabmap_poses.txt` | 14 KB | RTAB-Map trajectory (269 keyframes, TUM format) |
+| `CameraTrajectory.txt` | 25 KB | ORB-SLAM3 output (505 poses, mostly stationary) |
+| `trajectory_comparison.png` | 900 KB | GT + RTAB-Map + ORB-SLAM3 overlay plot |
+| `results.json` | 1 KB | ATE/RPE metrics for both algorithms |
+| `rtabmap.db` | 282 MB | RTAB-Map database (gitignored, reproduce via step 2) |
+| `slam_results.md` | — | detailed per-algorithm analysis |
+
+## Next Steps
+
+- test on real Husky A200 with actual D435i camera (real textures should help ORB-SLAM3)
+- try ORB-SLAM3 RGB-D Inertial on real robot where IMU has actual vibrations from motor/terrain
+- compare with LiDAR-based SLAM (already evaluated on NCLT dataset, see `datasets/nclt/`)
+- consider adding photorealistic textures to Gazebo world (PBR materials, high-res ground textures)
