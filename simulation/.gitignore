@@ -1,8 +1,0 @@
-# glb models
-world_scene.glb
-
-# generated map renders
-map_routes.png
-
-# old world backup (large, keep local only)
-src/ugv_gazebo/worlds_backup/
