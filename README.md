@@ -66,8 +66,8 @@ Best result: 271 m route through forest → road → village, 98% path efficienc
 ## Quick Start
 
 ```bash
-git clone https://github.com/vbronetskyi/nclt-slam-project.git
-cd nclt-slam-project
+git clone https://github.com/vbronetskyi/ugv-visual-inertial-slam-navigation.git
+cd ugv-visual-inertial-slam-navigation
 
 # rover pipeline
 cd datasets/rover
@@ -104,7 +104,7 @@ python3 tools/web_nav.py   # open http://localhost:8765
 ### SLAM & Odometry
 
 - **ORB-SLAM3** — Campos et al., 2021, IEEE TRO — [paper](https://arxiv.org/abs/2007.11898) — [code](https://github.com/UZ-SLAMLab/ORB_SLAM3)
-- **RTAB-Map** — Labbé & Michaud, 2019, IJRR — [paper](https://doi.org/10.1177/0278364918770436) — [code](https://github.com/introlab/rtabmap)
+- **RTAB-Map** — Labbé & Michaud, 2019, IJRR — [paper](https://arxiv.org/abs/2403.06341) — [code](https://github.com/introlab/rtabmap)
 - **SLAM Toolbox** — Macenski & Jambrecic, 2021, JOSS — [paper](https://doi.org/10.21105/joss.02783) — [code](https://github.com/SteveMacenski/slam_toolbox)
 - **DROID-SLAM** — Teed & Deng, 2021, NeurIPS — [paper](https://arxiv.org/abs/2108.10869) — [code](https://github.com/princeton-vl/DROID-SLAM)
 - **KISS-ICP** — Vizzo et al., 2023, RAL — [paper](https://arxiv.org/abs/2209.15397) — [code](https://github.com/PRBonn/kiss-icp)
@@ -127,7 +127,7 @@ python3 tools/web_nav.py   # open http://localhost:8765
 
 ### Datasets
 
-- **ROVER** — Ligocki et al., Esslingen University of Applied Sciences — [download](https://huggingface.co/datasets/iis-esslingen/ROVER)
+- **ROVER** — Ligocki et al., 2024 — [paper](https://arxiv.org/abs/2412.02506) — [download](https://huggingface.co/datasets/iis-esslingen/ROVER)
 - **NCLT** — Carlevaris-Bianco et al., 2016, IJRR — [paper](https://doi.org/10.1177/0278364915614638) — [website](https://robots.engin.umich.edu/nclt/)
 - **Oxford RobotCar** — Maddern et al., 2017, IJRR — [paper](https://doi.org/10.1177/0278364916679498) — [website](https://robotcar-dataset.robots.ox.ac.uk)
 - **RobotCar Seasons** (benchmark) — Sattler et al., 2018, CVPR — [paper](https://arxiv.org/abs/1707.09092) — [website](https://www.visuallocalization.net)
