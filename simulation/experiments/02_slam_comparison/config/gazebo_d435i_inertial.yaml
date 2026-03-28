@@ -39,10 +39,10 @@ IMU.T_b_c1: !!opencv-matrix
          0.0, 0.0, 0.0, 1.0]
 
 IMU.InsertKFsWhenLost: 1
-IMU.NoiseGyro: 5e-3
-IMU.NoiseAcc: 1e-2
-IMU.GyroWalk: 1e-4
-IMU.AccWalk: 1e-3
+IMU.NoiseGyro: 0.005
+IMU.NoiseAcc: 0.01
+IMU.GyroWalk: 0.0001
+IMU.AccWalk: 0.0002
 IMU.Frequency: 250.0
 
 # aggressive ORB — more features, lower thresholds for low-texture sim
