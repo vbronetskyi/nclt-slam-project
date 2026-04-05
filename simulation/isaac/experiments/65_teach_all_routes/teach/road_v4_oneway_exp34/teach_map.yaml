@@ -1,0 +1,9 @@
+free_thresh: 0.25
+image: /workspace/simulation/isaac/experiments/65_teach_all_routes/teach/road/teach_map.pgm
+negate: 0
+occupied_thresh: 0.65
+origin:
+- -100.0
+- -15.0
+- 0.0
+resolution: 0.1

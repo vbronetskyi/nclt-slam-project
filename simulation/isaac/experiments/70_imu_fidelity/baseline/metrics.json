@@ -1,0 +1,17 @@
+{
+  "config": "baseline (master, no fixes, warmup=0)",
+  "ob_path_m": 154.5735904943626,
+  "vio_path_m": 154.73593534289782,
+  "vio_scale": 1.0010502754578967,
+  "total_gt_path_m": 321.31386637889347,
+  "ate_preturn_max": 0.8312970276576,
+  "ate_preturn_mean": 0.12416501641472497,
+  "ate_postturn_max": 0.5379534487543134,
+  "ate_postturn_mean": 0.11064051654399568,
+  "ate_full_max": 0.7393438111836175,
+  "ate_full_mean": 0.4902987995779499,
+  "loop_residual_dense_start_to_end_m": 12.493448165092577,
+  "loop_residual_note": "dense CSV starts ~25s after true route start (VIO warmup skipped). Robot actually returned to anchors start: GT end (-91.88,-4.95) vs anchors start (-90.9,-5.5) = ~1m closure. Real loop closure is GOOD.",
+  "aborted": false,
+  "finished": true
+}
