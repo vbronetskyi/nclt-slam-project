@@ -1,0 +1,1 @@
+REC=/root/isaac_tr_datasets/03_south/teach/isaac_slam_1776579789

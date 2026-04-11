@@ -1,0 +1,9 @@
+free_thresh: 0.25
+image: /workspace/simulation/isaac/experiments/66_teach_road_with_accel_noise/teach/road/teach_map.pgm
+negate: 0
+occupied_thresh: 0.65
+origin:
+- -105.0
+- -15.0
+- 0.0
+resolution: 0.1
