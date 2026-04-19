@@ -1,0 +1,37 @@
+patched config + launch with teach_map for 09_se_ne
+=== PHASE 1: Isaac + VIO warmup (GT tf) ===
+merged ['04_nw_se', '05_ne_sw', '06_nw_ne', '07_se_sw', '08_nw_sw', '09_se_ne'] into /tmp/slam_routes.json
+  04_nw_se: 482 wp
+  05_ne_sw: 510 wp
+  06_nw_ne: 493 wp
+  07_se_sw: 502 wp
+  08_nw_sw: 205 wp
+  09_se_ne: 201 wp
+  north: 235 wp
+  north_forest: 197 wp
+  road: 167 wp
+  road_exp13: 163 wp
+  road_exp34_oneway: 139 wp
+  road_nav2: 167 wp
+  road_old_slamjson: 163 wp
+  road_original: 69 wp
+  south: 797 wp
+  south_original: 201 wp
+  south_slam: 244 wp
+  test_drive: 205 wp
+Isaac: 1205015
+VIO: 1205426
+TF(GT warmup): 1205429
+VIO warmup: 200 frames
+=== PHASE 2: tf_slam v55 (NO matcher) + stock Nav2 + supervisor ===
+TF(SLAM v55, no matcher): 1205890
+Nav2(stock): 1205946
+Supervisor: 1205950
+Waiting for stock Nav2 bt_navigator to become active...
+Nav2 ready
+=== PHASE 3: waypoint_follower client ===
+Client: 1206128
+
+PIDs: Isaac=1205015 VIO=1205426 TF=1205890 Nav2=1205946 Sup=1205950 Client=1206128
+OUT: /workspace/simulation/isaac/experiments/74_pure_stock_nav2_baseline/results/run_09
+[INFO] [1776893897.369568510] [waypoint_follower_client]: RESULT: reached 22/35 skipped 13 duration 1048s missed_idx=[nav2_msgs.msg.MissedWaypoint(index=2, goal=geometry_msgs.msg.PoseStamped(header=std_msgs.msg.Header(stamp=builtin_interfaces.msg.Time(sec=0, nanosec=0), frame_id='map'), pose=geometry_msgs.msg.Pose(position=geometry_msgs.msg.Point(x=77.16705322265626, y=-12.133214950561527, z=0.0), orientation=geometry_msgs.msg.Quaternion(x=0.0, y=0.0, z=0.7149227674041733, w=0.6992034300882386))), error_code=208), nav2_msgs.msg.MissedWaypoint(index=3, goal=geometry_msgs.msg.PoseStamped(header=std_msgs.msg.Header(stamp=builtin_interfaces.msg.Time(sec=0, nanosec=0), frame_id='map'), pose=geometry_msgs.msg.Pose(position=geometry_msgs.msg.Point(x=77.07698059082031, y=-8.082206726074215, z=0.0), orientation=geometry_msgs.msg.Quaternion(x=0.0, y=0.0, z=0.7147960191796542, w=0.6993330043440817))), error_code=208), nav2_msgs.msg.MissedWaypoint(index=4, goal=geometry_msgs.msg.PoseStamped(header=std_msgs.msg.Header(stamp=builtin_interfaces.msg.Time(sec=0, nanosec=0), frame_id='map'), pose=geometry_msgs.msg.Pose(position=geometry_msgs.msg.Point(x=76.98816680908205, y=-4.021577835083011, z=0.0), orientation=geometry_msgs.msg.Quaternion(x=0.0, y=0.0, z=0.7047551744503299, w=0.70945059312505))), error_code=208), nav2_msgs.msg.MissedWaypoint(index=25, goal=geometry_msgs.msg.PoseStamped(header=std_msgs.msg.Header(stamp=builtin_interfaces.msg.Time(sec=0, nanosec=0), frame_id='map'), pose=geometry_msgs.msg.Pose(position=geometry_msgs.msg.Point(x=77.12347412109375, y=1.5452089309692383, z=0.0), orientation=geometry_msgs.msg.Quaternion(x=0.0, y=0.0, z=-0.7240790866598916, w=0.6897169537294101))), error_code=208), nav2_msgs.msg.MissedWaypoint(index=26, goal=geometry_msgs.msg.PoseStamped(header=std_msgs.msg.Header(stamp=builtin_interfaces.msg.Time(sec=0, nanosec=0), frame_id='map'), pose=geometry_msgs.msg.Pose(position=geometry_msgs.msg.Point(x=76.92632293701172, y=-2.508190631866455, z=0.0), orientation=geometry_msgs.msg.Quaternion(x=0.0, y=0.0, z=-0.705539626251625, w=0.7086704705211846))), error_code=208), nav2_msgs.msg.MissedWaypoint(index=27, goal=geometry_msgs.msg.PoseStamped(header=std_msgs.msg.Header(stamp=builtin_interfaces.msg.Time(sec=0, nanosec=0), frame_id='map'), pose=geometry_msgs.msg.Pose(position=geometry_msgs.msg.Point(x=76.94403839111328, y=-6.509228229522712, z=0.0), orientation=geometry_msgs.msg.Quaternion(x=0.0, y=0.0, z=-0.7011710085961489, w=0.7129931393107927))), error_code=208), nav2_msgs.msg.MissedWaypoint(index=28, goal=geometry_msgs.msg.PoseStamped(header=std_msgs.msg.Header(stamp=builtin_interfaces.msg.Time(sec=0, nanosec=0), frame_id='map'), pose=geometry_msgs.msg.Pose(position=geometry_msgs.msg.Point(x=77.0110092163086, y=-10.514475822448734, z=0.0), orientation=geometry_msgs.msg.Quaternion(x=0.0, y=0.0, z=-0.7283215227468368, w=0.6852355503793778))), error_code=208), nav2_msgs.msg.MissedWaypoint(index=29, goal=geometry_msgs.msg.PoseStamped(header=std_msgs.msg.Header(stamp=builtin_interfaces.msg.Time(sec=0, nanosec=0), frame_id='map'), pose=geometry_msgs.msg.Pose(position=geometry_msgs.msg.Point(x=76.76506805419922, y=-14.545125007629398, z=0.0), orientation=geometry_msgs.msg.Quaternion(x=0.0, y=0.0, z=-0.8508282050327023, w=0.5254439699157559))), error_code=208), nav2_msgs.msg.MissedWaypoint(index=30, goal=geometry_msgs.msg.PoseStamped(header=std_msgs.msg.Header(stamp=builtin_interfaces.msg.Time(sec=0, nanosec=0), frame_id='map'), pose=geometry_msgs.msg.Pose(position=geometry_msgs.msg.Point(x=74.96249389648438, y=-18.144197463989258, z=0.0), orientation=geometry_msgs.msg.Quaternion(x=0.0, y=0.0, z=-0.9244709053619031, w=0.38125260017387824))), error_code=208), nav2_msgs.msg.MissedWaypoint(index=31, goal=geometry_msgs.msg.PoseStamped(header=std_msgs.msg.Header(stamp=builtin_interfaces.msg.Time(sec=0, nanosec=0), frame_id='map'), pose=geometry_msgs.msg.Pose(position=geometry_msgs.msg.Point(x=72.11188507080078, y=-20.97720718383789, z=0.0), orientation=geometry_msgs.msg.Quaternion(x=0.0, y=0.0, z=-0.8652423510647823, w=0.501353841038331))), error_code=208), nav2_msgs.msg.MissedWaypoint(index=32, goal=geometry_msgs.msg.PoseStamped(header=std_msgs.msg.Header(stamp=builtin_interfaces.msg.Time(sec=0, nanosec=0), frame_id='map'), pose=geometry_msgs.msg.Pose(position=geometry_msgs.msg.Point(x=70.1122055053711, y=-24.465909957885742, z=0.0), orientation=geometry_msgs.msg.Quaternion(x=0.0, y=0.0, z=-0.7716675002380932, w=0.6360261543964151))), error_code=208), nav2_msgs.msg.MissedWaypoint(index=33, goal=geometry_msgs.msg.PoseStamped(header=std_msgs.msg.Header(stamp=builtin_interfaces.msg.Time(sec=0, nanosec=0), frame_id='map'), pose=geometry_msgs.msg.Pose(position=geometry_msgs.msg.Point(x=69.34204864501953, y=-28.425170898437504, z=0.0), orientation=geometry_msgs.msg.Quaternion(x=0.0, y=0.0, z=-0.8794734007595498, w=0.47594804060572854))), error_code=208), nav2_msgs.msg.MissedWaypoint(index=34, goal=geometry_msgs.msg.PoseStamped(header=std_msgs.msg.Header(stamp=builtin_interfaces.msg.Time(sec=0, nanosec=0), frame_id='map'), pose=geometry_msgs.msg.Pose(position=geometry_msgs.msg.Point(x=67.14988708496094, y=-31.780534744262702, z=0.0), orientation=geometry_msgs.msg.Quaternion(x=0.0, y=0.0, z=0.0, w=1.0))), error_code=208)]
