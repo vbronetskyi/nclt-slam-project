@@ -1,5 +1,8 @@
 # Exp 51 v6_imu_noise_fix - match ORB-SLAM3 noise model to measured synth-IMU
 
+*[thesis root](../../../../../README.md) > [simulation](../../../../README.md) > isaac > experiments > 51_hybrid_nav2_pp > v6_imu_noise_fix*
+
+
 ## Change
 
 One-line yaml: [`config/vio_th160.yaml`](config/vio_th160.yaml)

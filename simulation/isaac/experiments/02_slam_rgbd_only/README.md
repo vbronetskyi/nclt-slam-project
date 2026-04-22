@@ -1,5 +1,8 @@
 # exp 02: Nav2 with RGBD-only ORB-SLAM3 (mapping mode)
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 02_slam_rgbd_only*
+
+
 ## Goal
 
 Replace GT localization (exp 01) with real visual SLAM. ORB-SLAM3 RGBD mode runs in **mapping mode** (no atlas), builds a map from scratch during navigation. The relay reads `/tmp/slam_pose.txt` and computes a map->odom correction.

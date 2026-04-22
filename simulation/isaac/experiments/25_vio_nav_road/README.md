@@ -1,5 +1,8 @@
 # exp 25: VIO round-trip limitation + SLAM tracking loss in Nav2 recovery
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 25_vio_nav_road*
+
+
 ## goal
 
 Run Nav2 with obstacles on road route using the "best localization". After exp 23's

@@ -1,5 +1,8 @@
 # exp 49: Nav2 + VIO SLAM Full Round-Trip Navigation
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 49_nav2_vio_roundtrip*
+
+
 ## Коротко
 
 **Робот автономно проїхав повний round-trip 395м використовуючи VIO SLAM для локалізації.**

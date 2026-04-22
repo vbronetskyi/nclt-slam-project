@@ -1,5 +1,8 @@
 # Experiment 01: Route 1 - Forest to Road to Village
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > gazebo > experiments > 01_autonomous_drive*
+
+
 ## Overview
 
 Autonomous drive of Husky A200 UGV through a 390x390m outdoor terrain with 541 objects (trees, buildings, obstacles). The robot drives from the forest (west) through a dirt road to the village (east).

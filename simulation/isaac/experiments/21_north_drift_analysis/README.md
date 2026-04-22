@@ -1,5 +1,8 @@
 # exp 21: North Drift Analysis - zigzag init impact
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 21_north_drift_analysis*
+
+
 ## goal
 
 Investigate why north RGBD-only ATE was 7.79m in exp 20 (vs old 1.93m baseline), and verify VIO failure mode + IMU configuration.

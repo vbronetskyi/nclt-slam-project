@@ -1,5 +1,9 @@
 # UGV Simulation - Clearpath Husky A200
 
+*[thesis root](../../README.md) > [simulation](../README.md) > gazebo*
+
+> Gazebo Harmonic + ROS 2 Jazzy + Nav2 setup for Husky A200.  3 experiments done here before migrating to Isaac Sim for the main thesis work
+
 Autonomous navigation simulation of a Clearpath Husky A200 unmanned ground vehicle in a procedurally generated outdoor environment. Built with ROS 2 Jazzy, Gazebo Harmonic, Nav2, and RTAB-Map for visual SLAM evaluation.
 
 ![World overview](docs/images/world_overview.png)
@@ -91,6 +95,25 @@ gazebo/
 - [Environment](docs/environment.md) - World generation, terrain, object placement, zones
 - [Robot](docs/robot.md) - Husky A200 chassis, sensors, TF frames, differential drive
 - [Simulation](docs/simulation.md) - Launch files, Gazebo-ROS bridge, Nav2 config, known issues
+
+
+
+## Content map
+
+- [`README.md`](README.md) - this file.  gazebo setup + world + experiments overview
+- [`src/ugv_description/`](src/ugv_description/) - URDF + meshes + config
+- [`src/ugv_gazebo/`](src/ugv_gazebo/) - Gazebo world + launch files
+- [`src/ugv_navigation/`](src/ugv_navigation/) - Nav2 config + map
+- [`experiments/`](experiments/) - 3 experiments (00 nav test, 01 autonomous drive, 02 SLAM comparison)
+- [`tools/`](tools/) - web UI, renderers
+- [`scripts/`](scripts/) - world generators, setup helpers
+- [`docs/`](docs/) - images
+
+## Where to read next
+
+- **SLAM comparison headline**: [`experiments/02_slam_comparison/README.md`](experiments/02_slam_comparison/) - RTAB-Map vs ORB-SLAM3 on forest route
+- **autonomous drive demo**: [`experiments/01_autonomous_drive/README.md`](experiments/01_autonomous_drive/)
+- **why we moved to Isaac**: short answer - Gazebo sensor pipeline stalls on large scenes, ORB-SLAM3 fails on procedural textures.  see [`../isaac/README.md`](../isaac/README.md) for what Isaac gave us
 
 ## References
 

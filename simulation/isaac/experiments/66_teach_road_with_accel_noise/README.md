@@ -1,5 +1,8 @@
 # exp 66 - Road teach with accel-noise IMU
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 66_teach_road_with_accel_noise*
+
+
 ## Мета
 Повторити teach-проїзд експ 59 pipeline на full road-roundtrip маршруті
 (333 м, 167 WP), але з модифікованою моделлю IMU з експ 70 Run A:

@@ -1,5 +1,8 @@
 # exp 15: PhysX IMU noise reduction for ORB-SLAM3 VIO
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 15_imu_noise_filter*
+
+
 ## goal
 
 Find a way to get clean IMU readings from PhysX in Isaac Sim so ORB-SLAM3 RGBD-Inertial mode can work. Previous attempts at VIO failed because IMU readings during motion had massive noise from contact solver micro-oscillations.

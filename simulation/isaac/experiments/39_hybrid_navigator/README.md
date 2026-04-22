@@ -1,5 +1,8 @@
 # exp 39: Hybrid Navigator (Gap Nav + A* Planner)
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 39_hybrid_navigator*
+
+
 ## goal
 
 Combine gap navigator speed (0.55 m/s) with A* planner intelligence (routes

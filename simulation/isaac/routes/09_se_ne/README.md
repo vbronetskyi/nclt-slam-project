@@ -1,5 +1,8 @@
 # 09_se_ne - east edge (SE -> NE)
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > routes > 09_se_ne*
+
+
 ## route layout
 - **Spawn**: (65.0, -35.0)
 - Turnaround: (65, 35)

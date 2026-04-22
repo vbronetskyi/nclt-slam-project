@@ -1,5 +1,8 @@
 # exp 59 - WP Look-Ahead Skip + Detour
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 59_wp_lookahead_detour*
+
+
 Continuous teach-and-repeat (T&R) navigation on the south forest roundtrip,
 built on exp 58 base (visual landmark matcher + route sanitizer + ORB-SLAM3
 RGB-D-I VIO) with two changes aimed at obstacle handling:

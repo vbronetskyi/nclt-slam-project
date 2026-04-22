@@ -1,5 +1,8 @@
 # Exp 73 - Stock Nav2 NavigateThroughPoses baseline
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 73_stock_nav2_baseline*
+
+
 Drop-in replacement for our custom `send_goals_hybrid.py + pure_pursuit_path_follower.py + WP lookahead skip + 4-7 m detour ring` with **stock Nav2 behavior** - `NavigateThroughPoses` action + default `navigate_through_poses_w_replanning_and_recovery.xml` behavior tree + stock RPP controller + stock recoveries (spin, back-up, wait, drive-on-heading).
 
 ## Everything held fixed vs routes/\<NN\>/repeat

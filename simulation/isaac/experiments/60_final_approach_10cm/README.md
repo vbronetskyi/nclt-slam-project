@@ -1,5 +1,8 @@
 # Exp 60 - Final Aproach + 10 cm Clearance Spec
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 60_final_approach_10cm*
+
+
 Builds on exp 59. Two classes of problem surfaced there and are
 targeted here:
 

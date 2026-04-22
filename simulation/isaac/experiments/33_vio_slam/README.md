@@ -1,5 +1,8 @@
 # exp 33: VIO SLAM Tuning (ORB-SLAM3 RGBD-Inertial)
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 33_vio_slam*
+
+
 ## Goal
 
 Налаштувати ORB-SLAM3 VIO (RGBD + IMU) для south forest route і порівняти

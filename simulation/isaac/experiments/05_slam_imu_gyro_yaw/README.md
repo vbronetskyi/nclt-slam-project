@@ -1,5 +1,8 @@
 # exp 05: SLAM + IMU gyroscope yaw fusion (without VIO)
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 05_slam_imu_gyro_yaw*
+
+
 ## Goal
 
 Use the IMU gyroscope (which is cheap and has very low noise on the z axis) to provide a stable yaw reference. SLAM RGBD-only handles position; IMU handles yaw. **No ORB-SLAM3 VIO** - gyro integrated directly in the relay.

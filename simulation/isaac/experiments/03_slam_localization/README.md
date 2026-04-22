@@ -1,5 +1,8 @@
 # exp 03: Nav2 with ORB-SLAM3 localization mode (pre-built atlas)
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 03_slam_localization*
+
+
 ## Goal
 
 Improve over exp 02 (mapping mode, drift) by giving SLAM a pre-built reference map. ORB-SLAM3 localization mode loads an `.osa` atlas built offline from a clean mapping run on the same route.

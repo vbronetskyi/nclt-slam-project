@@ -1,5 +1,8 @@
 # exp 37: A* Local Planner on Obstacle Grid
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 37_grid_planner*
+
+
 ## Goal
 
 Replace reactive gap navigation with A* path planning on the ego-centric

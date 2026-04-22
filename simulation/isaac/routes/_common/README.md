@@ -1,5 +1,8 @@
 # _common - shared scripts & artifacts across routes
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > routes > _common*
+
+
 ## scripts/
 - `extract_scene_obstacles.py` - reads `/opt/husky_forest_scene.usd`
   directly and dumps every collision prim (ShrubCol, TreeCollision,

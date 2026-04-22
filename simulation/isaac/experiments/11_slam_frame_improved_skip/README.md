@@ -1,5 +1,8 @@
 # exp 11: SLAM frame + improved waypoint skip logic
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 11_slam_frame_improved_skip*
+
+
 ## goal
 
 Fix cascading waypoint skip from exp 10. Add safeguards to prevent the skip logic from accidentally finishing the route prematurely.

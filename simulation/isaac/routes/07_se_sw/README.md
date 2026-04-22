@@ -1,5 +1,8 @@
 # 07_se_sw - south edge (SE -> SW)
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > routes > 07_se_sw*
+
+
 ## route layout
 - **Spawn**: (65.0, -35.0)
 - **Turnaround**: (-90, -35)

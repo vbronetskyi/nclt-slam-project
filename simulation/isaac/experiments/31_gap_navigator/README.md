@@ -1,5 +1,8 @@
 # exp 31: Gap-Based Navigator with Forest Thinning
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 31_gap_navigator*
+
+
 ## Goal
 
 Замінити VFH-секторний підхід (exp 30) на gap-based навігатор який знаходить

@@ -1,5 +1,8 @@
 # exp 57 - visual T&R v3 (depth cross-correlation channel - negative result)
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 57_depth_correlation*
+
+
 ## Goal
 
 Add a second anchor channel (depth-based cross-correlation against the

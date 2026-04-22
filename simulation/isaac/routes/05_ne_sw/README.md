@@ -1,5 +1,8 @@
 # 05_ne_sw - NE -> SW diagonal
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > routes > 05_ne_sw*
+
+
 ## Route layout
 - Spawn: (65.0, 35.0)
 - **Turnaround**: (-90, -35)

@@ -1,5 +1,8 @@
 # exp 75 - Gap Navigator driven by teach waypoints
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 75_gap_navigator_teach_wp*
+
+
 Reactive depth-based navigator adapted from exp 31/35, driven by a teach
 trajectory as its goal sequence - no Nav2, no global planner, no teach
 occupancy map.

@@ -1,5 +1,8 @@
 # Exp 63 - Global Relocalisation Fallback
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 63_global_reloc*
+
+
 Target the drift root cause identified accross exps 60-62:
 
 - Once VIO drifts > 20 m, the matcher's local pose-filter search

@@ -1,5 +1,8 @@
 # exp 67 - Road repeat with accel-noise IMU
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 67_repeat_road_no_obstacles_accel_noise*
+
+
 ## Мета
 Запустити повний exp 59 repeat pipeline на road-маршруті,
 використовуючи teach-артефакти з exp 66 (teach_map + landmarks) і

@@ -1,5 +1,8 @@
 # Exp 76 - Our full T&R pipeline, but ORB-SLAM3 in pure RGB-D (no IMU)
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 76_rgbd_no_imu_ours*
+
+
 Same as our per-route `routes/09_se_ne/repeat` pipeline, but ORB-SLAM3
 runs in **RGB-D only** mode (no IMU inertial tracking).  Everything else
 (matcher, tf_relay, Nav2 planner + our send_goals_hybrid + pure_pursuit,

@@ -1,5 +1,8 @@
 # 03_south - south roundtrip
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > routes > 03_south*
+
+
 ## Route layout
 
 - Spawn: (-94.9, -6.0)

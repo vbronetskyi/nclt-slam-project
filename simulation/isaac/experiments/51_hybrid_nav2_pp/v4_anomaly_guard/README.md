@@ -1,5 +1,8 @@
 # Exp 51 v4_anomaly_guard - detect SLAM position jumps in tf_relay
 
+*[thesis root](../../../../../README.md) > [simulation](../../../../README.md) > isaac > experiments > 51_hybrid_nav2_pp > v4_anomaly_guard*
+
+
 ## hypothesis
 
 v3 showed a "39 m VIO jump" at Frame 2100 (t=215 s). Detecting single-tick

@@ -1,5 +1,8 @@
 # 02_north_forest - deep forest roundtrip
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > routes > 02_north_forest*
+
+
 ## Route layout
 
 - **Spawn**: (-84.4, 4.5)

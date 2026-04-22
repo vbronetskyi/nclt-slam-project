@@ -1,5 +1,8 @@
 # Exp 74 - Pure stock Nav2 baseline (no matcher, supervisor kept)
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 74_pure_stock_nav2_baseline*
+
+
 Compared to exp 73 (navigation-logic ablation), this one **removes the
 visual_landmark_matcher** - the key anchor-correction contribution of our
 T&R pipeline. VIO is left to drift uncorrected.

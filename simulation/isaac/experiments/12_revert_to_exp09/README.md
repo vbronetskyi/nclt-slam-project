@@ -1,5 +1,8 @@
 # exp 12: Revert to exp 09 config (reproducibility check)
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 12_revert_to_exp09*
+
+
 ## goal
 
 Reproduce exp 09's 141 m result with the original (simple) waypoint logic, after exp 10-11 made things worse with aggressive skip rules.

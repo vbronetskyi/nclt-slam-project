@@ -1,5 +1,9 @@
 # 4Seasons pipeline
 
+*[thesis root](../../README.md) > 4seasons*
+
+> **0.93 m ATE RMSE on office_loop_1** - best single-sequence result in the whole project, from real 2000 Hz IMU + 30 cm stereo baseline
+
 evaluation of ORB-SLAM3 Stereo-Inertial on the 4Seasons dataset from TU Munich.
 first dataset in this project with a real high-rate IMU, so it's where
 visual-inertial SLAM actually makes sense.
@@ -57,6 +61,24 @@ python3 scripts/run_4seasons_hloc.py
   loops available in the dataset for cross-season eval later
 - the hloc self-test has low accuracy not because hloc is bad, but because
   the reference SfM is sparse. denser references would help
+
+
+
+## Content map
+
+- [`README.md`](README.md) - this file.  dataset overview + pipeline plan + how to run
+- [`CHANGELOG.md`](CHANGELOG.md) - experiment log with numbers per experiment (0.9, 1.0)
+- [`EXPERIMENTS_4SEASONS.md`](EXPERIMENTS_4SEASONS.md) - detailed per-experiment writeup
+- [`configs/`](configs/) - ORB-SLAM3 yaml configs
+- [`scripts/`](scripts/) - converter + evaluator + hloc self-test
+- [`results/`](results/) - per-run trajectory + plots
+
+## Where to read next
+
+- **headline numbers**: `CHANGELOG.md` experiment 0.9
+- **why 4Seasons after RobotCar**: the RobotCar section in [`../robotcar/README.md`](../robotcar/README.md) explains why pseudo-IMU doesn't work, which is what motivates 4Seasons
+- **the EuRoC conversion**: [`scripts/convert_4seasons_to_euroc.py`](scripts/convert_4seasons_to_euroc.py) has inline notes
+- **how this feeds into the thesis story**: [`../../docs/thesis_reading_order.md`](../../docs/thesis_reading_order.md)
 
 ## References
 

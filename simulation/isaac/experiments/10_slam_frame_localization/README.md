@@ -1,5 +1,8 @@
 # exp 10: SLAM frame + localization mode (failed combination)
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 10_slam_frame_localization*
+
+
 ## goal
 
 Combine the two best approaches: SLAM frame navigation (exp 09, 141 m) + atlas localization (exp 03). Hypothesis: localization mode -> drift pattern matches the atlas -> waypoints from the atlas align better with live pose.

@@ -1,5 +1,8 @@
 # exp 01: Nav2 with GT localization (baseline)
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 01_gt_navigation*
+
+
 ## Goal
 
 Establish a baseline for Nav2-based navigation in Isaac Sim using ground-truth (GT) localization. This is the upper bound - anything that uses real SLAM should be compared against this.

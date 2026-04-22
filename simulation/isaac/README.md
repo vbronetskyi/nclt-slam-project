@@ -1,5 +1,9 @@
 # isaac sim - husky a200 outdoor simulation
 
+*[thesis root](../../README.md) > [simulation](../README.md) > isaac*
+
+> Isaac Sim 6 + Husky A200 + D435i + Phidgets-class IMU.  9-route teach-and-repeat campaign, **~1850 m driven across all repeats**.  our T&R pipeline beats stock Nav2 on the same routes
+
 nvidia isaac sim setup for the clearpath husky a200 with d435i rgb-d camera in
 a procedural forest environment. the robot drives via PhysX wheel-terrain
 interaction and records RGB-D + IMU data for ORB-SLAM3 evaluation.
@@ -302,3 +306,30 @@ meshes that have unnamed materials. see `material_cache.py` line 31 and
 - [ORB-SLAM3](https://github.com/UZ-SLAMLab/ORB_SLAM3)
 - [OpenUSD](https://openusd.org/release/index.html)
 - [PhysX](https://developer.nvidia.com/physx-sdk)
+
+## Content map
+
+- [`README.md`](README.md) - this file.  setup + development history + quick start
+- [`experiments/`](experiments/) - 79 experiments across 2 months, indexed in [`../../docs/experiment_index.md`](../../docs/experiment_index.md)
+- [`routes/`](routes/) - 9 T&R routes (01_road through 09_se_ne), each with teach + repeat, see [`routes/README.md`](routes/README.md) for the campaign overview
+- [`scripts/`](scripts/) - the pipeline code
+  - [`common/`](scripts/common/) - our final T&R pipeline (tf_relay, matcher, recorder, PP follower, supervisor, plan logger, drift monitor)
+  - [`nav_our_custom/`](scripts/nav_our_custom/) - Nav2 patches (send_goals_hybrid, launch template)
+  - [`nav_stock_nav2/`](scripts/nav_stock_nav2/) - stock Nav2 client for baseline
+  - [`nav_rgbd_no_imu/`](scripts/nav_rgbd_no_imu/) - RGB-D-only ablation
+  - [`isaac_sim/`](scripts/isaac_sim/) - scene builders + URDF conversion
+  - [`analysis/`](scripts/analysis/) - post-hoc metrics + plot generators
+  - [`_archive/`](scripts/_archive/) - old versions kept for history
+- [`assets/`](assets/) - URDF + USD + meshes (mostly vendored)
+- [`config/`](config/) - Nav2 launch + params + behaviour tree
+- [`tools/`](tools/) - misc helpers
+- [`results/final/`](results/final/) - thesis figures (scene layout, route coverage map)
+- [`analysis/`](analysis/) - experiment ranking data
+
+## Where to read next
+
+- **main thesis numbers (9-route campaign)**: [`routes/README.md`](routes/README.md)
+- **our pipeline vs baselines (exp 74 stock Nav2, exp 76 RGB-D-no-IMU)**: [`experiments/74_pure_stock_nav2_baseline/README.md`](experiments/74_pure_stock_nav2_baseline/) and [`experiments/76_rgbd_no_imu_ours/README.md`](experiments/76_rgbd_no_imu_ours/)
+- **full journey across 79 experiments**: [`../../docs/experiment_index.md`](../../docs/experiment_index.md)
+- **the core algorithm (VIO + anchor fusion)**: [`scripts/common/tf_wall_clock_relay_v55.py`](scripts/common/tf_wall_clock_relay_v55.py) + [`visual_landmark_matcher.py`](scripts/common/visual_landmark_matcher.py)
+- **thesis-grade figures**: [`results/final/`](results/final/)

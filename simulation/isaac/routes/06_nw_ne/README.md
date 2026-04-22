@@ -1,5 +1,8 @@
 # 06_nw_ne - north edge (NW -> NE)
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > routes > 06_nw_ne*
+
+
 ## Route layout
 - **Spawn**: (-90.0, 35.0)
 - **Turnaround**: (65, 35)

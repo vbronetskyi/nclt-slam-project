@@ -1,5 +1,8 @@
 # exp 16: VIO mapping with filter=60 IMU - FAILED (different bug)
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 16_vio_filter60_attempt*
+
+
 ## Goal
 
 Test ORB-SLAM3 RGBD-Inertial mapping with the cleaner IMU from exp 15

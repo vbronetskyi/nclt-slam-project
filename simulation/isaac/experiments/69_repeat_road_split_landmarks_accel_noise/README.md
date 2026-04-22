@@ -1,5 +1,8 @@
 # exp 69 - Road repeat, split outbound/return landmarks + accel-noise IMU
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 69_repeat_road_split_landmarks_accel_noise*
+
+
 ## Мета
 Усунути 14 m anchor-misfire spike, виявлений у exp 68.
 

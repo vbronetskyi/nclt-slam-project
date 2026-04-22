@@ -1,5 +1,8 @@
 # Exp 41: Trajectory Following with Nav2 - Real Obstacle Avoidance
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 41_trajectory_follow*
+
+
 ## result
 
 **42/43 waypoints REACHED, 1 SKIPPED. 98% route completion with solid barriers.**

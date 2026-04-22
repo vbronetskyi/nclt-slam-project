@@ -1,5 +1,8 @@
 # 06_nw_ne - teach
 
+*[thesis root](../../../../../README.md) > [simulation](../../../../README.md) > isaac > routes > 06_nw_ne > teach*
+
+
 Corner-to-corner roundtrip teach: top edge LT->RT
 Route: (-90, +35) -> (+65, +35), smooth hairpin turnaround (r=1.5 m, 180° arc + parallel-offset
 blended return of 10 pts), mirror outbound for the return leg.

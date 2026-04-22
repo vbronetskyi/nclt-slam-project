@@ -1,85 +1,130 @@
-# Visual-Inertial SLAM for outdoor UGV
+# Visual-Inertial SLAM and Navigation for outdoor UGV
 
-bachelor thesis. goal is visual-inertial point-to-point navigation with obstacle
-avoidance for an autonomous ground robot (Clearpath Husky A200 style) operating
-in outdoor environments, using an RGB-D camera and an IMU.
+bachelor thesis.  goal is visual-inertial point-to-point navigation with
+obstacle avoidance for an autonomous ground robot (Clearpath Husky A200 style)
+operating in outdoor environments, using an RGB-D camera and an IMU
 
-current phase is benchmarking existing visual SLAM and odometry methods on public
-outdoor datasets, to understand what works and where things break before
-building a navigation stack on top. simulation of the Husky and the navigation
-pipeline will get added here later.
+the project has two halves. first half is benchmarking existing visual SLAM
+methods on four public outdoor datasets - to figure out what works, where it
+breaks, and what the real robot pipeline needs to look like.  second half is
+building that pipeline in Isaac Sim and running a teach-and-repeat campaign
+across 9 routes, with stock-Nav2 and RGB-D-only ablations for comparison
 
-## What's here
+![all 9 T&R routes on the simulation scene](simulation/isaac/results/final/18_scene_obstacles_routes.png)
+
+## Results summary (headline only)
+
+| Pipeline | best result | where to read more |
+|---|---|---|
+| [**NCLT**](datasets/nclt/) | LiDAR ICP + GPS LC - 30.2 m winter, 151-188 m other seasons | [`datasets/nclt/CHANGELOG.md`](datasets/nclt/CHANGELOG.md), [`reports/orbslam3_nclt_report.md`](datasets/nclt/reports/orbslam3_nclt_report.md) |
+| [**NCLT Kaggle**](datasets/nclt_kaggle/) | MinkLoc3D scaffold, training pending | [`README.md`](datasets/nclt_kaggle/README.md), [`PROJECT_CONTEXT.md`](datasets/nclt_kaggle/PROJECT_CONTEXT.md) |
+| [**ROVER**](datasets/rover/) | ORB-SLAM3 RGB-D - **0.37 m** best (GL autumn), 11/15 success | [`CHANGELOG.md`](datasets/rover/CHANGELOG.md), [`EXPERIMENTS_ROVER.md`](datasets/rover/EXPERIMENTS_ROVER.md), [`REPORT_experiment_1.1.md`](datasets/rover/REPORT_experiment_1.1.md) |
+| [**RobotCar**](datasets/robotcar/) | ORB-SLAM3 Stereo - 3.91 m ATE RMSE, 72.7% tracking | [`CHANGELOG.md`](datasets/robotcar/CHANGELOG.md), [`EXPERIMENTS_ROBOTCAR.md`](datasets/robotcar/EXPERIMENTS_ROBOTCAR.md) |
+| [**4Seasons**](datasets/4seasons/) | ORB-SLAM3 Stereo-Inertial - **0.93 m** ATE RMSE, 99.99% tracking | [`CHANGELOG.md`](datasets/4seasons/CHANGELOG.md), [`EXPERIMENTS_4SEASONS.md`](datasets/4seasons/EXPERIMENTS_4SEASONS.md) |
+| [**Gazebo sim**](simulation/gazebo/) | RTAB-Map RGB-D 9.23 m on forest, ORB-SLAM3 failed | [`experiments/`](simulation/gazebo/experiments/) |
+| [**Isaac sim T&R**](simulation/isaac/) | our pipeline **100%** on route 09 vs 63% stock Nav2 | [`routes/README.md`](simulation/isaac/routes/README.md), [`results/final/`](simulation/isaac/results/final/) |
+
+the 100 % headline is a single route (09 SE-NE, 36/36 WPs), not the whole
+campaign.  cross-route numbers are in [`simulation/isaac/routes/README.md`](simulation/isaac/routes/README.md)
+
+## Repository layout
 
 ```
 datasets/
-  nclt/           LiDAR ICP + ORB-SLAM3 + DROID-SLAM on NCLT (Segway + Velodyne + Ladybug3)
-  nclt_kaggle/    MinkLoc3D place recognition on Kaggle-hosted NCLT subset
-  rover/          ORB-SLAM3 (RGB-D, stereo, stereo-inertial) on the ROVER UGV dataset
-  robotcar/       hloc + ORB-SLAM3 Stereo on Oxford RobotCar (scaffold; experiments incoming)
-  4seasons/       ORB-SLAM3 Stereo-Inertial on TU Munich 4Seasons (scaffold; experiments incoming)
+  nclt/           LiDAR ICP + ORB-SLAM3 + DROID-SLAM on NCLT campus dataset
+  nclt_kaggle/    MinkLoc3D place recognition scaffold (Kaggle-hosted NCLT subset)
+  rover/          ORB-SLAM3 on ROVER UGV (RGB-D + stereo fisheye + SI)
+  robotcar/       hloc + ORB-SLAM3 Stereo on Oxford RobotCar
+  4seasons/       ORB-SLAM3 Stereo-Inertial on TU Munich 4Seasons
+simulation/
+  gazebo/         Gazebo Harmonic + Nav2 baselines
+  isaac/          Isaac Sim T&R campaign - 9 routes, 3 methods, full pipeline
 ```
 
-each dataset subdir is a self-contained pipeline with its own README, configs,
-scripts and (as results arrive) a CHANGELOG / EXPERIMENTS writeup.
+each subdir is a self-contained pipeline with its own README, CHANGELOG / writeup,
+configs, scripts, results.  see the pipeline READMEs above for the full story
 
-## Why these five
+## Where to read next
 
-- **NCLT** - long-term 4-season outdoor dataset with a Segway + Velodyne HDL-32E,
-  Ladybug3 spherical camera, MS25 IMU, RTK GPS. good for LiDAR odometry baselines
-  and for seeing how much seasonal change breaks visual SLAM
-- **NCLT (Kaggle subset)** - pre-split hackathon version of NCLT used for training
-  a compact 3D place-recognition descriptor (MinkLoc3D) for later loop closure
-- **ROVER** - small ground UGV with Intel RealSense D435i + T265, closest public
-  dataset to the Husky-style outdoor robot i'm targeting, with day/night/season
-  variants
-- **Oxford RobotCar** - 10 km urban route across 100+ sessions, used for the
-  RobotCar Seasons visual localization benchmark (hloc) and for ORB-SLAM3 Stereo
-  on the raw stereo stream
-- **4Seasons** - TU Munich stereo + real 2000 Hz IMU. first dataset in this
-  project where ORB-SLAM3 Stereo-Inertial has all the inputs it actually needs
+depending on what you want to know
+
+- **just tell me what works on my UGV**: [`simulation/isaac/routes/README.md`](simulation/isaac/routes/README.md)
+  is the main campaign + 9-route table.  the pipeline scripts live in
+  [`simulation/isaac/scripts/common/`](simulation/isaac/scripts/common/) and
+  [`simulation/isaac/scripts/nav_our_custom/`](simulation/isaac/scripts/nav_our_custom/)
+
+- **thesis defence / full argument**: start with [`docs/thesis_reading_order.md`](docs/thesis_reading_order.md)
+  which walks through the readmes in the order the thesis tells its story
+
+- **reproducing a result**: each pipeline README has a `How to run` block
+  with exact commands.  raw data needs to be downloaded separately (see each
+  dataset's setup section)
+
+- **per-experiment details**: Isaac has 79 experiments in
+  [`simulation/isaac/experiments/`](simulation/isaac/experiments/), indexed in
+  [`docs/experiment_index.md`](docs/experiment_index.md) with 1-line summaries
+
+- **code-only look**: [`simulation/isaac/scripts/common/tf_wall_clock_relay_v55.py`](simulation/isaac/scripts/common/tf_wall_clock_relay_v55.py)
+  and [`visual_landmark_matcher.py`](simulation/isaac/scripts/common/visual_landmark_matcher.py)
+  are the core anchor-fusion algorithm.  they have changelogs in the
+  docstrings covering exps 51-64
 
 ## Setup
 
 - Ubuntu 24.04, Python 3.10+
-- NVIDIA GPU + CUDA 12.x (for hloc / deep SLAM methods)
-- ORB-SLAM3 built from source in `third_party/ORB_SLAM3/` (clone separately, not
-  tracked here)
-- per-dataset dependencies live in each pipeline's README
+- NVIDIA GPU + CUDA 12.x for hloc / deep SLAM / Isaac Sim
+- ORB-SLAM3 built from source in `third_party/ORB_SLAM3/` (clone separately,
+  not tracked here - see each dataset's setup for the commit used)
+- Isaac Sim 6.0.0 via pip (Python 3.12 required for this version)
+- ROS 2 Jazzy + Gazebo Harmonic for the Gazebo side
+
+per-dataset dependencies live in each pipeline's README
+
+## Thesis story at a glance
+
+the reason the project started with datasets and ended with Isaac Sim is
+that I didn't trust the Husky simulator at first.  the datasets gave
+calibrated ground truth and let me see what methods do on real fisheye
+cameras with real IMU noise.  once RGB-D + IMU was clearly the only
+combination that worked (ROVER 0.37 m on D435i, 4Seasons 0.93 m with real
+IMU, but RobotCar no-raw-IMU fails), the sim story became clear: build
+Isaac Sim, drive husky with D435i + phidgets-class IMU, and prove that a
+teach-and-repeat pipeline can beat stock Nav2.  the 9-route campaign is that
+proof
 
 ## References
 
 ### SLAM and odometry
 
 - **ORB-SLAM3** - Campos et al., 2021, IEEE TRO - [paper](https://arxiv.org/abs/2007.11898) - [code](https://github.com/UZ-SLAMLab/ORB_SLAM3)
-- **DROID-SLAM** - Teed & Deng, 2021, NeurIPS - [paper](https://arxiv.org/abs/2108.10869) - [code](https://github.com/princeton-vl/DROID-SLAM)
-- **DPVO / DPV-SLAM** - Teed et al., 2023 - [code](https://github.com/princeton-vl/DPVO)
+- **DROID-SLAM / DPVO / DPV-SLAM** - Teed et al., 2021-2023 - [DROID](https://github.com/princeton-vl/DROID-SLAM) - [DPVO](https://github.com/princeton-vl/DPVO)
+- **RTAB-Map** - Labbe & Michaud, 2019, IJRR - [code](https://github.com/introlab/rtabmap)
 - **KISS-ICP** - Vizzo et al., 2023, RAL - [paper](https://arxiv.org/abs/2209.15397) - [code](https://github.com/PRBonn/kiss-icp)
 
-### Visual localization
+### Visual localization / place recognition
 
 - **hloc** - Sarlin et al., 2019, CVPR - [code](https://github.com/cvg/Hierarchical-Localization)
-- **SuperPoint** - DeTone et al., 2018 - [paper](https://arxiv.org/abs/1712.07629)
-- **SuperGlue / LightGlue** - Sarlin et al. 2020 / Lindenberger et al. 2023 - [LG code](https://github.com/cvg/LightGlue)
+- **SuperPoint / SuperGlue / LightGlue** - DeTone 2018 / Sarlin 2020 / Lindenberger 2023
 - **ALIKED** - Zhao et al., 2023 - [paper](https://arxiv.org/abs/2304.03608)
-- **NetVLAD / OpenIBL** - global descriptors for place-based retrieval
-
-### Place recognition
-
 - **MinkLoc3D** - Komorowski, 2021, WACV - [paper](https://arxiv.org/abs/2011.04530) - [code](https://github.com/jac99/MinkLoc3D)
-- **MinkowskiEngine** - Choy et al., 2019 - [code](https://github.com/NVIDIA/MinkowskiEngine)
 
 ### Datasets
 
-- **NCLT** - Carlevaris-Bianco et al., 2016, IJRR - [paper](https://doi.org/10.1177/0278364915614638) - [website](https://robots.engin.umich.edu/nclt/)
-- **ROVER** - Ligocki et al., 2024 - [paper](https://arxiv.org/abs/2412.02506) - [download](https://huggingface.co/datasets/iis-esslingen/ROVER)
-- **Oxford RobotCar** - Maddern et al., 2017, IJRR - [paper](https://doi.org/10.1177/0278364916679498) - [website](https://robotcar-dataset.robots.ox.ac.uk)
-- **RobotCar Seasons** (benchmark) - Sattler et al., 2018, CVPR - [paper](https://arxiv.org/abs/1707.09092) - [website](https://www.visuallocalization.net)
-- **4Seasons** - Wenzel et al., 2020, DAGM GCPR - [paper](https://arxiv.org/abs/2009.06364) - [website](https://www.4seasons-dataset.com)
+- **NCLT** - Carlevaris-Bianco et al., 2016, IJRR - [website](https://robots.engin.umich.edu/nclt/)
+- **ROVER** - Ligocki et al., 2024 - [HuggingFace](https://huggingface.co/datasets/iis-esslingen/ROVER)
+- **Oxford RobotCar / Seasons** - Maddern 2017 / Sattler 2018 - [website](https://robotcar-dataset.robots.ox.ac.uk)
+- **4Seasons** - Wenzel et al., 2020, DAGM GCPR - [website](https://www.4seasons-dataset.com)
 
-### Tools
+### Nav stack + tooling
 
-- **evo** - trajectory evaluation - [code](https://github.com/MichaelGrupp/evo)
-- **Open3D** - Zhou et al., 2018 - [code](https://github.com/isl-org/Open3D)
-- **OpenCV** - [website](https://opencv.org/)
-- **COLMAP** - Schönberger & Frahm, 2016 - [code](https://github.com/colmap/colmap)
+- **Nav2** - Macenski et al., 2020 - [code](https://github.com/ros-navigation/navigation2)
+- **ROS 2 Jazzy** - [docs](https://docs.ros.org/en/jazzy/)
+- **Isaac Sim 6.0** - NVIDIA - [docs](https://docs.isaacsim.omniverse.nvidia.com/)
+- **Gazebo Harmonic** - [website](https://gazebosim.org/)
+- **evo** / **Open3D** / **OpenCV** / **COLMAP** - [evo](https://github.com/MichaelGrupp/evo), [Open3D](https://github.com/isl-org/Open3D), [OpenCV](https://opencv.org/), [COLMAP](https://github.com/colmap/colmap)
+
+### Hardware
+
+- **Clearpath Husky A200** - [product page](https://clearpathrobotics.com/husky-unmanned-ground-vehicle-robot/)
+- **Intel RealSense D435i / T265** - [D435i](https://www.intelrealsense.com/depth-camera-d435i/) / [T265](https://www.intelrealsense.com/tracking-camera-t265/)
+- **Phidgets Spatial 1042** IMU - [product page](https://www.phidgets.com/?prodid=32)

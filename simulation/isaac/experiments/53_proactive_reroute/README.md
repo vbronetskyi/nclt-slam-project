@@ -1,5 +1,8 @@
 # exp 53 - proactive re-route + proximity speed limit
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 53_proactive_reroute*
+
+
 ## Motivation
 
 Exp 52 run 4 failed in a new way: robot drove into the on-route

@@ -1,5 +1,8 @@
 # Experiment 02: SLAM Comparison - RTAB-Map vs ORB-SLAM3
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > gazebo > experiments > 02_slam_comparison*
+
+
 Compared two Visual SLAM algorithms on the same 216m route through a procedurally generated Gazebo world. The robot was driven manually via a web UI, recording RGB-D + IMU data for offline evaluation.
 
 ![Trajectory comparison](trajectory_comparison.png)

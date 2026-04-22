@@ -1,5 +1,8 @@
 # exp 22: VIO Warmup for Forest Routes
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 22_warmup_for_vio*
+
+
 ## Goal
 
 After confirming VIO offline works on road (exp 18: ATE 0.116m), but fails on forest routes (exp 20: 60+ resets), try prepending a warmup motion to forest recordings so ORB-SLAM3 IMU init has time to converge before sharp forest turns.

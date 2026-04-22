@@ -1,5 +1,8 @@
 # exp 40: Teach-and-Repeat + Nav2
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 40_tr_nav2_hybrid*
+
+
 ## goal
 
 Single destination goal (70.4, -2.3) sent to Nav2. Nav2 plans on blank static

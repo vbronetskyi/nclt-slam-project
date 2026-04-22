@@ -1,5 +1,8 @@
 # Exp 51 v2_imu_fix - Standstill-aware synthetic IMU
 
+*[thesis root](../../../../../README.md) > [simulation](../../../../README.md) > isaac > experiments > 51_hybrid_nav2_pp > v2_imu_fix*
+
+
 Fix the synthetic-IMU phantom-acceleration bug identified in exp 51 v1 analysis.
 
 ## hypothesis

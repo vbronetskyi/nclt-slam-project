@@ -1,5 +1,8 @@
 # exp 07: SLAM + adaptive drift monitor (best SLAM result before VIO)
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 07_slam_adaptive_drift*
+
+
 ## Goal
 
 Fix exp 06's drift monitor oscillation with **adaptive thresholds and forward-only waypoints**.

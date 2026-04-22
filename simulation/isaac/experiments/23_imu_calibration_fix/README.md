@@ -1,5 +1,8 @@
 # exp 23: IMU calibration fix - VIO finally works on road (ATE 0.089m)
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 23_imu_calibration_fix*
+
+
 ## goal
 
 Find and fix all IMU/Tbc calibration errors that were breaking VIO on forest routes (and silently degrading it on road).

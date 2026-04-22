@@ -1,5 +1,8 @@
 # Exp 55 - visual teach-and-repeat landmark matching for drift-free VIO
 
+*[thesis root](../../../../../README.md) > [simulation](../../../../README.md) > isaac > routes > 03_south > teach*
+
+
 ## Problem (from exp 53 analysis)
 
 Exp 53 run 2 reached 37/94 WPs, 539 m before SLAM drift ran away (32 m err

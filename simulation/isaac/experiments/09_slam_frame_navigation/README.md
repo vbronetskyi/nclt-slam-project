@@ -1,5 +1,8 @@
 # exp 09: SLAM Frame Navigation - paradigm shift
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 09_slam_frame_navigation*
+
+
 ## Goal
 
 Stop fighting SLAM drift in world frame. Instead, **navigate entirely in SLAM coordinate frame**: waypoints and robot pose are both in the same drifted frame, so drift cancels out.

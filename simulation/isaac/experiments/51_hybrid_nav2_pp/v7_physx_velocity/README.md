@@ -1,5 +1,8 @@
 # Exp 51 v7_physx_velocity - synth IMU from PhysX velocity API
 
+*[thesis root](../../../../../README.md) > [simulation](../../../../README.md) > isaac > experiments > 51_hybrid_nav2_pp > v7_physx_velocity*
+
+
 ## Hypothesis
 
 v5 diagnostic showed synth IMU ax std 3.5 m/s² (measured) vs yaml 0.02 spec

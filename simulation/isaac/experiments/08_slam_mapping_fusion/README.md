@@ -1,5 +1,8 @@
 # exp 08: SLAM mapping mode + full sensor fusion
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 08_slam_mapping_fusion*
+
+
 ## goal
 
 Combine three signals: SLAM position + wheel odometry + IMU gyro compass. Use mapping mode instead of localization to avoid the "unknown features after obstacle bypass" problem from exp 03.

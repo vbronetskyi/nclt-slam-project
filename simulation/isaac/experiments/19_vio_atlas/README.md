@@ -1,5 +1,8 @@
 # exp 19: VIO Atlas - partial success
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 19_vio_atlas*
+
+
 ## goal
 
 Build a reusable VIO atlas offline, then use it in live localization mode for navigation. This would let us:

@@ -1,5 +1,8 @@
 # exp 04: SLAM + cmd_vel odometry complementary filter
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 04_slam_complementary_filter*
+
+
 ## Goal
 
 Reduce SLAM drift between updates by fusing it with `cmd_vel` integration (dead reckoning). Idea: SLAM corrects long-term, odometry smooths short-term frame-to-frame jitter.

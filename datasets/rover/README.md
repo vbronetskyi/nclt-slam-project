@@ -1,5 +1,9 @@
 # ROVER Pipeline - ORB-SLAM3 Baseline Evaluation
 
+*[thesis root](../../README.md) > rover*
+
+> **0.37 m best ATE (GL autumn)** with ORB-SLAM3 RGB-D on D435i.  15 recordings across 2 locations, 11/15 success.  T265 stereo fisheye fails entirely, needs pinhole undistortion
+
 ## Overview
 
 This pipeline provides a complete set of scripts, configurations, and results for evaluating ORB-SLAM3 on the **ROVER** dataset (Esslingen University of Applied Sciences, Germany). The dataset is publicly available on HuggingFace: [iis-esslingen/ROVER](https://huggingface.co/datasets/iis-esslingen/ROVER).
@@ -349,6 +353,28 @@ Raw data is stored separately at `../data/rover/` (~335 GB, not tracked in git).
 - RGB-D night handling is still brittle: 2 of 4 night recordings segfault or NaN. A proper low-light front-end (exposure control, ORB->learned features) is out of scope here.
 - Evaluation uses only ORB-SLAM3. Other open-source stacks (VINS-Fusion, OpenVINS, Kimera) are not benchmarked on ROVER yet.
 - The RGB-D pipeline assumes the factory D435i depth is accurate; no IR projector strength / post-filtering tuning was done.
+
+
+
+## Content map
+
+- [`README.md`](README.md) - this file.  dataset overview, sensor specs, all 15 recordings
+- [`CHANGELOG.md`](CHANGELOG.md) - experiment log, 1.1 (main run) + 1.1b (fisheye fix)
+- [`EXPERIMENTS_ROVER.md`](EXPERIMENTS_ROVER.md) - detailed per-recording results
+- [`REPORT_experiment_1.1.md`](REPORT_experiment_1.1.md) - full technical report
+- [`RESULTS_ANALYSIS.md`](RESULTS_ANALYSIS.md) - summary analysis across all experiments
+- [`configs/`](configs/) - ORB-SLAM3 yaml configs (T265 stereo, T265 pinhole, D435i RGB-D)
+- [`scripts/`](scripts/) - data prep, conversion, ORB-SLAM3 runner, retry scripts
+- [`results/`](results/) - per-recording per-mode results
+
+## Where to read next
+
+- **headline numbers + per-recording table**: `RESULTS_ANALYSIS.md`
+- **narrative of what went right / wrong**: `EXPERIMENTS_ROVER.md`
+- **why T265 fisheye stereo fails**: `EXPERIMENTS_ROVER.md` phase-1 + fix in `CHANGELOG.md` 1.1b
+- **this closest to real UGV**: ROVER is a ground robot with D435i + T265, same sensor config as our Isaac Sim Husky
+
+cross-dataset: ROVER proves D435i RGB-D works outdoor at sub-meter ATE.  this is why the Isaac Sim pipeline uses D435i, not stereo fisheye
 
 ## References
 

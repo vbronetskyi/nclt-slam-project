@@ -1,5 +1,8 @@
 # 01_road - road loop
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > routes > 01_road*
+
+
 ## route layout
 
 - **Spawn**: (-80.0, -1.4)

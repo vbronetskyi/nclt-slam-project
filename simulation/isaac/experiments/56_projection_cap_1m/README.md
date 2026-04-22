@@ -1,5 +1,8 @@
 # Exp 56 - visual teach-and-repeat v2 (projection cap + anchor stack)
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 56_projection_cap_1m*
+
+
 ## summary
 
 Exp 56 inherits the visual teach-and-repeat stack from exp 55 and adds

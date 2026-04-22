@@ -1,5 +1,8 @@
 # Exp 35: Road Obstacle Avoidance
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 35_road_obstacle_avoidance*
+
+
 ## Goal
 
 Evaluate the teach-and-repeat pipeline on the road route with physical collision

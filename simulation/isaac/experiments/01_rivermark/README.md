@@ -1,5 +1,8 @@
 # experiment 01: NVIDIA Rivermark outdoor environment
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 01_rivermark*
+
+
 ## goal
 
 load the NVIDIA Rivermark ready-made outdoor scene in Isaac Sim and evaluate

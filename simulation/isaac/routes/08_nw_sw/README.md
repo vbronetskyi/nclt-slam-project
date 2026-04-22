@@ -1,5 +1,8 @@
 # 08_nw_sw - west edge (NW -> SW)
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > routes > 08_nw_sw*
+
+
 ## Route layout
 - **Spawn**: (-90.0, 35.0)
 - **Turnaround**: (-90, -35)

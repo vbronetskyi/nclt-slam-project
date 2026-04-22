@@ -1,5 +1,8 @@
 # Navigation Experiments - Husky Visual Teach-and-Repeat
 
+*[thesis root](../../../README.md) > [simulation](../../README.md) > isaac > experiments*
+
+
 Reproducible experiment configs for Husky visual teach-and-repeat (T&R)
 navigation on the south forest roundtrip (≈ 391 m, 3 cone groups +
 tent on the route).

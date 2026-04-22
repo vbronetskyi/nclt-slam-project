@@ -1,5 +1,8 @@
 # Exp 51 v3_no_loop - disable ORB-SLAM3 loop closing
 
+*[thesis root](../../../../../README.md) > [simulation](../../../../README.md) > isaac > experiments > 51_hybrid_nav2_pp > v3_no_loop*
+
+
 Eliminate the bad-loop-closure failure seen at ~150 m in v2_imu_fix. Teach-and-repeat
 is a single pass; loop closure provides no benefit and proposes wrong matches in
 visually repetitive forest.

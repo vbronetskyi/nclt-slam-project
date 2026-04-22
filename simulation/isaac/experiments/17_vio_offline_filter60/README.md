@@ -1,5 +1,8 @@
 # exp 17: Offline RGBD-Inertial SLAM with filter=60 IMU
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 17_vio_offline_filter60*
+
+
 ## goal
 
 Test ORB-SLAM3 RGBD-Inertial offline mode (avoiding live VIO sync bugs from exp 16) with the cleaner IMU from exp 15 (filter=60, Phidgets-level noise).

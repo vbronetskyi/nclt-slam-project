@@ -1,5 +1,8 @@
 # exp 45: South Forest with Nav2 SmacPlanner2D
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 45_south_forest_smac*
+
+
 ## Result
 
 **47/99 REACHED / 27 SKIPPED - peak 93m (vs exp 44's 89m with NavFn).**

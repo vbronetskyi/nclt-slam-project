@@ -1,5 +1,8 @@
 # Exp 51 v5_scale_correction - RollingScaleCorrector + root-cause diagnostics
 
+*[thesis root](../../../../../README.md) > [simulation](../../../../README.md) > isaac > experiments > 51_hybrid_nav2_pp > v5_scale_correction*
+
+
 ## Original plan
 
 After v3 (no loop closing) and v4 (anomaly guard) both showed gradual drift

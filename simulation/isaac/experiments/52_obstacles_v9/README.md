@@ -1,5 +1,8 @@
 # Exp 52 v9 - honest teach-and-repeat with depth-sensed obstacles
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 52_obstacles_v9*
+
+
 ## goal
 
 Run the v9 hybrid pipeline (Nav2 planner_server + custom pure-pursuit

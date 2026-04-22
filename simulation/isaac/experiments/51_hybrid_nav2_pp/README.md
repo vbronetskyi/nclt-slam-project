@@ -1,5 +1,8 @@
 # Exp 51 - Hybrid Nav2 planner + Pure Pursuit follower with VIO localization
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 51_hybrid_nav2_pp*
+
+
 Goal: full south-route teach-and-repeat using ORB-SLAM3 RGB-D-Inertial VIO for
 localization, Nav2 global planner for obstacle-aware paths, and a custom pure
 pursuit follower for smooth control (avoids MPPI/DWB angular-velocity

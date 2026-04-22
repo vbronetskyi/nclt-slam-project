@@ -1,5 +1,8 @@
 # exp 38: Optimized A* Planner
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 38_fast_planner*
+
+
 ## Goal
 
 Optimize A* planner from exp 37 to maintain higher speed. Exp 37 proved A*

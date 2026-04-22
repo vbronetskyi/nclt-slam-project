@@ -1,5 +1,8 @@
 # exp 42: Encoder+Compass Localization
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 42_real_localization*
+
+
 ## Result
 
 **Encoder+compass localization matches GT performance on all tests.**

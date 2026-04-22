@@ -1,5 +1,8 @@
 # Exp 61 - Denser Anchors + Precise Endpoint Arrival
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 61_dense_anchors_precise_endpoints*
+
+
 User-directed follow-up to exp 60. Two priorities:
 
 1. **Reduce drift.** Exp 60 mean drift was 3.11 m; no-anchor windows

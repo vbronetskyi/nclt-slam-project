@@ -1,5 +1,8 @@
 # exp 54 - real-speed cruise + adaptive SLAM/encoder blend
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 54_adaptive_encoder*
+
+
 ## Motivation (from exp 53 run 2 analysis)
 
 Exp 53 reached 37/94 WPs at 540 m before SLAM drifted past recovery. The

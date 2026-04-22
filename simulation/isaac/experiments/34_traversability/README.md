@@ -1,5 +1,8 @@
 # exp 34: Traversability - South Forest Render/Collision Desync
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 34_traversability*
+
+
 ## Problem
 
 Render-only vegetation (leaves, grass, ferns, fallen trees) blocks depth camera

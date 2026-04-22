@@ -1,5 +1,8 @@
 # Exp 51 v9_robust_nav - fix Nav2 feedback cascade past 150 m
 
+*[thesis root](../../../../../README.md) > [simulation](../../../../README.md) > isaac > experiments > 51_hybrid_nav2_pp > v9_robust_nav*
+
+
 ## problem
 
 After v8 ran the full hybrid stack with correctly calibrated IMU noise and

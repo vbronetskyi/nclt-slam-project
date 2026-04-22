@@ -1,5 +1,8 @@
 # Exp 64 - Best-of-Breed (Exp 59 that finishes)
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 64_best_of_breed*
+
+
 Minimal-delta experiment: take exp 59 (#1 in composite ranking) and add
 two proven-working mechanisms from later experiments, with nothing else
 changed.

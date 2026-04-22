@@ -1,5 +1,8 @@
 # exp 44: South Forest Route with Nav2
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 44_south_forest_nav2*
+
+
 ## Result
 
 **Nav2 + teach-repeat fails on dense forest - both sparse and dense waypoints hit the same obstacle cluster at (-19, -20). Route ceiling ~85m of 196m regardless of Nav2 tuning.**

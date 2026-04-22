@@ -1,5 +1,8 @@
 # exp 20: Localization Comparison - 3 Routes
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 20_localization_comparison*
+
+
 ## goal
 
 Compare ORB-SLAM3 RGBD-only vs RGBD-Inertial (VIO) on all three Husky routes (road, north, south) with a unified IMU pipeline. This provides the localization comparison table for the bachelor thesis.

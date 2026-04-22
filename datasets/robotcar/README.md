@@ -1,5 +1,9 @@
 # Oxford RobotCar + RobotCar Seasons pipeline
 
+*[thesis root](../../README.md) > robotcar*
+
+> **3.91 m ATE over 834 m** from ORB-SLAM3 Stereo on Bumblebee XB3.  plus hloc cross-season localisation at **64.5 %** (ALIKED + LightGlue + OpenIBL)
+
 visual localization (hloc benchmark on RobotCar Seasons) and visual SLAM
 (ORB-SLAM3 Stereo on raw RobotCar stereo) evaluations.
 
@@ -74,6 +78,27 @@ python3 scripts/run_full_benchmark.py
   smooth for ORB-SLAM3's VIBA init)
 - 24 cm stereo baseline is a bit narrow for distant landmarks
 - night queries stay hard for all methods (~40% vs 70%+ daytime)
+
+
+
+## Content map
+
+- [`README.md`](README.md) - this file.  dataset overview + experiments planned/ran
+- [`CHANGELOG.md`](CHANGELOG.md) - experiment log, 0.7 (hloc) + 0.8 (ORB-SLAM3 Stereo)
+- [`EXPERIMENTS_ROBOTCAR.md`](EXPERIMENTS_ROBOTCAR.md) - full writeup incl. the stereo-inertial failure
+- [`configs/`](configs/) - ORB-SLAM3 yaml configs (Stereo + SI attempt)
+- [`scripts/`](scripts/) - download, stereo prep, ground truth, synthesise IMU, hloc benchmark
+- [`notebooks/`](notebooks/) - 4Seasons + RobotCar Seasons hloc results analysis
+- [`results/`](results/) - robotcar_orbslam3/ + robotcar_seasons_hloc/ full sweep
+
+## Where to read next
+
+- **hloc 7-config sweep numbers**: `CHANGELOG.md` experiment 0.7 table
+- **why Stereo-Inertial fails on RobotCar**: `EXPERIMENTS_ROBOTCAR.md` stereo-inertial section - explains the pseudo-IMU derivation problem
+- **how 4Seasons solves the IMU gap**: [`../4seasons/README.md`](../4seasons/README.md)
+- **the hloc benchmark plots**: `results/robotcar_seasons_hloc/plots/`
+
+cross-dataset: RobotCar 3.91 m stereo-only is 4x worse than 4Seasons 0.93 m stereo-inertial - this is the "IMU matters" evidence
 
 ## References
 

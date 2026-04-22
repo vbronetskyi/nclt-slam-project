@@ -1,5 +1,8 @@
 # Teach-and-Repeat routes - campaign overview
 
+*[thesis root](../../../README.md) > [simulation](../../README.md) > isaac > routes*
+
+
 Six corner-to-corner routes through the Isaac Sim forest world, driven twice
 each: once to collect the reference teach trajectory + visual landmarks, then
 again with dynamic obstacles blocking the outbound leg. Total ≈ 1850 m

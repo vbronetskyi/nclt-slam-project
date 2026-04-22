@@ -1,5 +1,8 @@
 # exp 24: Smooth waypoints for forest VIO
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 24_smooth_waypoints*
+
+
 ## goal
 
 After fixing IMU calibration in exp 23 (VIO road ATE 0.089m), test if **smoothing forest waypoints** (removing A* planner's artificial U-turns) enables VIO to work on forest routes.

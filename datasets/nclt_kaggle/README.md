@@ -1,5 +1,9 @@
 # NCLT Kaggle Pipeline - Place Recognition with MinkLoc3D
 
+*[thesis root](../../README.md) > nclt_kaggle*
+
+> MinkLoc3D place recognition scaffold for loop closure.  no trained models yet, pipeline set up and ready for training on Kaggle GPU
+
 ## Overview
 
 This pipeline implements LiDAR-based place recognition on the [NCLT dataset](http://robots.engin.umich.edu/nclt/) using a MinkLoc3D model (sparse 3D convolutions via MinkowskiEngine). The goal is to train a lightweight 3D descriptor for loop closure detection in a SLAM system, with edge deployment targeting Jetson Orin Nano.
@@ -203,6 +207,26 @@ Current status:
 - The preprocessed hackathon pack already voxelises at 0.1 m, so the RQ3 voxel sweep is bounded below by that; finer grids would need re-processing from the raw NCLT `.bin` files.
 - Positive/negative thresholds (10 m / 25 m) were copied from the PointNetVLAD training recipe; they may be too loose for dense urban sections of NCLT.
 - Edge deployment (Jetson / Hailo-8) has not been validated end-to-end, only assumed from the ONNX op set.
+
+
+
+## Content map
+
+- [`README.md`](README.md) - this file.  research questions, setup, how to run
+- [`PROJECT_CONTEXT.md`](PROJECT_CONTEXT.md) - research context, code conventions, edge-deployment plan
+- [`configs/`](configs/) - dataset / train / SLAM configs
+- [`notebooks/`](notebooks/) - 4 notebooks (data, training, evaluation, sensor exploration)
+- [`scripts/`](scripts/) - download, prepare, train, evaluate
+- [`src/`](src/) - Python package (datasets, models, SLAM, evaluation, utils)
+- [`tests/`](tests/) - unit tests
+
+## Where to read next
+
+- **research questions**: this README `Research Questions` section (RQ1-RQ5)
+- **deeper research context**: `PROJECT_CONTEXT.md`
+- **why this is separate from NCLT full pipeline**: the full NCLT (../nclt/) uses all 4 seasonal sessions; this Kaggle subset uses a preprocessed 10-session hackathon dataset that's training-friendly
+
+this pipeline is NOT finished - models not trained yet, see `Experiment Results` section for the checklist of what's done / pending
 
 ## References
 

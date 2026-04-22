@@ -1,5 +1,8 @@
 # Experiment 00: First Autonomous Navigation
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > gazebo > experiments > 00_navigation_test*
+
+
 ## Setup
 - Date: 2026-03-07
 - Robot: Husky A200 sim (skid-steer, 50kg, 990x670mm)

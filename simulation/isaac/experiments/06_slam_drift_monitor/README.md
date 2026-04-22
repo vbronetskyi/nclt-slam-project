@@ -1,5 +1,8 @@
 # exp 06: SLAM + drift monitor v1 (return-to-path)
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 06_slam_drift_monitor*
+
+
 ## Goal
 
 Detect when robot drifts too far from the planned trajectory and force a "return to path" maneuver. Idea: if SLAM thinks robot is on the road but mapped trajectory says it's far away, the SLAM is wrong -> emit a corrective goal.

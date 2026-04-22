@@ -1,5 +1,9 @@
 # NCLT SLAM Pipeline
 
+*[thesis root](../../README.md) > nclt*
+
+> **174-188 m ATE on 3-6 km outdoor LiDAR odometry** - visual SLAM fails across all seasons here due to 5 Hz Ladybug3 + no camera calibration
+
 Evaluation of odometry and SLAM methods on the University of Michigan North Campus Long-Term (NCLT) dataset.
 
 ## The NCLT Dataset
@@ -353,6 +357,29 @@ nclt_data/
 - ORB-SLAM3 monocular and monocular-inertial never produced usable trajectories on Ladybug3 side cameras (max 28% tracking). The 5 Hz shutter and missing fisheye calibration are the main blockers. A working pipeline would need either (a) fresh calibration of the 6 cameras with Kannala-Brandt, (b) IMU fusion at ~200 Hz (not present in NCLT), or (c) a different camera model that tolerates fisheye natively (e.g. VINS-Fusion).
 - LiDAR ICP is the only method with 100% coverage, but 174--188 m ATE over 3--6 km loops is still odometry-grade; improving this needs RTK-GPS tightly coupled (we only use it as loop-closure candidates) or Hokuyo planar LiDAR as a secondary factor.
 - Only 4 of 27 sessions are used so seasonal cross-localisation (e.g. winter -> summer) is not covered here.
+
+
+
+## Content map
+
+- [`README.md`](README.md) - this file.  dataset overview, sensor specs, setup, plan
+- [`WEEK1_SUMMARY.md`](WEEK1_SUMMARY.md) - week-1 data pipeline notes (loaders, binary formats)
+- [`CHANGELOG.md`](CHANGELOG.md) - full experiment log, 0.1 through 0.6 (LiDAR + visual SLAM attempts)
+- [`reports/orbslam3_nclt_report.md`](reports/orbslam3_nclt_report.md) - thesis-chapter-style report on the ORB-SLAM3 attempt + why it failed
+- [`configs/`](configs/) - ORB-SLAM3 yaml configs
+- [`notebooks/`](notebooks/) - hloc results analysis notebook
+- [`scripts/`](scripts/) - 23 scripts (data loaders, ICP pipelines, visual SLAM runners)
+- [`src/`](src/) - Python modules (SLAM, data loaders, evaluation)
+- [`results/`](results/) - per-experiment outputs (week0 hloc, week2 ICP, week3 IMU+GPS)
+
+## Where to read next
+
+- **the LiDAR result that worked**: `CHANGELOG.md` experiment 0.1 (LiDAR ICP + GPS LC)
+- **why visual SLAM failed**: `reports/orbslam3_nclt_report.md` has the detailed analysis
+- **data loaders and format quirks**: [`src/data_loaders/`](src/data_loaders/) + `WEEK1_SUMMARY.md`
+- **full benchmark across 4 seasons**: `CHANGELOG.md` experiment 0.1 table
+
+cross-dataset: the ROVER RGB-D success shows the opposite result - D435i RGB-D works at 0.37-0.48 m where NCLT's fisheye + slow camera fails
 
 ## References
 

@@ -1,5 +1,8 @@
 # exp 18: VIO offline with zigzag IMU initialization - SUCCESS! 🎉
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 18_vio_zigzag_init*
+
+
 ## goal
 
 Make ORB-SLAM3 RGBD-Inertial SLAM produce a usable trajectory by fixing

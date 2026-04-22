@@ -1,5 +1,8 @@
 # Exp 43: ORB-SLAM3 + Encoder Fusion
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 43_slam_localization*
+
+
 ## result
 
 **SLAM+Encoder fusion achieves 95% completion with obstacles - matching

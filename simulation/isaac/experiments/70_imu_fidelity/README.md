@@ -1,5 +1,8 @@
 # Exp 70 - IMU Fidelity Ablation
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 70_imu_fidelity*
+
+
 ## Мета
 Перевірити чи заявлені у дипломі моделі шуму synthetic-IMU (Phidgets 1042)
 поводять себе реалістично на повному road-roundtrip маршруті (333 м, 167 WP,

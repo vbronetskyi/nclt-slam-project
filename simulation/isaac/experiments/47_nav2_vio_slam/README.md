@@ -1,5 +1,8 @@
 # exp 47: Nav2 + VIO SLAM Localization
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 47_nav2_vio_slam*
+
+
 ## Result
 
 **Nav2 + VIO SLAM closed-loop навігація на повному outbound маршруті (193м): ATE 0.150м, scale 1.003, 2604 frames, 0 lost. 33/39 WPs reached.**

@@ -1,5 +1,8 @@
 # exp 27: Full-path lateral + current_idx snap
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 27_fullpath_lateral_snap*
+
+
 ## goal
 
 Exp 26 discovered that the window-based lateral corridor check missed cases

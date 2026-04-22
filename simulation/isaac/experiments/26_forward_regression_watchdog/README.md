@@ -1,5 +1,8 @@
 # exp 26: Forward regression watchdog + tighter recovery
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 26_forward_regression_watchdog*
+
+
 ## goal
 
 Exp 25 run 4 revealed a recurring failure: after RGBD-only Nav2 bypasses

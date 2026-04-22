@@ -1,5 +1,8 @@
 # Exp 51 v8_correct_yaml - IMU noise density calibrated from measurements
 
+*[thesis root](../../../../../README.md) > [simulation](../../../../README.md) > isaac > experiments > 51_hybrid_nav2_pp > v8_correct_yaml*
+
+
 ## Motivation
 
 Deep audit revealed a **unit bug** in my v5 diagnostic. YAML `IMU.NoiseAcc`

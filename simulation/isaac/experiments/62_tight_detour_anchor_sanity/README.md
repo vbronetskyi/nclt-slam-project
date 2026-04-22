@@ -1,5 +1,8 @@
 # exp 62 - Tight Detour + Anchor Sanity
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 62_tight_detour_anchor_sanity*
+
+
 Drift-focused follow-up to exp 61's failure. Exp 61 inflated the detour
 ring (2–5 m -> 4–7 m) which pulled the robot off the teach visual corridor
 and let drift grow unbounded (17 m at the critical endpoints). Exp 62

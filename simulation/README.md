@@ -1,5 +1,9 @@
 # simulation - clearpath husky a200
 
+*[thesis root](../README.md) > simulation*
+
+> two simulators: Gazebo Harmonic (early baseline work) and Isaac Sim 6 (main thesis T&R campaign).  Isaac Sim is where the final results come from
+
 simulation environments for visual-inertial navigation experiments on the
 clearpath husky a200 UGV with d435i rgb-d camera and phidgets imu
 
@@ -58,3 +62,17 @@ simulation/
 - Nav2, Macenski et al., 2020, [paper](https://arxiv.org/abs/2003.00368), [code](https://github.com/ros-navigation/navigation2)
 - Clearpath Husky A200, [product page](https://clearpathrobotics.com/husky-unmanned-ground-vehicle-robot/)
 - Intel RealSense D435i, [product page](https://www.intelrealsense.com/depth-camera-d435i/)
+
+## Content map
+
+- [`README.md`](README.md) - this file.  gazebo vs isaac overview
+- [`gazebo/`](gazebo/) - Gazebo Harmonic + ROS 2 + Nav2 early experiments (3 experiments)
+- [`isaac/`](isaac/) - Isaac Sim main thesis campaign (79 experiments + 9-route T&R campaign)
+
+see the two pipeline READMEs for details: [`gazebo/README.md`](gazebo/README.md), [`isaac/README.md`](isaac/README.md)
+
+## Where to read next
+
+- **thesis main results**: `isaac/README.md` + `isaac/routes/README.md`
+- **early Gazebo baselines**: `gazebo/README.md` + `gazebo/experiments/`
+- **why we migrated to Isaac Sim**: `isaac/README.md` has the history

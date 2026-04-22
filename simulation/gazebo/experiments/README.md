@@ -1,5 +1,8 @@
 # Simulation Experiments
 
+*[thesis root](../../../README.md) > [simulation](../../README.md) > gazebo > experiments*
+
+
 This directory contains experiments conducted with the Husky A200 UGV in Gazebo Harmonic simulation (ROS 2 Jazzy, Ubuntu 24.04). Experiments progress from basic navigation integration to full SLAM evaluation and comparison.
 
 ## Experiments

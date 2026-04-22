@@ -1,5 +1,8 @@
 # exp 48: VIO Live Round-Trip (VIO vs RGB-D only)
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 48_vio_roundtrip__*
+
+
 ## Result
 
 **Full round-trip 392м (outbound -> turnaround -> return).**

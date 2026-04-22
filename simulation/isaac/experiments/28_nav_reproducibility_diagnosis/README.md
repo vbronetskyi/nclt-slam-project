@@ -1,5 +1,8 @@
 # exp 28: Nav2+SLAM reproducibility diagnosis - recovery from exps 25-27 drift
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 28_nav_reproducibility_diagnosis*
+
+
 ## Context
 
 Exps 25–27 kept adding complexity (forward-regression watchdog, lateral

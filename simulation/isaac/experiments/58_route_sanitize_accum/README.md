@@ -1,5 +1,8 @@
 # exp 58 - visual T&R v4: WP sanitization + continuous landmark accumulation
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 58_route_sanitize_accum*
+
+
 ## Motivation (from exp 56 retrospection)
 
 Exp 56 reached 1 390 m and 83 / 94 WPs - the best result so far - but

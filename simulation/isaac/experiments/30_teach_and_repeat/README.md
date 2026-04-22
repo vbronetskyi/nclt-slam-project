@@ -1,5 +1,8 @@
 # exp 30: Teach-and-Repeat Navigation
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 30_teach_and_repeat*
+
+
 ## goal
 
 Побудувати систему навігації яка НЕ залежить від глобальної SLAM локалізації.

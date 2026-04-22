@@ -1,5 +1,8 @@
 # 02_north_forest - teach
 
+*[thesis root](../../../../../README.md) > [simulation](../../../../README.md) > isaac > routes > 02_north_forest > teach*
+
+
 Source experiment: `71_teach_north_forest_accel_noise`.
 
 Drives Husky open-loop through the deep northern forest, recording:

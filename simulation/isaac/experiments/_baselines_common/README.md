@@ -1,5 +1,8 @@
 # Baselines vs Our T&R - consolidated results (9 routes)
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > _baselines_common*
+
+
 Comparison of three navigation stacks, each driven with the same teach
 trajectory (sub-sampled at 4 m), same obstacles, same Isaac simulator.
 Supervisor drops obstacles at < 10 m from the final goal (return leg

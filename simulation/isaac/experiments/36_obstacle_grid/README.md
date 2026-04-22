@@ -1,5 +1,8 @@
 # Exp 36: Local Obstacle Grid
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 36_obstacle_grid*
+
+
 ## goal
 
 Replace single-frame reactive depth detection with an ego-centric obstacle

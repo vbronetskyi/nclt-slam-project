@@ -1,5 +1,8 @@
 # Exp 68 - Road repeat WITH obstacles + accel-noise IMU
 
+*[thesis root](../../../../../README.md) > [simulation](../../../../README.md) > isaac > routes > 01_road > repeat*
+
+
 ## Мета
 Exp 59 Pareto-оптимальний pipeline на road маршруті з фізично коректною IMU
 (accel noise у motion branch, exp 70 Run A), тепер **з повним набором

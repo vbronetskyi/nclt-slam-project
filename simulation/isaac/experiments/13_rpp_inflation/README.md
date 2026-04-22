@@ -1,5 +1,8 @@
 # exp 13: Regulated Pure Pursuit + larger inflation - best SLAM result (145 m)
 
+*[thesis root](../../../../README.md) > [simulation](../../../README.md) > isaac > experiments > 13_rpp_inflation*
+
+
 ## Goal
 
 Replace DWB with **Regulated Pure Pursuit (RPP)** controller. RPP has built-in features that DWB doesn't:
