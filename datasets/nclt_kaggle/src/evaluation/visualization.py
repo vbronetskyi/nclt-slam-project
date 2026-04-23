@@ -1,4 +1,5 @@
-"""SLAM evaluation visualization: trajectories, errors, recall, precision-recall"""
+"""SLAM evaluation visualization: trajectories, errors, recall, precision-recall
+"""
 
 from __future__ import annotations
 

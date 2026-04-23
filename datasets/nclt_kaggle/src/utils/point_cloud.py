@@ -1,4 +1,5 @@
-"""point cloud processing: loading, filtering, transformation for NCLT Velodyne data"""
+"""point cloud processing: loading, filtering, transformation for NCLT Velodyne data
+"""
 
 from __future__ import annotations
 
@@ -14,9 +15,9 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-# ---------------------------------------------------------------------------
-# Loading
-# ---------------------------------------------------------------------------
+
+#Loading
+
 
 
 def load_velodyne_bin(path: str | Path) -> np.ndarray:
@@ -46,9 +47,9 @@ def load_velodyne_bin(path: str | Path) -> np.ndarray:
     return points
 
 
-# ---------------------------------------------------------------------------
+
 # Downsampling
-# ---------------------------------------------------------------------------
+
 
 
 def voxel_downsample(points: np.ndarray, voxel_size: float = 0.1) -> np.ndarray:
@@ -107,9 +108,9 @@ def _closest_point_indices(
     return np.unique(indices)
 
 
-# ---------------------------------------------------------------------------
+
 # Ground removal
-# ---------------------------------------------------------------------------
+
 
 
 def remove_ground_plane(
@@ -184,9 +185,9 @@ def remove_ground_plane(
     )
 
 
-# ---------------------------------------------------------------------------
+
 # Transformation
-# ---------------------------------------------------------------------------
+
 
 
 def transform_point_cloud(
@@ -207,7 +208,7 @@ def transform_point_cloud(
         return points.copy()
 
     xyz = points[:, :3]
-    # R @ p + t  for each point (vectorised).
+    # R @ p + t  for each point (vectorised)
     rotation = transform[:3, :3]
     translation = transform[:3, 3]
     xyz_transformed = (rotation @ xyz.T).T + translation
@@ -220,9 +221,9 @@ def transform_point_cloud(
     return result.astype(points.dtype)
 
 
-# ---------------------------------------------------------------------------
+
 # Normal estimation
-# ---------------------------------------------------------------------------
+
 
 
 def compute_normals(
@@ -257,9 +258,9 @@ def compute_normals(
     return normals
 
 
-# ---------------------------------------------------------------------------
+
 # Cropping
-# ---------------------------------------------------------------------------
+
 
 
 def crop_point_cloud(
@@ -305,9 +306,9 @@ def crop_point_cloud(
     return result
 
 
-# ---------------------------------------------------------------------------
+
 # Random subsampling
-# ---------------------------------------------------------------------------
+
 
 
 def random_subsample(
@@ -331,9 +332,9 @@ def random_subsample(
     return result
 
 
-# ---------------------------------------------------------------------------
+
 # Open3D conversions
-# ---------------------------------------------------------------------------
+
 
 
 def to_open3d(points: np.ndarray) -> "o3d.geometry.PointCloud":

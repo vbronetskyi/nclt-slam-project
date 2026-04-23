@@ -63,7 +63,7 @@ nclt:
         - "rot_y"
         - "rot_z"
 
-    # GPS (Trimble); Kaggle addon uses gps_rtk.csv
+    # GPS (Trimble); Kaggle addon uses gps_rtk.csv   
     gps:
       filename: "gps_rtk.csv"
       rate_hz: 1

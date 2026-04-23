@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""KISS-ICP vs Custom ICP evaluation on NCLT data"""
+"""KISS-ICP vs Custom ICP evaluation on NCLT data
+"""
 import os
 import sys
 import numpy as np
@@ -15,7 +16,7 @@ from data_loaders.ground_truth_loader import GroundTruthLoader
 
 SESSION = '2012-04-29'
 # LC_SC_THRESH = 0.4  # was 0.5, gave too many false LCs
-SUBSAMPLE = 10  # every Nth scan; 10 -> ~2800 scans from 28k, enough for smoke test
+SUBSAMPLE = 10  # every Nth scan; 10 -> +-2800 scans from 28k, enough for smoke test
 MAX_SCANS = 500  # cap for quick testing
 RESULTS_DIR = Path(__file__).resolve().parent.parent / 'results' / 'week2_icp_baseline'
 PLOTS_DIR = RESULTS_DIR / 'plots'
@@ -178,7 +179,7 @@ def try_kiss_icp(scans, timestamps):
 
         odometry = KissICP(config=config)
 
-        # debug: check what attributes the odometry object has
+        # debug: check what attributes the odometry object has   
         print(f"\nDEBUG: KissICP attributes: {[attr for attr in dir(odometry) if not attr.startswith('_')]}")
 
         poses = []
@@ -257,7 +258,7 @@ def compute_ate(traj_est, traj_gt):
 
 
 def plot_results(gt_traj, custom_traj, kiss_traj=None):
-    # TODO: check with prof if ATE RMSE or ATE mean is what the thesis needs
+    # check with prof if ATE RMSE or ATE mean is what the thesis needs
     print("\n" + "="*60)
     print("Generating Plots")
 
@@ -281,7 +282,7 @@ def plot_results(gt_traj, custom_traj, kiss_traj=None):
     print(f"Saved: {traj_plot}")
     plt.close()
 
-    # 2. ATE over time
+    # 2. ATE over time   
     custom_ate = compute_ate(custom_traj, gt_traj)
 
     plt.figure(figsize=(12, 6))
@@ -310,7 +311,7 @@ def plot_results(gt_traj, custom_traj, kiss_traj=None):
     if kiss_traj is None:
         axes = [axes]
 
-    # custom ICP
+    #custom ICP
     axes[0].hist(custom_ate['errors'], bins=50, color='blue', alpha=0.7, edgecolor='black')
     axes[0].axvline(custom_ate['mean'], color='red', linestyle='--', linewidth=2, label=f"Mean: {custom_ate['mean']:.2f}m")
     axes[0].set_xlabel('Error (m)', fontsize=12)
@@ -344,7 +345,7 @@ def save_trajectories(gt_traj, custom_traj, kiss_traj=None):
     print("Saving Trajectories (TUM format)")
 
     def save_tum(traj, filename):
-        # TUM format: timestamp x y z qx qy qz qw
+        #TUM format: timestamp x y z qx qy qz qw
         tum_traj = np.column_stack([
             traj[:, 0],  # timestamp
             traj[:, 1:4],  # xyz
@@ -372,7 +373,7 @@ def main():
     # 3. Try KISS-ICP
     kiss_traj = try_kiss_icp(scans, timestamps)
 
-    # 4. Save trajectories
+    #4. Save trajectories
     save_trajectories(gt_traj, custom_traj, kiss_traj)
 
     # 5. Compute metrics

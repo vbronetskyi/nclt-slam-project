@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Experiment 0.6: proper ORB-SLAM3 run on NCLT after fixing earlier mistakes.
+"""Experiment 0.6: proper ORB-SLAM3 run on NCLT after fixing earlier mistakes
 
 exp 0.2-0.5 all used Cam0 which turns out to be the top/sky-facing camera (!).
 also forced a plain PinHole on a fisheye lens. this script redoes ORB-SLAM3
@@ -39,20 +39,20 @@ IMU_DIR = RESULTS_DIR / "imu_data"
 
 SESSIONS = {"spring": "2012-04-29", "summer": "2012-08-04"}
 
-# Ladybug3 camera yaw angles from forward (degrees).
+# Ladybug3 camera yaw angles from forward (degrees)
 # Cam0=top(sky, unusable), Cam1=right(+73), Cam2=back-right(+144),
-# Cam3=back-left(-143), Cam4=left(-72), Cam5=forward(0).
-# Only the three best side cameras (1, 4, 5) are used in the sweep.
+# Cam3=back-left(-143), Cam4=left(-72), Cam5=forward(0)
+# Only the three best side cameras (1, 4, 5) are used in the sweep
 CAM_ANGLES = {1: 73.0, 4: -72.0, 5: 0.0}
 
 # Ladybug3 approximate geometry. pole-mounted on the Segway, hence
-# center ~1.23 m above body origin in NED.
+# center +-1.23 m above body origin in NED.
 LB3_RADIUS = 0.08  # sphere radius in meters
 LB3_CENTER_BODY = np.array([0.035, 0.002, -1.23])
 
-# default fisheye calibration (half-res 808x616, equidistant Kannala-Brandt).
-# For equidistant: f = r_max / theta_max = 404 / (60 deg in rad) ~= 386.
-# assumes ~120 deg horizontal FOV for Ladybug3 side cameras.
+# default fisheye calibration (half-res 808x616, equidistant Kannala-Brandt)
+# For equidistant: f = r_max / theta_max = 404 / (60 deg in rad) ~= 386
+# assumes +-120 deg horizontal FOV for Ladybug3 side cameras   
 DEFAULT_FISHEYE = {
     "fx": 386.0, "fy": 386.0, "cx": 404.0, "cy": 308.0,
     "k1": 0.0, "k2": 0.0, "k3": 0.0, "k4": 0.0,
@@ -60,8 +60,8 @@ DEFAULT_FISHEYE = {
 
 # default IMU noise (Microstrain 3DM-GX3-45, relaxed for real-world conditions)
 DEFAULT_IMU_NOISE = {
-    "gyro_noise": 0.004,    # rad/s^0.5 (datasheet ~0.03 deg/s/sqrt(Hz) ≈ 5e-4, relaxed 8x)
-    "accel_noise": 0.04,    # m/s^1.5 (datasheet ~0.03 m/s^2/sqrt(Hz), relaxed)
+    "gyro_noise": 0.004,    # rad/s^0.5 (datasheet +-0.03 deg/s/sqrt(Hz) ≈ 5e-4, relaxed 8x)
+    "accel_noise": 0.04,    # m/s^1.5 (datasheet +-0.03 m/s^2/sqrt(Hz), relaxed)
     "gyro_walk": 0.0002,    # rad/s^1.5
     "accel_walk": 0.004,    # m/s^2.5
 }
@@ -112,7 +112,7 @@ def orbslam_env():
     return env
 
 
-# GEOMETRY UTILITIES
+#GEOMETRY UTILITIES
 def compute_Tbc(cam_angle_deg, cam_id=5):
     """compute body-to-camera transform T_b_c for ORB-SLAM3"""
     theta = np.radians(cam_angle_deg)
@@ -243,7 +243,7 @@ def evaluate_trajectory(est_path, gt_data, with_scale=True):
     gt_ts = gt_data[:, 0] / 1e6  # microseconds → seconds
     gt_xyz = gt_data[:, 1:4]
 
-    # match timestamps (nearest neighbor, 0.15s tolerance for 5Hz camera)
+    #match timestamps (nearest neighbor, 0.15s tolerance for 5Hz camera)
     matched_est, matched_gt = [], []
     for i, t in enumerate(est_ts):
         idx = np.argmin(np.abs(gt_ts - t))
@@ -425,7 +425,7 @@ def characterize_imu_noise(session):
     imu = load_ms25_imu(session)
     odom = load_odometry(session, hz=100)
 
-    # find static segments: where wheel odometry velocity is near zero
+    #find static segments: where wheel odometry velocity is near zero
     # velocity ≈ diff(position) / diff(time)
     dt = np.diff(odom[:, 0]) / 1e6  # seconds
     dx = np.linalg.norm(np.diff(odom[:, 1:4], axis=0), axis=1)
@@ -439,11 +439,11 @@ def characterize_imu_noise(session):
         log("    Not enough static data, using defaults", "WARN")
         return DEFAULT_IMU_NOISE
 
-    # find IMU samples during static periods
+    #find IMU samples during static periods
     imu_ts = imu[:, 0]
     # use first static segment (at start of session)
     t_start = static_utimes[0]
-    # find end of first static segment
+    #find end of first static segment
     breaks = np.where(np.diff(static_utimes) > 1e6)[0]  # >1s gap
     t_end = static_utimes[breaks[0]] if len(breaks) > 0 else static_utimes[min(500, len(static_utimes)-1)]
 
@@ -499,7 +499,7 @@ def prepare_imu_csv(session, version, image_utimes, output_path):
     """Prepare IMU data in EuRoC CSV format.
 
     Versions:
-        v1: MS25 raw at ~47 Hz
+        v1: MS25 raw at +-47 Hz
         v2: MS25 interpolated to 100 Hz
         v3: MS25 interpolated to 200 Hz
         v4: Hybrid (MS25 accel + KVH yaw rate, MS25 roll/pitch gyro) at 100 Hz
@@ -528,7 +528,7 @@ def prepare_imu_csv(session, version, image_utimes, output_path):
         kvh_ts = kvh[:, 0]
         kvh_heading = kvh[:, 1]
 
-        # KVH yaw rate = d(heading)/dt
+        #KVH yaw rate = d(heading)/dt
         kvh_dt = np.diff(kvh_ts) / 1e6  # seconds
         kvh_yaw_rate = np.diff(kvh_heading) / kvh_dt
         # unwrap large jumps (heading wraps at ±π)
@@ -541,7 +541,7 @@ def prepare_imu_csv(session, version, image_utimes, output_path):
         kvh_yaw_rate = kvh_yaw_rate[kvh_mask]
 
     if version == "v1":
-        # raw MS25 at ~47 Hz
+        # raw MS25 at +-47 Hz
         out_ts = imu_ts
         out_gyro = gyro
         out_accel = accel
@@ -601,7 +601,7 @@ def prepare_euroc_dir(session, cam_ids, n_frames, imu_csv_path,
 
     ts_path = output_base / "timestamps.txt"
 
-    # always update IMU symlink (different runs may use different IMU versions)
+    #always update IMU symlink (different runs may use different IMU versions)
     imu_link = output_base / "mav0" / "imu0" / "data.csv"
     imu_link.parent.mkdir(parents=True, exist_ok=True)
     if imu_link.exists() or imu_link.is_symlink():
@@ -613,7 +613,6 @@ def prepare_euroc_dir(session, cam_ids, n_frames, imu_csv_path,
         with open(ts_path) as f:
             existing = sum(1 for line in f if line.strip())
         if existing > 0:
-            # print(f"DEBUG config={cfg}")
             log(f"  EuRoC dir already prepared: {existing} frames, IMU→{Path(imu_csv_path).name}")
             utimes = []
             with open(ts_path) as f:
@@ -694,7 +693,7 @@ def write_mono_inertial_config(output_path, cam_calib, imu_noise, Tbc,
     """write ORB-SLAM3 mono-inertial config YAML (KannalaBrandt8 fisheye)"""
     c = cam_calib
     n = imu_noise
-    # format Tbc as comma-separated row-major
+    # format Tbc as comma-seperated row-major
     tbc_data = ", ".join(f"{v:.10f}" for v in Tbc.flatten())
 
     content = f"""%YAML:1.0
@@ -1025,7 +1024,7 @@ def phase_a(session="2012-04-29"):
 
     calib = {"cam_calib": {}, "imu_noise": {}, "imu_paths": {}, "Tbc": {}}
 
-    # a0: Patch ORB-SLAM3 (remove usleep)
+    #a0: Patch ORB-SLAM3 (remove usleep)
     patch_orbslam3_remove_usleep()
 
     # a1: COLMAP fisheye calibration for Cam1, Cam4, Cam5
@@ -1062,11 +1061,10 @@ def phase_a(session="2012-04-29"):
     # a4: Prepare IMU data (5 versions)
     log("\nA4: Preparing IMU data (5 versions)")
     image_utimes = get_image_utimes(session, 5, n_frames=0, skip_start=200)
-    # print("DEBUG: entering main loop")
     log(f"  Image time range: {min(image_utimes)/1e6:.1f}s - {max(image_utimes)/1e6:.1f}s")
 
     imu_versions = {
-        "v1": "MS25 raw ~47Hz",
+        "v1": "MS25 raw +-47Hz",
         "v2": "MS25 interpolated 100Hz",
         "v3": "MS25 interpolated 200Hz",
         "v4": "Hybrid (MS25+KVH) 100Hz",
@@ -1090,7 +1088,7 @@ def phase_a(session="2012-04-29"):
 # PHASE B: MONO-INERTIAL SWEEP
 
 def phase_b(session, calib):
-    # NOTE: not thread-safe but we run single threaded anyway
+    # not thread-safe but we run single threaded anyway
     """Phase B: Mono-inertial sweep on 3000 frames.
 
     Tests IMU rates, camera models, cameras, and parameters.
@@ -1147,7 +1145,7 @@ def phase_b(session, calib):
                     config_path, imu_noise, Tbc,
                     imu_freq=imu_freq_map[imu_ver])
 
-            # run
+            #run
             result = run_orbslam3(
                 "mono_inertial", config_path, euroc_dir, ts_path,
                 timeout_s=SWEEP_TIMEOUT, output_dir=run_dir, label=run_label)
@@ -1172,7 +1170,7 @@ def phase_b(session, calib):
 
         return results
 
-    # ---- B1: IMU rate sweep (Cam5 fisheye) ----
+    # B1: IMU rate sweep (Cam5 fisheye)
     log("\n=== B1: IMU Rate Sweep (Cam5 fisheye) ===")
     best_imu = "v1"
     best_tracking = 0
@@ -1185,16 +1183,16 @@ def phase_b(session, calib):
 
     log(f"\n  Best IMU: {best_imu} ({best_tracking:.1f}% tracking)")
 
-    # ---- B2: Camera model comparison (fisheye vs pinhole) ----
+    # B2: Camera model comparison (fisheye vs pinhole)
     log("\n=== B2: Camera Model Comparison ===")
     do_run("cam5_pinhole", cam_id=5, imu_ver=best_imu, cam_model="pinhole")
 
-    # ---- B3: Camera comparison (Cam5, Cam4, Cam1) ----
+    # B3: Camera comparison (Cam5, Cam4, Cam1)
     log("\n=== B3: Camera Comparison ===")
     for cam_id in [4, 1]:
         do_run(f"cam{cam_id}_fisheye", cam_id=cam_id, imu_ver=best_imu)
 
-    # ---- B4: CLAHE + nFeatures sweep ----
+    # B4: CLAHE + nFeatures sweep
     log("\n=== B4: CLAHE and nFeatures Sweep ===")
     do_run("cam5_clahe", cam_id=5, imu_ver=best_imu, preprocess="clahe")
     do_run("cam5_nfeat5000", cam_id=5, imu_ver=best_imu, n_features=5000)
@@ -1250,7 +1248,7 @@ def phase_c(session, calib, best_imu):
         run_dir.mkdir(parents=True, exist_ok=True)
         log(f"\n--- Stereo: Cam{left_id} + Cam{right_id} ---")
 
-        # prepare EuRoC directory with both cameras
+        #prepare EuRoC directory with both cameras
         imu_path = calib["imu_paths"][best_imu]
         euroc_dir, ts_path, img_utimes = prepare_euroc_dir(
             session, [left_id, right_id], N_SWEEP_FRAMES, imu_path)
@@ -1268,7 +1266,7 @@ def phase_c(session, calib, best_imu):
         baseline = np.linalg.norm(Tc1c2[:3, 3])
         log(f"  Baseline: {baseline*100:.1f} cm")
 
-        # write config
+        #write config
         config_path = run_dir / "config.yaml"
         write_stereo_inertial_config(
             config_path,
@@ -1277,7 +1275,7 @@ def phase_c(session, calib, best_imu):
             calib["imu_noise"], Tbc_left, Tc1c2,
             imu_freq=imu_freq_map[best_imu])
 
-        # run
+        #run
         result = run_orbslam3(
             "stereo_inertial", config_path, euroc_dir, ts_path,
             timeout_s=SWEEP_TIMEOUT, output_dir=run_dir, label=run_label)
@@ -1286,7 +1284,7 @@ def phase_c(session, calib, best_imu):
                             "imu_ver": best_imu, "baseline_m": float(baseline)}
 
         # evaluate with SE(3) alignment because stereo already has metric scale
-        # (no 7-DoF Sim(3) scale recovery needed, just 6-DoF rigid).
+        # (no 7-DoF Sim(3) scale recovery needed, just 6-DoF rigid)
         if result["success"] and result["traj_path"]:
             eval_result = evaluate_trajectory(result["traj_path"], gt_data, with_scale=False)
             result["eval"] = eval_result
@@ -1302,7 +1300,7 @@ def phase_c(session, calib, best_imu):
         save_json(result, run_dir / "result.json")
         all_results.append(result)
 
-    # summary
+    # summary   
     log("\n=== Phase C Summary ===")
     for r in all_results:
         label = r.get("label", "?")
@@ -1374,7 +1372,7 @@ def phase_d(session, calib, best_config):
 
         result["config"] = cfg
 
-        # evaluate
+        #evaluate
         if result["success"] and result["traj_path"]:
             eval_result = evaluate_trajectory(result["traj_path"], gt_data, with_scale=True)
             result["eval"] = eval_result
@@ -1631,7 +1629,7 @@ def phase_g():
                 if "runs" in data:
                     all_runs.extend(data["runs"])
 
-    # ---- Plot 1: Phase B tracking rates ----
+    # Plot 1: Phase B tracking rates
     phase_b_dir = RESULTS_DIR / "phase_b"
     if phase_b_dir.exists():
         try:
@@ -1658,7 +1656,7 @@ def phase_g():
         except Exception as e:
             log(f"  Plot 1 error: {e}", "WARN")
 
-    # ---- Plot 2: Trajectory vs GT ----
+    # Plot 2: Trajectory vs GT
     gt_spring = load_ground_truth("2012-04-29")
     for phase in ["phase_b", "phase_d"]:
         phase_path = RESULTS_DIR / phase
@@ -1704,12 +1702,12 @@ def phase_g():
         except Exception as e:
             log(f"  Trajectory plot error ({phase}): {e}", "WARN")
 
-    # ---- Plot 3: ATE comparison bar chart ----
+    # Plot 3: ATE comparison bar chart
     try:
         methods = []
         ates = []
 
-        # LiDAR ICP reference
+        #LiDAR ICP reference
         methods.append("LiDAR ICP\n(Exp 0.1)")
         ates.append(174.0)
 
@@ -1748,7 +1746,7 @@ def phase_g():
     except Exception as e:
         log(f"  ATE comparison plot error: {e}", "WARN")
 
-    # ---- Generate REPORT.md ----
+    # Generate REPORT.md
     log("  Generating REPORT.md...")
     report_lines = [
         "# Experiment 0.6: Definitive ORB-SLAM3 Evaluation on NCLT",
@@ -1870,7 +1868,7 @@ def main():
         except Exception as e:
             log(f"Phase C failed: {e}", "ERROR")
 
-        # phase D: Full session
+        #phase D: Full session
         try:
             phase_d_results = phase_d(session, calib, top_configs)
         except Exception as e:

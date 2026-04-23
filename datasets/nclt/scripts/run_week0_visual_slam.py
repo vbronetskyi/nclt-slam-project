@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Week 0: visual SLAM baseline on NCLT Ladybug3.
+"""Week 0: visual SLAM baseline on NCLT Ladybug3
 
 tries ORB-SLAM3 mono first; if not available falls back to a simple OpenCV VO
 pipeline (ORB features + essential matrix). compared against GT trajectory.
@@ -41,7 +41,7 @@ def run_lidar_pipeline(session, subsample=2):
     print(f"  LIDAR PIPELINE: {session}")
     print(f"{'='*80}")
 
-    # --- load data ---
+    # load data
     gt_loader = GroundTruthLoader()
     gt_df = gt_loader.load_ground_truth(session)
     gt_all = np.column_stack([
@@ -106,12 +106,12 @@ def run_lidar_pipeline(session, subsample=2):
     PG_LC_W = 10.0
     PG_DAMPING = 1e-3
 
-    # init components
+    #init components
     odom_pred = OdometryPredictor(odom_df) if has_odom else None
     local_map = LocalMap(LOCALMAP_SIZE, LOCALMAP_VOXEL)
     gps_lc = GPSLoopClosureDetector(gps_df, GPS_LC_MIN_GAP, GPS_LC_RADIUS, GPS_LC_DEDUP) if has_gps else None
 
-    # --- Step 1: Odometry-aided ICP ---
+    # Step 1: Odometry-aided ICP
     print(f"\n  Step 1: ICP Odometry ({len(files)} scans)...")
     poses_4x4 = []
     timestamps_us = []
@@ -176,7 +176,7 @@ def run_lidar_pipeline(session, subsample=2):
     t_odom = time.time()-t0
     print(f"  ICP done: {len(poses_4x4)} poses in {t_odom:.1f}s")
 
-    # --- Step 2: GPS loop closure ---
+    # Step 2: GPS loop closure
     verified_lc = []
     t_lc = 0
     if gps_lc is not None:
@@ -211,7 +211,7 @@ def run_lidar_pipeline(session, subsample=2):
     else:
         print(f"  Step 2: Skipped (no GPS)")
 
-    # --- Step 3: Pose graph optimization ---
+    # Step 3: Pose graph optimization
     print(f'  Step 3: Pose graph optimization...')
     poses_2d = np.array([pose_to_2d(p) for p in poses_4x4])
     z_vals = [p[2,3] for p in poses_4x4]
@@ -234,7 +234,7 @@ def run_lidar_pipeline(session, subsample=2):
         print("    No loop closures. Using odometry-only.")
         opt_2d = poses_2d.copy()
 
-    # --- Build trajectories ---
+    # Build trajectories   
     odom_traj = []
     for ts, pose in zip(timestamps_us, poses_4x4):
         p = pose[:3,3]; q = Rotation.from_matrix(pose[:3,:3]).as_quat()
@@ -295,7 +295,7 @@ def run_lidar_pipeline(session, subsample=2):
 
 
 def _get_cached_pcd(cache, idx, files, loader, ground_dist):
-    # FIXME: magic number, tune per session
+    # magic number, tune per session
     """Get cached or freshly loaded point cloud"""
     if idx in cache:
         return cache[idx]
@@ -329,7 +329,7 @@ def generate_comparison(results, output_dir):
         '2012-10-28': 'Autumn',
     }
 
-    # --- Comparison table ---
+    # Comparison table
     table_lines = []
     table_lines.append("=" * 100)
     table_lines.append("CROSS-SEASON COMPARISON: LiDAR SLAM Pipeline (Odom-Aided ICP + Local Map + GPS LC)")
@@ -363,7 +363,7 @@ def generate_comparison(results, output_dir):
     with open(output_dir / 'comparison_table.txt', 'w') as f:
         f.write(table_text + "\n")
 
-    # --- Plot 1: All trajectories (subplots) ---
+    # Plot 1: All trajectories (subplots)
     n = len(sessions)
     fig, axes = plt.subplots(2, 2, figsize=(20, 20))
     axes = axes.flatten()
@@ -391,7 +391,7 @@ def generate_comparison(results, output_dir):
     print(f"  Saved: all_trajectories.png")
     plt.close()
 
-    # --- Plot 2: ATE over time (all sessions) ---
+    # Plot 2: ATE over time (all sessions)
     fig, ax = plt.subplots(figsize=(16, 8))
     colors = ['blue', 'green', 'red', 'orange']
     for i, s in enumerate(sessions):
@@ -410,13 +410,13 @@ def generate_comparison(results, output_dir):
     print(f"  Saved: ate_comparison.png")
     plt.close()
 
-    # --- Plot 3: Bar chart ---
+    #Plot 3: Bar chart
     fig, axes = plt.subplots(1, 3, figsize=(18, 6))
 
     labels = [f"{s}\n{season_names.get(s, '?')}" for s in sessions]
     x = np.arange(len(sessions))
 
-    # ATE RMSE
+    # ATE RMSE   
     ate_rmse = [results[s]['ate_opt']['rmse'] for s in sessions]
     bars = axes[0].bar(x, ate_rmse, color=colors[:len(sessions)], alpha=0.8, edgecolor='black')
     axes[0].set_ylabel('ATE RMSE (m)', fontsize=12)
@@ -514,7 +514,7 @@ if __name__ == '__main__':
             traceback.print_exc()
             continue
 
-    # --- Generate comparison ---
+    # Generate comparison
     if len(results) >= 2:
         print(f"\n{'#'*80}")
         print(f"# CROSS-SEASON COMPARISON")

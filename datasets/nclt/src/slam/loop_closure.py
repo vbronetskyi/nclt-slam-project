@@ -1,5 +1,4 @@
-"""
-Loop closure detection and pose graph optimization.
+"""Loop closure detection and pose graph optimization
 
 Scan context descriptors (Kim & Kim 2018) for LC candidate search, FPFH+RANSAC
 global registration for coarse pose, point-to-plane ICP for refinement, and a
@@ -24,7 +23,7 @@ class ScanContext:
 
     def __init__(self, ns=60, nr=20, max_r=80.0):
         # ns=60 sectors -> 6 deg yaw bins; fine enough for NCLT but cheap to slide.
-        # nr=20 rings out to 80m picks up buildings and tree lines on campus.
+        # nr=20 rings out to 80m picks up buildings and tree lines on campus
         self.ns, self.nr, self.max_r = ns, nr, max_r
 
     def compute(self, pts):
@@ -126,7 +125,7 @@ class PoseGraphOptimizer2D:
 
     def __init__(self, odom_w=1.0, lc_w=10.0, damping=1e-3):
         # LC edges weighted 10x higher than odom because they are metric
-        # (ICP-verified) constraints and should pull harder than drift-prone odom.
+        # (ICP-verified) constraints and should pull harder than drift-prone odom   
         self.ow, self.lw, self.damping = odom_w, lc_w, damping
 
     @staticmethod

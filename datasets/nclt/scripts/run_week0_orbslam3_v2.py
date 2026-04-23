@@ -1,14 +1,8 @@
 #!/usr/bin/env python3
-"""
-Week 0 v2: ORB-SLAM3 Monocular evaluation on NCLT.
+"""Week 0 v2: ORB-SLAM3 Monocular evaluation on NCLT
 
 Runs ORB-SLAM3 in pure monocular mode on NCLT Ladybug3 Camera 0 images,
 then evaluates against ground truth using Sim(3) alignment.
-
-Prerequisites:
-    - ORB-SLAM3 built at /tmp/ORB_SLAM3/
-    - Data prepared with prepare_orbslam3_mono_inertial.py
-    - NCLT ground truth available
 
 Usage:
     python run_week0_orbslam3_v2.py --session 2012-04-29 [--max-images 5000]
@@ -111,7 +105,7 @@ def run_orbslam3(session, data_dir, output_name, config_path, timeout=600):
     print(f"  Completed in {t_elapsed:.1f}s (exit code {result.returncode})")
     print(f"  Maps: {n_maps}, Keyframes: {n_kfs}")
 
-    # find trajectory file
+    #find trajectory file
     traj_file = Path('/tmp') / f'f_{output_name}.txt'
     if traj_file.exists():
         n_poses = sum(1 for _ in open(traj_file))
@@ -123,7 +117,7 @@ def run_orbslam3(session, data_dir, output_name, config_path, timeout=600):
 
 
 def evaluate_trajectory(traj_file, session, results_dir):
-    # XXX: hardcoded path, move to config
+    # hardcoded path, move to config
     """evaluate ORB-SLAM3 trajectory against NCLT ground truth"""
     # load SLAM trajectory
     slam_data = np.loadtxt(str(traj_file))
@@ -192,7 +186,7 @@ def evaluate_trajectory(traj_file, session, results_dir):
         'ate_pct': ate_rmse / gt_len * 100 if gt_len > 0 else 0,
     }
 
-    # plot
+    #plot
     fig, axes = plt.subplots(1, 2, figsize=(18, 8))
 
     ax1 = axes[0]
@@ -286,7 +280,7 @@ def main():
             print(f"  Scale: {metrics['scale']:.1f}")
             print(f"  ATE RMSE: {metrics['ate_rmse']:.1f}m ({metrics['ate_pct']:.1f}%)")
 
-    # summary table
+    # summary table   
     if all_metrics:
         print(f"\n{'='*70}")
         print("COMPARISON TABLE")
@@ -299,7 +293,7 @@ def main():
                   f"{m['gt_length_m']:>7.1f} {m['scale']:>8.1f} "
                   f"{m['ate_rmse']:>8.1f} {m['ate_pct']:>5.1f}%")
 
-        # save metrics
+        # save metrics   
         metrics_path = RESULTS_DIR / 'metrics.txt'
         with open(metrics_path, 'w') as f:
             f.write("ORB-SLAM3 Monocular Evaluation Results\n")

@@ -1,5 +1,4 @@
-"""
-Sensor data loader for NCLT (IMU, GPS, Odometry)
+"""Sensor data loader for NCLT (IMU, GPS, Odometry)
 
 Sensors: MS25 IMU, GPS, GPS RTK, KVH FOG, wheel odometry
 Ref: https://robots.engin.umich.edu/nclt/

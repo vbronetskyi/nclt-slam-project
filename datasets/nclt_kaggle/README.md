@@ -10,30 +10,20 @@ This pipeline implements LiDAR-based place recognition on the [NCLT dataset](htt
 
 Training is done on Kaggle GPU using the preprocessed [NCLT hackathon dataset](https://www.kaggle.com/datasets/creatorofuniverses/nclt-iprofi-hack-23) (10 sessions, Jan--Dec 2012). A seperate [sensors addon dataset](https://www.kaggle.com/datasets/) provides IMU, GPS, odometry, and ground truth for multi-sensor fusion experiments.
 
----
 
-## Research Questions
-
-- **RQ1**: Can MinkLoc3D achieve Recall@1 > 0.9 on NCLT with < 50ms inference on Jetson Orin Nano?
-- **RQ2**: How much does learned loop closure reduce ATE compared to odometry-only SLAM?
-- **RQ3**: What voxel resolution works best in terms of the accuracy/latency trade-off for real-time operation?
-- **RQ4**: Can INT8 quantization preserve >95% of FP32 recall while achieving 2x speedup on Hailo-8?
-- **RQ5**: How does seasonal/weather variation across NCLT sessions affect place recognition robustness?
-
----
 
 ## Setup and Requirements
 
-**System:** Ubuntu 24.04, Python 3.10+
+System: Ubuntu 24.04, Python 3.10+
 
-**Dependencies:**
+Dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
 Core packages: PyTorch, Open3D, MinkowskiEngine, NumPy, pandas, scipy, scikit-learn. See `requirements.txt` for the full list.
 
-**Dataset:** download the preprocessed NCLT dataset from [Kaggle](https://www.kaggle.com/datasets/creatorofuniverses/nclt-iprofi-hack-23) into `data/NCLT_preprocessed/`, or use the download script:
+Dataset: download the preprocessed NCLT dataset from [Kaggle](https://www.kaggle.com/datasets/creatorofuniverses/nclt-iprofi-hack-23) into `data/NCLT_preprocessed/`, or use the download script:
 
 ```bash
 # install kaggle API, place kaggle.json in ~/.kaggle/
@@ -45,36 +35,33 @@ When running on Kaggle, data is automatically available at `/kaggle/input/nclt-i
 
 **Sensors addon** (optional, for IMU/GPS/odometry experiments): attach the `nclt-sensors-addon` dataset on Kaggle or download locally to `data/nclt_sensors_addon/`. The addon packages the MS25 IMU (`ms25.csv`, 3-axis accel + gyro + mag), consumer GPS (`gps.csv`), RTK GPS (`gps_rtk.csv`), KVH fiber-optic gyro heading (`kvh.csv`), wheel odometry (`odometry_mu.csv`), and dataset-aligned ground truth (`groundtruth_*.csv`) for each of the 10 sessions already included in the preprocessed LiDAR pack. It integrates via `src/datasets/sensor_loader.py`, which reads the CSVs, converts units to SI, and time-aligns each stream against the Velodyne utimes so the SLAM pipeline can fuse IMU/GPS/FOG with the point-cloud odometry.
 
----
+
 
 ## How to Run
 
 ```bash
-# 1. install the project in editable mode
-pip install -e .
-
-# 2. verify data loading and preprocessing (local)
+# 1. download dataset from Kaggle
 python scripts/download_nclt_sample.py --source kaggle
 
-# 3. prepare kaggle dataset (pair annotations for training)
+# 2. prepare kaggle dataset (pair annotations for training)
 python scripts/prepare_kaggle_dataset.py
 
-# 4. train place recognition model (local GPU or Kaggle notebook)
+# 3. train place recognition model (local GPU or Kaggle notebook)
 python scripts/train_place_recognition.py --config configs/train_config.yaml
 
-# 5. evaluate SLAM pipeline (ICP odometry + learned loop closure)
+# 4. evaluate SLAM pipeline (ICP odometry + learned loop closure)
 python scripts/evaluate_slam.py --config configs/slam_config.yaml
 ```
 
 ### Training on Kaggle (recommended)
 
 1. Fork the notebook `notebooks/02_kaggle_training.ipynb`
-2. Upload to Kaggle and attach both datasets:
+2. Upload to Kaggle and attach both datasets:   
    - [NCLT Preprocessed](https://www.kaggle.com/datasets/creatorofuniverses/nclt-iprofi-hack-23) - LiDAR point clouds, images, poses
    - [NCLT Sensors Addon](https://www.kaggle.com/datasets/) - IMU, GPS, odometry, ground truth
 3. Run all cells
 
----
+
 
 ## Dataset
 
@@ -111,7 +98,7 @@ NCLT_preprocessed/
 
 See `data/README.md` for detailed download and setup instructions.
 
----
+
 
 ## Architecture
 
@@ -124,18 +111,16 @@ See `data/README.md` for detailed download and setup instructions.
    - Spatial constraint: 50 m search radius
    - Temporal constraint: 30 s minimum time difference
 4. **Pose Graph**: Levenberg-Marquardt optimization
-5. **Edge Deployment**: ONNX export, TensorRT (Jetson) or Hailo SDK (Hailo-8)
+5. **Edge Deployment**: ONNX export, TensorRT (Jetson) or Hailo SDK (Hailo-8)   
 
----
+
 
 ## Project Structure
 
 ```
 datasets/nclt_kaggle/
 ├── README.md                              <- this file
-├── PROJECT_CONTEXT.md                     <- research context and code conventions
 ├── requirements.txt                       <- Python dependencies
-├── setup.py                               <- editable install
 ├── configs/
 │   ├── dataset_config.yaml                <- dataset paths, sessions, sensor config
 │   ├── train_config.yaml                  <- model, optimizer, loss, augmentation
@@ -181,7 +166,7 @@ datasets/nclt_kaggle/
     └── nclt_mock/                         <- mock sensor data for offline testing
 ```
 
----
+
 
 ## Experiment Results
 
@@ -199,21 +184,19 @@ Current status:
 - [ ] SLAM integration (ICP + learned loop closure)
 - [ ] Edge deployment (ONNX, TensorRT)
 
----
+
 
 ## Limitations
 
-- No trained weights yet, so all RQs are open; Recall@K numbers below are only the plan. The Kaggle notebook boots but has not been run to completion on the Kaggle GPU quota.
-- The preprocessed hackathon pack already voxelises at 0.1 m, so the RQ3 voxel sweep is bounded below by that; finer grids would need re-processing from the raw NCLT `.bin` files.
-- Positive/negative thresholds (10 m / 25 m) were copied from the PointNetVLAD training recipe; they may be too loose for dense urban sections of NCLT.
-- Edge deployment (Jetson / Hailo-8) has not been validated end-to-end, only assumed from the ONNX op set.
+- No trained weights yet.  The Kaggle notebook boots but has not been run to completion on the Kaggle GPU quota.
+- The preprocessed hackathon pack already voxelises at 0.1 m, so any voxel sweep is bounded below by that; finer grids would need re-processing from the raw NCLT `.bin` files.
+- Positive/negative thresholds (10 m / 25 m) were copied from the PointNetVLAD training recipe; they may be too loose for dense urban sections of NCLT
 
 
 
 ## Content map
 
-- [`README.md`](README.md) - this file.  research questions, setup, how to run
-- [`PROJECT_CONTEXT.md`](PROJECT_CONTEXT.md) - research context, code conventions, edge-deployment plan
+- [`README.md`](README.md) - this file.  setup, how to run
 - [`configs/`](configs/) - dataset / train / SLAM configs
 - [`notebooks/`](notebooks/) - 4 notebooks (data, training, evaluation, sensor exploration)
 - [`scripts/`](scripts/) - download, prepare, train, evaluate
@@ -222,9 +205,7 @@ Current status:
 
 ## Where to read next
 
-- **research questions**: this README `Research Questions` section (RQ1-RQ5)
-- **deeper research context**: `PROJECT_CONTEXT.md`
-- **why this is separate from NCLT full pipeline**: the full NCLT (../nclt/) uses all 4 seasonal sessions; this Kaggle subset uses a preprocessed 10-session hackathon dataset that's training-friendly
+- **why this is seperate from NCLT full pipeline**: the full NCLT (../nclt/) uses all 4 seasonal sessions; this Kaggle subset uses a preprocessed 10-session hackathon dataset that's training-friendly
 
 this pipeline is NOT finished - models not trained yet, see `Experiment Results` section for the checklist of what's done / pending
 
@@ -232,7 +213,7 @@ this pipeline is NOT finished - models not trained yet, see `Experiment Results`
 
 - [NCLT Dataset](https://robots.engin.umich.edu/nclt/), official website
 - [NCLT Kaggle (hackathon)](https://www.kaggle.com/datasets/creatorofuniverses/nclt-iprofi-hack-23) - preprocessed version
-- J. Komorowski, "MinkLoc3D: Point Cloud Based Large-Scale Place Recognition," *WACV*, 2021.
+- J. Komorowski, MinkLoc3D: Point Cloud Based Large-Scale Place Recognition, *WACV*, 2021.
 
 ```bibtex
 @article{carlevaris2016university,

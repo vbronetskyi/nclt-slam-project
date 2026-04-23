@@ -1,5 +1,4 @@
-"""
-Odometry-aided ICP: wheel-odom prediction, sliding local map, ground removal.
+"""Odometry-aided ICP: wheel-odom prediction, sliding local map, ground removal
 
 Why: plain frame-to-frame ICP drifts on low-texture NCLT paths. Three fixes:
  1. init ICP from wheel-odom delta (so we start near the minimum, not at I)
@@ -8,7 +7,7 @@ Why: plain frame-to-frame ICP drifts on low-texture NCLT paths. Three fixes:
     surface at the expense of real structure (walls, poles, tree trunks)
 
 The file is named imu_fusion.py for historical reasons; in practice NCLT's MS25
-IMU is too slow (~48 Hz) to preintegrate reliably, so we lean on wheel odometry
+IMU is too slow (+-48 Hz) to preintegrate reliably, so we lean on wheel odometry
 which is already at 100 Hz in the dataset.
 """
 import numpy as np
@@ -120,17 +119,17 @@ class GPSLoopClosureDetector:
     """GPS-based loop closure detection.
 
     Converts lat/lon to a local ENU-ish planar frame (small-angle flat-earth,
-    good enough for NCLT's ~1 km campus radius), then finds pairs that are
+    good enough for NCLT's +-1 km campus radius), then finds pairs that are
     spatially close but separated in time (> min_gap frames). This is a cheap
     LC proposal step; we still verify each candidate with FPFH + ICP before
     adding to the pose graph.
     """
 
     def __init__(self, gps_df, min_gap=200, radius=15.0, dedup_window=50):
-        # min_gap=200 frames (~40 s at 5 Hz): don't propose LC against recent
-        # frames since those are just odometry continuation.
+        # min_gap=200 frames (+-40 s at 5 Hz): don't propose LC against recent
+        # frames since those are just odometry continuation   
         # radius=15 m: larger -> more false matches; smaller -> miss real closures.
-        # NCLT RTK GPS is ~10 cm so 15 m is well above noise floor.
+        # NCLT RTK GPS is +-10 cm so 15 m is well above noise floor
         self.min_gap = min_gap
         self.radius = radius
         self.dedup_window = dedup_window
@@ -209,14 +208,14 @@ def remove_ground(pcd, distance_threshold=0.25, ransac_n=3, num_iterations=200):
             ransac_n=ransac_n,
             num_iterations=num_iterations)
 
-        # plane: [a, b, c, d] with ax+by+cz+d=0, normal is (a,b,c).
+        # plane: [a, b, c, d] with ax+by+cz+d=0, normal is (a,b,c)
         # abs(n_z) > 0.7 means mostly horizontal plane i.e. likely the ground.
         normal = np.array(plane_model[:3])
         if abs(normal[2]) > 0.7:
             non_ground = pcd.select_by_index(inliers, invert=True)
             return non_ground
     except Exception:
-        # RANSAC can throw if pcd is too sparse. Fall through and return original.
+        # RANSAC can throw if pcd is too sparse. Fall thorugh and return original.
         pass
 
     return pcd

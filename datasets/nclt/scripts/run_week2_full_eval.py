@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Full-scale KISS-ICP vs Custom ICP+IMU on NCLT 2012-04-29 (12,971 scans)"""
+"""Full-scale KISS-ICP vs Custom ICP+IMU on NCLT 2012-04-29 (12,971 scans)
+"""
 import os
 import sys
 import numpy as np
@@ -16,7 +17,7 @@ from data_loaders.velodyne_loader import VelodyneLoader
 from data_loaders.ground_truth_loader import GroundTruthLoader
 
 SESSION = '2012-04-29'
-# voxel_size = 0.3  # was 0.5 too coarse for poles
+# voxel_size = 0.3  # was 0.5 too coarse for poles   
 KISS_ICP_SUBSAMPLE = 5  # Use every 5th scan for KISS-ICP (2,594 scans - manageable)
 CUSTOM_ICP_SUBSAMPLE = 2  # Use every 2nd scan for Custom ICP (6,486 scans)
 RESULTS_DIR = Path(__file__).resolve().parent.parent / 'results' / 'week2_icp_loop_closure'
@@ -26,8 +27,8 @@ PLOTS_DIR.mkdir(parents=True, exist_ok=True)
 
 print("  SLAM PRACTICAL EVALUATION: KISS-ICP vs Custom ICP+IMU")
 print(f"Session: {SESSION}")
-print(f"KISS-ICP: every {KISS_ICP_SUBSAMPLE}th scan (~2,594 scans - practical for performance)")
-print(f"Custom ICP: every {CUSTOM_ICP_SUBSAMPLE}nd scan (~6,486 scans - denser sampling)")
+print(f"KISS-ICP: every {KISS_ICP_SUBSAMPLE}th scan (+-2,594 scans - practical for performance)")
+print(f"Custom ICP: every {CUSTOM_ICP_SUBSAMPLE}nd scan (+-6,486 scans - denser sampling)")
 print(f"Results: {RESULTS_DIR}")
 
 
@@ -44,7 +45,7 @@ class CustomICPWithIMU:
         """Get motion prediction from IMU data"""
         if self.imu_data is None or self.prev_timestamp is None:
             return np.eye(4)
-        # TODO: integrate angular velocity + linear acceleration
+        # integrate angular velocity + linear acceleration
         return np.eye(4)
 
     def register_scan(self, points: np.ndarray, timestamp: int):
@@ -302,7 +303,7 @@ def compute_rpe(traj_est, traj_gt, delta=1):
     rot_errors = []
 
     for i in range(n - delta):
-        # ground truth relative motion
+        #ground truth relative motion
         pos_gt_i = traj_gt[i, 1:4]
         pos_gt_j = traj_gt[i + delta, 1:4]
         quat_gt_i = traj_gt[i, [4, 5, 6, 7]]  # qw, qx, qy, qz
@@ -321,7 +322,7 @@ def compute_rpe(traj_est, traj_gt, delta=1):
 
         T_gt_rel = np.linalg.inv(T_gt_i) @ T_gt_j
 
-        # estimated relative motion
+        # estimated relative motion   
         pos_est_i = traj_est[i, 1:4]
         pos_est_j = traj_est[i + delta, 1:4]
         quat_est_i = traj_est[i, [4, 5, 6, 7]]
@@ -493,7 +494,7 @@ def print_metrics_table(custom_traj, gt_traj, custom_time, kiss_traj=None, kiss_
 
 def main():
 
-    # XXX: hardcoded path, move to config
+    # hardcoded path, move to config
     # load IMU data
     imu_data = load_imu_data(SESSION)
 

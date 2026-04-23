@@ -1,5 +1,4 @@
-"""
-ATE and RPE trajectory metrics. trajectories are in TUM format:
+"""ATE and RPE trajectory metrics. trajectories are in TUM format:
 [timestamp, x, y, z, qx, qy, qz, qw]
 
 ATE = Absolute Trajectory Error, per-frame position L2 error after time sync.
@@ -62,7 +61,7 @@ def compute_rpe(traj_est, traj_gt, delta=1):
 
 def sync_trajectories(est_traj, gt_all, tolerance=0.2):
     """align estimated + gt by timestamp (nearest-neighbour, 0.2s window).
-    NCLT gt runs at ~150 Hz so any reasonable SLAM output finds a gt match.
+    NCLT gt runs at +-150 Hz so any reasonable SLAM output finds a gt match.
     tolerance 0.2s: big enough for 5 Hz Ladybug3, tight enough to avoid jumps."""
     gt_sync = []
     est_sync = []

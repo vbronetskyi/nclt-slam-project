@@ -1,9 +1,8 @@
-"""
-Velodyne HDL-32E loader for NCLT.
+"""Velodyne HDL-32E loader for NCLT
 
 NCLT binary format is quirky: per point it stores x/y/z as uint16 then
 intensity + laser_id as uint8 each, so 8 bytes total (the extra byte is
-essentially padding). recover metric coords via:
+padding). recover metric coords via:
 
     actual[m] = raw * 0.005 - 100.0
 
@@ -95,7 +94,7 @@ class VelodyneLoader:
                 utime = struct.unpack('<Q', f.read(8))[0]
                 f.read(4)  # padding
 
-                # read hits
+                #read hits
                 hits = []
                 for _ in range(num_hits):
                     x_raw = struct.unpack('<H', f.read(2))[0]

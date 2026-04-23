@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Dense Custom ICP Evaluation - Every 2nd scan with improved settings
+"""Dense Custom ICP Evaluation - Every 2nd scan with improved settings
 Processes 6,486 scans from NCLT session 2012-04-29
 """
 import os
@@ -20,7 +19,7 @@ from data_loaders.ground_truth_loader import GroundTruthLoader
 
 SESSION = '2012-04-29'
 SUBSAMPLE = 2  # every 2nd scan -> 6,486 scans
-# TODO: try subsample=1 once i can run overnight
+# try subsample=1 once i can run overnight
 RESULTS_DIR = Path(__file__).resolve().parent.parent / 'results' / 'week2_icp_loop_closure'
 PLOTS_DIR = RESULTS_DIR / 'plots'
 
@@ -28,7 +27,7 @@ PLOTS_DIR.mkdir(parents=True, exist_ok=True)
 
 print("  DENSE CUSTOM ICP EVALUATION")
 print(f"Session: {SESSION}")
-print(f"Sampling: every {SUBSAMPLE}nd scan (~6,486 scans)")
+print(f"Sampling: every {SUBSAMPLE}nd scan (+-6,486 scans)")
 print(f"Settings: 0.3m voxel, 100 iterations, 1.5m threshold")
 print(f"Results: {RESULTS_DIR}")
 
@@ -138,7 +137,7 @@ def compute_ate(traj_est, traj_gt):
 
 
 def compute_rpe(traj_est, traj_gt, delta=1):
-    # NOTE: not thread-safe but we run single threaded anyway
+    #not thread-safe but we run single threaded anyway
     n = len(traj_est)
     trans_errors = []
     rot_errors = []
@@ -147,7 +146,7 @@ def compute_rpe(traj_est, traj_gt, delta=1):
         # ground truth relative motion
         pos_gt_i = traj_gt[i, 1:4]
         pos_gt_j = traj_gt[i + delta, 1:4]
-        # TUM format: qx, qy, qz, qw
+        # TUM format: qx, qy, qz, qw   
         quat_gt_i = traj_gt[i, [7, 4, 5, 6]]  # [qw, qx, qy, qz]
         quat_gt_j = traj_gt[i + delta, [7, 4, 5, 6]]
 
@@ -164,7 +163,7 @@ def compute_rpe(traj_est, traj_gt, delta=1):
 
         T_gt_rel = np.linalg.inv(T_gt_i) @ T_gt_j
 
-        # estimated relative motion
+        # estimated relative motion   
         pos_est_i = traj_est[i, 1:4]
         pos_est_j = traj_est[i + delta, 1:4]
         quat_est_i = traj_est[i, [7, 4, 5, 6]]  # [qw, qx, qy, qz]
@@ -186,7 +185,7 @@ def compute_rpe(traj_est, traj_gt, delta=1):
         # relative error
         T_error = np.linalg.inv(T_gt_rel) @ T_est_rel
 
-        # translation error
+        #translation error
         trans_error = np.linalg.norm(T_error[:3, 3])
         trans_errors.append(trans_error)
 
@@ -211,9 +210,7 @@ def compute_rpe(traj_est, traj_gt, delta=1):
     }
 
 
-# ============================================================================
 # MAIN EXECUTION
-# ============================================================================
 
 print("\n" + "="*80)
 print("LOADING GROUND TRUTH")

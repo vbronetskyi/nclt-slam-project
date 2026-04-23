@@ -1,4 +1,5 @@
-"""tests for sensor loaders, synchronizer, session manager, and utilities"""
+"""tests for sensor loaders, synchronizer, session manager, and utilities
+"""
 
 from __future__ import annotations
 
@@ -8,9 +9,9 @@ import numpy as np
 import pytest
 
 
-# ---------------------------------------------------------------------------
+
 # Fixtures
-# ---------------------------------------------------------------------------
+
 
 MOCK_DATA_DIR = Path(__file__).resolve().parent.parent / "data" / "nclt_mock" / "2012-01-08"
 
@@ -88,9 +89,9 @@ def session_manager(data_dir: Path, sensor_config: dict):
     return SessionSensorManager(data_dir, sensor_config)
 
 
-# ---------------------------------------------------------------------------
-# Tests for BaseSensorLoader (exercised via IMULoader)
-# ---------------------------------------------------------------------------
+
+#Tests for BaseSensorLoader (exercised via IMULoader)
+
 
 
 class TestBaseSensorLoader:
@@ -132,13 +133,13 @@ class TestBaseSensorLoader:
         assert result is None
 
     def test_slice(self, imu_loader):
-        """1-second slice yields ~100 samples"""
+        """1-second slice yields +-100 samples"""
         start = T0
         end = T0 + 1_000_000  # 1 second
 
         sliced = imu_loader.slice(start, end)
 
-        # At 100 Hz we expect ~101 samples (inclusive endpoints)
+        # At 100 Hz we expect +-101 samples (inclusive endpoints)
         assert 95 <= len(sliced) <= 110
         assert sliced.values.shape[1] == 9
         assert sliced.columns == imu_loader.load().columns
@@ -167,9 +168,9 @@ class TestBaseSensorLoader:
         assert result is None
 
 
-# ---------------------------------------------------------------------------
+
 # Tests for individual sensor loaders
-# ---------------------------------------------------------------------------
+
 
 
 class TestIndividualLoaders:
@@ -239,9 +240,9 @@ class TestIndividualLoaders:
         np.testing.assert_allclose(pose[3, :], [0, 0, 0, 1], atol=1e-10)
 
 
-# ---------------------------------------------------------------------------
-# Tests for SensorSynchronizer
-# ---------------------------------------------------------------------------
+
+#Tests for SensorSynchronizer
+
 
 
 class TestSensorSynchronizer:
@@ -278,9 +279,9 @@ class TestSensorSynchronizer:
             assert len(sensor_data) > 0, f"Sensor '{name}' has no data in window"
 
 
-# ---------------------------------------------------------------------------
+
 # Tests for SessionSensorManager
-# ---------------------------------------------------------------------------
+
 
 
 class TestSessionSensorManager:
@@ -317,9 +318,9 @@ class TestSessionSensorManager:
         assert isinstance(sync, SensorSynchronizer)
 
 
-# ---------------------------------------------------------------------------
+
 # Tests for imu_utils.py
-# ---------------------------------------------------------------------------
+
 
 
 class TestIMUUtils:
@@ -449,16 +450,16 @@ class TestIMUUtils:
         assert np.all(np.abs(bias) < 1.0)
 
 
-# ---------------------------------------------------------------------------
-# Tests for gps_utils.py
-# ---------------------------------------------------------------------------
+
+#Tests for gps_utils.py
+
 
 
 class TestGPSUtils:
     """Tests for GPS utility functions"""
 
     def test_lla_to_ecef_equator(self):
-        """At (0, 0, 0) the ECEF X coordinate should be ~WGS84_A"""
+        """At (0, 0, 0) the ECEF X coordinate should be +-WGS84_A"""
         from src.utils.gps_utils import WGS84_A, lla_to_ecef
 
         ecef = lla_to_ecef(0.0, 0.0, 0.0)
@@ -491,7 +492,7 @@ class TestGPSUtils:
 
         assert enu.shape == (3, 3)
 
-        # First point is the reference, so ENU should be ~ (0, 0, 0)
+        #First point is the reference, so ENU should be ~ (0, 0, 0)
         np.testing.assert_allclose(enu[0], [0.0, 0.0, 0.0], atol=1e-6)
 
     def test_lla_to_enu_empty(self):
@@ -510,7 +511,7 @@ class TestGPSUtils:
 
         dist = haversine_distance(0.0, 0.0, 1.0, 0.0)
 
-        # 1 degree latitude ~ 111.19 km
+        # 1 degree latitude +- 111.19 km
         assert 110_000 < dist < 112_000
 
     def test_gps_to_pose(self):

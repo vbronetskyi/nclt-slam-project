@@ -1,4 +1,5 @@
-"""MinkLoc3D-style place recognition with GeM pooling for LiDAR point clouds"""
+"""MinkLoc3D-style place recognition with GeM pooling for LiDAR point clouds
+"""
 
 from __future__ import annotations
 
@@ -64,7 +65,7 @@ class MinkLoc3D(nn.Module):
     def forward(self, x: ME.SparseTensor) -> torch.Tensor:
         features = self.backbone(x)  # SparseTensor
 
-        # pool per-batch
+        #pool per-batch
         batch_size = features.C[:, 0].max().item() + 1
         descriptors = []
         for b in range(batch_size):

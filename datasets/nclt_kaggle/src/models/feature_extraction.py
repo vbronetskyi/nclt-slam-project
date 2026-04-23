@@ -1,4 +1,5 @@
-"""sparse 3D convolutional feature extraction using MinkowskiEngine"""
+"""sparse 3D convolutional feature extraction using MinkowskiEngine
+"""
 
 from __future__ import annotations
 

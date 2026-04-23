@@ -1,4 +1,5 @@
-"""tests for NCLT dataset loading and pair generation"""
+"""tests for NCLT dataset loading and pair generation
+"""
 
 from __future__ import annotations
 
@@ -9,9 +10,9 @@ import numpy as np
 import pytest
 
 
-# ---------------------------------------------------------------------------
+
 # Fixtures
-# ---------------------------------------------------------------------------
+
 
 
 @pytest.fixture
@@ -69,9 +70,9 @@ def sample_data(tmp_path: Path) -> Path:
     return data_root
 
 
-# ---------------------------------------------------------------------------
+
 # Tests for NCLTDataset
-# ---------------------------------------------------------------------------
+
 
 
 class TestNCLTDataset:
@@ -104,7 +105,7 @@ class TestNCLTDataset:
         sample = ds[0]
 
         pc = sample["point_cloud"]
-        # Should be (N, 4) - x, y, z, intensity
+        #Should be (N, 4) - x, y, z, intensity
         assert pc.ndim == 2
         assert pc.shape[1] == 4
 
@@ -176,9 +177,9 @@ nclt:
             NCLTDataset(config_path=config_path, split="train")
 
 
-# ---------------------------------------------------------------------------
+
 # Tests for point cloud loading
-# ---------------------------------------------------------------------------
+
 
 
 class TestPointCloudLoading:
@@ -229,9 +230,9 @@ class TestPointCloudLoading:
             NCLTDataset.load_point_cloud(bad_path)
 
 
-# ---------------------------------------------------------------------------
-# Tests for pose conversion
-# ---------------------------------------------------------------------------
+
+#Tests for pose conversion
+
 
 
 class TestPoseConversion:

@@ -1,4 +1,5 @@
-"""NCLT sensors-addon loaders: IMU, GPS, odometry, gyro, ground truth from headerless CSVs"""
+"""NCLT sensors-addon loaders: IMU, GPS, odometry, gyro, ground truth from headerless CSVs
+"""
 
 from __future__ import annotations
 
@@ -12,9 +13,9 @@ import numpy as np
 logger = logging.getLogger(__name__)
 
 
-# ---------------------------------------------------------------------------
+
 # Data container
-# ---------------------------------------------------------------------------
+
 
 @dataclass
 class SensorData:
@@ -36,9 +37,9 @@ class SensorData:
         )
 
 
-# ---------------------------------------------------------------------------
+
 # Base loader
-# ---------------------------------------------------------------------------
+
 
 class BaseSensorLoader:
     """base class for CSV sensor loaders with lazy I/O and bisect-based lookups"""
@@ -147,11 +148,11 @@ class BaseSensorLoader:
 
         idx = bisect.bisect_left(ts, utime)
 
-        # exact match
+        # exact match   
         if idx < len(ts) and ts[idx] == utime:
             return data.values[idx].copy()
 
-        # idx points to the first element > utime, so bracket is [idx-1, idx]
+        # idx points to the first element > utime, so bracket is [idx-1, idx]   
         if idx == 0 or idx >= len(ts):
             return None
 
@@ -182,9 +183,9 @@ class BaseSensorLoader:
         )
 
 
-# ---------------------------------------------------------------------------
+
 # Concrete sensor loaders
-# ---------------------------------------------------------------------------
+
 
 class IMULoader(BaseSensorLoader):
     """loader for ms25.csv IMU data (Microstrain MS25)"""
@@ -249,9 +250,9 @@ class GroundTruthLoader(BaseSensorLoader):
         return _euler_to_se3(x, y, z, roll, pitch, yaw)
 
 
-# ---------------------------------------------------------------------------
-# Synchronizer
-# ---------------------------------------------------------------------------
+
+#Synchronizer
+
 
 class SensorSynchronizer:
     """synchronize multiple sensor streams to a reference timeline"""
@@ -302,9 +303,9 @@ class SensorSynchronizer:
         )
 
 
-# ---------------------------------------------------------------------------
+
 # Session manager
-# ---------------------------------------------------------------------------
+
 
 # sensor name -> loader class
 _SENSOR_REGISTRY: dict[str, type[BaseSensorLoader]] = {
@@ -433,9 +434,9 @@ class SessionSensorManager:
         )
 
 
-# ---------------------------------------------------------------------------
+
 # Private helpers
-# ---------------------------------------------------------------------------
+
 
 def _euler_to_se3(
     x: float, y: float, z: float,

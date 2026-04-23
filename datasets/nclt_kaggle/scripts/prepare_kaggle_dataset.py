@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prepare NCLT dataset for training on Kaggle.
+"""Prepare NCLT dataset for training on Kaggle
 
 Handles Kaggle notebook setup: symlinks, data integrity checks,
 pair CSV generation, and dataset statistics.
@@ -78,7 +78,7 @@ def load_session_poses(session_dir: Path) -> pd.DataFrame:
 
 
 def generate_pairs(
-    # TODO: check with prof if ATE RMSE or ATE mean is what the thesis needs
+    # check with prof if ATE RMSE or ATE mean is what the thesis needs
     data_path: Path,
     sessions: list[str],
     positive_threshold: float = POSITIVE_THRESHOLD,

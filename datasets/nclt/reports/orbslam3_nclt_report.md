@@ -2,13 +2,13 @@
 
 ## 1. Problem Statement
 
-**Objective:** evaluate the feasibility of visual odometry/SLAM on the NCLT (North Campus Long-Term) dataset using ORB-SLAM3 in mono-inertial and stereo-inertial modes.
+Objective: evaluate the feasibility of visual odometry/SLAM on the NCLT (North Campus Long-Term) dataset using ORB-SLAM3 in mono-inertial and stereo-inertial modes.
 
 **The NCLT dataset** is a multi-sensor dataset collected on the University of Michigan campus from a Segway RMP platform. It contains data from LiDAR, cameras, IMU, GPS, and wheel odometry across 27 sessions spanning 15 months.
 
-**Test session:** 2012-04-29 (spring), duration ~43 min, total route length 3184 m.
+Test session: 2012-04-29 (spring), duration +-43 min, total route length 3184 m.
 
----
+
 
 ## 2. NCLT Sensor Hardware and Its Limitations
 
@@ -19,10 +19,10 @@
 | Type | Spherical (6 cameras: 5 lateral + 1 top) |
 | Resolution | 1616 x 1232 (downsampled to 808 x 616) |
 | Frame rate | **5 Hz** |
-| Field of view | ~120 per camera (fisheye) |
+| Field of view | +-120 per camera (fisheye) |
 | Shutter | Global shutter |
 
-**Cam0 issue:** in earlier experiments (0.2-0.3), Cam0 was mistakenly used; it is the **top-facing camera pointed at the sky**. This was only discovered after inspecting the images. All subsequent tests use Cam5 (front-facing).
+Cam0 issue: in earlier experiments (0.2-0.3), Cam0 was mistakenly used; it is the **top-facing camera pointed at the sky**. This was only discovered after inspecting the images. All subsequent tests use Cam5 (front-facing).
 
 ### 2.2. IMU - Microstrain 3DM-GX3-45 (MS25)
 
@@ -31,7 +31,7 @@
 | Rate | **48 Hz** | 200 Hz | **4.2x slower** |
 | Gyroscope noise | 0.00972 rad/s/sqrt(Hz) | 0.00017 rad/s/sqrt(Hz) | **57x worse** |
 | Accelerometer noise | 0.02855 m/s^2/sqrt(Hz) | 0.002 m/s^2/sqrt(Hz) | **14x worse** |
-| IMU samples per frame | ~10 | ~10 | Same |
+| IMU samples per frame | +-10 | +-10 | Same |
 
 > **EuRoC** is the dataset on which ORB-SLAM3 was developed and benchmarked (camera 20 Hz, IMU 200 Hz).
 
@@ -40,11 +40,11 @@
 ORB-SLAM3 in mono-inertial mode relies on **IMU preintegration** between camera frames. At 5 Hz the inter-frame interval is **200 ms** (versus 50 ms in EuRoC). During this interval:
 
 - The robot travels 0.2-0.6 m (large parallax)
-- The IMU integrates acceleration over 200 ms, accumulating position drift proportional to t^2
+- The IMU integrates acceleration over 200 ms, accumulating position drift proportional to t^2   
 - Accelerometer noise (14x worse than EuRoC) further amplifies the error
-- **Result:** velocity/position drift between frames is ~224x larger than in EuRoC
+- Result: velocity/position drift between frames is +-224x larger than in EuRoC   
 
----
+
 
 ## 3. Calibration
 
@@ -62,7 +62,7 @@ For ORB-SLAM3 the **KannalaBrandt8** (equidistant fisheye) model was used:
 - cx = 404, cy = 308
 - k1 = k2 = k3 = k4 = 0 (distortion coefficients unknown)
 
-> **Issue:** zero distortion coefficients for a lens with ~120 FOV introduce systematic error in the outer image regions.
+> Issue: zero distortion coefficients for a lens with +-120 FOV introduce systematic error in the outer image regions.
 
 ### 3.2. IMU Noise Parametars
 
@@ -79,22 +79,22 @@ Axis correctness was also verified: at standstill accel_z = -9.805 m/s^2 (gravit
 
 ### 3.3. Body-to-Camera Extrinsics (T_bc)
 
-Computed from the known Ladybug3 geometry (sphere of radius ~80 mm, center at 1.23 m above the body frame):
+Computed from the known Ladybug3 geometry (sphere of radius +-80 mm, center at 1.23 m above the body frame):
 
-**Cam5 (front-facing, 0 degrees):**
+Cam5 (front-facing, 0 degrees):
 ```
 T_bc = [0, 0, 1, 0.115;  1, 0, 0, 0.002;  0, 1, 0, -1.23;  0, 0, 0, 1]
 ```
 
----
+
 
 ## 4. Testing Methodology
 
 ### 4.1. Data Preparation
 
 Data were converted to the EuRoC format expected by ORB-SLAM3:
-- **Images:** PNG files named by nanosecond timestamps (`{utime_us * 1000}.png`)
-- **IMU:** CSV in the format `timestamp_ns, gx, gy, gz, ax, ay, az`
+- Images: PNG files named by nanosecond timestamps (`{utime_us * 1000}.png`)
+- IMU: CSV in the format `timestamp_ns, gx, gy, gz, ax, ay, az`
 - **5 IMU data variants** were created:
 
 | Version | Source | Rate | Description |
@@ -109,7 +109,7 @@ Data were converted to the EuRoC format expected by ORB-SLAM3:
 
 **12 configurations** were tested in two phases:
 
-**Phase B (Mono-Inertial, 3000 frames ~ 10 minutes):**
+Phase B (Mono-Inertial, 3000 frames ~ 10 minutes):
 
 | ID | Camera | Model | IMU | Details | Test Objective |
 |----|--------|-------|-----|---------|----------------|
@@ -124,14 +124,14 @@ Data were converted to the EuRoC format expected by ORB-SLAM3:
 | B009 | Cam5 | Fisheye | v1 | **CLAHE** | Contrast enhancement |
 | B010 | Cam5 | Fisheye | v1 | **5000 features** | More keypoints |
 
-**Phase C (Stereo-Inertial, 3000 frames):**
+Phase C (Stereo-Inertial, 3000 frames):
 
 | ID | Camera Pair | Baseline | Objective |
 |----|-------------|----------|-----------|
 | C_cam4_cam5 | Cam4 + Cam5 | 9.4 cm | Stereo with left + front |
 | C_cam5_cam1 | Cam5 + Cam1 | 9.5 cm | Stereo with front + right |
 
----
+
 
 ## 5. Results
 
@@ -146,11 +146,11 @@ Data were converted to the EuRoC format expected by ORB-SLAM3:
 | B005 | 0% | 0 | - | **Crash** | Segfault after map reset |
 | B006 | 2.6% | 79 -> 40 | 1 | Works | Pinhole **34x worse** |
 | B007 | 0% | 0 | - | **Crash** | Lateral camera fails |
-| B008 | 0% | 0 | - | **Crash** | "scale too small" |
+| B008 | 0% | 0 | - | **Crash** | scale too small |
 | B009 | 0% | 0 | - | **Crash** | CLAHE broke tracking |
 | B010 | 0% | 0 | - | **Crash** | 5000 features = worse |
 
-**Key findings from Phase B:**
+Key findings from Phase B:
 1. **Fisheye model is essential** - pinhole yields 2.6% vs. 90.2%
 2. **IMU rate does not matter** - v1 (47 Hz), v2 (100 Hz), v3 (200 Hz) all give identical 90.2%
 3. **Only the front camera (Cam5) works** - lateral cameras (Cam4, Cam1) crash
@@ -164,7 +164,7 @@ Data were converted to the EuRoC format expected by ORB-SLAM3:
 | C_cam4_cam5 | **0.03%** (1 frame) | 1 | **Complete failure** |
 | C_cam5_cam1 | **0.03%** (1 frame) | 1 | **Complete failure** |
 
-**Cause of failure:** the Ladybug3 cameras are arranged at ~72 degree angles to each other and have **minimal field-of-view overlap**. Stereo matching is impossible. ORB-SLAM3 creates a map with 0 points and immediately resets the session.
+Cause of failure: the Ladybug3 cameras are arranged at +-72 degree angles to each other and have **minimal field-of-view overlap**. Stereo matching is impossible. ORB-SLAM3 creates a map with 0 points and immediately resets the session.
 
 ### 5.3. Phase D - Full Session (21,310 frames)
 
@@ -177,17 +177,17 @@ Despite the 90.2% tracking rate (2706 frames out of 3000), analysis of the ORB-S
 | Metric | Ground Truth | ORB-SLAM3 VIO (B004) |
 |--------|-------------|---------------------|
 | Duration | 478 s | 478 s |
-| Path length | ~637 m | **378,233 m (378 km)** |
-| Scale relative to GT | 1.0x | **~310x** |
+| Path length | +-637 m | **378,233 m (378 km)** |
+| Scale relative to GT | 1.0x | **+-310x** |
 | Trajectory shape | Zigzag accross campus | Straight line |
 
 After Sim(3) alignment (best similarity in 7 DOF - rotation, translation, scale):
-- Scale factor: **1.1 x 10^-3** (reduction by ~1000x)
-- ATE RMSE after alignment: **~69 m** (for a GT segment length of ~637 m)
+- Scale factor: **1.1 x 10^-3** (reduction by +-1000x)
+- ATE RMSE after alignment: **+-69 m** (for a GT segment length of +-637 m)
 
-> **Interpretation:** ORB-SLAM3 "sees" keypoints and tracks them frame-by-frame (90.2% success), but the inertial component (IMU preintegration) produces **an entirely incorrect estimate of scale and velocity**, turning a zigzag route into a straight line 378 km long.
+> Interpretation: ORB-SLAM3 sees keypoints and tracks them frame-by-frame (90.2% success), but the inertial component (IMU preintegration) produces **an entirely incorrect estimate of scale and velocity**, turning a zigzag route into a straight line 378 km long.
 
----
+
 
 ## 6. Comparison with Other Methods
 
@@ -201,11 +201,11 @@ Other methods were also tested as part of this project:
 | 0.4a | DROID-SLAM | 60% | 110 m* | *Shape does not match GT |
 | 0.4b | DPVO | 100% | 142 m* | *Shape does not match GT |
 | 0.4c | DPV-SLAM | 97% | 166 m* | *False loop closures |
-| **0.6** | **ORB-SLAM3 VIO (proper)** | **90.2%** | **~69 m*** | ***Scale 310x incorrect** |
+| **0.6** | **ORB-SLAM3 VIO (proper)** | **90.2%** | **+-69 m*** | ***Scale 310x incorrect** |
 
-> \* denotes results that are formally low but **not reliable**: Sim(3) alignment finds "best similarity" even for fundamentally incorrect trajectories. Visual inspection shows that none of the visual methods reproduce the route shape.
+> \* denotes results that are formally low but **not reliable**: Sim(3) alignment finds best similarity even for fundamentally incorrect trajectories. Visual inspection shows that none of the visual methods reproduce the route shape.
 
----
+
 
 ## 7. Diagnosing the Scale Problem
 
@@ -216,18 +216,18 @@ A detailed check of the data preparation pipeline was performed:
 3. **YAML configs** - verified: T_bc matrices, noise parameters, IMU rate
 4. **Output trajectories** - verified: timestamps match input images
 
-**Conclusion:** no errors were found in data preparation. The problem is **fundamental** - the NCLT sensor parameters fall outside the operating range of ORB-SLAM3.
+Conclusion: no errors were found in data preparation. The problem is **fundamental** - the NCLT sensor parameters fall outside the operating range of ORB-SLAM3.
 
 ### Explanation of the Mechanism
 
 ORB-SLAM3 mono-inertial uses a **tightly-coupled** scheme: IMU preintegration between frames provides an initial guess for the optimizer, which then refines the pose using visual observations. When the IMU prediction drifts heavily (due to noise/low rate) and the camera provides frames only every 200 ms:
 
-1. The IMU predicts displacement over 200 ms with large drift (~14-57x worse noise than EuRoC)
+1. The IMU predicts displacement over 200 ms with large drift (+-14-57x worse noise than EuRoC)
 2. Visual BA refines the pose but cannot fully correct the IMU scale drift
 3. The scale diverges with each frame
 4. Over 478 seconds the accumulated scale error reaches 310x
 
----
+
 
 ## 8. Conclusions
 
@@ -243,14 +243,14 @@ ORB-SLAM3 mono-inertial uses a **tightly-coupled** scheme: IMU preintegration be
 - **Full session** - timeout due to nonlinear growth of computation
 
 ### Root cause:
-**NCLT falls outside the operating range of ORB-SLAM3 VIO.** The system was designed and tested on EuRoC (camera 20 Hz, IMU 200 Hz, IMU noise 14-57x lower). With a 5 Hz camera and a 48 Hz IMU, **scale is unobservable** - inertial preintegration over 200 ms accumulates an error that the visual component cannot correct.
+NCLT falls outside the operating range of ORB-SLAM3 VIO. The system was designed and tested on EuRoC (camera 20 Hz, IMU 200 Hz, IMU noise 14-57x lower). With a 5 Hz camera and a 48 Hz IMU, **scale is unobservable** - inertial preintegration over 200 ms accumulates an error that the visual component cannot correct.
 
 ### Recommendations:
-1. **For the NCLT dataset:** use LiDAR ICP as the primary odometry (ATE 174 m, 100% coverage)
-2. **For visual SLAM:** consider VINS-Fusion with native equidistant fisheye support and online extrinsics calibration
-3. **To improve scale:** fuse with wheel odometry (100 Hz, metric scale) or GPS
+1. For the NCLT dataset: use LiDAR ICP as the primary odometry (ATE 174 m, 100% coverage)
+2. For visual SLAM: consider VINS-Fusion with native equidistant fisheye support and online extrinsics calibration
+3. To improve scale: fuse with wheel odometry (100 Hz, metric scale) or GPS
 
----
+
 
 ## Appendix A. Result File Structure
 

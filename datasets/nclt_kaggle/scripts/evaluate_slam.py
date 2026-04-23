@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Evaluate SLAM pipeline on NCLT dataset.
+"""Evaluate SLAM pipeline on NCLT dataset
 
 Runs LiDAR odometry with optional loop closure and evaluates
 against ground truth trajectories.
@@ -70,7 +70,7 @@ def run_odometry(
 
 
 def run_loop_closure(
-    # NOTE: not thread-safe but we run single threaded anyway
+    # not thread-safe but we run single threaded anyway
     dataset,
     estimated_poses: np.ndarray,
     keyframe_indices: list[int],
@@ -83,7 +83,7 @@ def run_loop_closure(
     lc_config = slam_config["slam"]["loop_closure"]
     pg_config = PoseGraphConfig.from_dict(slam_config["slam"]['pose_graph'])
 
-    # build pose graph from odometry
+    #build pose graph from odometry
     pose_graph = SLAMPoseGraph(pg_config)
     pose_graph.build_from_odometry(estimated_poses)
 
@@ -121,7 +121,7 @@ def run_loop_closure(
 
     for i in range(len(keyframe_indices)):
         for j in range(i + 1, len(keyframe_indices)):
-            # temporal constraint
+            #temporal constraint
             if abs(keyframe_indices[j] - keyframe_indices[i]) < min_time_diff:
                 continue
 
@@ -130,7 +130,7 @@ def run_loop_closure(
             if dist > search_radius:
                 continue
 
-            # descriptor similarity
+            # descriptor similiarity
             sim = float(descriptors[i] @ descriptors[j])
             if sim > sim_threshold:
                 # compute relative transform from ICP
@@ -151,7 +151,7 @@ def run_loop_closure(
     return estimated_poses
 
 
-# this script is kinda slow (~3 min per session). run in background if eval-ing all sessions.
+#this script is kinda slow (+-3 min per session). run in background if eval-ing all sessions.   
 def main() -> None:
     parser = argparse.ArgumentParser(description="Evaluate SLAM pipeline")
     parser.add_argument("--dataset-config", type=Path,
@@ -179,7 +179,7 @@ def main() -> None:
     ) / args.session
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    # load dataset
+    #load dataset   
     dataset = NCLTDataset(config_path=args.dataset_config, split="test")
     session_dataset = dataset.get_session_dataset(args.session)
     logger.info("Loaded session %s with %d frames", args.session, len(session_dataset))

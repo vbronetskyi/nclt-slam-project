@@ -1,4 +1,5 @@
-"""SLAM and place recognition evaluation metrics: ATE, RPE, Recall@K, precision-recall"""
+"""SLAM and place recognition evaluation metrics: ATE, RPE, Recall@K, precision-recall
+"""
 
 from __future__ import annotations
 
@@ -12,9 +13,9 @@ from scipy.spatial.transform import Rotation
 logger = logging.getLogger(__name__)
 
 
-# ---------------------------------------------------------------------------
+
 # Low-level helpers
-# ---------------------------------------------------------------------------
+
 
 
 def pose_error(
@@ -54,9 +55,9 @@ def pose_error(
     return trans_err, rot_err_deg
 
 
-# ---------------------------------------------------------------------------
+
 # Umeyama alignment
-# ---------------------------------------------------------------------------
+
 
 
 def umeyama_alignment(
@@ -91,7 +92,7 @@ def umeyama_alignment(
     mu_est = estimated.mean(axis=0)
     mu_gt = ground_truth.mean(axis=0)
 
-    # centred coordinates
+    #centred coordinates
     est_c = estimated - mu_est
     gt_c = ground_truth - mu_gt
 
@@ -115,9 +116,9 @@ def umeyama_alignment(
     return R, t, s
 
 
-# ---------------------------------------------------------------------------
+
 # Absolute Trajectory Error (ATE)
-# ---------------------------------------------------------------------------
+
 
 
 def compute_ate(
@@ -128,7 +129,7 @@ def compute_ate(
     estimated = np.asarray(estimated, dtype=np.float64)
     ground_truth = np.asarray(ground_truth, dtype=np.float64)
 
-    # --- input validation ---------------------------------------------------
+    # input validation
     if estimated.size == 0 or ground_truth.size == 0:
         raise ValueError("Input pose arrays must not be empty.")
 
@@ -188,9 +189,9 @@ def compute_ate(
     }
 
 
-# ---------------------------------------------------------------------------
+
 # Relative Pose Error (RPE)
-# ---------------------------------------------------------------------------
+
 
 
 def compute_rpe(
@@ -202,7 +203,7 @@ def compute_rpe(
     estimated = np.asarray(estimated, dtype=np.float64)
     ground_truth = np.asarray(ground_truth, dtype=np.float64)
 
-    # --- input validation ---------------------------------------------------
+    # input validation
     if estimated.size == 0 or ground_truth.size == 0:
         raise ValueError("Input pose arrays must not be empty.")
 
@@ -265,9 +266,9 @@ def compute_rpe(
     return result
 
 
-# ---------------------------------------------------------------------------
+
 # Place Recognition – Recall@K
-# ---------------------------------------------------------------------------
+
 
 
 def recall_at_k(
@@ -287,7 +288,7 @@ def recall_at_k(
     positions_query = np.asarray(positions_query, dtype=np.float64)
     positions_db = np.asarray(positions_db, dtype=np.float64)
 
-    # --- input validation ---------------------------------------------------
+    # input validation
     if descriptors_query.size == 0 or descriptors_db.size == 0:
         raise ValueError("Descriptor arrays must not be empty.")
     if positions_query.size == 0 or positions_db.size == 0:
@@ -349,9 +350,9 @@ def recall_at_k(
     return results
 
 
-# ---------------------------------------------------------------------------
-# Precision-Recall Curve for Loop Closure
-# ---------------------------------------------------------------------------
+
+#Precision-Recall Curve for Loop Closure
+
 
 
 def precision_recall_curve(
@@ -362,7 +363,7 @@ def precision_recall_curve(
     similarities = np.asarray(similarities, dtype=np.float64).ravel()
     labels = np.asarray(labels, dtype=np.float64).ravel()
 
-    # --- input validation ---------------------------------------------------
+    #input validation
     if similarities.size == 0:
         raise ValueError("similarities array must not be empty.")
     if labels.size == 0:
@@ -391,7 +392,7 @@ def precision_recall_curve(
             np.array([], dtype=np.float64),
         )
 
-    # sort by descending similarity
+    # sort by descending similarity   
     sorted_indices = np.argsort(-similarities)
     sorted_labels = labels[sorted_indices]
     sorted_similarities = similarities[sorted_indices]

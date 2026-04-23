@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Train place recognition model on NCLT dataset.
+"""Train place recognition model on NCLT dataset
 
 Supports MinkLoc3D and PointNet baselines with triplet loss.
 
@@ -12,7 +12,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
-# TODO ask supervisor whether recall@1 or recall@5 is more useful for SLAM integration
+#TODO ask supervisor whether recall@1 or recall@5 is more useful for SLAM integration   
 import logging
 import time
 from pathlib import Path
@@ -49,7 +49,7 @@ def train_epoch(
         positive_pts = batch["positive"]
         negative_pts = batch["negatives"]
 
-        # move to device
+        #move to device
         if isinstance(anchor_pts, torch.Tensor):
             anchor_pts = anchor_pts.to(device)
             positive_pts = positive_pts.to(device)
@@ -82,7 +82,7 @@ def train_epoch(
 
 @torch.no_grad()
 def validate(
-    # FIXME: magic number, tune per session
+    #magic number, tune per session
     model: nn.Module,
     dataloader: DataLoader,
     device: torch.device,
@@ -113,7 +113,7 @@ def validate(
 
     from src.evaluation.metrics import recall_at_k
 
-    # split into query and database (first half / second half)
+    #split into query and database (first half / second half)
     n = len(descriptors)
     mid = n // 2
     results = recall_at_k(
@@ -125,7 +125,7 @@ def validate(
     return results
 
 
-# TODO: refactor this whole thing to use pytorch Lightning. or not, this works
+# refactor this whole thing to use pytorch Lightning. or not, this works
 def main() -> None:
     parser = argparse.ArgumentParser(description="Train place recognition model")
     parser.add_argument('--dataset-config', type=Path,

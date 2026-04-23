@@ -1,4 +1,5 @@
-"""GPS coordinate conversions for NCLT: LLA -> ECEF -> ENU, trajectory poses, parsing"""
+"""GPS coordinate conversions for NCLT: LLA -> ECEF -> ENU, trajectory poses, parsing
+"""
 
 from __future__ import annotations
 
@@ -9,9 +10,9 @@ import numpy as np
 
 logger = logging.getLogger(__name__)
 
-# ---------------------------------------------------------------------------
+
 # WGS-84 ellipsoid constants
-# ---------------------------------------------------------------------------
+
 WGS84_A = 6378137.0                        # semi-major axis (m)
 WGS84_F = 1 / 298.257223563                # flattening
 WGS84_E2 = 2 * WGS84_F - WGS84_F ** 2     # first eccentricity squared
@@ -19,17 +20,17 @@ WGS84_E2 = 2 * WGS84_F - WGS84_F ** 2     # first eccentricity squared
 # Mean Earth radius for haversine (m)
 _EARTH_RADIUS_M = 6371000.0
 
-# ---------------------------------------------------------------------------
+
 # Default reference point for NCLT (University of Michigan North Campus)
-# ---------------------------------------------------------------------------
+
 NCLT_REF_LAT = 42.293195    # degrees
 NCLT_REF_LON = -83.709657   # degrees
 NCLT_REF_ALT = 270.0        # meters above WGS-84 ellipsoid
 
 
-# ---------------------------------------------------------------------------
+
 # Coordinate conversions
-# ---------------------------------------------------------------------------
+
 
 def lla_to_ecef(lat: float, lon: float, alt: float) -> np.ndarray:
     """convert geodetic (lat/lon/alt degrees/meters) to ECEF [X, Y, Z] via WGS-84"""
@@ -106,7 +107,7 @@ def lla_to_enu(
     if alt_ref is None:
         alt_ref = float(alt[0])
 
-    # vectorised ECEF conversion
+    #vectorised ECEF conversion
     lat_rad = np.radians(lat)
     lon_rad = np.radians(lon)
 
@@ -142,9 +143,9 @@ def lla_to_enu(
     return np.column_stack([east, north, up])
 
 
-# ---------------------------------------------------------------------------
+
 # Distance
-# ---------------------------------------------------------------------------
+
 
 def haversine_distance(
     lat1: float,
@@ -168,9 +169,9 @@ def haversine_distance(
     return float(_EARTH_RADIUS_M * c)
 
 
-# ---------------------------------------------------------------------------
+
 # Trajectory / pose helpers
-# ---------------------------------------------------------------------------
+
 
 def gps_to_pose(
     timestamps: np.ndarray,
@@ -231,9 +232,9 @@ def _estimate_heading(enu: np.ndarray) -> np.ndarray:
     return heading
 
 
-# ---------------------------------------------------------------------------
+
 # CSV parsing
-# ---------------------------------------------------------------------------
+
 
 def parse_gps_csv(csv_path: str | Path) -> dict[str, np.ndarray]:
     """parse NCLT gps.csv (8 columns: utime, mode, satell, lat, lon, alt, track, speed)"""
@@ -269,9 +270,9 @@ def parse_gps_csv(csv_path: str | Path) -> dict[str, np.ndarray]:
     return result
 
 
-# ---------------------------------------------------------------------------
+
 # Filtering
-# ---------------------------------------------------------------------------
+
 
 def filter_gps_by_fix(
     timestamps: np.ndarray,

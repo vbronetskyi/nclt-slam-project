@@ -1,4 +1,5 @@
-"""NCLT pairs dataset for place recognition training with triplet sampling"""
+"""NCLT pairs dataset for place recognition training with triplet sampling
+"""
 
 from __future__ import annotations
 
@@ -139,9 +140,9 @@ class NCLTPairsDataset(Dataset):
             "NCLTPairsDataset [%s]: %d pairs ready.", split, len(self.pairs)
         )
 
-    # ------------------------------------------------------------------
+
     # Public interface
-    # ------------------------------------------------------------------
+
 
     def __len__(self) -> int:
         return len(self.pairs)
@@ -189,9 +190,9 @@ class NCLTPairsDataset(Dataset):
             "positive_pose": positive_pose,
         }
 
-    # ------------------------------------------------------------------
+
     # Pair loading / generation
-    # ------------------------------------------------------------------
+
 
     def _load_pairs_from_csv(self, csv_path: Path) -> list[tuple]:
         """parse pre-annotated pair CSV"""
@@ -262,7 +263,7 @@ class NCLTPairsDataset(Dataset):
         for anchor_idx, anchor_pose in enumerate(all_poses):
             anchor_xy = coords[anchor_idx]
 
-            # --- Find positives (within positive_threshold) ----------------
+            # Find positives (within positive_threshold)
             positive_indices = tree.query_ball_point(
                 anchor_xy, r=self.positive_threshold
             )
@@ -279,7 +280,7 @@ class NCLTPairsDataset(Dataset):
             )
             best_pos_idx = positive_indices[int(np.argmin(dists))]
 
-            # --- Find negatives (beyond negative_threshold) ----------------
+            # Find negatives (beyond negative_threshold)
             all_dists = np.linalg.norm(coords - anchor_xy, axis=1)
             negative_mask = all_dists > self.negative_threshold
             negative_indices = np.where(negative_mask)[0]
@@ -330,9 +331,9 @@ class NCLTPairsDataset(Dataset):
         )
         return selected
 
-    # ------------------------------------------------------------------
+
     # Internal helpers
-    # ------------------------------------------------------------------
+
 
     def _resolve_data_root(self) -> Path:
         """return first existing data root (kaggle_path, then local_path)"""
@@ -372,7 +373,7 @@ class NCLTPairsDataset(Dataset):
                 col_map = {
                     name.strip().lower(): i for i, name in enumerate(header)
                 }
-                # Kaggle format has qw column
+                #Kaggle format has qw column
                 is_kaggle = "qw" in col_map
             else:
                 col_map = None
@@ -525,7 +526,7 @@ class NCLTPairsDataset(Dataset):
         if not session_poses:
             raise ValueError(f"No poses loaded for session '{session}'.")
 
-        # exact match
+        #exact match
         for pose in session_poses:
             if pose["timestamp"] == timestamp:
                 return pose

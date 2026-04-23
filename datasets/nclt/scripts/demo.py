@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Interactive demo for NCLT SLAM Pipeline, exercises all data loaders"""
+"""Interactive demo for NCLT SLAM Pipeline, exercises all data loaders
+"""
 import os
 import sys
 import numpy as np
@@ -125,7 +126,7 @@ def demo_ground_truth():
 
 
 def demo_hokuyo():
-    # TODO: check with prof if ATE RMSE or ATE mean is what the thesis needs
+    #check with prof if ATE RMSE or ATE mean is what the thesis needs
     print_header('Hokuyo 2D LiDAR Loader')
 
     loader = HokuyoLoader()
@@ -163,7 +164,7 @@ def demo_hokuyo():
         else:
             print(f"  {key:20s}: {value}")
 
-    # convert to Cartesian
+    #convert to Cartesian
     points_2d = loader.ranges_to_cartesian(scans[0]['ranges'])
     print(f"\nFirst scan (Cartesian):")
     print(f"  Valid points: {len(points_2d)}")

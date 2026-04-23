@@ -1,5 +1,4 @@
-"""
-Custom ICP-based LiDAR odometry.
+"""Custom ICP-based LiDAR odometry
 
 Point-to-plane ICP via Open3D for frame-to-frame pose estimation.
 Error minimised: sum_i ((T p_i - q_i) . n_i)^2, where n_i is the target normal.
@@ -39,7 +38,7 @@ class CustomICP:
         pcd.points = o3d.utility.Vector3dVector(points[:, :3])
         pcd = pcd.voxel_down_sample(voxel_size=self.voxel_size)
         # normals  needed for point-to-plane error. Hybrid KD-tree: 1m radius or 30 nn,        # whichever is reached first. For HDL-32E outdoor scans this gives smooth normals
-        # on walls without over-smoothing edges.
+        # on walls without over-smoothing edges
         pcd.estimate_normals(
             search_param=o3d.geometry.KDTreeSearchParamHybrid(radius=1.0, max_nn=30))
 
@@ -51,8 +50,8 @@ class CustomICP:
             return self.current_pose
 
         if init_transform is None:
-            # cold start with identity. In practice the caller passes IMU- or
-            # constant-velocity-predicted delta which dramatically improves convergence.
+            #cold start with identity. In practice the caller passes IMU- or
+            # constant-velocity-predicted delta which dramatically improves convergence
             init_transform = np.eye(4)
 
         reg = o3d.pipelines.registration.registration_icp(

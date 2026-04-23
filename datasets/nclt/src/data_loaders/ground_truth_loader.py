@@ -1,16 +1,6 @@
-"""
-NCLT ground truth pose loader.
+"""NCLT ground truth pose loader
 
 CSV layout per row: utime, x, y, z, qx, qy, qz (NO qw!). qw has to be
-recovered from the unit-quaternion constraint:
-
-    qw^2 + qx^2 + qy^2 + qz^2 = 1   =>   qw = sqrt(1 - qx^2 - qy^2 - qz^2)
-
-numerical safety: due to float rounding the sum under the sqrt can go very
-slightly negative, so we clamp at 0 with np.maximum. also the first row of
-every groundtruth csv has NaN, easy to miss, drop it before computing.
-
-Ref: https://robots.engin.umich.edu/nclt/
 """
 import os
 import pandas as pd

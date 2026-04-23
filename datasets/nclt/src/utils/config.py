@@ -1,4 +1,5 @@
-"""NCLT SLAM Pipeline config"""
+"""NCLT SLAM Pipeline config
+"""
 import os
 
 NCLT_DATA_ROOT = '/workspace/nclt_data'

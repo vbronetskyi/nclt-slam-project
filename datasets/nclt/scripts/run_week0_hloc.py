@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Experiment 0.7: hloc cross-season visual localization on NCLT.
+"""Experiment 0.7: hloc cross-season visual localization on NCLT
 
 Build 3D map from spring Cam5 images (2012-04-29),
 localize summer Cam5 images (2012-08-04) against that map.
 
-hloc full run takes ~12h end-to-end, feature extraction is the bottleneck.
+hloc full run takes +-12h end-to-end, feature extraction is the bottleneck.
 run in tmux, check back next morning
 Tests seasonal robustness of visual localization on NCLT.
 
@@ -192,7 +192,7 @@ def run_sfm_pipeline(image_dir, db_list, outputs, feature_conf_name='superpoint_
     t0 = time.time()
     n_db = len(db_list)
     if n_db <= 100:
-        # small dataset: exhaustive pairs
+        # small dataset: exhaustive pairs   
         print(f'  [SfM 2/4] Generating exhaustive pairs (n={n_db})...')
         pairs_from_exhaustive.main(sfm_pairs, image_list=db_list)
     else:
@@ -265,7 +265,7 @@ def create_query_list_file(query_list, output_path, width=808, height=616):
     """Create query list file with camera intrinsics for hloc localize_sfm.
 
     Format: image_name CAMERA_MODEL width height param1 param2 ...
-    Using OPENCV_FISHEYE model for NCLT Ladybug3 Cam5 (~120 deg FOV).
+    Using OPENCV_FISHEYE model for NCLT Ladybug3 Cam5 (+-120 deg FOV).
     """
     # OPENCV_FISHEYE: fx, fy, cx, cy, k1, k2, k3, k4
     # approximate parameters for NCLT Cam5 (half-res 808x616)
@@ -299,7 +299,7 @@ def run_localization(image_dir, model, query_list, db_list, feature_path,
     loc_results = outputs / 'localization_results.txt'
     query_list_file = outputs / 'queries_with_intrinsics.txt'
 
-    # 1. Extract features for query images (append to existing h5)
+    # 1. Extract features for query images (append to existing h5)   
     t0 = time.time()
     print(f'\n  [Loc 1/5] Extracting query features...')
     feature_conf = extract_features.confs['superpoint_aachen']
@@ -596,7 +596,7 @@ def evaluate_sfm_map(model, gt_poses, db_list, output_dir):
 # plotting
 
 def plot_sfm_vs_gt(output_dir):
-    # NOTE: not thread-safe but we run single threaded anyway
+    # not thread-safe but we run single threaded anyway
     """Plot SfM trajectory aligned to GT"""
     data = np.load(output_dir / 'sfm_trajectory.npz')
     sfm = data['sfm_aligned']
@@ -660,7 +660,7 @@ def plot_localization_vs_gt(loc_poses, gt_poses, query_list, output_dir):
     ax.legend(fontsize=10)
     ax.grid(True, alpha=0.3)
 
-    # panel 2: Error over trajectory
+    #panel 2: Error over trajectory
     ax = axes[1]
     errors = np.linalg.norm(aligned - gt_xyz, axis=1)
     ax.plot(range(len(errors)), errors, '-', color='#E91E63', linewidth=1)
@@ -784,7 +784,7 @@ def plot_comparison_all_methods(eval_results, output_dir):
         ('ORB-SLAM3 VIO\n(Exp 0.6)', 69.0, None, 90, 0),
     ]
 
-    # add hloc result
+    #add hloc result
     hloc_ate = eval_results.get('ate_rmse_sim3')
     hloc_pct = eval_results.get('pct_localized', 0)
     if hloc_ate is not None:
@@ -817,11 +817,11 @@ def plot_comparison_all_methods(eval_results, output_dir):
             ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 2,
                    f'{ate:.0f}m', ha='center', fontsize=10, fontweight='bold')
 
-    # coverage comparison
+    #coverage comparison
     ax = axes[1]
     coverages = []
     for m in methods:
-        # use summer coverage where available
+        #use summer coverage where available
         c = m[4] if m[4] > 0 else m[3]
         coverages.append(c)
     bars = ax.bar(range(len(names)), coverages, color=colors[:len(names)], alpha=0.8)
@@ -953,7 +953,7 @@ def run_ablation_features(image_dir, db_list, query_list, gt_poses, base_outputs
             print(f'  ERROR in ablation kp={nkp}: {e}')
             ablation_results[nkp] = {'status': 'error', 'error': str(e)}
 
-    # save and plot
+    #save and plot
     with open(ablation_dir / 'results.json', 'w') as f:
         json.dump({str(k): v for k, v in ablation_results.items()}, f, indent=2)
 
@@ -1008,14 +1008,14 @@ def run_experiment(mode='full'):
     # ── Configuration ──
     if mode == 'sanity':
         spring_every, summer_every = 1, 1  # consecutive, limited below
-        spring_max, summer_max = 50, 50    # 50 images each (~10 seconds)
+        spring_max, summer_max = 50, 50    # 50 images each (+-10 seconds)
         num_retrieval = 5
     elif mode == 'small':
-        spring_every, summer_every = 10, 20  # ~2150 / ~1200
+        spring_every, summer_every = 10, 20  # +-2150 / +-1200
         spring_max, summer_max = None, None
         num_retrieval = 20
     else:  # full
-        spring_every, summer_every = 3, 5  # ~7170 / ~4828
+        spring_every, summer_every = 3, 5  # +-7170 / +-4828
         spring_max, summer_max = None, None
         num_retrieval = 20
 
@@ -1105,7 +1105,7 @@ def run_experiment(mode='full'):
             image_dir, db_list, query_list, gt_poses, outputs
         )
 
-    # save summary
+    #save summary
     total_time = time.time() - t_start
 
     summary = {

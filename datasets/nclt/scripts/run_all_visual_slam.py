@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-"""Overnight deep visual SLAM benchmark on NCLT.
+#!/usr/bin/env python3   
+"""Overnight deep visual SLAM benchmark on NCLT
 
 Runs DROID-SLAM (Teed & Deng, NeurIPS 2021), DPVO (Teed et al., 2024) and
 DPV-SLAM (Lipson et al., ECCV 2024) on NCLT spring (2012-04-29) and summer
@@ -8,7 +8,7 @@ half-res, calibrated via COLMAP (f=221, cx=404, cy=308).
 
 heads up - exp 0.5 later found Cam0 is the top/sky-facing camera. kept here
 anyway so results stay comparable with exp 0.2-0.4; the side-cam rerun is a
-separate script. best to launch inside tmux because each session is ~1-2h.
+separate script. best to launch inside tmux because each session is +-1-2h.
 """
 
 import os
@@ -22,7 +22,7 @@ import signal
 import multiprocessing as mp
 from pathlib import Path
 from datetime import datetime, timedelta
-# from memory_profiler import profile  # debugging OOM, not needed for run
+#from memory_profiler import profile  # debugging OOM, not needed for run
 
 import numpy as np
 import cv2
@@ -45,10 +45,10 @@ PREPARED_BASE = DATA_DIR / "images_prepared"
 SESSIONS = ["2012-04-29", "2012-08-04"]
 SESSION_NAMES = {"2012-04-29": "spring", "2012-08-04": "summer"}
 
-# camera intrinsics (COLMAP-calibrated on 300 frames of Cam5, half-res 808x616).
+# camera intrinsics (COLMAP-calibrated on 300 frames of Cam5, half-res 808x616)
 # The original NCLT cam_params.zip is 404 from the server; these f/cx/cy are the
 # best pinhole approximation we have. For a fisheye equidistant model the
-# "true" focal would be ~579, not 221; see CHANGELOG for why this matters.
+# "true" focal would be +-579, not 221; see CHANGELOG for why this matters.
 FX, FY = 221.0, 221.0
 CX, CY = 404.0, 308.0
 IMG_W, IMG_H = 808, 616
@@ -78,7 +78,7 @@ START_TIME = None
 LOG_FILE = None
 
 
-# embedded runner scripts
+#embedded runner scripts
 
 DROID_RUNNER_SCRIPT = r'''#!/usr/bin/env python3
 """DROID-SLAM runner called via subprocess from the main script"""
@@ -114,13 +114,13 @@ def main():
     from droid import Droid
     from types import SimpleNamespace
 
-    # --- calibration ---
+    # calibration
     calib = np.loadtxt(calib_file)
     fx, fy, cx, cy = calib[:4]
     distort = calib[4:] if len(calib) > 4 else None
     K = np.array([[fx, 0, cx], [0, fy, cy], [0, 0, 1]])
 
-    # --- image list ---
+    # image list
     exts = {".png", ".jpg", ".jpeg"}
     images = sorted(f for f in os.listdir(imagedir)
                     if os.path.splitext(f)[1].lower() in exts)
@@ -129,7 +129,7 @@ def main():
     if not images:
         print("ERROR: no images", flush=True); sys.exit(1)
 
-    # --- compute resize dims (match DROID-SLAM convention) ---
+    # compute resize dims (match DROID-SLAM convention)
     img0 = cv2.imread(os.path.join(imagedir, images[0]))
     h0, w0 = img0.shape[:2]
     sc = np.sqrt((384 * 512) / (h0 * w0))
@@ -138,7 +138,7 @@ def main():
     sx, sy = w1 / w0, h1 / h0
     print(f"Resize: {w0}x{h0} -> {w1}x{h1}", flush=True)
 
-    # --- args ---
+    # args
     args = SimpleNamespace(
         weights=weights_path,
         image_size=[h1, w1],
@@ -167,7 +167,7 @@ def main():
     t0 = time.time()
     gpu_peak = 0
 
-    # --- tracking ---
+    # tracking
     print("=== Tracking ===", flush=True)
     for idx, name in enumerate(tqdm(images, file=sys.stdout)):
         try:
@@ -204,7 +204,7 @@ def main():
     track_time = time.time() - t0
     print(f"Tracking: {track_time:.0f}s ({len(images)/track_time:.1f} fps)", flush=True)
 
-    # --- global optimisation + trajectory filling ---
+    # global optimisation + trajectory filling
     print("=== Global BA + trajectory fill ===", flush=True)
     t_opt = time.time()
     try:
@@ -247,14 +247,14 @@ def main():
     print(f"Optimisation: {opt_time:.0f}s, total: {total_time:.0f}s", flush=True)
     print(f"Trajectory: {len(traj)} poses", flush=True)
 
-    # --- save TUM trajectory ---
+    # save TUM trajectory
     with open(output_traj, "w") as f:
         for i, pose in enumerate(traj):
             ts = timestamps[i] if i < len(timestamps) else timestamps[-1]
             f.write(f"{ts:.6f} {pose[0]:.6f} {pose[1]:.6f} {pose[2]:.6f} "
                     f"{pose[3]:.6f} {pose[4]:.6f} {pose[5]:.6f} {pose[6]:.6f}\n")
 
-    # --- save stats ---
+    # save stats
     stats = dict(
         method="DROID-SLAM", runtime_total_s=total_time,
         runtime_tracking_s=track_time, runtime_optim_s=opt_time,
@@ -306,11 +306,11 @@ def main():
     print(f"PyTorch {torch.__version__}, CUDA {torch.cuda.is_available()}", flush=True)
     print(f"Method: {method}", flush=True)
 
-    # --- calibration ---
+    # calibration
     calib = np.loadtxt(calib_file)
     fx, fy, cx, cy = calib[:4]
 
-    # --- image list ---
+    # image list
     exts = {".png", ".jpg", ".jpeg"}
     images = sorted(f for f in os.listdir(imagedir)
                     if os.path.splitext(f)[1].lower() in exts)
@@ -325,13 +325,13 @@ def main():
 
     # DPVO expects half-resolution images (like its own image_stream does)
     h_half, w_half = h0 // 2, w0 // 2
-    # crop to multiple of 16
+    #crop to multiple of 16
     h_half = h_half - h_half % 16
     w_half = w_half - w_half % 16
     fx_h, fy_h, cx_h, cy_h = fx / 2, fy / 2, cx / 2, cy / 2
     print(f"DPVO half-res: {w_half}x{h_half}, intrinsics: f={fx_h:.1f}", flush=True)
 
-    # --- Try Python API first ---
+    # Try Python API first
     traj_poses = None
     timestamps = []
     t0 = time.time()
@@ -342,7 +342,7 @@ def main():
         from dpvo.config import cfg as base_cfg
 
         cfg = base_cfg.clone()
-        cfg.BUFFER_SIZE = 2048  # default 4096, enough for ~2k keyframes
+        cfg.BUFFER_SIZE = 2048  # default 4096, enough for +-2k keyframes
         cfg.PATCHES_PER_FRAME = 80  # default
         if method == "dpv_slam":
             cfg.LOOP_CLOSURE = True
@@ -431,7 +431,7 @@ def main():
     except ImportError as e:
         print(f"DPVO Python API unavailable ({e}), trying demo.py", flush=True)
 
-        # --- Fallback: call demo.py ---
+        # Fallback: call demo.py
         demo_py = os.path.join(dpvo_dir, "demo.py")
         out_name = os.path.splitext(output_traj)[0]
         cmd = [
@@ -453,7 +453,7 @@ def main():
         if result.returncode != 0:
             print(f"STDERR: {result.stderr[-2000:]}", flush=True)
 
-        # find trajectory files
+        # find trajectory files   
         patterns = [f"{out_name}*.tum", f"{out_name}*.txt",
                     "*.tum", "*trajectory*"]
         search_dirs = [os.path.dirname(output_traj), dpvo_dir]
@@ -479,7 +479,7 @@ def main():
     n_poses = len(traj_poses) if traj_poses is not None else 0
     print(f"Total time: {total_time:.0f}s, poses: {n_poses}", flush=True)
 
-    # --- save TUM trajectory ---
+    # save TUM trajectory
     if traj_poses is not None and n_poses > 0:
         with open(output_traj, "w") as f:
             for i, pose in enumerate(traj_poses):
@@ -581,7 +581,7 @@ def get_pip():
 
 
 def check_installed(pkg_import):
-    # XXX: hardcoded path, move to config
+    # hardcoded path, move to config
     """Check if a package is importable in the venv"""
     r = run_cmd([get_python(), "-c", f"import {pkg_import}; print('OK')"],
                 timeout=30)
@@ -669,7 +669,7 @@ def install_droid_slam():
     pip = get_pip()
     pip_cmd = [pip] if not isinstance(pip, str) or " " not in pip else pip.split()
 
-    # --- Clone ---
+    # Clone
     if not (droid_dir / "droid_slam").exists():
         log("Cloning DROID-SLAM...")
         r = run_cmd(["git", "clone", "--recursive",
@@ -681,7 +681,7 @@ def install_droid_slam():
     else:
         log("DROID-SLAM already cloned")
 
-    # --- Install lietorch ---
+    #Install lietorch
     if not check_installed("lietorch"):
         log("Building lietorch from submodule...")
         lt_dir = droid_dir / "thirdparty" / "lietorch"
@@ -695,9 +695,8 @@ def install_droid_slam():
             return False
     log("lietorch OK")
 
-    # --- Install pytorch_scatter ---
+    # Install pytorch_scatter
     if not check_installed("torch_scatter"):
-        # print(f"DEBUG config={cfg}")
         log("Building pytorch_scatter...")
         ps_dir = droid_dir / "thirdparty" / "pytorch_scatter"
         if ps_dir.exists():
@@ -712,7 +711,7 @@ def install_droid_slam():
     else:
         log("pytorch_scatter OK")
 
-    # --- Build droid_backends (must run setup.py from DROID-SLAM dir) ---
+    # Build droid_backends (must run setup.py from DROID-SLAM dir)
     so_file = droid_dir / "droid_backends.cpython-312-x86_64-linux-gnu.so"
     if so_file.exists():
         log(f"droid_backends already built: {so_file}")
@@ -725,7 +724,7 @@ def install_droid_slam():
             return False
     log("droid_backends OK")
 
-    # --- Download weights ---
+    # Download weights
     weights = droid_dir / "droid.pth"
     if not weights.exists():
         log("Downloading DROID-SLAM weights...")
@@ -759,7 +758,7 @@ def install_dpvo():
     pip = get_pip()
     pip_cmd = [pip] if not isinstance(pip, str) or " " not in pip else pip.split()
 
-    # --- Clone ---
+    # Clone
     if not (dpvo_dir / "dpvo").exists():
         log("Cloning DPVO...")
         r = run_cmd(["git", "clone", "--recursive",
@@ -771,7 +770,7 @@ def install_dpvo():
     else:
         log("DPVO already cloned")
 
-    # --- Download Eigen ---
+    # Download Eigen
     eigen_dir = dpvo_dir / "thirdparty" / "eigen-3.4.0"
     if not eigen_dir.exists():
         log("Downloading Eigen 3.4.0...")
@@ -783,7 +782,7 @@ def install_dpvo():
     if eigen_dir.exists():
         log("Eigen OK")
 
-    # --- Install lietorch (shared with DROID-SLAM) ---
+    # Install lietorch (shared with DROID-SLAM)
     if not check_installed("lietorch"):
         lt_dir = dpvo_dir / "thirdparty" / "lietorch"
         if lt_dir.exists():
@@ -793,7 +792,7 @@ def install_dpvo():
             log("Trying lietorch from PyPI...")
             run_cmd(pip_cmd + ["install", "lietorch"], timeout=600)
 
-    # --- Patch DPVO for PyTorch 2.7+ API (deprecated .type() removal) ---
+    # Patch DPVO for PyTorch 2.7+ API (deprecated .type() removal)
     log("Patching DPVO for modern PyTorch API...")
     import re as _re
     for cu_file in dpvo_dir.rglob("*.cu"):
@@ -833,7 +832,7 @@ def install_dpvo():
         disp_h.write_text(txt)
         log("  Patched dispatch.h")
 
-    # --- Build DPVO (must run setup.py from DPVO dir) ---
+    # Build DPVO (must run setup.py from DPVO dir)
     so_files = list(dpvo_dir.glob("*.so"))
     if len(so_files) >= 3:
         log(f"DPVO already built: {[s.name for s in so_files]}")
@@ -846,14 +845,14 @@ def install_dpvo():
             return False
     log("DPVO build OK")
 
-    # --- Download weights ---
+    # Download weights
     log("Downloading DPVO weights...")
     dpvo_pth = dpvo_dir / "dpvo.pth"
     if dpvo_pth.exists():
         log(f"Weights already present: {dpvo_pth} ({dpvo_pth.stat().st_size // 1024**2} MB)")
     else:
         # only download the weight file, NOT the full dataset script
-        # download_models_and_data.sh also downloads TartanAir + movies (huge, unnecessary)
+        # download_models_and_data.sh also downloads TartanAir + movies (huge, unneccessary)
         log("Downloading dpvo.pth from Dropbox...")
         run_cmd(["wget", "-q", "-O", str(dpvo_pth),
                  "https://www.dropbox.com/s/nap0u8zslspdwm4/models.zip"],
@@ -920,7 +919,7 @@ def phase1_install():
     return installed
 
 
-# phase 2: data preparation
+#phase 2: data preparation
 
 def _convert_one_image(args):
     """Worker: convert one TIFF to PNG at 808x616. (for multiprocessing)"""
@@ -1019,11 +1018,11 @@ def prepare_ground_truth_tum(session):
     xyz = data[:, 1:4]
     qxyz = data[:, 4:7]
 
-    # compute qw
+    #compute qw
     qw_sq = 1.0 - np.sum(qxyz ** 2, axis=1)
     qw = np.sqrt(np.maximum(qw_sq, 0.0))
 
-    # drop NaN rows
+    #drop NaN rows
     valid = np.isfinite(qw) & np.all(np.isfinite(xyz), axis=1)
     utimes, xyz, qxyz, qw = utimes[valid], xyz[valid], qxyz[valid], qw[valid]
 
@@ -1302,7 +1301,7 @@ def evaluate_trajectory(method_key, session, gt_tum_path):
     if gt.shape[1] == 7:
         gt = np.column_stack([gt, np.ones(len(gt))])
 
-    # sync
+    #sync
     est_sync, gt_sync = sync_trajectories(est, gt, max_dt=0.15)
     if len(est_sync) < 10:
         result["reason"] = f"only {len(est_sync)} matched poses"
@@ -1318,7 +1317,7 @@ def evaluate_trajectory(method_key, session, gt_tum_path):
     ate_mean = float(np.mean(errors))
     ate_median = float(np.median(errors))
 
-    # Path lengths
+    #Path lengths
     est_length = float(np.sum(np.linalg.norm(np.diff(est_aligned, axis=0), axis=1)))
     gt_length = float(np.sum(np.linalg.norm(np.diff(gt_sync[:, 1:4], axis=0), axis=1)))
 
@@ -1361,9 +1360,9 @@ def generate_plots(all_results):
     log("Generating plots...")
     colors = {"droid_slam": "#e74c3c", "dpvo": "#3498db", "dpv_slam": "#2ecc71"}
 
-    # ------------------------------------------------------------------
+
     # plot 1: Trajectory overlays (one subplot per session)
-    # ------------------------------------------------------------------
+
     fig, axes = plt.subplots(1, 2, figsize=(18, 8))
     for idx, session in enumerate(SESSIONS):
         ax = axes[idx]
@@ -1402,9 +1401,9 @@ def generate_plots(all_results):
     plt.savefig(str(RESULTS_DIR / "trajectory_all_methods.png"), dpi=150)
     plt.close()
 
-    # ------------------------------------------------------------------
+
     # plot 2: ATE bar chart
-    # ------------------------------------------------------------------
+
     fig, ax = plt.subplots(figsize=(10, 6))
     method_names = []
     spring_ate, summer_ate = [], []
@@ -1445,9 +1444,9 @@ def generate_plots(all_results):
     plt.savefig(str(RESULTS_DIR / "ate_comparison.png"), dpi=150)
     plt.close()
 
-    # ------------------------------------------------------------------
+
     # plot 3: Tracking success rate
-    # ------------------------------------------------------------------
+
     fig, ax = plt.subplots(figsize=(10, 6))
     method_names_t = []
     spring_rate, summer_rate = [], []
@@ -1481,9 +1480,9 @@ def generate_plots(all_results):
     plt.savefig(str(RESULTS_DIR / "tracking_success_rate.png"), dpi=150)
     plt.close()
 
-    # ------------------------------------------------------------------
+
     # plot 4: ATE over trajectory (per method, spring only)
-    # ------------------------------------------------------------------
+
     fig, ax = plt.subplots(figsize=(12, 5))
     session = "2012-04-29"
     gt_path = RESULTS_DIR / "ground_truth" / f"gt_{session}.tum"
@@ -1543,7 +1542,7 @@ def phase4_evaluate(gt_files):
                     "status": "failed", "reason": str(e)
                 }
 
-    # generate plots
+    #generate plots
     try:
         generate_plots(all_results)
     except Exception as e:
@@ -1606,7 +1605,7 @@ def save_summary(all_results, all_stats):
 
     log(f"\n{summary}")
 
-    # JSON summary
+    #JSON summary
     json_summary = {}
     for mk in METHODS:
         for session in SESSIONS:
@@ -1704,7 +1703,6 @@ def phase5_save(all_results, all_stats):
     try:
         save_summary(all_results, all_stats)
     except Exception as e:
-        # print(f"DEBUG: len(gt_ts)={len(gt_ts)} len(est_ts)={len(est_ts)}")
         log(f"Summary failed: {e}", level="ERROR")
 
     try:

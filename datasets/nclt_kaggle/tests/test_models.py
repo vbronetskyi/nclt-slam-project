@@ -1,4 +1,5 @@
-"""tests for place recognition models and evaluation metrics"""
+"""tests for place recognition models and evaluation metrics
+"""
 
 from __future__ import annotations
 
@@ -6,9 +7,9 @@ import numpy as np
 import pytest
 
 
-# ---------------------------------------------------------------------------
-# Tests for evaluation metrics
-# ---------------------------------------------------------------------------
+
+#Tests for evaluation metrics
+
 
 
 class TestMetrics:
@@ -118,9 +119,9 @@ class TestMetrics:
         assert abs(r_err) < 1e-10  # no rotation
 
 
-# ---------------------------------------------------------------------------
+
 # Tests for transforms
-# ---------------------------------------------------------------------------
+
 
 
 class TestTransforms:

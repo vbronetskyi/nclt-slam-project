@@ -1,26 +1,9 @@
 #!/usr/bin/env python3
-"""Week 3: improved LiDAR odometry on NCLT spring (2012-04-29).
-every 2nd scan -> 6486 scans total.
-
-Week 2 got 419m ATE with plain ICP. this script adds:
-  1. wheel-odom delta for ICP init instead of identity (huge win)
-  2. scan-to-local-map ICP (20-scan sliding window, 0.5m voxel)
-  3. RANSAC ground plane removal before ICP - ground is flat + dominant,
-     otherwise ICP settles into a degenerate local minimum on it
-  4. GPS-aided loop closures (proximity search on RTK GPS)
-  5. 2D pose graph solve with sparse Gauss-Newton + LM damping
-
-bugs from v1 of this file that made it produce garbage:
-  - ms25.csv has 10 cols (mag_x/y/z, accel_x/y/z, rot_x/y/z), not quaternions.
-    v1 was feeding magnetometer values to SLERP -> random rotations
-  - Open3D pcd.transform(T) is in-place, v1 applied it twice to the same
-    object so the local map got corrupted on the second call
-  - switched the init guess from broken IMU preintegration to wheel odom
-    (odometry_mu_100hz.csv, which is integrated wheel encoders at 100 Hz)
-  - scan-to-map ICP now passes T_pred directly as the init arg instead of
-    pre-transforming the source cloud, avoids the in-place gotcha
-
-target: ATE < 50m (10x better than week 2)
+"""improved LiDAR odometry on NCLT spring (2012-04-29), every 2nd scan
+which gives 6486 scans total.  on top of the plain-ICP baseline from
+week 2 (419 m ATE) it adds wheel-odom prediction for the ICP init,
+scan-to-local-map matching with a 20-scan sliding window, RANSAC ground
+removal, GPS-aided loop closures and a 2D pose graph solve
 """
 import os
 import sys
@@ -41,7 +24,7 @@ from data_loaders.velodyne_loader import VelodyneLoader
 from data_loaders.ground_truth_loader import GroundTruthLoader
 from data_loaders.sensor_loader import SensorLoader
 # quick note - this file is named imu_localmap but we do NOT preintegrate IMU.
-# NCLT's MS25 IMU is only ~48 Hz and noisy, tried integrating it in v1 and got garbage.
+# NCLT's MS25 IMU is only +-48 Hz and noisy, tried integrating it in v1 and got garbage.
 # we use the pre-integrated wheel-odom (odometry_mu_100hz.csv) as ICP init instead.
 
 SESSION = '2012-04-29'
@@ -51,14 +34,14 @@ PLOTS_DIR = RESULTS_DIR / 'plots'
 PLOTS_DIR.mkdir(parents=True, exist_ok=True)
 
 # ICP parameters. 0.3 m voxel keeps walls/poles, drops grass; 1.5 m threshold
-# is safely wider than the Segway's ~0.5 m/frame motion at 5 Hz.
+#is safely wider than the Segway's +-0.5 m/frame motion at 5 Hz.
 ICP_VOXEL = 0.3
 ICP_THRESHOLD = 1.5
 # max_iter = 150  # more iters, diminishing returns
 ICP_MAX_ITER = 80
 
 # local map: last 20 scans fused in global frame. Big enough to give ICP real
-# geometry (not just the current scan's ~30 m radius), small enough to stay real-time.
+# geometry (not just the current scan's +-30 m radius), small enough to stay real-time
 LOCALMAP_SIZE = 20
 LOCALMAP_VOXEL = 0.5
 
@@ -67,11 +50,11 @@ GROUND_DIST = 0.25
 GROUND_RANSAC_N = 3
 GROUND_ITERS = 200
 
-# GPS loop closure: 15 m RTK proximity is well above RTK noise (~10 cm),
-# and min_gap=200 means "don't close with recent frames, those are just odometry".
+# GPS loop closure: 15 m RTK proximity is well above RTK noise (+-10 cm),
+# and min_gap=200 means "don't close with recent frames, those are just odometry"
 GPS_LC_MIN_GAP = 200
 GPS_LC_RADIUS = 15.0
-# FIXME: radius should be tuned per-session, 15m works for spring but summer has more false matches
+# radius should be tuned per-session, 15m works for spring but summer has more false matches
 GPS_LC_ICP_FITNESS = 0.25  # fraction of inliers required to accept a LC edge
 GPS_LC_ICP_DIST = 2.0
 GPS_LC_DEDUP = 50
@@ -88,9 +71,9 @@ print(f"Local map: {LOCALMAP_SIZE} scans, {LOCALMAP_VOXEL}m voxel")
 print(f"GPS LC: radius={GPS_LC_RADIUS}m, min_gap={GPS_LC_MIN_GAP}")
 
 
-# Odometry predictor.
+# Odometry predictor   
 # v1 tried IMU preintegration (Forster et al., 2015) but NCLT's MS25 IMU is only
-# ~48 Hz and very noisy, so preintegrated deltas were garbage. Using NCLT's
+# +-48 Hz and very noisy, so preintegrated deltas were garbage. Using NCLT's
 # pre-integrated wheel odometry (odometry_mu_100hz.csv) is both simpler and
 # more accurate as an ICP init guess.
 class OdometryPredictor:
@@ -265,7 +248,7 @@ class GPSLoopClosureDetector:
                 if dist < self.radius:
                     candidates.append((qi, ci, dist))
 
-        # deduplicate: keep best per window pair
+        #deduplicate: keep best per window pair
         dedup = {}
         for q, c, d in candidates:
             wq, wc = q // self.dedup_window, c // self.dedup_window
@@ -277,7 +260,7 @@ class GPSLoopClosureDetector:
 
 
 # Pose  graph optimizer: 2D SE(2), sparse normal equations, Gauss-Newton + LM.# Gauge-fixed by anchoring node 0. Damping adapted per iter (halve on improve,
-# 5x on worsen) following standard LM.
+# 5x on worsen) following standard LM
 class PoseGraphOptimizer2D:
     """Sparse 2D pose graph optimizer (Gauss-Newton + LM damping), first pose anchored."""
 
@@ -382,7 +365,7 @@ def compute_rpe(e, g, d=1):
             'trans_errors':te, 'rot_errors':re}
 
 
-# --- Step 0: Load data ---
+# Step 0: Load data
 print("\nSTEP 0: LOADING DATA")
 
 gt_loader = GroundTruthLoader()
@@ -412,7 +395,7 @@ odom_pred = OdometryPredictor(odom_df)
 local_map = LocalMap(LOCALMAP_SIZE, LOCALMAP_VOXEL)
 gps_lc = GPSLoopClosureDetector(gps_df, GPS_LC_MIN_GAP, GPS_LC_RADIUS, GPS_LC_DEDUP)
 
-# --- Step 1: Odometry-aided ICP with local map matching ---
+# Step 1: Odometry-aided ICP with local map matching
 print("\nSTEP 1: ODOMETRY-AIDED ICP + LOCAL MAP + GROUND REMOVAL")
 
 poses_4x4 = []
@@ -445,7 +428,7 @@ for idx in tqdm(range(len(files)), desc="LiDAR-Odom ICP"):
         # get odometry-based relative transform as ICP initial guess
         T_odom_rel = odom_pred.get_relative_transform(prev_timestamp, ts)
 
-        # get registration target: local map or previous scan
+        # get registration target: local map or previous scan   
         map_pcd = local_map.get_map_pcd()
 
         if map_pcd is not None and len(map_pcd.points) > 500:
@@ -478,7 +461,7 @@ for idx in tqdm(range(len(files)), desc="LiDAR-Odom ICP"):
     poses_4x4.append(current_pose.copy())
     timestamps_us.append(ts)
 
-    # add scan to local map (pcd is still in local frame, add_scan transforms it)
+    #add scan to local map (pcd is still in local frame, add_scan transforms it)
     local_map.add_scan(np.asarray(pcd.points), current_pose)
 
     prev_pcd = pcd
@@ -493,7 +476,7 @@ t_odom = time.time()-t0
 print(f"\nOdometry: {len(poses_4x4)} poses in {t_odom:.1f}s "
       f"({len(poses_4x4)/t_odom:.1f} sc/s)")
 
-# --- Step 2: GPS-aided loop closure detection ---
+# Step 2: GPS-aided loop closure detection
 print("\nSTEP 2: GPS-AIDED LOOP CLOSURE DETECTION")
 
 t0 = time.time()
@@ -505,7 +488,7 @@ print(f"GPS candidates: {len(gps_candidates)} in {t_detect:.1f}s")
 print("\nSTEP 3: ICP VERIFICATION OF GPS LOOP CLOSURES")
 
 def get_pcd(idx):
-    # FIXME: magic number, tune per session
+    # magic number, tune per session
     if idx in pcd_cache:
         return pcd_cache[idx]
     nearest = min(pcd_cache.keys(), key=lambda k: abs(k-idx))
@@ -555,7 +538,7 @@ if verified_lc:
         print(f"  {c:5d}<->{q:5d} (gap={q-c:5d}): fit={fit:.3f}, "
               f"rmse={rmse:.3f}m, gps={gd:.1f}m")
 
-# --- Step 4: Pose graph optimization ---
+# Step 4: Pose graph optimization
 print("\nSTEP 4: POSE GRAPH OPTIMIZATION")
 
 def pose_to_2d(p4):
@@ -594,7 +577,7 @@ else:
     opt_2d = poses_2d.copy()
     t_opt = 0
 
-# --- Step 5: Evaluation ---
+# Step 5: Evaluation
 print("\nSTEP 5: EVALUATION")
 
 odom_traj = []
@@ -657,7 +640,7 @@ print(f"\nWeek 2 → Week 3 ATE improvement: "
       f"{wk2_ate:.1f}m → {ate_opt['rmse']:.1f}m "
       f"({(1-ate_opt['rmse']/wk2_ate)*100:+.1f}%)")
 
-# --- Step 6: Plots ---
+#Step 6: Plots
 print("\nSTEP 6: GENERATING PLOTS")
 
 # 1. Trajectory comparison
@@ -711,7 +694,7 @@ plt.tight_layout()
 plt.savefig(PLOTS_DIR/'error_dist_week3.png', dpi=150)
 print(f"  Saved: error_dist_week3.png"); plt.close()
 
-# 4. GPS loop closures
+#4. GPS loop closures
 fig, ax = plt.subplots(figsize=(14,12))
 sc = ax.scatter(odom_traj[:,1], odom_traj[:,2], c=np.arange(ml), cmap='viridis', s=1, alpha=0.5)
 plt.colorbar(sc, ax=ax, label='Frame')
@@ -735,7 +718,7 @@ np.savetxt(RESULTS_DIR/'gt_trajectory.txt', gt_traj, fmt='%.6f',
            header='timestamp x y z qx qy qz qw')
 print(f"  Trajectories saved to {RESULTS_DIR}")
 
-# --- Summary ---
+# Summary
 print(f"\n{'='*80}")
 print("WEEK 3 PIPELINE COMPLETE")
 print(f"{'='*80}")

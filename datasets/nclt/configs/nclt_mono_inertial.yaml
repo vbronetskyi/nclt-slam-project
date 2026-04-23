@@ -1,13 +1,13 @@
 %YAML:1.0
 
-#--------------------------------------------------------------------------------------------
+
 # NCLT Ladybug3 Camera 0 + MS25 IMU - Mono-Inertial Config
 # Half resolution (808x616) with PinHole model
 #
 # Calibration from COLMAP self-calibration on 100 images:
 #   SIMPLE_PINHOLE: f=221, cx=404, cy=309 (96 images registered, 0.48px reprojection error)
-# Ladybug3 has ~120deg horizontal FOV (5 cameras covering 360 + overlap)
-#--------------------------------------------------------------------------------------------
+# Ladybug3 has +-120deg horizontal FOV (5 cameras covering 360 + overlap)
+
 
 File.version: "1.0"
 
@@ -35,10 +35,10 @@ Camera.fps: 5
 # Color order (1: RGB, 0: BGR)
 Camera.RGB: 1
 
-#--------------------------------------------------------------------------------------------
+
 # IMU Parameters (MS25 MEMS IMU at 50 Hz)
 # relaxed noise, low-rate camera needs slack for IMU init
-#--------------------------------------------------------------------------------------------
+
 
 IMU.NoiseGyro: 0.01
 IMU.NoiseAcc: 0.1
@@ -59,9 +59,9 @@ IMU.T_b_c1: !!opencv-matrix
           1.0, 0.0, 0.0, 0.0,
           0.0, 0.0, 0.0, 1.0]
 
-#--------------------------------------------------------------------------------------------
+
 # ORB Extractor Parameters
-#--------------------------------------------------------------------------------------------
+
 
 ORBextractor.nFeatures: 2000
 ORBextractor.scaleFactor: 1.2
@@ -69,9 +69,9 @@ ORBextractor.nLevels: 8
 ORBextractor.iniThFAST: 20
 ORBextractor.minThFAST: 7
 
-#--------------------------------------------------------------------------------------------
+
 # Viewer Parameters (disabled for headless mode)
-#--------------------------------------------------------------------------------------------
+
 
 Viewer.KeyFrameSize: 0.6
 Viewer.KeyFrameLineWidth: 2.0

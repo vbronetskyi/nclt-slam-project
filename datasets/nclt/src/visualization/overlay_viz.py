@@ -1,8 +1,6 @@
-"""
-Point cloud overlay on camera images for NCLT
+"""Point cloud overlay on camera images for NCLT
 
 Projects Velodyne points onto Ladybug3 camera images
-Note: 2012-01-08 has no images, use 2012-04-29 or 2012-08-04
 """
 import numpy as np
 import cv2
@@ -61,7 +59,7 @@ class OverlayVisualizer:
 
         # compute colors if not provided
         if colors is None:
-            # color by depth (distance from camera)
+            #color by depth (distance from camera)
             depths = points[in_bounds, 2]
             colors = self._depth_colormap(depths)
         else:
@@ -116,7 +114,7 @@ class OverlayVisualizer:
     @staticmethod
     def _depth_colormap(depths: np.ndarray) -> np.ndarray:
         """depth values to Nx3 RGB colors (0-1)"""
-        # normalize depths
+        # normalize depths   
         d_min, d_max = depths.min(), depths.max()
         if d_max > d_min:
             normalized = (depths - d_min) / (d_max - d_min)

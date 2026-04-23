@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Plot all SLAM results on NCLT (trajectories, ATE bars, tracking rates)"""
+"""Plot all SLAM results on NCLT (trajectories, ATE bars, tracking rates)
+"""
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
@@ -115,15 +116,13 @@ def compute_ate(est_xyz, gt_xyz):
     return np.sqrt(np.mean(dists**2)), np.mean(dists), np.median(dists)
 
 
-# ============================================================
 # LOAD ALL TRAJECTORIES
-# ============================================================
 
 print('Loading trajectories...')
 
 trajs = {}
 
-# --- Ground Truth (Spring 2012-04-29, full session) ---
+#Ground Truth (Spring 2012-04-29, full session)
 gt_seasonal = load_tum(RESULTS / 'week0_seasonal/2012-04-29/gt_trajectory.txt')
 gt_icp_dense = load_tum(RESULTS / 'week2_icp_loop_closure/gt_dense_trajectory.txt')
 gt_synced = load_tum(RESULTS / 'week2_icp_loop_closure/gt_synced_trajectory.txt')
@@ -132,7 +131,7 @@ gt_synced = load_tum(RESULTS / 'week2_icp_loop_closure/gt_synced_trajectory.txt'
 gt = gt_seasonal if gt_seasonal is not None else gt_icp_dense
 print(f"  GT: {len(gt)} poses")
 
-# --- LiDAR ICP (Spring) ---
+# LiDAR ICP (Spring)
 icp_dense = load_tum(RESULTS / 'week2_icp_loop_closure/icp_only_trajectory.txt')
 if icp_dense is not None:
     aligned, gt_matched = sync_and_align(icp_dense, gt)
@@ -146,7 +145,7 @@ if icp_dense is not None:
         trajs['LiDAR ICP\n(dense, 6.5k scans)']['ate_rmse'] = ate_rmse
         print(f"  LiDAR ICP: {len(aligned)} matched, ATE={ate_rmse:.1f}m")
 
-# --- LiDAR ICP + Loop Closure ---
+# LiDAR ICP + Loop Closure
 icp_lc = load_tum(RESULTS / 'week2_icp_loop_closure/icp_lc_trajectory.txt')
 if icp_lc is not None:
     aligned, gt_matched = sync_and_align(icp_lc, gt)
@@ -160,7 +159,7 @@ if icp_lc is not None:
         trajs['LiDAR ICP+LC']['ate_rmse'] = ate_rmse
         print(f"  LiDAR ICP+LC: {len(aligned)} matched, ATE={ate_rmse:.1f}m")
 
-# --- Seasonal optimized (Spring = LiDAR+Odom+GPS) ---
+# Seasonal optimized (Spring = LiDAR+Odom+GPS)
 seasonal_opt = load_tum(RESULTS / 'week0_seasonal/2012-04-29/optimized_trajectory.txt')
 if seasonal_opt is not None:
     aligned, gt_matched = sync_and_align(seasonal_opt, gt)
@@ -174,7 +173,7 @@ if seasonal_opt is not None:
         trajs['LiDAR+Odom+GPS\n(optimized)']['ate_rmse'] = ate_rmse
         print(f"  LiDAR+Odom+GPS: {len(aligned)} matched, ATE={ate_rmse:.1f}m")
 
-# --- Week3 IMU+GPS optimized ---
+# Week3 IMU+GPS optimized
 w3_opt = load_tum(RESULTS / 'week3_imu_gps/optimized_trajectory.txt')
 if w3_opt is not None:
     aligned, gt_matched = sync_and_align(w3_opt, gt)
@@ -188,7 +187,7 @@ if w3_opt is not None:
         trajs['LiDAR+IMU+GPS\n(week3)']['ate_rmse'] = ate_rmse
         print(f"  LiDAR+IMU+GPS: {len(aligned)} matched, ATE={ate_rmse:.1f}m")
 
-# --- DROID-SLAM (Spring, aligned) ---
+# DROID-SLAM (Spring, aligned)
 droid = load_tum(RESULTS / 'week0_visual_slam/droid_slam/2012-04-29/trajectory_aligned.txt')
 if droid is not None:
     aligned, gt_matched = sync_and_align(droid, gt, max_diff_s=2.0)
@@ -202,7 +201,7 @@ if droid is not None:
         trajs['DROID-SLAM']['ate_rmse'] = ate_rmse
         print(f"  DROID-SLAM: {len(aligned)} matched, ATE={ate_rmse:.1f}m")
 
-# --- DPVO (Spring, aligned) ---
+# DPVO (Spring, aligned)
 dpvo = load_tum(RESULTS / 'week0_visual_slam/dpvo/2012-04-29/trajectory_aligned.txt')
 if dpvo is not None:
     aligned, gt_matched = sync_and_align(dpvo, gt, max_diff_s=2.0)
@@ -216,7 +215,7 @@ if dpvo is not None:
         trajs['DPVO']['ate_rmse'] = ate_rmse
         print(f"  DPVO: {len(aligned)} matched, ATE={ate_rmse:.1f}m")
 
-# --- DPV-SLAM (Spring, aligned) ---
+# DPV-SLAM (Spring, aligned)
 dpv = load_tum(RESULTS / 'week0_visual_slam/dpv_slam/2012-04-29/trajectory_aligned.txt')
 if dpv is not None:
     aligned, gt_matched = sync_and_align(dpv, gt, max_diff_s=2.0)
@@ -230,7 +229,7 @@ if dpv is not None:
         trajs['DPV-SLAM']['ate_rmse'] = ate_rmse
         print(f"  DPV-SLAM: {len(aligned)} matched, ATE={ate_rmse:.1f}m")
 
-# --- ORB-SLAM3 mono (v2, spring 3k, best single-map segment) ---
+# ORB-SLAM3 mono (v2, spring 3k, best single-map segment)
 orb_v2_3k = load_orbslam3(RESULTS / 'week0_orbslam3_v2/trajectory_spring_3k.txt')
 if orb_v2_3k is not None:
     aligned, gt_matched = sync_and_align(orb_v2_3k, gt, max_diff_s=2.0)
@@ -244,7 +243,7 @@ if orb_v2_3k is not None:
         trajs['ORB-SLAM3 Mono\n(3k, single map)']['ate_rmse'] = ate_rmse
         print(f"  ORB-SLAM3 Mono 3k: {len(aligned)} matched, ATE={ate_rmse:.1f}m")
 
-# --- ORB-SLAM3 mono-inertial (B001: best VIO run, still massive drift) ---
+# ORB-SLAM3 mono-inertial (B001: best VIO run, still massive drift)
 orb_b001 = load_orbslam3(RESULTS / 'week0_orbslam3_proper/phase_b/B001_imu_v1/f_nclt.txt')
 if orb_b001 is not None:
     aligned, gt_matched = sync_and_align(orb_b001, gt, max_diff_s=2.0)
@@ -261,9 +260,7 @@ if orb_b001 is not None:
 
 print(f"\nTotal methods loaded: {len(trajs)}")
 
-# ============================================================
 # FIGURE 1: Bird's-eye trajectory comparison (ALL methods)
-# ============================================================
 
 print("\nPlotting Figure 1: All trajectories bird's-eye view...")
 
@@ -321,7 +318,7 @@ ax = axes[1, 1]
 ax.set_title('Best Method per Category', fontsize=14, fontweight='bold')
 ax.plot(gt[:, 1], gt[:, 2], 'k-', linewidth=3, alpha=0.5, label='Ground Truth', zorder=1)
 
-# pick best from each category
+#pick best from each category   
 best_picks = {}
 for name, data in trajs.items():
     cat = data['method']
@@ -347,9 +344,7 @@ print(f"  Saved: {OUT_DIR / 'fig1_all_trajectories.png'}")
 plt.close()
 
 
-# ============================================================
 # FIGURE 2: ATE comparison bar chart
-# ============================================================
 
 print("Plotting Figure 2: ATE comparison...")
 
@@ -447,9 +442,7 @@ print(f"  Saved: {OUT_DIR / 'fig2_ate_comparison.png'}")
 plt.close()
 
 
-# ============================================================
 # FIGURE 3: Tracking rate & coverage comparison
-# ============================================================
 
 print('Plotting Figure 3: Tracking rates...')
 
@@ -487,7 +480,7 @@ ax1.set_xlim(0, 115)
 ax1.grid(axis='x', alpha=0.3)
 ax1.invert_yaxis()
 
-# number of poses (log scale)
+# number of poses (log scale)   
 n_poses_data = sorted(tracking_data, key=lambda x: x[2], reverse=True)
 names_p = [x[0] for x in n_poses_data]
 n_poses = [x[2] for x in n_poses_data]
@@ -511,9 +504,7 @@ print(f"  Saved: {OUT_DIR / 'fig3_tracking_rates.png'}")
 plt.close()
 
 
-# ============================================================
 # FIGURE 4: Seasonal comparison (LiDAR pipeline)
-# ============================================================
 
 print("Plotting Figure 4: Seasonal trajectories...")
 
@@ -567,9 +558,7 @@ print(f"  Saved: {OUT_DIR / 'fig4_seasonal.png'}")
 plt.close()
 
 
-# ============================================================
 # FIGURE 5: ORB-SLAM3 scale drift visualization
-# ============================================================
 
 print("Plotting Figure 5: ORB-SLAM3 scale drift...")
 
@@ -589,7 +578,7 @@ if orb_b001 is not None:
 
     # add text showing the scale
     max_coord = max(np.max(np.abs(orb_b001[:, 1])), np.max(np.abs(orb_b001[:, 2])))
-    ax.text(0.05, 0.95, f'Max coordinate: {max_coord:.0f}m\nGT trajectory: ~700m\nScale error: {max_coord/700:.0f}x',
+    ax.text(0.05, 0.95, f'Max coordinate: {max_coord:.0f}m\nGT trajectory: +-700m\nScale error: {max_coord/700:.0f}x',
             transform=ax.transAxes, fontsize=11, verticalalignment='top',
             bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8))
 
@@ -605,7 +594,7 @@ if orb_v2_full is not None:
     ax.grid(True, alpha=0.3)
 
     path_len = np.sum(np.linalg.norm(np.diff(orb_v2_full[:, 1:4], axis=0), axis=1))
-    ax.text(0.05, 0.95, f'Est. path: {path_len:.1f}m\nGT path: ~3186m\nScale: {path_len/3186:.3f}x',
+    ax.text(0.05, 0.95, f'Est. path: {path_len:.1f}m\nGT path: +-3186m\nScale: {path_len/3186:.3f}x',
             transform=ax.transAxes, fontsize=11, verticalalignment='top',
             bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8))
 
@@ -615,9 +604,7 @@ print(f"  Saved: {OUT_DIR / 'fig5_orbslam3_drift.png'}")
 plt.close()
 
 
-# ============================================================
 # FIGURE 6: Summary dashboard
-# ============================================================
 
 print("Plotting Figure 6: Summary dashboard...")
 
@@ -676,7 +663,7 @@ ax.set_title('NCLT SLAM Experiments: Complete Results Summary\n'
              'Experiments 0.1-0.6: LiDAR ICP, ORB-SLAM3 (Mono/VIO/Stereo), DROID-SLAM, DPVO, DPV-SLAM\n',
              fontsize=16, fontweight='bold', pad=20)
 
-# add footnotes
+#add footnotes
 footnote = (
     "Key findings:\n"
     "• LiDAR ICP + Odom + GPS is the only reliable pipeline (Winter: 30.2m ATE)\n"
@@ -699,7 +686,7 @@ print(f"\n{'='*60}")
 print(f"All plots saved to: {OUT_DIR}")
 print(f"{'='*60}")
 
-# list all generated files
+#list all generated files
 for f in sorted(OUT_DIR.glob('*.png')):
     size_kb = f.stat().st_size / 1024
     print(f"  {f.name} ({size_kb:.0f} KB)")

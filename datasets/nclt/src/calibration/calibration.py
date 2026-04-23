@@ -1,5 +1,4 @@
-"""
-NCLT calibration: body/velodyne/camera frame transforms
+"""NCLT calibration: body/velodyne/camera frame transforms
 
 For accurate projections, download cam_params from NCLT site
 Ref: https://github.com/aljosaosep/NCLT-dataset-tools
@@ -59,7 +58,7 @@ class NCLTCalibration:
                 if os.path.exists(k_file):
                     self.camera_intrinsics[cam_id] = np.loadtxt(k_file, delimiter=',')
 
-                # lidar to camera extrinsics
+                #lidar to camera extrinsics
                 x_file = os.path.join(self.calib_dir, f'x_lb3_c{cam_id}.csv')
                 if os.path.exists(x_file):
                     self.lidar_to_camera[cam_id] = np.loadtxt(x_file, delimiter=',')
@@ -122,7 +121,7 @@ class NCLTCalibration:
         T_lidar_to_cam = self.get_lidar_to_camera(cam_id)
         points_cam = (np.linalg.inv(T_lidar_to_cam) @ points_homo.T).T
 
-        # filter points in front of camera (z > 0)
+        #filter points in front of camera (z > 0)
         valid_mask = points_cam[:, 2] > 0
 
         # project to image plane

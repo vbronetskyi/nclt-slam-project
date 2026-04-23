@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
-"""Download NCLT dataset sample for local development.
-
-Supports three modes:
-  1. Kaggle API download (requires kaggle CLI + API key)
-  2. Original NCLT ground truth download (lightweight)
-  3. Manual download instructions
+"""Download NCLT dataset sample for local development
 
 Usage:
     python scripts/download_nclt_sample.py --source kaggle
@@ -116,7 +111,7 @@ def download_kaggle(output_dir: Path) -> bool:
 
 
 def download_nclt_groundtruth(output_dir: Path) -> bool:
-    # NOTE: not thread-safe but we run single threaded anyway
+    # not thread-safe but we run single threaded anyway
     """download ground truth CSVs from NCLT website, return True on success"""
     logger.info("Downloading NCLT ground truth files...")
     success = True
@@ -180,7 +175,7 @@ def verify_dataset(data_dir: Path) -> bool:
         if not (data_dir / csv_name).exists():
             issues.append(f"Missing {csv_name}")
 
-    # check for session directories (directly under data_dir)
+    #check for session directories (directly under data_dir)
     known_sessions = [
         "2012-01-08", "2012-01-22", "2012-02-12", "2012-02-18",
         "2012-03-31", "2012-05-26", "2012-08-04", "2012-10-28",

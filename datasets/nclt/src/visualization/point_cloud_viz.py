@@ -1,5 +1,4 @@
-"""
-3D point cloud viz for NCLT
+"""3D point cloud viz for NCLT
 
 Open3D interactive viz of Velodyne and Hokuyo data
 """
@@ -34,7 +33,7 @@ class PointCloudVisualizer:
         pcd = o3d.geometry.PointCloud()
         pcd.points = o3d.utility.Vector3dVector(points[:, :3])
 
-        # color points based on chosen attribute
+        #color points based on chosen attribute
         colors = self._compute_colors(points, color_by)
         pcd.colors = o3d.utility.Vector3dVector(colors)
 
@@ -76,10 +75,10 @@ class PointCloudVisualizer:
 
         scan = scans[scan_idx]
 
-        # convert to Cartesian
+        # convert to Cartesian   
         points_2d = self.hokuyo_loader.ranges_to_cartesian(scan['ranges'])
 
-        # add z=0 to make it 3D
+        # add z=0 to make it 3D   
         points_3d = np.column_stack([points_2d, np.zeros(len(points_2d))])
 
         # create Open3D point cloud
@@ -87,7 +86,7 @@ class PointCloudVisualizer:
         pcd.points = o3d.utility.Vector3dVector(points_3d)
         pcd.paint_uniform_color([1.0, 0.0, 0.0])  # Red
 
-        # create coordinate frame
+        #create coordinate frame
         coord_frame = o3d.geometry.TriangleMesh.create_coordinate_frame(
             size=1.0, origin=[0, 0, 0]
         )
@@ -109,7 +108,7 @@ class PointCloudVisualizer:
         # get positions
         positions = gt[['x', 'y', 'z']].values[::subsample]
 
-        # create line set for trajectory
+        #create line set for trajectory
         points = positions
         lines = [[i, i+1] for i in range(len(points)-1)]
 

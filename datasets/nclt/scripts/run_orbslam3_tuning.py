@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""ORB-SLAM3 parameter sweep on NCLT Ladybug3. runs unattended.
+"""ORB-SLAM3 parameter sweep on NCLT Ladybug3. runs unattended
 
 first does a camera investigation (figure out which of Cam0-5 actually point
 at useful scene content), then a quick 1k-frame validation on the top cameras,
@@ -35,7 +35,7 @@ TUNING_DIR = RESULTS_DIR / "tuning_runs"
 SESSION = "2012-04-29"
 # only spring + summer have Ladybug3 frames. winter/autumn = lidar-only.
 # most of exps 0.2-0.4 were on Cam0 which turned out to be sky-facing (pointing up).
-# NOTE: only spring + summer have Ladybug3 images, winter/autumn = lidar-only
+# only spring + summer have Ladybug3 images, winter/autumn = lidar-only   
 
 # ORB-SLAM3 environment
 def orbslam_env():
@@ -64,7 +64,7 @@ def log(msg, level="INFO"):
             f.write(line + "\n")
 
 
-# ground truth loading
+#ground truth loading   
 def load_ground_truth(session="2012-04-29"):
     """Load NCLT ground truth as (N,8) array: [timestamp_us, x, y, z, r, p, y_aw, ?]."""
     gt_path = NCLT_DATA / "ground_truth" / f"groundtruth_{session}.csv"
@@ -169,7 +169,7 @@ def prepare_tum_dataset(cam_id, n_frames=0, preprocess="none", clahe_clip=2.0,
 
     assoc_file = output_dir / "rgb.txt"
 
-    # check if already prepared
+    #check if already prepared
     if assoc_file.exists():
         with open(assoc_file) as f:
             existing = sum(1 for line in f if not line.startswith("#"))
@@ -346,7 +346,7 @@ def run_orbslam3(dataset_dir, config_path, timeout_s=900, run_label=""):
             if "Tracking" in line and "lost" in line.lower():
                 log(f"    {line.strip()}")
 
-        # find trajectory
+        #find trajectory
         traj_path = None
         for candidate in ["KeyFrameTrajectory.txt", "CameraTrajectory.txt",
                           "FrameTrajectory_TUM_Format.txt"]:
@@ -397,7 +397,7 @@ def load_tum_trajectory(traj_path):
     return poses
 
 
-# PHASE 0: Camera Investigation
+#PHASE 0: Camera Investigation
 def phase0_camera_investigation():
     """Investigate all 6 Ladybug3 cameras to find best ones for SLAM"""
     log("PHASE 0: Camera Investigation")
@@ -414,7 +414,7 @@ def phase0_camera_investigation():
             log(f"  Cam{cam_id}: No images found", "WARN")
             continue
 
-        # pick a sample from ~25% into the sequence (avoid overexposed startup)
+        # pick a sample from +-25% into the sequence (avoid overexposed startup)
         idx = max(len(tiffs) // 4, 200)
         sample_tiff = tiffs[min(idx, len(tiffs) - 1)]
 
@@ -441,7 +441,7 @@ def phase0_camera_investigation():
         kps = orb.detect(img_gray)
         n_orb = len(kps)
 
-        # goodFeaturesToTrack (what ORB-SLAM3 internally uses is similar)
+        # goodFeaturesToTrack (what ORB-SLAM3 internally uses is similiar)
         corners = cv2.goodFeaturesToTrack(img_gray, maxCorners=3000,
                                           qualityLevel=0.01, minDistance=10)
         n_corners = len(corners) if corners is not None else 0
@@ -475,7 +475,7 @@ def phase0_camera_investigation():
         log(f"  Cam{cam_id}: bright={brightness:.0f} contrast={contrast:.0f} "
             f"ORB={n_orb} corners={n_corners} orient={orientation}")
 
-    # summary table
+    #summary table
     log("\n  Camera Investigation Summary:")
     log(f"  {'Cam':>4} {'Bright':>7} {'Contrast':>9} {'ORB':>5} {'Corners':>8} {'Orientation':<20}")
     log(f"  {'-'*4:>4} {'-'*7:>7} {'-'*9:>9} {'-'*5:>5} {'-'*8:>8} {'-'*20:<20}")
@@ -642,7 +642,7 @@ def phase2_parameter_tuning(cam_id, preprocess="none"):
     N_FRAMES = 3000
     gt_data = load_ground_truth()
 
-    # prepare dataset once
+    #prepare dataset once
     clahe_clip = 3.0 if preprocess == "clahe" else 0
     prep = "clahe" if preprocess in ("clahe", "aggressive") else "none"
 
@@ -710,7 +710,7 @@ def phase2_parameter_tuning(cam_id, preprocess="none"):
             return min(valid, key=lambda x: x[key]) if valid else None
         return max(runs, key=lambda x: x.get(key, 0))
 
-    # --- Starting params ---
+    #Starting params
     params = {
         "fx": 221.0, "fy": 221.0, "cx": 404.0, "cy": 308.0,
         "k1": 0.0, "k2": 0.0, "p1": 0.0, "p2": 0.0,
@@ -725,9 +725,9 @@ def phase2_parameter_tuning(cam_id, preprocess="none"):
         params["minThFAST"] = 2
         params["nLevels"] = 12
 
-    # ---------------------------------------------------------------
+
     # step 1: nFeatures sweep
-    # ---------------------------------------------------------------
+
     log("\n--- Step 1: nFeatures sweep ---")
     step1_runs = []
     for nf in [1000, 2000, 3000, 5000, 8000]:
@@ -742,9 +742,9 @@ def phase2_parameter_tuning(cam_id, preprocess="none"):
         log(f"  Best nFeatures: {params['nFeatures']} "
             f"(tracking={best1['tracking_rate']:.1f}%, ATE={best1['ate_rmse']:.2f}m)")
 
-    # ---------------------------------------------------------------
+
     # step 2: FAST threshold sweep
-    # ---------------------------------------------------------------
+
     log("\n--- Step 2: FAST threshold sweep ---")
     step2_runs = []
     for ini, mn in [(20, 7), (15, 5), (10, 3), (7, 3), (5, 2)]:
@@ -761,9 +761,9 @@ def phase2_parameter_tuning(cam_id, preprocess="none"):
         log(f"  Best FAST: ini={params['iniThFAST']} min={params['minThFAST']} "
             f"(tracking={best2['tracking_rate']:.1f}%, ATE={best2['ate_rmse']:.2f}m)")
 
-    # ---------------------------------------------------------------
-    # step 3: Scale and levels sweep
-    # ---------------------------------------------------------------
+
+    #step 3: Scale and levels sweep
+
     log("\n--- Step 3: Scale factor and pyramid levels sweep ---")
     step3_runs = []
     for sf, nl in [(1.1, 10), (1.1, 12), (1.2, 8), (1.2, 10), (1.3, 8), (1.15, 10)]:
@@ -780,9 +780,9 @@ def phase2_parameter_tuning(cam_id, preprocess="none"):
         log(f"  Best scale: factor={params['scaleFactor']} levels={params['nLevels']} "
             f"(tracking={best3['tracking_rate']:.1f}%, ATE={best3['ate_rmse']:.2f}m)")
 
-    # ---------------------------------------------------------------
+
     # step 4: Preprocessing sweep (if not already CLAHE)
-    # ---------------------------------------------------------------
+
     log("\n--- Step 4: Preprocessing sweep ---")
     step4_runs = []
     prep_variants = [("none", 0), ("clahe", 2.0), ("clahe", 4.0)]
@@ -825,9 +825,9 @@ def phase2_parameter_tuning(cam_id, preprocess="none"):
         log(f"  Best preprocessing: {best_preprocess} (clip={best_clip}) "
             f"(tracking={best4['tracking_rate']:.1f}%, ATE={best4['ate_rmse']:.2f}m)")
 
-    # ---------------------------------------------------------------
+
     # step 5: Multi-camera test
-    # ---------------------------------------------------------------
+
     log("\n--- Step 5: Multi-camera comparison ---")
     # load phase0 selected cameras
     cam_stats_path = CAMERA_SAMPLES_DIR / "camera_stats.json"
@@ -873,9 +873,9 @@ def phase2_parameter_tuning(cam_id, preprocess="none"):
         final_cam = best5["cam_id"]
         log(f"  Cam{final_cam} is significantly better, switching!")
 
-    # ---------------------------------------------------------------
+
     # step 6: Resolution sweep
-    # ---------------------------------------------------------------
+
     log("\n--- Step 6: Resolution sweep ---")
     step6_runs = []
     for res_name, (rw, rh) in [("half", (808, 616)), ("3quarter", (1212, 924))]:
@@ -912,7 +912,6 @@ def phase2_parameter_tuning(cam_id, preprocess="none"):
             traj = load_tum_trajectory(result["traj_path"])
             ate = compute_ate(traj, gt_data)
             metrics["ate_rmse"] = ate["ate_rmse"]
-            # print(f"DEBUG pose={pose}")
             log(f"    {res_name}: ATE={ate['ate_rmse']:.2f}m "
                 f"tracking={result['tracking_rate']:.1f}%")
         step6_runs.append(metrics)
@@ -934,7 +933,7 @@ def phase2_parameter_tuning(cam_id, preprocess="none"):
         log(f"  Best resolution: {best_resolution} ({rw}x{rh}) "
             f"(tracking={best6['tracking_rate']:.1f}%, ATE={best6['ate_rmse']:.2f}m)")
 
-    # save all runs
+    #save all runs
     with open(TUNING_DIR / "all_runs.json", "w") as f:
         json.dump(all_runs, f, indent=2)
 
@@ -1067,7 +1066,7 @@ def phase3_full_run(best_config):
             }
             log(f"    Default: FAILED (expected - sky camera)")
 
-    # save updated results
+    #save updated results
     with open(RESULTS_DIR / "full_session_results.json", "w") as f:
         json.dump(full_results, f, indent=2)
 
@@ -1083,7 +1082,7 @@ def phase4_plots_and_report(full_results, all_runs, camera_stats):
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
-    # --- Plot 1: Parameter sweep results ---
+    #Plot 1: Parameter sweep results
     if all_runs:
         fig, axes = plt.subplots(2, 3, figsize=(18, 10))
 
@@ -1123,7 +1122,7 @@ def phase4_plots_and_report(full_results, all_runs, camera_stats):
         plt.close()
         log("  Saved parameter_sweep.png")
 
-    # --- Plot 2: Trajectory comparison ---
+    #Plot 2: Trajectory comparison
     if full_results:
         gt_data = load_ground_truth()
         gt_xy = gt_data[:, 1:3]
@@ -1204,7 +1203,7 @@ def phase4_plots_and_report(full_results, all_runs, camera_stats):
         plt.close()
         log("  Saved trajectory_comparison.png")
 
-    # --- Plot 3: Camera comparison ---
+    # Plot 3: Camera comparison
     if camera_stats:
         fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 
@@ -1229,7 +1228,7 @@ def phase4_plots_and_report(full_results, all_runs, camera_stats):
         plt.close()
         log("  Saved camera_comparison.png")
 
-    # --- Summary report ---
+    # Summary report
     report = generate_report(full_results, all_runs, camera_stats)
     with open(RESULTS_DIR / "SUMMARY.md", "w") as f:
         f.write(report)
@@ -1325,7 +1324,7 @@ def generate_report(full_results, all_runs, camera_stats):
 
 # MAIN
 def main():
-    # NOTE: not thread-safe but we run single threaded anyway
+    # not thread-safe but we run single threaded anyway
     global LOG_FILE
 
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
@@ -1344,7 +1343,6 @@ def main():
     # check prerequisites
     if not MONO_TUM.exists():
         log(f"ORB-SLAM3 binary not found at {MONO_TUM}", "ERROR")
-        # print(f"DEBUG config={cfg}")
         log("Please build ORB-SLAM3 first")
         sys.exit(1)
     if not VOCAB_PATH.exists():
@@ -1354,19 +1352,19 @@ def main():
         log(f"Ground truth not found at {GT_FILE}", "ERROR")
         sys.exit(1)
 
-    # --- Phase 0 ---
+    # Phase 0
     best_cameras, camera_stats = phase0_camera_investigation()
 
-    # --- Phase 1 ---
+    # Phase 1
     best_cam, best_preprocess, val_results = phase1_quick_validation(best_cameras)
 
-    # --- Phase 2 ---
+    # Phase 2
     best_config, all_runs = phase2_parameter_tuning(best_cam, best_preprocess)
 
-    # --- Phase 3 ---
+    # Phase 3
     full_results = phase3_full_run(best_config)
 
-    # --- Phase 4 ---
+    # Phase 4
     phase4_plots_and_report(full_results, all_runs, camera_stats)
 
     elapsed = time.time() - start_time

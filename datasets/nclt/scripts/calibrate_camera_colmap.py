@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Self-calibrate NCLT Ladybug3 camera using COLMAP Structure-from-Motion.
+"""Self-calibrate NCLT Ladybug3 camera using COLMAP Structure-from-Motion
 
 Runs COLMAP feature extraction + matching + reconstruction on a subset of images
 to estimate camera intrinsics (fx, fy, cx, cy) and fisheye distortion (k1-k4).
@@ -32,7 +31,7 @@ def prepare_colmap_images(session, cam_id=0, n_images=300, subsample=3):
         return None
 
     tiff_files = sorted(img_dir.glob('*.tiff'))
-    # take every Nth image, up to n_images
+    #take every Nth image, up to n_images
     selected = tiff_files[::subsample][:n_images]
 
     colmap_dir = Path(f'/tmp/colmap_nclt_{session}')
@@ -71,7 +70,7 @@ def run_colmap(colmap_dir):
         '--image_path', str(colmap_dir / 'images'),
         '--ImageReader.camera_model', 'OPENCV_FISHEYE',
         '--ImageReader.single_camera', '1',
-        # initial guess for focal length (equidistant ~579 at half res)
+        # initial guess for focal length (equidistant +-579 at half res)
         '--ImageReader.camera_params', '579,579,404,308,0.01,-0.005,0.001,0.0',
         '--SiftExtraction.max_num_features', '3000',
     ]
@@ -234,7 +233,7 @@ def extract_calibration(recon_dir, output_path):
 
 
 def main():
-    # FIXME: magic number, tune per session
+    # magic number, tune per session
     parser = argparse.ArgumentParser(description="Self-calibrate NCLT camera via COLMAP")
     parser.add_argument('--session', default='2012-04-29', help='NCLT session')
     parser.add_argument('--cam-id', type=int, default=0, help='Camera ID (0-5)')

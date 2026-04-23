@@ -11,7 +11,7 @@ This report presents the results of running Custom ICP odometry on the NCLT data
 - **Total scans available**: 12,971
 - **Scans processed**: 500 (every 10th scan, limited for testing)
 - **Trajectory length**: 1,336.9 meters
-- **Duration**: ~1,100 seconds (~18 minutes)
+- **Duration**: +-1,100 seconds (+-18 minutes)
 
 ## Methods Evaluated
 
@@ -19,7 +19,7 @@ This report presents the results of running Custom ICP odometry on the NCLT data
 - **Implementation**: Open3D Point-to-Plane ICP
 - **Preprocessing**: Voxel downsampling (0.5m voxel size)
 - **Features**: Normal estimation, iterative registration
-- **Performance**: ~30 scans/second
+- **Performance**: +-30 scans/second
 
 ### 2. KISS-ICP
 - **Status**: Not available (installation failed)
@@ -40,13 +40,13 @@ This report presents the results of running Custom ICP odometry on the NCLT data
 ### Key Observations
 
 1. **Drift Accumulation**: The ATE plot shows significant drift over time:
-   - Initial error: ~130m
-   - Mid-trajectory: peaks at ~260m
-   - End of trajectory: dramatic increase to ~360m
+   - Initial error: +-130m
+   - Mid-trajectory: peaks at +-260m
+   - End of trajectory: dramatic increase to +-360m
 
 2. **Error Patterns**:
    - Error grows roughly linearly for first 600 seconds
-   - Shows some correction around 700-800 seconds (error drops to ~60m)
+   - Shows some correction around 700-800 seconds (error drops to +-60m)
    - Final segment shows catastrophic drift (360m)
 
 3. **Trajectory Comparison**:
@@ -63,9 +63,9 @@ This report presents the results of running Custom ICP odometry on the NCLT data
 **Analysis**:
 - **Black line**: Ground truth trajectory (complex loop)
 - **Blue line**: Custom ICP estimate
-- The custom ICP follows a similar overall path but with:
-  - Large positional offset (~100-200m)
-  - No loop closure (doesn't recognize revisited areas)
+- The custom ICP follows a similiar overall path but with:
+  - Large positional offset (+-100-200m)
+  - No loop closure (doesn't recognize revisited areas)   
   - Accumulated rotation error causing path divergence
 
 ### 2. ATE Over Time
@@ -74,7 +74,7 @@ This report presents the results of running Custom ICP odometry on the NCLT data
 **Analysis**:
 - Shows temporal evolution of positioning error
 - Clear drift pattern: error accumulates over time
-- Interesting correction around 700s (vehicle may have traveled straight)
+- Interesting correction around 700s (vehicle may have traveled straight)   
 - Final spike suggests challenging geometry or poor scan matching
 
 ### 3. Error Distribution
@@ -90,8 +90,8 @@ This report presents the results of running Custom ICP odometry on the NCLT data
 ## Performance Bottlenecks
 
 ### Processing Speed
-- **Loading scans**: ~20 scans/second (I/O bound)
-- **ICP registration**: ~30 scans/second
+- **Loading scans**: +-20 scans/second (I/O bound)
+- **ICP registration**: +-30 scans/second
 - **Downsampling overhead**: Significant (0.5m voxel size required for speed)
 
 ### Accuracy Limitations
@@ -178,8 +178,8 @@ Key takeaways:
 
 **Bottom line**: This establishes a baseline. Any improvement (loop closure, better registration, sensor fusion) will show measurable gains.
 
----
+
 
 **Date**: February 10, 2026
-**Runtime**: ~42 seconds (including data loading)
+**Runtime**: +-42 seconds (including data loading)
 **Environment**: RTX 5080, PyTorch 2.10, Open3D 0.18

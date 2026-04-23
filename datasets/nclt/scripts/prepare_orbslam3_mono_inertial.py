@@ -1,12 +1,5 @@
 #!/usr/bin/env python3
-"""
-Prepare NCLT data in TUM-VI format for ORB-SLAM3 Mono-Inertial.
-
-Creates:
-    /tmp/nclt_mono_inertial_{session}/
-        images/          - Half-resolution PNG images (808x616)
-        timestamps.txt   - Nanosecond timestamps, one per line
-        imu.txt          - CSV: timestamp_ns, gx, gy, gz, ax, ay, az
+"""Prepare NCLT data in TUM-VI format for ORB-SLAM3 Mono-Inertial
 
 Usage:
     python prepare_orbslam3_mono_inertial.py --session 2012-04-29 [--max-images 0] [--cam-id 0]
@@ -58,7 +51,7 @@ def prepare_images(session, cam_id=0, max_images=0, output_dir=None):
         cv2.imwrite(str(out_img_dir / out_name), img)
         entries.append((ts_ns, out_name))
 
-    # write timestamps file (one ns timestamp per line)
+    # write timestamps file (one ns timestamp per line)   
     with open(output_dir / 'timestamps.txt', 'w') as fout:
         for ts_ns, _ in entries:
             fout.write(f"{ts_ns}\n")
@@ -91,10 +84,10 @@ def prepare_imu(session, output_dir):
         imu_df['rot_y'].values**2 +
         imu_df['rot_z'].values**2
     )
-    print(f"  Accel norm: mean={np.mean(accel_norm):.3f} m/s^2 (expect ~9.81)")
+    print(f"  Accel norm: mean={np.mean(accel_norm):.3f} m/s^2 (expect +-9.81)")
     print(f"  Gyro norm: mean={np.mean(gyro_norm):.4f} rad/s")
 
-    # write IMU file in TUM-VI format
+    # write IMU file in TUM-VI format   
     imu_path = output_dir / 'imu.txt'
     with open(imu_path, 'w') as fout:
         fout.write("#timestamp [ns],w_RS_S_x [rad s^-1],w_RS_S_y [rad s^-1],w_RS_S_z [rad s^-1],"
@@ -109,7 +102,7 @@ def prepare_imu(session, output_dir):
 
 
 def main():
-    # TODO: this should live in src/slam, not here
+    # this should live in src/slam, not here
     parser = argparse.ArgumentParser(description='Prepare NCLT data for ORB-SLAM3 Mono-Inertial')
     parser.add_argument('--session', required=True, help='NCLT session (e.g., 2012-04-29)')
     parser.add_argument('--cam-id', type=int, default=0, help='Ladybug3 camera ID (0-5)')

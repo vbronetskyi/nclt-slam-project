@@ -1,5 +1,4 @@
-"""
-Hokuyo 2D LiDAR loader for NCLT
+"""Hokuyo 2D LiDAR loader for NCLT
 
 Binary: 8 bytes timestamp + 1081 x 2 bytes range (uint16)
 Range: actual = raw * 0.005 - 100.0
@@ -17,8 +16,8 @@ class HokuyoLoader:
 
     SCALING = 0.005  # 5mm per unit
     OFFSET = -100.0
-    NUM_RANGES_30M = 1081  # Number of range measurements for 30m Hokuyo
-    NUM_RANGES_4M = 726    # Number of range measurements for 4m Hokuyo
+    NUM_RANGES_30M = 1081  # Number of range measurments for 30m Hokuyo
+    NUM_RANGES_4M = 726    # Number of range measurments for 4m Hokuyo
 
     def __init__(self, data_root: str = '/workspace/nclt_data/hokuyo_data'):
         self.data_root = data_root
@@ -44,7 +43,7 @@ class HokuyoLoader:
 
         with open(filepath, 'rb') as f:
             while True:
-                # timestamp
+                #timestamp
                 utime_bytes = f.read(8)
                 if not utime_bytes:  # EOF
                     break

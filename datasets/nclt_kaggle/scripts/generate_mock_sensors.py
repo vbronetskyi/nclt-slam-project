@@ -1,16 +1,8 @@
 #!/usr/bin/env python3
-"""Generate mock NCLT sensor data CSV files for testing.
+"""Generate mock NCLT sensor data CSV files for testing
 
 Creates synthetic sensor data simulating a 10-second trajectory at the
 University of Michigan North Campus.
-
-Sensors generated:
-    - ms25.csv        : IMU (accelerometer, gyroscope, magnetometer) at 100Hz
-    - gps_rtk.csv     : GPS fix at 1Hz
-    - odometry_mu_100hz.csv : wheel odometry at 100Hz
-    - kvh.csv         : fiber optic gyro heading at 100Hz
-    - groundtruth.csv : ground truth pose at 10Hz
-    - track.csv       : compatibility file for NCLTDataset (1Hz poses)
 
 Usage:
     python scripts/generate_mock_sensors.py
@@ -29,7 +21,7 @@ def generate_mock_sensors(output_dir: str) -> None:
     out.mkdir(parents=True, exist_ok=True)
 
     # common timing parameters
-    t0 = 1326044400000000  # ~2012-01-08 in microseconds
+    t0 = 1326044400000000  # +-2012-01-08 in microseconds
     duration_s = 10.0
     dt_100hz = 10000  # 10 ms in microseconds
     dt_10hz = 100000  # 100 ms in microseconds
@@ -43,18 +35,18 @@ def generate_mock_sensors(output_dir: str) -> None:
     utimes_10hz = t0 + np.arange(n_10hz) * dt_10hz
     utimes_1hz = t0 + np.arange(n_1hz) * dt_1hz
 
-    # trajectory: moving slowly northeast at ~1 m/s
-    # heading ~45 deg = 0.785 rad (NE direction)
+    # trajectory: moving slowly northeast at +-1 m/s
+    # heading +-45 deg = 0.785 rad (NE direction)
     heading_start = 0.785
     speed = 1.0  # m/s
-    vx = speed * np.cos(heading_start)  # ~0.707 m/s
-    vy = speed * np.sin(heading_start)  # ~0.707 m/s
+    vx = speed * np.cos(heading_start)  # +-0.707 m/s
+    vy = speed * np.sin(heading_start)  # +-0.707 m/s
 
-    # ----------------------------------------------------------------
-    # 1. ms25.csv - IMU at 100Hz (1000 rows)
+
+    #1. ms25.csv - IMU at 100Hz (1000 rows)
     #    Columns: utime, mag_x, mag_y, mag_z, accel_x, accel_y, accel_z,
     #             rot_x, rot_y, rot_z
-    # ----------------------------------------------------------------
+
     mag_x = 0.2 + rng.normal(0, 0.005, n_100hz)
     mag_y = -0.05 + rng.normal(0, 0.005, n_100hz)
     mag_z = 0.4 + rng.normal(0, 0.005, n_100hz)
@@ -79,17 +71,17 @@ def generate_mock_sensors(output_dir: str) -> None:
     )
     print(f"  ms25.csv          : {imu_data.shape[0]} rows, {imu_data.shape[1]} cols")
 
-    # ----------------------------------------------------------------
+
     # 2. gps_rtk.csv - GPS at 1Hz (10 rows)
     #    Columns: utime, mode, num_satell, latitude, longitude,
     #             altitude, track, speed
-    # ----------------------------------------------------------------
+
     lat_start = 42.293195
     lon_start = -83.709657
     alt_base = 270.0
 
     # approximate meters-to-degrees at Ann Arbor latitude
-    # 1 deg lat ~ 111,000 m, 1 deg lon ~ 111,000 * cos(42.29 deg) ~ 82,200 m
+    # 1 deg lat +- 111,000 m, 1 deg lon +- 111,000 * cos(42.29 deg) +- 82,200 m
     m_per_deg_lat = 111000.0
     m_per_deg_lon = 111000.0 * np.cos(np.radians(lat_start))
 
@@ -112,10 +104,10 @@ def generate_mock_sensors(output_dir: str) -> None:
     )
     print(f"  gps_rtk.csv       : {gps_data.shape[0]} rows, {gps_data.shape[1]} cols")
 
-    # ----------------------------------------------------------------
-    # 3. odometry_mu_100hz.csv - Wheel odometry at 100Hz (1000 rows)
+
+    #3. odometry_mu_100hz.csv - Wheel odometry at 100Hz (1000 rows)
     #    Columns: utime, x, y, z, roll, pitch, yaw
-    # ----------------------------------------------------------------
+
     t_100hz_s = np.arange(n_100hz) * 0.01  # 0..9.99 seconds
 
     odom_x = vx * t_100hz_s + rng.normal(0, 0.005, n_100hz)
@@ -136,11 +128,11 @@ def generate_mock_sensors(output_dir: str) -> None:
     )
     print(f"  odometry_mu_100hz : {odom_data.shape[0]} rows, {odom_data.shape[1]} cols")
 
-    # ----------------------------------------------------------------
+
     # 4. kvh.csv - Fiber optic gyro at 100Hz (1000 rows)
     #    Columns: utime, heading
-    # ----------------------------------------------------------------
-    # slow linear drift of ~0.001 rad/s + small noise
+
+    # slow linear drift of +-0.001 rad/s + small noise
     heading_drift_rate = 0.001  # rad/s
     heading = (
         heading_start
@@ -156,10 +148,10 @@ def generate_mock_sensors(output_dir: str) -> None:
     )
     print(f"  kvh.csv           : {kvh_data.shape[0]} rows, {kvh_data.shape[1]} cols")
 
-    # ----------------------------------------------------------------
+
     # 5. groundtruth.csv - Ground truth at 10Hz (100 rows)
     #    Columns: utime, x, y, z, roll, pitch, yaw
-    # ----------------------------------------------------------------
+
     t_10hz_s = np.arange(n_10hz) * 0.1  # 0..9.9 seconds
 
     gt_x = vx * t_10hz_s
@@ -179,10 +171,10 @@ def generate_mock_sensors(output_dir: str) -> None:
     )
     print(f"  groundtruth.csv   : {gt_data.shape[0]} rows, {gt_data.shape[1]} cols")
 
-    # ----------------------------------------------------------------
+
     # 6. track.csv - NCLTDataset compatibility (1Hz, 10 rows)
     #    Columns: timestamp, x, y, z, roll, pitch, yaw
-    # ----------------------------------------------------------------
+
     track_x = vx * t_1hz_s
     track_y = vy * t_1hz_s
     track_z = np.zeros(n_1hz)

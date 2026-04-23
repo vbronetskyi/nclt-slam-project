@@ -1,10 +1,10 @@
 %YAML:1.0
 
-#--------------------------------------------------------------------------------------------
+
 # NCLT Ladybug3 Camera 0 + MS25 IMU - Mono-Inertial Config (Aggressive)
 # Half resolution (808x616) with PinHole model
 # Lower FAST thresholds + more features to handle low-texture Ladybug3 images
-#--------------------------------------------------------------------------------------------
+
 
 File.version: "1.0"
 
@@ -32,10 +32,10 @@ Camera.fps: 5
 # Color order (1: RGB, 0: BGR)
 Camera.RGB: 1
 
-#--------------------------------------------------------------------------------------------
+
 # IMU Parameters (MS25 MEMS IMU at 50 Hz)
 # very relaxed noise, 5Hz camera needs extra slack for IMU init
-#--------------------------------------------------------------------------------------------
+
 
 IMU.NoiseGyro: 0.02
 IMU.NoiseAcc: 0.2
@@ -53,9 +53,9 @@ IMU.T_b_c1: !!opencv-matrix
           1.0, 0.0, 0.0, 0.0,
           0.0, 0.0, 0.0, 1.0]
 
-#--------------------------------------------------------------------------------------------
+
 # ORB Extractor Parameters (aggressive - lower thresholds for Ladybug3 images)
-#--------------------------------------------------------------------------------------------
+
 
 ORBextractor.nFeatures: 3000
 ORBextractor.scaleFactor: 1.2
@@ -63,9 +63,9 @@ ORBextractor.nLevels: 8
 ORBextractor.iniThFAST: 10
 ORBextractor.minThFAST: 3
 
-#--------------------------------------------------------------------------------------------
+
 # Viewer Parameters
-#--------------------------------------------------------------------------------------------
+
 
 Viewer.KeyFrameSize: 0.6
 Viewer.KeyFrameLineWidth: 2.0

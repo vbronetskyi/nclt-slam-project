@@ -1,4 +1,5 @@
-"""IMU processing for NCLT: parsing, interpolation, integration, preintegration"""
+"""IMU processing for NCLT: parsing, interpolation, integration, preintegration
+"""
 
 from __future__ import annotations
 
@@ -17,9 +18,9 @@ _GYRO_COLS = (7, 8, 9)   # rot_x, rot_y, rot_z
 _US_TO_S = 1e-6  # microseconds to seconds
 
 
-# ---------------------------------------------------------------------------
+
 # Rotation helpers
-# ---------------------------------------------------------------------------
+
 
 
 def skew_symmetric(v: np.ndarray) -> np.ndarray:
@@ -52,9 +53,9 @@ def rodrigues(axis_angle: np.ndarray) -> np.ndarray:
     return R
 
 
-# ---------------------------------------------------------------------------
+
 # Parsing
-# ---------------------------------------------------------------------------
+
 
 
 def parse_imu_csv(csv_path: str | Path) -> dict[str, np.ndarray]:
@@ -89,9 +90,9 @@ def parse_imu_csv(csv_path: str | Path) -> dict[str, np.ndarray]:
     return result
 
 
-# ---------------------------------------------------------------------------
+
 # Interpolation
-# ---------------------------------------------------------------------------
+
 
 
 def interpolate_imu(
@@ -115,9 +116,9 @@ def interpolate_imu(
     return result
 
 
-# ---------------------------------------------------------------------------
+
 # Bias estimation
-# ---------------------------------------------------------------------------
+
 
 
 def compute_bias(
@@ -149,9 +150,9 @@ def compute_bias(
     return bias
 
 
-# ---------------------------------------------------------------------------
+
 # Gravity alignment
-# ---------------------------------------------------------------------------
+
 
 
 def gravity_alignment(
@@ -184,7 +185,7 @@ def gravity_alignment(
 
     if sin_angle < 1e-8:
         if cos_angle > 0:
-            # already aligned
+            # already aligned   
             return np.eye(3, dtype=np.float64)
         else:
             # 180-degree flip
@@ -207,9 +208,9 @@ def gravity_alignment(
     return R
 
 
-# ---------------------------------------------------------------------------
+
 # Gyroscope integration
-# ---------------------------------------------------------------------------
+
 
 
 def integrate_gyroscope(
@@ -234,9 +235,9 @@ def integrate_gyroscope(
     return orientations
 
 
-# ---------------------------------------------------------------------------
+
 # IMU preintegration
-# ---------------------------------------------------------------------------
+
 
 
 def imu_preintegration(

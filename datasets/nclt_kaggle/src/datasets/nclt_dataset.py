@@ -1,4 +1,5 @@
-"""NCLT LiDAR dataset loader with Kaggle/local paths, sensor addon support"""
+"""NCLT LiDAR dataset loader with Kaggle/local paths, sensor addon support
+"""
 
 from __future__ import annotations
 
@@ -141,9 +142,9 @@ class NCLTDataset(Dataset):
             self._sensors_root is not None,
         )
 
-    # ------------------------------------------------------------------
+
     # Public API
-    # ------------------------------------------------------------------
+
 
     def __len__(self) -> int:
         return len(self.samples)
@@ -212,9 +213,9 @@ class NCLTDataset(Dataset):
         )
         return subset
 
-    # ------------------------------------------------------------------
+
     # I/O helpers (public, usable as standalone utilities)
-    # ------------------------------------------------------------------
+
 
     @staticmethod
     def load_point_cloud(path: Path) -> np.ndarray:
@@ -391,9 +392,9 @@ class NCLTDataset(Dataset):
         T[2, 3] = tz
         return T
 
-    # ------------------------------------------------------------------
+
     # private helpers
-    # ------------------------------------------------------------------
+
 
     @staticmethod
     def _load_config(config_path: str | Path) -> DatasetConfig:
@@ -535,7 +536,7 @@ class NCLTDataset(Dataset):
                 logger.debug("All points removed by ground filter.")
                 return points
 
-        # 2. random subsampling
+        #2. random subsampling
         if points.shape[0] > self.pc_config.max_points:
             indices = np.random.choice(
                 points.shape[0], size=self.pc_config.max_points, replace=False
@@ -551,7 +552,7 @@ class NCLTDataset(Dataset):
 
         extensions = (".png", ".jpg", ".jpeg", ".tif", ".tiff")
 
-        # try flat layout first
+        #try flat layout first
         for ext in extensions:
             candidate = record.image_dir / f"{record.timestamp}{ext}"
             if candidate.exists():
@@ -573,9 +574,9 @@ class NCLTDataset(Dataset):
 
         return None
 
-    # ------------------------------------------------------------------
+
     # sensor addon helpers
-    # ------------------------------------------------------------------
+
 
     def _resolve_sensors_path(
         self, override: str | Path | None = None,
@@ -673,7 +674,7 @@ class NCLTDataset(Dataset):
         window_us = self.sensor_window_ms * 1000
         result: dict[str, Any] = {}
 
-        # IMU
+        #IMU
         if manager.imu is not None:
             imu_val = manager.imu.query(record.timestamp, window_us=window_us)
             if imu_val is not None:
@@ -709,9 +710,9 @@ class NCLTDataset(Dataset):
 
         return result
 
-    # ------------------------------------------------------------------
+
     # Dunder helpers
-    # ------------------------------------------------------------------
+
 
     def __repr__(self) -> str:
         return (

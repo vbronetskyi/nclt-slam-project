@@ -1,4 +1,5 @@
-"""pose graph optimization for SLAM using Open3D"""
+"""pose graph optimization for SLAM using Open3D
+"""
 
 from __future__ import annotations
 
@@ -166,7 +167,7 @@ class SLAMPoseGraph:
         for i in range(n):
             self.add_node(poses[i])
 
-        # add sequential edges
+        #add sequential edges
         for i in range(n - 1):
             relative = np.linalg.inv(poses[i]) @ poses[i + 1]
             self.add_odometry_edge(i, i + 1, relative)

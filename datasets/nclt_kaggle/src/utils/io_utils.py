@@ -1,4 +1,5 @@
-"""I/O utilities for configs, trajectories, and results"""
+"""I/O utilities for configs, trajectories, and results
+"""
 
 from __future__ import annotations
 

@@ -1,4 +1,5 @@
-"""LiDAR odometry using ICP point cloud registration via Open3D"""
+"""LiDAR odometry using ICP point cloud registration via Open3D
+"""
 
 from __future__ import annotations
 
@@ -108,7 +109,7 @@ class LiDARodometry:
         # downsample
         pcd = pcd.voxel_down_sample(self.config.voxel_size)
 
-        # normals for GICP
+        # normals for GICP   
         if self.config.method in ("gicp", "ndt"):
             pcd.estimate_normals(
                 search_param=o3d.geometry.KDTreeSearchParamHybrid(
