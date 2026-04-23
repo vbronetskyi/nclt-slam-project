@@ -121,55 +121,19 @@ annotator (z-depth in meters, stored as uint16 mm).
 
 ## routes
 
-all three routes share start (-95, -6) and destination (72, -5) near the
-houses. the robot drives to the destination and returns.
+nine out-and-back routes sweep the 240x160 m scene.  01-03 are the legacy
+single-segment routes (road / north-forest / south); 04-09 are the
+corner-to-corner campaign routes (diagonals, parallel edges, short
+corners).  each is driven twice - obstacle-free **teach**, then **repeat**
+with 4-7 non-traversable props spawned on the outbound leg
 
-**road** - follows the dirt road. gentle curves, good visibility. the
-shortest and most open route.
+![9-route teach GT trajectories](results/final/04_teach_gt_9routes.png)
 
-**north forest** - goes north into the forest (up to y=42), weaving between
-trees, shrubs, fallen logs and rocks. dense canopy, limited visibility.
+full per-route tables (spawn, turnaround, obstacles, coverage) live in
+[`routes/README.md`](routes/README.md); teach-time landmarks + map at
+[`results/final/README.md`](results/final/README.md#dataset)
 
-**south forest** - goes south into the forest (down to y=-40). manually
-driven to ensure realistic path selection.
-
-![gt trajectories](results/final/04_gt_trajectories.png)
-
-## slam evaluation
-
-orb-slam3 in rgb-d mode on all three routes, PhysX wheel drive.
-
-### kinematic drive results (original)
-
-the robot was driven kinematically (position set directly each frame, no
-physics). this gives perfectly smooth camera motion.
-
-| route | distance | frames | resets | ATE (m) |
-|-------|----------|--------|--------|---------|
-| road | 339 m | 4557 | 0 | 0.92 |
-| north | 473 m | 6760 | 0 | 1.93 |
-| south | 396 m | 5483 | 0 | 0.75 |
-
-![slam results kinematic](results/final/05_slam_results_kinematic.png)
-
-### PhysX drive results
-
-the robot drives via PhysX articulation (wheels on terrain, real friction
-and slip). camera motion has natural dynamics from terrain interaction.
-
-| route | distance | frames | resets | ATE (m) |
-|-------|----------|--------|--------|---------|
-| road | 338 m | 3651 | 0 | 0.49 |
-| north | 464 m | 7367 | 0 | 2.07 |
-| south | 393 m | 5694 | 0 | 1.29 |
-
-![slam results physx](results/final/05_slam_results_physx.png)
-
-all routes: 0 resets, 100% tracking. PhysX drive gives comparable accuracy
-to kinematic (road even improved from 0.92 to 0.49m). north and south
-are slightly worse due to less smooth camera motion from terrain bumps.
-
-### slam configuration
+## slam configuration
 
 orb-slam3 config (`rgbd_d435i_v2.yaml`):
 - camera: pinhole, fx=fy=320, cx=320, cy=240, 640x480 @ 10 Hz
@@ -272,6 +236,14 @@ components live in `scripts/common/` and `scripts/nav_our_custom/`
 \* _stock Nav2's low drift is because the robot stalls inside inflation
 zones and barely accumulates motion.  route completion columns are the
 faithful signal_
+
+![endpoint reach + return per route](results/final/06_endpoint_bars.png)
+
+![localization drift per route](results/final/05_drift_bars.png)
+
+**trajectory comparison - 100 % headline route (09 SE-NE):**
+
+![09 SE-NE: 3-stack trajectories](results/final/07_compare_09_se_ne.png)
 
 full per-route numbers in [`routes/README.md`](routes/README.md);
 thesis-grade narrative + conclusions in

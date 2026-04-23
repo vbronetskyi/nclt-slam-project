@@ -99,31 +99,19 @@ above spawned between 20 % and 80 % of the outbound leg
 
 ### ground-truth trajectories
 
-all 9 teach GT trajectories share the same scene:
+all 9 teach GT trajectories on the same scene:
 
-![GT trajectories](04_gt_trajectories.png)
+![9-route teach GT trajectories](04_teach_gt_9routes.png)
 
-### early SLAM evaluation (pre-campaign)
+### early SLAM evaluation (pre-campaign, legacy)
 
 before the 9-route campaign, RGB-D ORB-SLAM3 was characterised on three
-legacy routes under two drive modes.  kept here for completeness
-
-**kinematic drive** (xform position set directly, no physics):
-
-![slam results kinematic](05_slam_results_kinematic.png)
-
-**PhysX drive** (wheels on terrain, real friction + slip):
-
-![slam results PhysX](05_slam_results_physx.png)
-
-| route | kinematic ATE | PhysX ATE |
-|---|---|---|
-| road  | 0.92 m | **0.49 m** |
-| north | 1.93 m | 2.07 m |
-| south | 0.75 m | 1.29 m |
-
-PhysX drive is comparable on accuracy and preserves the IMU signal, so
-the campaign uses PhysX throughout
+legacy routes under two drive modes (kinematic vs PhysX).  kept in
+`results/debug/` + `results/slam_rgbd/` for history; not load-bearing
+for the final pipeline.  numbers: kinematic ATE 0.92 m / 1.93 m / 0.75 m
+(road / north / south), PhysX ATE 0.49 m / 2.07 m / 1.29 m.  PhysX drive
+is comparable on accuracy and preserves the IMU signal, so the campaign
+uses PhysX throughout
 
 ### artifact layout
 
@@ -149,8 +137,6 @@ per-route artifacts live out-of-tree at
             ├── anchor_matches.csv    every PnP attempt (success + failure)
             └── plan_obstacles.png, repeat_result.png
 ```
-
-![occupancy map from teach](06_map_vis.png)
 
 ## the final teach-and-repeat pipeline
 
@@ -310,6 +296,31 @@ inflation zones and barely accumulates motion.  the matcher deficit has
 little time to manifest.  reach / return / coverage are the faithful
 signals_
 
+![reach + return per route, all 3 stacks](06_endpoint_bars.png)
+
+![drift mean + p95 per route, all 3 stacks](05_drift_bars.png)
+
+### trajectory comparisons (current repeat runs, all 3 stacks)
+
+**route 09 SE-NE (100 % headline, 166 m teach path)**
+
+![09 SE-NE comparison](07_compare_09_se_ne.png)
+
+**route 04 NW-SE (longest diagonal, 1223 m teach path)**
+
+![04 NW-SE comparison](08_compare_04_nw_se.png)
+
+**route 01 road (17 cones + 1 tent, most obstacle-dense)**
+
+![01 road comparison](09_compare_01_road.png)
+
+per-route baseline comparison plots for every route are mirrored at
+[`../../experiments/_baselines_common/plots/`](../../experiments/_baselines_common/plots/).
+regenerate all with `python3 ../../scripts/analysis/plot_three_way.py`
+(writes into each route's repeat dir) or
+`python3 ../../scripts/analysis/make_thesis_final_plots.py` (writes the
+curated thesis figures into this directory)
+
 ## per-route breakdown
 
 source: [`../../routes/_common/metrics.json`](../../routes/_common/metrics.json)
@@ -454,16 +465,26 @@ python3 _common/scripts/compute_metrics.py   # reads artifacts in place,
 
 ## figure index (this directory)
 
-| file | used by | caption |
-|---|---|---|
-| `01_web_map.png`                | this + isaac README | 2D web map view |
-| `02_terrain_relief.png`         | this + isaac README | heightfield relief |
-| `03_scene_topdown.png`          | this + isaac README | scene top-down |
-| `03b_scene_forward.png`         | -                   | ground-level forward view |
-| `03c_scene_oblique.png`         | this + isaac README | oblique scene render |
-| `04_gt_trajectories.png`        | this + isaac README | 3 legacy route GT paths |
-| `05_slam_results_kinematic.png` | this + isaac README | kinematic-drive SLAM ATE |
-| `05_slam_results_physx.png`     | this + isaac README | PhysX-drive SLAM ATE |
-| `06_map_vis.png`                | this                | teach-derived Nav2 occupancy |
-| `13_coverage_on_map.png`        | this + isaac README | 3-panel coverage comparison |
-| `18_scene_obstacles_routes.png` | this + root README  | all 9 routes + obstacles on scene |
+| file | used by | caption | source |
+|---|---|---|---|
+| `01_web_map.png`                | this + isaac README | 2D web map view                     | scene render |
+| `02_terrain_relief.png`         | this + isaac README | heightfield relief                  | scene render |
+| `03_scene_topdown.png`          | this + isaac README | scene top-down                      | scene render |
+| `03b_scene_forward.png`         | -                   | ground-level forward view           | scene render |
+| `03c_scene_oblique.png`         | this + isaac README | oblique scene render                | scene render |
+| `04_teach_gt_9routes.png`       | this + isaac README | 9 teach GT trajectories on scene    | `make_thesis_final_plots.py` |
+| `05_drift_bars.png`             | this + isaac README | drift mean+p95 per route, 3 stacks  | `make_thesis_final_plots.py` |
+| `06_endpoint_bars.png`          | this + isaac README | reach + return error per route, 3 stacks | `make_thesis_final_plots.py` |
+| `07_compare_09_se_ne.png`       | this + isaac README | 3-stack trajectories on 09 SE-NE    | `make_thesis_final_plots.py` |
+| `08_compare_04_nw_se.png`       | this                | 3-stack trajectories on 04 NW-SE    | `make_thesis_final_plots.py` |
+| `09_compare_01_road.png`        | this                | 3-stack trajectories on 01 road     | `make_thesis_final_plots.py` |
+| `13_coverage_on_map.png`        | this + isaac README | 3-panel coverage overlay on map     | `plot_13` in `make_final_plots.py` |
+| `18_scene_obstacles_routes.png` | this + root README  | all 9 routes + obstacles on scene   | `plot_18` in `make_final_plots.py` |
+
+regenerate all thesis figures:
+```bash
+cd /workspace/simulation/isaac
+python3 routes/_common/scripts/compute_metrics.py       # refresh metrics.json
+python3 scripts/analysis/make_thesis_final_plots.py     # 04-09
+python3 scripts/analysis/make_final_plots.py            # 13, 18 (+ scratch 07-21)
+```
