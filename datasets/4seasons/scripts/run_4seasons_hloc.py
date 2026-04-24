@@ -20,7 +20,7 @@ from pathlib import Path
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-# hloc imports
+# hloc imports   
 sys.path.insert(0, '/workspace/third_party/hloc')
 from hloc import (
     extract_features,
@@ -128,7 +128,7 @@ def get_image_relpath(seq_name, recording, ts_ns):
     return f'{seq_name}/{recording}/undistorted_images/cam0/{ts_ns}.png'
 
 
-# reference model building
+#reference model building
 def subsample_by_distance(timestamps_ns, vio_poses, min_dist=2.0):
     """Subsample timestamps to have at least min_dist meters between frames"""
     selected = []
@@ -305,7 +305,7 @@ def evaluate_self_test(loc_poses, vio_poses, image_ts_map):
 
 
 def evaluate_localization(loc_poses, gnss_gt, image_ts_map, s, R, t):
-    # XXX: depends on hloc internals, breaks if they refactor
+    # depends on hloc internals, breaks if they refactor
     """Evaluate localized poses against GNSS GT (cross-season).
 
     s, R, t define the Sim3 alignment from VIO to GNSS frame.
@@ -326,7 +326,7 @@ def evaluate_localization(loc_poses, gnss_gt, image_ts_map, s, R, t):
         gt_pos, gt_quat = gnss_gt[gnss_ts_sorted[idx]]
         gt_R = Rotation.from_quat(gt_quat).as_matrix()
 
-        # transform estimated pose to GNSS frame
+        # transform estimated pose to GNSS frame   
         pos_gnss_est = transform_pose(pos_vio, s, R, t)
 
         # translation error
@@ -390,7 +390,7 @@ def run_pipeline(args):
     selected = subsample_by_distance(all_ref_ts, vio_poses, min_dist=SUBSAMPLE_DIST)
     log.info(f'Subsampled to {len(selected)} reference keyframes (every ~{SUBSAMPLE_DIST}m)')
 
-    # create COLMAP model
+    #create COLMAP model
     colmap_model_dir = HLOC_OUTPUTS / 'colmap_reference'
     create_colmap_model(selected, vio_poses, colmap_model_dir)
 
@@ -566,7 +566,7 @@ def run_pipeline(args):
 
         if qname == 'self_test':
             # self-test: compare directly against VIO poses (same frame)
-            # avoids ~6m VIO->GNSS alignment noise
+            # avoids +-6m VIO->GNSS alignment noise
             metrics = evaluate_self_test(loc_poses, vio_poses, img_ts)
         else:
             qseq = next(q for q in QUERY_SEQS if q['name'] == qname)
@@ -599,43 +599,6 @@ def run_pipeline(args):
         print(f'{qn:<20} {mn:<15} {acc.get("0.25m/2deg","N/A"):<10} '
               f'{acc.get("0.5m/5deg","N/A"):<10} {acc.get("5.0m/10deg","N/A"):<10} '
               f'{m["median_trans_m"]:<10.3f}')
-
-    try:
-        import matplotlib
-        matplotlib.use('Agg')
-        import matplotlib.pyplot as plt
-
-        fig, ax = plt.subplots(figsize=(10, 6))
-        methods = sorted(set(mn for _, mn in all_results.keys()))
-        queries = sorted(set(qn for qn, _ in all_results.keys()))
-        x = np.arange(len(queries))
-        width = 0.35
-
-        for i, method in enumerate(methods):
-            vals = []
-            for q in queries:
-                key = f'{q}/{method}'
-                if key in eval_results:
-                    vals.append(eval_results[key]['accuracy'].get('0.5m/5deg', 0))
-                else:
-                    vals.append(0)
-            ax.bar(x + i * width, vals, width, label=method)
-
-        ax.set_ylabel('Accuracy @ 0.5m/5° (%)')
-        ax.set_title('4Seasons hloc Visual Localization')
-        ax.set_xticks(x + width / 2)
-        ax.set_xticklabels(queries)
-        ax.legend()
-        ax.grid(True, alpha=0.3)
-
-        plot_path = RESULTS_DIR / 'accuracy_comparison.png'
-        plt.tight_layout()
-        plt.savefig(plot_path, dpi=150)
-        plt.close()
-        log.info(f'Plot saved to {plot_path}')
-    except Exception as e:
-        log.warning(f'Could not create plot: {e}')
-
 
 def main():
     parser = argparse.ArgumentParser(description='hloc on 4Seasons')

@@ -17,28 +17,28 @@ Generated: 2026-02-15 20:42
 ## Comparison with Published Results
 
 Published SuperPoint+SuperGlue on RobotCar Seasons (Sarlin et al. 2020):
-- Day: ~49/70/88% at (0.25m,2d)/(0.5m,5d)/(5m,10d)
-- Night: ~17/27/40% at the same thresholds
+- Day: +-49/70/88% at (0.25m,2d)/(0.5m,5d)/(5m,10d)
+- Night: +-17/27/40% at the same thresholds
 
-Note: Our evaluation uses the training split only (~1900 images). Official numbers use the full test set via visuallocalization.net.
+Note: Our evaluation uses the training split only (+-1900 images). Official numbers use the full test set via visuallocalization.net.
 
 ## Analysis
 
-**Best overall:** ALIKED+LG+OpenIBL (64.5% at 0.5m/5d)
+Best overall: ALIKED+LG+OpenIBL (64.5% at 0.5m/5d)
 
-**Best daytime:** SuperPoint+SuperGlue (71.5% at 0.5m/5d)
+Best daytime: SuperPoint+SuperGlue (71.5% at 0.5m/5d)
 
-**Best nighttime:** ALIKED+LG+OpenIBL (40.6% at 0.5m/5d)
+Best nighttime: ALIKED+LG+OpenIBL (40.6% at 0.5m/5d)
 
-**LightGlue vs SuperGlue:** 62.0% vs 62.4% -> LightGlue matches SuperGlue.
+LightGlue vs SuperGlue: 62.0% vs 62.4% -> LightGlue matches SuperGlue.
 
-**DISK+LightGlue:** 62.4% vs 62.4% (SP+SG baseline)
+DISK+LightGlue: 62.4% vs 62.4% (SP+SG baseline)
 
-**ALIKED+LightGlue:** 62.3% vs 62.4% (SP+SG baseline)
+ALIKED+LightGlue: 62.3% vs 62.4% (SP+SG baseline)
 
-**SIFT+NN-ratio:** 56.6% vs 62.4% (SP+SG baseline)
+SIFT+NN-ratio: 56.6% vs 62.4% (SP+SG baseline)
 
-**OpenIBL boost for ALIKED:** 64.5% vs 62.3% (NetVLAD)
+OpenIBL boost for ALIKED: 64.5% vs 62.3% (NetVLAD)
 
   Night: 40.6% vs 30.9%
 

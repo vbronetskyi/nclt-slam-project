@@ -1,26 +1,17 @@
 #!/usr/bin/env python3
-"""Convert 4Seasons dataset to EuRoC format for ORB-SLAM3 Stereo-Inertial
+"""convert a 4Seasons sequence to the EuRoC layout that ORB-SLAM3
+Stereo-Inertial expects.  takes the recording_* folder under the sequence
+dir, copies the undistorted cam0/cam1 frames into mav0/, rewrites imu.txt
+into mav0/imu0/data.csv with the right header, and writes a sorted
+times.txt
 
-4Seasons structure (after extracting zips):
-  {seq_dir}/recording_*/undistorted_images/cam0/{ts_ns}.png
-  {seq_dir}/recording_*/undistorted_images/cam1/{ts_ns}.png
-  {seq_dir}/recording_*/imu.txt  (space-separated: ts_ns gx gy gz ax ay az)
-  {seq_dir}/recording_*/GNSSPoses.txt  (CSV: ts_ns,tx,ty,tz,qx,qy,qz,qw,scale,fq,v3)
-  {seq_dir}/recording_*/result.txt  (VIO reference poses)
-
-EuRoC structure (what ORB-SLAM3 expects):
-  {out_dir}/mav0/cam0/data/{ts_ns}.png
-  {out_dir}/mav0/cam1/data/{ts_ns}.png
-  {out_dir}/mav0/imu0/data.csv  (CSV: ts_ns,wx,wy,wz,ax,ay,az with header)
-  {out_dir}/times.txt  (one ts_ns per line, sorted)
-
-Usage:
+usage:
   python3 convert_4seasons_to_euroc.py /workspace/data/4seasons/office_loop_1 \
       --output /workspace/data/4seasons/office_loop_1_euroc
 """
 
 import argparse
-# TODO: handle the summer and winter loops too, right now only office_loop_1 is done
+# handle the summer and winter loops too, right now only office_loop_1 is done
 import os
 import glob
 import shutil
@@ -88,7 +79,7 @@ def setup_images(img_src_dir, img_dst_dir, use_symlinks=True):
 
 
 def create_times_file(timestamps, times_path):
-    # FIXME: hardcoded list, really should come from config
+    # hardcoded list, realy should come from config
     with open(times_path, 'w') as f:
         for ts in sorted(timestamps):
             f.write(ts + '\n')
@@ -167,7 +158,6 @@ def main():
     if os.path.isfile(imu_src):
         convert_imu(imu_src, imu_dst)
     else:
-        # print(f"DEBUG: session={session}")
         print(f"  WARNING: IMU file not found: {imu_src}")
 
     # 2. Setup left camera images
@@ -176,7 +166,6 @@ def main():
     timestamps_l = setup_images(cam0_src, cam0_dst, use_symlinks=not args.copy)
 
     # 3. Setup right camera images
-    # print(f"DEBUG: session={session}")
     print("\n[3/4] Setting up right camera images...")
     cam1_dst = os.path.join(out_dir, "mav0", "cam1", "data")
     timestamps_r = setup_images(cam1_src, cam1_dst, use_symlinks=not args.copy)
@@ -197,7 +186,7 @@ def main():
     times_path = os.path.join(out_dir, "times.txt")
     create_times_file(timestamps_l, times_path)
 
-    # bonus: convert GT to TUM format for evaluation
+    # bonus: convert GT to TUM format for evaluation   
     gnss_src = os.path.join(rec_dir, "GNSSPoses.txt")
     if os.path.isfile(gnss_src):
         print("\n[Bonus] Converting ground truth to TUM format...")

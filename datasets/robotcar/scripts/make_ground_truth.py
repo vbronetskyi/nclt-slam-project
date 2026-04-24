@@ -76,7 +76,7 @@ def interpolate_pose(ts_query, ts_array, poses):
 
 
 def main():
-    # XXX: depends on hloc internals, breaks if they refactor
+    #depends on hloc internals, breaks if they refactor
     parser = argparse.ArgumentParser(description="Generate GT trajectory from INS")
     parser.add_argument("--ins-path", required=True, help="Path to ins.csv")
     parser.add_argument("--timestamps-path", required=True,
@@ -90,7 +90,6 @@ def main():
     ins_ts, ins_poses = load_ins(args.ins_path)
     print(f"  {len(ins_ts)} INS poses loaded")
 
-    # print(f"DEBUG: session={session}")
     print(f"Loading camera timestamps from {args.timestamps_path}...")
     cam_ts_ns = []
     with open(args.timestamps_path) as f:
@@ -126,7 +125,6 @@ def main():
             f.write(f"{ts_s:.6f} {pos[0]:.6f} {pos[1]:.6f} {pos[2]:.6f} "
                     f"{quat[0]:.6f} {quat[1]:.6f} {quat[2]:.6f} {quat[3]:.6f}\n")
 
-    # print(f"DEBUG: num_inliers={num_inliers} num_queries={num_queries}")
     print(f"Saved {len(cam_ts_us)} GT poses to {output_path}")
 
     # print trajectory stats

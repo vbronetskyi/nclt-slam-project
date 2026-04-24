@@ -1,15 +1,6 @@
 #!/usr/bin/env python3
-"""
-RobotCar Seasons full benchmark. Runs a handful of hloc pipeline configs
+"""RobotCar Seasons full benchmark. Runs a handful of hloc pipeline configs
 and evaluates them. Meant for unattended overnight runs.
-
-Methods tested:
-  1. SuperPoint + SuperGlue + NetVLAD   (baseline, already computed)
-  2. SuperPoint + LightGlue + NetVLAD   (faster matcher)
-  3. DISK + LightGlue + NetVLAD         (alt learned features)
-  4. ALIKED + LightGlue + NetVLAD       (recent efficient features)
-  5. SuperPoint + SuperGlue + OpenIBL   (alt retrieval)
-  6. SIFT + NN-ratio + NetVLAD          (classical baseline)
 """
 
 import sys
@@ -96,7 +87,7 @@ def log_system_state(label=''):
     log.info(f'{prefix}Disk: {disk.used/1e9:.0f}/{disk.total/1e9:.0f} GB used, '
              f'{disk.free/1e9:.0f} GB free')
 
-    # GPU
+    #GPU
     if torch.cuda.is_available():
         allocated = torch.cuda.memory_allocated() / 1e9
         reserved = torch.cuda.memory_reserved() / 1e9
@@ -424,7 +415,7 @@ def print_evaluation(method_name, eval_results, note=''):
     log.info('')
 
 
-# phase B: Submission Preparation
+#phase B: Submission Preparation
 def prepare_submission(results_file, test_file, output_file):
     """Filter localization results to test split and format for visuallocalization.net"""
     test_names = set()
@@ -528,7 +519,7 @@ print("[subprocess] Triangulation completed successfully.", flush=True)
         )
         log.info(f'[{method_name}]   Subprocess PID: {proc.pid}')
 
-        # stream output line by line
+        # stream output line by line   
         for line in proc.stdout:
             line = line.rstrip()
             if line:
@@ -566,7 +557,7 @@ print("[subprocess] Triangulation completed successfully.", flush=True)
 
 
 def run_single_method(method, outputs, sift_sfm, sfm_pairs, query_list_pattern, timings):
-    # XXX: depends on hloc internals, breaks if they refactor
+    #depends on hloc internals, breaks if they refactor
     """Run the full pipeline for a single method configuration.
 
     If triangulation fails, falls back to SP+SG reference SfM (with a note in results).
@@ -587,7 +578,7 @@ def run_single_method(method, outputs, sift_sfm, sfm_pairs, query_list_pattern, 
         log.info(f'[{name}] Results already exist ({n_lines} poses). Skipping pipeline.')
         return results_path, False
 
-    # --- Step 1: Extract features ---
+    # Step 1: Extract features
     log.info(f'[{name}] Step 1/6: Feature extraction ({feature_conf["output"]})')
     t0 = time.time()
     feature_path = outputs / (feature_conf['output'] + '.h5')
@@ -602,7 +593,7 @@ def run_single_method(method, outputs, sift_sfm, sfm_pairs, query_list_pattern, 
     timings[name]['feature_extraction'] = time.time() - t0
     torch.cuda.empty_cache()
 
-    # --- Step 2: Match SfM pairs ---
+    #Step 2: Match SfM pairs
     log.info(f'[{name}] Step 2/6: SfM pair matching')
     t0 = time.time()
     sfm_match_path = outputs / f'{feature_conf["output"]}_{matcher_conf["output"]}_{sfm_pairs.stem}.h5'
@@ -616,7 +607,7 @@ def run_single_method(method, outputs, sift_sfm, sfm_pairs, query_list_pattern, 
     timings[name]['sfm_matching'] = time.time() - t0
     torch.cuda.empty_cache()
 
-    # --- Step 3: Triangulate reference SfM ---
+    # Step 3: Triangulate reference SfM
     log.info(f'[{name}] Step 3/6: Triangulation ({method["sfm_name"]})')
     t0 = time.time()
     if (reference_sfm / 'images.bin').exists():
@@ -651,7 +642,7 @@ def run_single_method(method, outputs, sift_sfm, sfm_pairs, query_list_pattern, 
 
     timings[name]['triangulation'] = time.time() - t0
 
-    # --- Step 4: Global descriptors + retrieval pairs ---
+    # Step 4: Global descriptors + retrieval pairs
     retrieval_name = retrieval_conf['output']
     loc_pairs = outputs / f'pairs-query-{method["retrieval_conf_name"]}{NUM_LOC}.txt'
 
@@ -676,7 +667,7 @@ def run_single_method(method, outputs, sift_sfm, sfm_pairs, query_list_pattern, 
         )
     timings[name]['retrieval_pairs'] = time.time() - t0
 
-    # --- Step 5: Match localization pairs ---
+    # Step 5: Match localization pairs
     log.info(f'[{name}] Step 5/6: Localization pair matching')
     t0 = time.time()
     loc_match_path = outputs / f'{feature_conf["output"]}_{matcher_conf["output"]}_{loc_pairs.stem}.h5'
@@ -689,7 +680,7 @@ def run_single_method(method, outputs, sift_sfm, sfm_pairs, query_list_pattern, 
     timings[name]['loc_matching'] = time.time() - t0
     torch.cuda.empty_cache()
 
-    # --- Step 6: Localize ---
+    # Step 6: Localize
     log.info(f'[{name}] Step 6/6: Localization')
     t0 = time.time()
     localize_sfm.main(
@@ -802,7 +793,7 @@ def generate_all_plots(all_eval, timings, feature_counts):
                    .replace('+OpenIBL', '+OI').replace('NN-ratio', 'NN') for m in method_names]
     colors = plt.cm.Set2(np.linspace(0, 1, max(len(method_names), 3)))
 
-    # --- Plot 1: Accuracy heatmap ---
+    # Plot 1: Accuracy heatmap
     fig, ax = plt.subplots(figsize=(14, max(4, len(method_names) * 0.8 + 2)))
     matrix = []
     for cond in CONDITIONS:
@@ -828,7 +819,7 @@ def generate_all_plots(all_eval, timings, feature_counts):
     plt.close()
     log.info('  Saved accuracy_heatmap.png')
 
-    # --- Plot 2: Grouped bar chart ---
+    # Plot 2: Grouped bar chart
     fig, ax = plt.subplots(figsize=(16, 6))
     x = np.arange(len(CONDITIONS))
     width = 0.8 / len(method_names)
@@ -847,7 +838,7 @@ def generate_all_plots(all_eval, timings, feature_counts):
     plt.close()
     log.info('  Saved accuracy_by_condition.png')
 
-    # --- Plot 3: Day vs Night ---
+    #Plot 3: Day vs Night
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))
     for ax_idx, (thresh, label) in enumerate(
         [('0.25m_2deg', '0.25m/2d'), ('0.5m_5deg', '0.5m/5d'), ('5.0m_10deg', '5m/10d')]
@@ -870,7 +861,7 @@ def generate_all_plots(all_eval, timings, feature_counts):
     plt.close()
     log.info('  Saved day_vs_night.png')
 
-    # --- Plot 4: Per-camera ---
+    # Plot 4: Per-camera
     fig, ax = plt.subplots(figsize=(10, 5))
     cameras = ['left', 'rear', 'right']
     x = np.arange(len(method_names))
@@ -891,7 +882,7 @@ def generate_all_plots(all_eval, timings, feature_counts):
     plt.close()
     log.info('  Saved per_camera.png')
 
-    # --- Plot 5: Speed vs Accuracy ---
+    #Plot 5: Speed vs Accuracy
     if timings:
         fig, ax = plt.subplots(figsize=(10, 6))
         for i, mn in enumerate(method_names):
@@ -909,7 +900,7 @@ def generate_all_plots(all_eval, timings, feature_counts):
         plt.close()
         log.info('  Saved speed_vs_accuracy.png')
 
-    # --- Plot 6: Cumulative error curves ---
+    # Plot 6: Cumulative error curves
     gt = load_ground_truth(TRAIN_FILE)
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
     for i, mn in enumerate(method_names):
@@ -944,7 +935,7 @@ def generate_all_plots(all_eval, timings, feature_counts):
     plt.close()
     log.info('  Saved cumulative_error_curves.png')
 
-    # --- Plot 7: Feature count per condition ---
+    # Plot 7: Feature count per condition
     if feature_counts:
         fig, ax = plt.subplots(figsize=(14, 6))
         feat_methods = list(feature_counts.keys())
@@ -967,7 +958,7 @@ def generate_all_plots(all_eval, timings, feature_counts):
         log.info('  Saved feature_count_per_condition.png')
 
 
-# phase F: Report Generation
+#phase F: Report Generation
 def generate_report(all_eval, timings, feature_counts, hardest_images):
     """Generate REPORT.md with analysis"""
     lines = ['# RobotCar Seasons - hloc Ablation Study Results\n',
@@ -998,9 +989,9 @@ def generate_report(all_eval, timings, feature_counts, hardest_images):
 
     lines.append('## Comparison with Published Results\n')
     lines.append('Published SuperPoint+SuperGlue on RobotCar Seasons (Sarlin et al. 2020):')
-    lines.append('- Day: ~49/70/88% at (0.25m,2d)/(0.5m,5d)/(5m,10d)')
-    lines.append('- Night: ~17/27/40% at the same thresholds\n')
-    lines.append('Note: Our evaluation uses the training split only (~1900 images). '
+    lines.append('- Day: +-49/70/88% at (0.25m,2d)/(0.5m,5d)/(5m,10d)')
+    lines.append('- Night: +-17/27/40% at the same thresholds\n')
+    lines.append('Note: Our evaluation uses the training split only (+-1900 images). '
                  'Official numbers use the full test set via visuallocalization.net.\n')
 
     lines.append('## Analysis\n')
@@ -1169,7 +1160,7 @@ def main():
             torch.cuda.empty_cache()
             continue
 
-    # ---- Phase B: Prepare test submissions ----
+    # Phase B: Prepare test submissions
     log.info(f'\n{"="*70}')
     log.info('  Phase B: Preparing test submissions')
     log.info(f'{"="*70}')
@@ -1179,7 +1170,7 @@ def main():
             sub_path = RESULTS_DIR / 'submissions' / f'{method["short"]}_submission.txt'
             prepare_submission(results_path, TEST_FILE, sub_path)
 
-    # ---- Phase D: Detailed analysis ----
+    # Phase D: Detailed analysis
     log.info(f'\n{"="*70}')
     log.info('  Phase D: Detailed analysis')
     log.info(f'{"="*70}')
@@ -1198,7 +1189,7 @@ def main():
             if cond in conds:
                 log.info(f'    {cond}: mean={conds[cond]["mean"]:.0f}, min={conds[cond]["min"]}, max={conds[cond]["max"]}')
 
-    # ---- Phase F: Plots ----
+    # Phase F: Plots
     log.info(f'\n{"="*70}')
     log.info('  Phase F: Generating plots')
     log.info(f'{"="*70}')
@@ -1208,7 +1199,7 @@ def main():
         log.error(f'Plot generation failed: {e}')
         log.error(traceback.format_exc())
 
-    # ---- Phase F: Report ----
+    # Phase F: Report
     log.info(f'\n{"="*70}')
     log.info('  Phase F: Generating report')
     log.info(f'{"="*70}')
@@ -1219,7 +1210,7 @@ def main():
         log.error(f'Report generation failed: {e}')
         log.error(traceback.format_exc())
 
-    # ---- Save all results ----
+    # Save all results
     log.info(f'\n{"="*70}')
     log.info('  Saving all results')
     log.info(f'{"="*70}')

@@ -9,9 +9,17 @@ dataset: Oxford RobotCar, session 2014-11-28-12-07-13 (overcast-reference),
 
 ORB-SLAM3 Stereo on the full drive. no IMU: RobotCar only exposes an INS
 navigation stream, not raw accel/gyro. a Stereo-Inertial attempt using a
-pseudo-IMU (differentiated INS) was also run and failed - the synthetic IMU
-is too smooth for ORB-SLAM3's tightly-coupled VI init. see
-EXPERIMENTS_ROBOTCAR for that walkthrough
+pseudo-IMU (differentiated INS) was also run and failed - synthesised
+accel from `dV/dt` of the INS velocities sat at `[-0.003, -0.058, -9.804]`
+on basically every frame, so the IMU-init acceleration check could not
+detect motion.  ORB-SLAM3's `IMU.fastInit` flag was also missing from
+the new Settings parser path; patched in `Settings.cc/h` + `Tracking.cc`
+so the flag is honoured.  even after the patch the system segfaults
+right after VIBA 2 - the differentiated INS is fundamentally too smooth
+for ORB-SLAM3's tightly-coupled VI optimiser, which expects raw sensor
+noise.  conclusion: pseudo-IMU from a fused INS solution is incompatible
+with ORB-SLAM3 stereo-inertial.  this is what motivated 4Seasons (a
+dataset that ships raw 2000 Hz IMU)
 
 results:
 
@@ -27,7 +35,7 @@ results:
 | RPE rot/frame | 0.555 deg |
 
 first successful visual SLAM in the project - the trajectory actually follows
-the road shape. 72.7% coverage (lost the last ~27% to tracking failures).
+the road shape. 72.7% coverage (lost the last +-27% to tracking failures).
 scale 0.97 is sensible for stereo. Sim(3) alignment used only because tracking
 drops lead to unconnected sub-maps; pure SE(3) eval is worse
 

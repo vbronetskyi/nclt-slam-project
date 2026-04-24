@@ -1,13 +1,13 @@
 %YAML:1.0
 
-#--------------------------------------------------------------------------------------------
+
 # System config
-#--------------------------------------------------------------------------------------------
+
 File.version: "1.0"
 
-#--------------------------------------------------------------------------------------------
+
 # Camera Parameters (Bumblebee XB3 wide stereo pair, pre-undistorted)
-#--------------------------------------------------------------------------------------------
+
 Camera.type: "PinHole"
 
 # Left camera (stereo_wide_left) - pre-undistorted, no distortion coefficients
@@ -55,11 +55,11 @@ Stereo.T_c1_c2: !!opencv-matrix
          0.0, 0.0, 1.0, 0.0,
          0.0, 0.0, 0.0, 1.0]
 
-#--------------------------------------------------------------------------------------------
-# IMU Parameters (pseudo-IMU synthesized from INS navigation solution)
-#--------------------------------------------------------------------------------------------
 
-# Transform from camera1 (OpenCV: x-right, y-down, z-forward)
+# IMU Parameters (pseudo-IMU synthesized from INS navigation solution)
+
+
+# Transform from camera1 (OpenCV: x-right, y-down, z-forward)   
 # to body/IMU frame (NED: x-forward, y-right, z-down)
 # This is the G_camera_image rotation from the RobotCar SDK
 # Stereo camera is at body frame origin, so translation = 0
@@ -73,7 +73,7 @@ IMU.T_b_c1: !!opencv-matrix
          0.0, 0.0, 0.0, 1.0]
 
 # Pseudo-IMU noise (much higher than real IMU because derived from navigation solution)
-# Based on measured std from synthesis: accel ~0.5-0.8 m/s^2, gyro ~0.02-0.1 rad/s
+# Based on measured std from synthesis: accel +-0.5-0.8 m/s^2, gyro +-0.02-0.1 rad/s
 IMU.NoiseGyro: 0.05
 IMU.NoiseAcc: 0.5
 IMU.GyroWalk: 0.005
@@ -81,18 +81,18 @@ IMU.AccWalk: 0.05
 IMU.Frequency: 50.0
 IMU.fastInit: 1
 
-#--------------------------------------------------------------------------------------------
+
 # ORB Parameters
-#--------------------------------------------------------------------------------------------
+
 ORBextractor.nFeatures: 1500
 ORBextractor.scaleFactor: 1.2
 ORBextractor.nLevels: 8
 ORBextractor.iniThFAST: 20
 ORBextractor.minThFAST: 7
 
-#--------------------------------------------------------------------------------------------
+
 # Viewer Parameters (disabled for headless)
-#--------------------------------------------------------------------------------------------
+
 Viewer.KeyFrameSize: 0.05
 Viewer.KeyFrameLineWidth: 1.0
 Viewer.GraphLineWidth: 0.9

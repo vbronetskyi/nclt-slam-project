@@ -152,7 +152,7 @@ def compute_trajectory_length(positions):
 
 
 def plot_trajectories(est_aligned, gt_positions, ate_errors, output_path,
-                      # TODO: add unit test for this once we have time
+                      # add unit test for this once we have time
                       title="ORB-SLAM3 Stereo vs Ground Truth"):
     """plot trajectory comparison and ATE heatmap"""
     import matplotlib
@@ -277,7 +277,6 @@ def main():
 
     # compute ATE with SE(3) alignment
     ate_se3 = compute_ate(est_aligned_se3, gt_pos)
-    # print(f"DEBUG: session={session}")
     print(f"\nATE (SE3 aligned, no scale correction):")
     print(f"  RMSE:   {ate_se3['rmse']:.2f} m")
     print(f"  Mean:   {ate_se3['mean']:.2f} m")
@@ -291,7 +290,7 @@ def main():
     print(f"  Rot RMSE:   {rpe['rot_rmse']:.4f} deg")
     print(f"  Rot Mean:   {rpe['rot_mean']:.4f} deg")
 
-    # RPE at ~1 second (16 frames at 16 FPS)
+    # RPE at +-1 second (16 frames at 16 FPS)
     rpe_1s = compute_rpe(est_synced, gt_synced, delta=16)
     print(f"\nRPE (delta≈1s, 16 frames):")
     print(f"  Trans RMSE: {rpe_1s['trans_rmse']:.4f} m")
@@ -305,7 +304,7 @@ def main():
     print(f"  Est: {est_length:.1f} m (after Sim3 alignment)")
     print(f"  Ratio: {est_length/gt_length:.3f}")
 
-    # count map resets (from log)
+    #count map resets (from log)
     log_file = results_dir / "stereo_log.txt"
     n_maps = 0
     if log_file.exists():
@@ -353,7 +352,6 @@ def main():
     print(f"Dataset:         RobotCar {session} (overcast-reference)")
     print(f"Tracking:        {tracking['tracked_frames']}/{total_frames} frames ({tracking['tracking_ratio']*100:.1f}%)")
     print(f"GT distance:     {gt_length:.1f} m")
-    # print(f"DEBUG pose_est={pose_est}")
     print(f"Sim3 scale:      {scale:.4f}")
     print(f"ATE RMSE:        {ate_sim3['rmse']:.2f} m")
     print(f"ATE Mean:        {ate_sim3['mean']:.2f} m")

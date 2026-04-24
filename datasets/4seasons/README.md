@@ -11,7 +11,7 @@ visual-inertial SLAM actually makes sense.
 ## Dataset
 
 TU Munich 4Seasons has stereo imagery + a real 2000 Hz IMU for SLAM under
-seasonal variation. same "office loop" route driven in spring, summer and
+seasonal variation. same office loop route driven in spring, summer and
 winter.
 
 | Sensor | Model | Parameters |
@@ -21,7 +21,7 @@ winter.
 | GNSS | Septentrio RTK | ground truth with RTK corrections |
 
 Primary session: **office_loop_1** (recording_2020-03-24, spring, sunny),
-~3.7 km route, 501 s, 15177 stereo pairs, ~1M IMU samples, 4037 RTK GT poses.
++-3.7 km route, 501 s, 15177 stereo pairs, +-1M IMU samples, 4037 RTK GT poses.
 
 ## Why 4Seasons after RobotCar
 
@@ -38,12 +38,10 @@ IMU so Stereo-Inertial mode works as designed.
   0.5m/5 deg with the SP+SG+NetVLAD SfM. limited by sparse ref sampling (only
   1707 of 15177 frames triangulated)
 
-full writeup in [EXPERIMENTS_4SEASONS.md](EXPERIMENTS_4SEASONS.md).
-
 ## Pipeline
 
 ```bash
-# download office_loop_1 (~19 GB) from 4seasons-dataset.com manually
+# download office_loop_1 (+-19 GB) from 4seasons-dataset.com manually
 # then convert to EuRoC format
 python3 scripts/convert_4seasons_to_euroc.py --sequence office_loop_1
 
@@ -68,7 +66,6 @@ python3 scripts/run_4seasons_hloc.py
 
 - [`README.md`](README.md) - this file.  dataset overview + pipeline plan + how to run
 - [`CHANGELOG.md`](CHANGELOG.md) - experiment log with numbers per experiment (0.9, 1.0)
-- [`EXPERIMENTS_4SEASONS.md`](EXPERIMENTS_4SEASONS.md) - detailed per-experiment writeup
 - [`configs/`](configs/) - ORB-SLAM3 yaml configs
 - [`scripts/`](scripts/) - converter + evaluator + hloc self-test
 - [`results/`](results/) - per-run trajectory + plots

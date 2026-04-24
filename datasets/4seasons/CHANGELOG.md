@@ -3,7 +3,7 @@
 ## Experiment 0.9 - ORB-SLAM3 Stereo-Inertial on 4Seasons office_loop_1
 
 date: 2026-02-17
-dataset: 4Seasons office_loop_1 (spring recording_2020-03-24). ~3.7 km route,
+dataset: 4Seasons office_loop_1 (spring recording_2020-03-24). +-3.7 km route,
   501 s, 15177 stereo pairs @ 30 Hz, ADIS16465 IMU @ 2000 Hz, Septentrio RTK GT
 
 converted 4Seasons -> EuRoC MAV layout using the custom converter, then ran
@@ -24,10 +24,15 @@ results:
 | ATE max | 3.06 m |
 | RPE RMSE | 0.40 m |
 
+![ORB-SLAM3 4Seasons trajectory + ATE](results/4seasons/office_loop_1/trajectory_comparison.png)
+
 best result in the whole project. scale 0.997 is near-perfect, which is what
 a real IMU + stereo is supposed to give. compared to RobotCar Stereo (3.91 m,
 no IMU), this is 4x better ATE - mostly the IMU, plus 30 cm baseline vs 24
-cm, plus 30 Hz vs 16 Hz
+cm, plus 30 Hz vs 16 Hz.  ATE max 3.06 m vs 6.75 m on RobotCar - fewer
+extreme deviations.  the 23.3% tracking rate (3536 KFs / 15177 frames) is
+keyframe-based, not full-frame: ORB-SLAM3 only persists keyframes, between
+them tracking is still continuous
 
 files: `configs/4Seasons_Stereo_Inertial.yaml`, `scripts/convert_4seasons_to_euroc.py`,
 `scripts/evaluate_4seasons.py`, `scripts/run_4seasons_experiment.sh`,

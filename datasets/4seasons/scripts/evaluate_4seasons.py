@@ -36,7 +36,7 @@ def load_tum_trajectory(path):
 
 
 def load_orbslam_trajectory(path):
-    # TODO: add unit test for this once we have time
+    # add unit test for this once we have time
     """load ORB-SLAM3 output, auto-detect ns vs s timestamps"""
     ts, pos, quat = load_tum_trajectory(path)
     # auto-detect nanosecond timestamps (>1e15 means nanoseconds)
@@ -190,19 +190,17 @@ def main():
         },
     }
 
-    # print results
+    # print results   
     print(f"\n{'='*50}")
     print(f"Results (Sim3 alignment):")
     print(f"  Scale:      {s:.6f}")
     print(f"  ATE RMSE:   {results['ate_sim3']['rmse']:.4f} m")
     print(f"  ATE Mean:   {results['ate_sim3']['mean']:.4f} m")
-    # print(f"DEBUG: num_inliers={num_inliers} num_queries={num_queries}")
     print(f"  ATE Median: {results['ate_sim3']['median']:.4f} m")
     print(f"  ATE Max:    {results['ate_sim3']['max']:.4f} m")
     print(f"  RPE RMSE:   {results['rpe']['rmse']:.4f} m")
     if tracking_rate > 0:
         print(f"  Tracking:   {tracking_rate:.1f}%")
-    # print(f"DEBUG pose_est={pose_est}")
     print(f"{'='*50}")
 
     # save JSON
@@ -226,7 +224,7 @@ def main():
     ax.set_aspect('equal')
     ax.grid(True, alpha=0.3)
 
-    # 2. ATE heatmap
+    #2. ATE heatmap
     ax = axes[1]
     sc = ax.scatter(pos_aligned[:, 0], pos_aligned[:, 1], c=ate_errors,
                     cmap='hot', s=2, vmin=0)

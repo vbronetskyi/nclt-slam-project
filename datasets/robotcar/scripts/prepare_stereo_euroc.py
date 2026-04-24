@@ -1,19 +1,5 @@
 #!/usr/bin/env python3
 """Prepare RobotCar Bumblebee stereo data in EuRoC format for ORB-SLAM3
-
-Pipeline:
-  1. Demosaic raw Bayer (GBRG) images -> RGB
-  2. Undistort using SDK LUT
-  3. Convert to grayscale
-  4. Save in EuRoC directory structure
-  5. Create timestamps file
-  6. Link pseudo-IMU data
-
-Output structure (EuRoC-like):
-  {output_dir}/mav0/cam0/data/{timestamp_ns}.png   (left)
-  {output_dir}/mav0/cam1/data/{timestamp_ns}.png   (right)
-  {output_dir}/mav0/imu0/data.csv                  (pseudo-IMU)
-  {output_dir}/timestamps.txt                       (camera timestamps in ns)
 """
 
 import argparse
@@ -34,7 +20,7 @@ def load_lut(models_dir, model_name):
 
 
 def undistort_image(image, bilinear_lut):
-    # TODO: add unit test for this once we have time
+    # add unit test for this once we have time
     """Undistort a 3-channel image using the SDK's LUT"""
     h, w = image.shape[:2]
     if h * w != bilinear_lut.shape[0]:
@@ -75,7 +61,7 @@ def process_session(data_dir, output_dir, models_dir, max_images=None):
         print(f"ERROR: Right stereo directory not found: {right_dir}")
         return False
 
-    # load undistortion LUTs
+    #load undistortion LUTs
     print("Loading undistortion LUTs...")
     lut_left = load_lut(models_dir, "stereo_wide_left")
     lut_right = load_lut(models_dir, "stereo_wide_right")
@@ -87,7 +73,7 @@ def process_session(data_dir, output_dir, models_dir, max_images=None):
     # build timestamp -> path mapping for right images
     right_map = {img.stem: img for img in right_images}
 
-    # find matching stereo pairs (same timestamp)
+    # find matching stereo pairs (same timestamp)   
     pairs = []
     for left_img in left_images:
         ts = left_img.stem
@@ -104,7 +90,7 @@ def process_session(data_dir, output_dir, models_dir, max_images=None):
         print("ERROR: No stereo pairs found!")
         return False
 
-    # create output directories
+    #create output directories
     cam0_dir = output_dir / "mav0" / "cam0" / "data"
     cam1_dir = output_dir / "mav0" / "cam1" / "data"
     imu_dir = output_dir / "mav0" / "imu0"
@@ -140,7 +126,7 @@ def process_session(data_dir, output_dir, models_dir, max_images=None):
         bgr_left = demosaic_gbrg(raw_left)
         bgr_right = demosaic_gbrg(raw_right)
 
-        # undistort
+        #undistort
         bgr_left = undistort_image(bgr_left, lut_left)
         bgr_right = undistort_image(bgr_right, lut_right)
 
@@ -168,12 +154,10 @@ def process_session(data_dir, output_dir, models_dir, max_images=None):
     if imu_src.exists():
         import shutil
         shutil.copy2(str(imu_src), str(imu_dst))
-        # print(f"DEBUG pose_est={pose_est}")
         print(f"Copied IMU data to {imu_dst}")
     else:
         print(f"WARNING: IMU data not found at {imu_src}")
 
-    # print(f">>> image {i}/{len(images)}")
     print(f"\nDone! EuRoC data at: {output_dir}")
     return True
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""synthesize a pseudo-IMU from RobotCar INS (velocities + Euler) for ORB-SLAM3 SI.
+"""synthesize a pseudo-IMU from RobotCar INS (velocities + Euler) for ORB-SLAM3 SI
 
 RobotCar does not publish raw accel/gyro, only the Novatel SPAN INS solution
 (position, velocity, orientation). fake an IMU stream by differentiating:
@@ -111,7 +111,7 @@ def smooth_derivative(signal, dt, filter_size=5):
 
 
 def synthesize_imu(ins_data, gravity=9.81007, smooth_window=5):
-    # NOTE: hloc feature extraction caches in ~/.cache/torch, purge manually if messed up
+    # hloc feature extraction caches in ~/.cache/torch, purge manually if messed up
     """Synthesize pseudo-IMU from INS navigation solution.
 
     Returns dict with timestamp_us, wx, wy, wz, ax, ay, az.
@@ -125,7 +125,7 @@ def synthesize_imu(ins_data, gravity=9.81007, smooth_window=5):
     # average  dt for uniform operations    dt_mean = np.mean(dt)
     print(f"  INS rate: {1.0/dt_mean:.1f} Hz (mean dt={dt_mean*1000:.1f} ms)")
 
-    # --- Angular velocity ---
+    # Angular velocity
     yaw_unwrapped = unwrap_yaw(ins_data["yaw"])
 
     d_roll = smooth_derivative(ins_data["roll"], dt_mean, smooth_window)
@@ -141,13 +141,13 @@ def synthesize_imu(ins_data, gravity=9.81007, smooth_window=5):
         d_roll[:-1], d_pitch[:-1], d_yaw[:-1]
     )
 
-    # --- Linear acceleration (specific force) ---
+    #Linear acceleration (specific force)
     # differentiate velocity in NED frame
     a_north = smooth_derivative(ins_data["vel_north"], dt_mean, smooth_window)
     a_east = smooth_derivative(ins_data["vel_east"], dt_mean, smooth_window)
     a_down = smooth_derivative(ins_data["vel_down"], dt_mean, smooth_window)
 
-    # specific force = acceleration - gravity (in NED: g = [0, 0, +g])
+    #specific force = acceleration - gravity (in NED: g = [0, 0, +g])
     # this is what an accelerometer would measure
     sf_north = a_north[:-1]
     sf_east = a_east[:-1]
@@ -164,7 +164,7 @@ def synthesize_imu(ins_data, gravity=9.81007, smooth_window=5):
     for i in range(n):
         R = euler_to_rotation_ned_to_body(roll_mid[i], pitch_mid[i], yaw_mid[i])
         sf_ned = np.array([sf_north[i], sf_east[i], sf_down[i]])
-        sf_body = R.T @ sf_ned  # R is NED->body, we want body-frame measurement
+        sf_body = R.T @ sf_ned  # R is NED->body, we want body-frame measurment
         ax[i] = sf_body[0]
         ay[i] = sf_body[1]
         az[i] = sf_body[2]
@@ -238,12 +238,10 @@ def main():
 
     for session in sessions:
         ins_path = data_dir / session / "gps" / "ins.csv"
-        # print("DEBUG: parsed CSV, now aligning timestamps")
         print(f"Processing: {session}")
         print(f"  Loading {ins_path}...")
 
         ins_data = load_ins_csv(ins_path)
-        # print(f"DEBUG: session={session}")
         print(f"  Loaded {len(ins_data['timestamp_us'])} INS samples "
               f"({ins_data['timestamp_us'][-1] - ins_data['timestamp_us'][0]:.0f} us span)")
 

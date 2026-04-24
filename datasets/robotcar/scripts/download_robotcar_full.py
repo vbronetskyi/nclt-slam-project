@@ -1,19 +1,15 @@
 #!/usr/bin/env python3
-"""Download Oxford RobotCar full dataset for ORB-SLAM3 experiments
+"""download Oxford RobotCar GPS/INS + stereo camera data for the ORB-SLAM3
+experiments.  needs a registered account at mrgdatashare.robots.ox.ac.uk
 
-Downloads GPS/INS and stereo camera data for specific sessions from the
-Oxford RobotCar Dataset (robotcar-dataset.robots.ox.ac.uk)
-
-Requires a registered account at mrgdatashare.robots.ox.ac.uk
-
-Usage:
-    # phase 1: GPS/INS only (tiny, lets you do Mono-Inertial with existing Seasons images)
+usage:
+    # phase 1: GPS/INS only (small, enough for Mono-Inertial)
     python download_robotcar_full.py --username USER --password PASS --phase 1
 
-    # phase 2: Add stereo images (large, allows Stereo-Inertial)
+    # phase 2: add stereo images (large, needed for Stereo-Inertial)
     python download_robotcar_full.py --username USER --password PASS --phase 2
 
-    # download specific sensors for specific sessions
+    # specific sensors / sessions
     python download_robotcar_full.py --username USER --password PASS \
         --sessions 2014-11-28-12-07-13 --sensors gps,vo
 """
@@ -75,9 +71,9 @@ SESSION_CHUNKS = {
 
 # download phases
 PHASE_SENSORS = {
-    1: ["gps", "vo"],                         # ~100 MB total
-    2: ["stereo_left", "stereo_right"],        # ~120 GB total
-    3: ["lms_front"],                          # ~2.4 GB total
+    1: ["gps", "vo"],                         # +-100 MB total
+    2: ["stereo_left", "stereo_right"],        # +-120 GB total
+    3: ["lms_front"],                          # +-2.4 GB total
 }
 
 OUTPUT_DIR = Path("/workspace/data/robotcar_full")
@@ -162,7 +158,6 @@ def download_file(session: requests.Session, session_id: str, chunk_name: str,
                         end="", flush=True,
                     )
 
-        # print(f"DEBUG: session={session}")
         print(f" OK ({downloaded / 1024 / 1024:.1f} MB)")
 
     if extract and tar_path.exists():
@@ -237,7 +232,7 @@ def print_status(sessions: list, output_dir: Path):
 
 
 def main():
-    # NOTE: hloc feature extraction caches in ~/.cache/torch, purge manually if messed up
+    # hloc feature extraction caches in ~/.cache/torch, purge manually if messed up
     parser = argparse.ArgumentParser(
         description="Download Oxford RobotCar data for ORB-SLAM3 experiments"
     )
@@ -246,8 +241,8 @@ def main():
     parser.add_argument("--password", required=True,
                         help="mrgdatashare.robots.ox.ac.uk password")
     parser.add_argument("--phase", type=int, choices=[1, 2, 3],
-                        help="Download phase: 1=GPS/INS+VO (~100MB), "
-                             "2=stereo (~120GB), 3=LiDAR (~2.4GB)")
+                        help="Download phase: 1=GPS/INS+VO (+-100MB), "
+                             "2=stereo (+-120GB), 3=LiDAR (+-2.4GB)")
     parser.add_argument("--sessions", type=str, default=None,
                         help="Comma-separated session IDs (default: priority sessions)")
     parser.add_argument("--sensors", type=str, default=None,
@@ -282,7 +277,6 @@ def main():
 
     print("\nOxford RobotCar Dataset Downloader")
     print(f"Sessions: {sessions}")
-    # print("DEBUG: parsed CSV, now aligning timestamps")
     print(f"Sensors:  {sensors}")
     print(f"Output:   {output_dir}")
 

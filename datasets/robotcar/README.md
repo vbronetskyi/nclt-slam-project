@@ -9,8 +9,8 @@ visual localization (hloc benchmark on RobotCar Seasons) and visual SLAM
 
 ## Dataset
 
-Oxford RobotCar is a **Nissan LEAF** driven along the same ~10 km route
-through central Oxford 100+ times between Nov 2014 and Nov 2015. all seasons,
+Oxford RobotCar is a **Nissan LEAF** driven along the same +-10 km route
+thorugh central Oxford 100+ times between Nov 2014 and Nov 2015. all seasons,
 weather, lighting. for this project i only use:
 - Bumblebee XB3 stereo (1280x960 @ 16 Hz, 24 cm baseline) for ORB-SLAM3
 - the 3 monocular Grasshopper cameras (1024x1024, undistorted to pinhole
@@ -32,7 +32,7 @@ one overcast reference drive (Nov 2014) builds a 3D map, 9 query sessions
 (dawn / dusk / night / night-rain / overcast-summer / overcast-winter / rain
 / snow / sun) are localised against it
 
-evaluation thresholds from [visuallocalization.net](https://www.visuallocalization.net/):
+evaluation thresholds from [visuallocalization.net](https://www.visuallocalization.net/):   
 
 | level | trans | rot |
 |-------|-------|-----|
@@ -50,15 +50,13 @@ training split: 1906 images with poses, used here for offline evaluation.
   **3.91 m ATE RMSE** over 834 m, 72.7% tracking. first working visual SLAM
   in this project
 
-full writeup in [EXPERIMENTS_ROBOTCAR.md](EXPERIMENTS_ROBOTCAR.md).
-
 ## Pipeline
 
 ```bash
 # download (needs account at mrgdatashare.robots.ox.ac.uk)
 python3 scripts/download_robotcar_full.py --username USER --password PASS --phase 1
-# phase 1 = GPS/INS + VO (~100 MB)
-# phase 2 = stereo images (~120 GB, careful)
+# phase 1 = GPS/INS + VO (+-100 MB)
+# phase 2 = stereo images (+-120 GB, careful)
 
 # convert stereo + make GT from INS
 python3 scripts/prepare_stereo_euroc.py
@@ -77,28 +75,27 @@ python3 scripts/run_full_benchmark.py
   stream. a pseudo-IMU from differentiating INS was tried and failed (too
   smooth for ORB-SLAM3's VIBA init)
 - 24 cm stereo baseline is a bit narrow for distant landmarks
-- night queries stay hard for all methods (~40% vs 70%+ daytime)
+- night queries stay hard for all methods (+-40% vs 70%+ daytime)
 
 
 
 ## Content map
 
 - [`README.md`](README.md) - this file.  dataset overview + experiments planned/ran
-- [`CHANGELOG.md`](CHANGELOG.md) - experiment log, 0.7 (hloc) + 0.8 (ORB-SLAM3 Stereo)
-- [`EXPERIMENTS_ROBOTCAR.md`](EXPERIMENTS_ROBOTCAR.md) - full writeup incl. the stereo-inertial failure
+- [`CHANGELOG.md`](CHANGELOG.md) - experiment log, 0.7 (hloc) + 0.8 (ORB-SLAM3 Stereo) incl. the stereo-inertial failure walkthrough
 - [`configs/`](configs/) - ORB-SLAM3 yaml configs (Stereo + SI attempt)
 - [`scripts/`](scripts/) - download, stereo prep, ground truth, synthesise IMU, hloc benchmark
-- [`notebooks/`](notebooks/) - 4Seasons + RobotCar Seasons hloc results analysis
+- [`notebooks/`](notebooks/) - hloc results analysis notebook
 - [`results/`](results/) - robotcar_orbslam3/ + robotcar_seasons_hloc/ full sweep
 
 ## Where to read next
 
 - **hloc 7-config sweep numbers**: `CHANGELOG.md` experiment 0.7 table
-- **why Stereo-Inertial fails on RobotCar**: `EXPERIMENTS_ROBOTCAR.md` stereo-inertial section - explains the pseudo-IMU derivation problem
+- **why Stereo-Inertial fails on RobotCar**: `CHANGELOG.md` experiment 0.8 - explains the pseudo-IMU derivation problem
 - **how 4Seasons solves the IMU gap**: [`../4seasons/README.md`](../4seasons/README.md)
 - **the hloc benchmark plots**: `results/robotcar_seasons_hloc/plots/`
 
-cross-dataset: RobotCar 3.91 m stereo-only is 4x worse than 4Seasons 0.93 m stereo-inertial - this is the "IMU matters" evidence
+cross-dataset: RobotCar 3.91 m stereo-only is 4x worse than 4Seasons 0.93 m stereo-inertial - this is the IMU matters evidence
 
 ## References
 

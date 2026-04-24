@@ -1,8 +1,8 @@
 %YAML:1.0
 
-#--------------------------------------------------------------------------------------------
+
 # Camera Parameters (Bumblebee XB3 wide stereo pair, pre-undistorted)
-#--------------------------------------------------------------------------------------------
+
 File.version: "1.0"
 
 Camera.type: "PinHole"
@@ -46,18 +46,18 @@ Stereo.T_c1_c2: !!opencv-matrix
          0.0, 0.0, 1.0, 0.0,
          0.0, 0.0, 0.0, 1.0]
 
-#--------------------------------------------------------------------------------------------
+
 # ORB Parameters
-#--------------------------------------------------------------------------------------------
+
 ORBextractor.nFeatures: 2000
 ORBextractor.scaleFactor: 1.2
 ORBextractor.nLevels: 8
 ORBextractor.iniThFAST: 20
 ORBextractor.minThFAST: 7
 
-#--------------------------------------------------------------------------------------------
+
 # Viewer Parameters
-#--------------------------------------------------------------------------------------------
+
 Viewer.KeyFrameSize: 0.05
 Viewer.KeyFrameLineWidth: 1.0
 Viewer.GraphLineWidth: 0.9
