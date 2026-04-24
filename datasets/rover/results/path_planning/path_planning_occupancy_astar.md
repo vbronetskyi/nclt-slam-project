@@ -2,16 +2,16 @@
 
 ## Overview
 
-This module demonstrates a complete **autonomous navigation pipeline**: from raw RGB-D depth data to obstacle-avoiding path planning. It uses the results of ORB-SLAM3 RGB-D on the `garden_large_day` recording from the ROVER dataset.
+This module demonstrates a complete **autonomous navigation pipeline**: from raw RGB-D depth data to obstacle-avoiding path planning. It uses the results of ORB-SLAM3 RGB-D on the `garden_large_day` recording from the ROVER dataset.   
 
-**Input data:**
+Input data:
 - Estimated ORB-SLAM3 poses (11,789 frames, TUM format)
 - Depth images from Intel RealSense D435i (640x480, uint16, mm)
 - GT trajectory from Leica Total Station (1,099 points)
 
-**Output:** a 3-panel visualization with the occupancy grid, A* routes, and the point cloud.
+Output: a 3-panel visualization with the occupancy grid, A* routes, and the point cloud.
 
----
+
 
 ## Pipeline
 
@@ -31,7 +31,7 @@ Z_cam = d
 P_world = R * P_cam + t
 ```
 
-**D435i camera parameters:**
+D435i camera parameters:
 | Parameter | Value |
 |-----------|-------|
 | fx, fy | 596.20, 593.14 |
@@ -39,11 +39,11 @@ P_world = R * P_cam + t
 | Resolution | 640 x 480 |
 | Depth filter | 0.1 -- 6.0 m |
 
-**Result:** 15.6 million 3D points in the ORB-SLAM3 world coordinate system.
+Result: 15.6 million 3D points in the ORB-SLAM3 world coordinate system.
 
 ### Step 3: Height Classification (Floor vs. Obstacle)
 
-**Key consideration:** ORB-SLAM3 uses a camera coordinate system where **Y points downward**. The X-Z plane is horizontal and Y is the vertical axis.
+Key consideration: ORB-SLAM3 uses a camera coordinate system where **Y points downward**. The X-Z plane is horizontal and Y is the vertical axis.
 
 Because the ORB-SLAM3 world frame is **not gravity-aligned** (the origin is the first camera frame), absolute height thresholds do not work. Instead, classification is performed **relative to the camera position for each frame**:
 
@@ -57,9 +57,9 @@ y_rel = y_point - y_camera
 | **Obstacle** | -1.0 < y_rel < +0.10 m | Points at camera level - walls, bushes |
 | **Ignore** | Everything else | Too high (trees, sky) |
 
-**Empirical justification:** the median y_rel for ground points is approximately +0.20 m (the D435i camera sits ~20-30 cm above the ground on the ROVER robot).
+Empirical justification: the median y_rel for ground points is approximately +0.20 m (the D435i camera sits +-20-30 cm above the ground on the ROVER robot).
 
-**Classification result:**
+Classification result:
 - Floor: 7.84 million points (50.3%)
 - Obstacle: 6.63 million points (42.6%)
 - Ignore: 1.10 million points (7.1%)
@@ -74,17 +74,17 @@ The classified 3D points are projected onto the X-Z plane at a resolution of **5
 | Grid size | 453 x 553 cells |
 | Coverage | X: [-6.7, 15.9] m, Z: [-16.0, 11.6] m |
 
-**Cell classification rules:**
+Cell classification rules:
 - A minimum of 3 total hits is required to classify a cell
-- **Free (0):** < 5 obstacle hits - traversable
-- **Occupied (1):** >= 5 obstacle hits - obstacle
-- **Unknown (-1):** insufficient data
+- Free (0): < 5 obstacle hits - traversable
+- Occupied (1): >= 5 obstacle hits - obstacle
+- Unknown (-1): insufficient data
 
 ### Step 5: Trajectory Carving
 
-**Problem:** some areas where the robot actually drove may be incorrectly marked as obstacles due to sensor noise or partial overlap.
+Problem: some areas where the robot actually drove may be incorrectly marked as obstacles due to sensor noise or partial overlap.
 
-**Solution:** all cells along the SLAM trajectory are marked as free with a radius of **0.25 m** (5 cells). This guarantees connectivity of the traversable corridor.
+Solution: all cells along the SLAM trajectory are marked as free with a radius of **0.25 m** (5 cells). This guarantees connectivity of the traversable corridor.
 
 ```
 For each pose (every 5th):
@@ -92,7 +92,7 @@ For each pose (every 5th):
     if cell != free -> mark as free
 ```
 
-**Result:** 15,788 cells carved. Free: 41,147 -> 56,935. Occupied: 53,738 -> 38,170.
+Result: 15,788 cells carved. Free: 41,147 -> 56,935. Occupied: 53,738 -> 38,170.
 
 ### Step 6: Inflation (Obstacle Expansion)
 
@@ -104,24 +104,24 @@ Inflated cells = binary_dilation(obstacles, circular_kernel(r=6))
 
 ### Step 7: A* Path Planning
 
-**Algorithm:** A* with 8-connectivity (8-connected grid search).
+Algorithm: A* with 8-connectivity (8-connected grid search).
 
-**Heuristic:** Octile distance - exact for 8-connected grids:
+Heuristic: Octile distance - exact for 8-connected grids:
 ```
 h(n) = max(|dr|, |dc|) + (sqrt(2) - 1) * min(|dr|, |dc|)
 ```
 
-**Movement cost:**
+Movement cost:
 - Cardinal directions (4): cost = 1.0
 - Diagonal directions (4): cost = sqrt(2) ~ 1.414
 
-**Traversability:** only cells with value 0 (free) are traversable. Unknown (-1), occupied (1), and inflated (2) are blocked.
+Traversability: only cells with value 0 (free) are traversable. Unknown (-1), occupied (1), and inflated (2) are blocked.
 
-**Adaptive inflation:** if no route is found with full inflation (6 cells), the system automatically reduces inflation to [4, 3, 2, 1, 0] until a path is found.
+Adaptive inflation: if no route is found with full inflation (6 cells), the system automatically reduces inflation to [4, 3, 2, 1, 0] until a path is found.
 
-**Snap to free:** if the start/goal falls on an obstacle, the nearest free cell within a 60-cell radius is used.
+Snap to free: if the start/goal falls on an obstacle, the nearest free cell within a 60-cell radius is used.
 
----
+
 
 ## Results: 3 Navigation Queries
 
@@ -136,11 +136,11 @@ Three routes between different parts of the garden were tested:
 **Ratio** = A* path / Euclidean distance:
 - Ratio = 1.0 -> straight path, no obstacles
 - Ratio > 1.0 -> path detours around obstacles
-- Routes B and C have ratio ~1.35 -> A* finds detour routes
+- Routes B and C have ratio +-1.35 -> A* finds detour routes
 
 All 3 routes were found with **full inflation of 0.3 m** (no reduction was needed).
 
----
+
 
 ## Visualization (3 Panels)
 
@@ -166,7 +166,7 @@ All 3 routes were found with **full inflation of 0.3 m** (no reduction was neede
 - **Purple/blue** - objects above camera height (walls, trees)
 - The garden structure is clearly visible: walls, bushes, pathways
 
----
+
 
 ## Technical Details
 
@@ -174,7 +174,7 @@ All 3 routes were found with **full inflation of 0.3 m** (no reduction was neede
 
 ORB-SLAM3 uses a **camera coordinate system**:
 - **X** - right (13.4 m spread)
-- **Y** - down (1.6 m spread - vertical axis)
+- **Y** - down (1.6 m spread - vertical axis)   
 - **Z** - forward (17.7 m spread)
 
 Horizontal plane: **X-Z**. Vertical axis: **Y** (positive = down).
@@ -196,11 +196,11 @@ Without trajectory carving, free corridors have gaps:
 2. Depth noise at object boundaries creates false obstacles
 3. Degenerate geometry when moving along walls
 
-Carving with a radius of 0.25 m (slightly less than the robot width of ~0.5 m) guarantees:
+Carving with a radius of 0.25 m (slightly less than the robot width of +-0.5 m) guarantees:
 - Corridor connectivity along the traversed path
 - A* can always find a route between points on the trajectory
 
----
+
 
 ## Files
 
@@ -216,4 +216,4 @@ Carving with a radius of 0.25 m (slightly less than the robot width of ~0.5 m) g
 python3 datasets/rover/scripts/occupancy_astar.py
 ```
 
-Execution time: ~7 seconds (backprojection ~4s, grid+A* ~1s, visualization ~2s).
+Execution time: +-7 seconds (backprojection +-4s, grid+A* +-1s, visualization +-2s).

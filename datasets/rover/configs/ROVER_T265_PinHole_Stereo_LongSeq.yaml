@@ -1,10 +1,10 @@
 %YAML:1.0
 
-#--------------------------------------------------------------------------------------------
+
 # Camera params Undistorted T265 fisheye -> PinHole 640x480, 110° hFoV
 # LONG SEQUENCE variant: fewer features to reduce pose graph and prevent
 # vector::reserve crash during loop closure Global BA on 21K+ frame sequences
-#--------------------------------------------------------------------------------------------
+
 
 File.version: "1.0"
 
@@ -53,9 +53,9 @@ Stereo.T_c1_c2: !!opencv-matrix
 Stereo.ThDepth: 30.0
 Stereo.b: 0.0635
 
-#--------------------------------------------------------------------------------------------
+
 # ORB params
-#--------------------------------------------------------------------------------------------
+
 
 ORBextractor.nFeatures: 1200
 ORBextractor.scaleFactor: 1.2
@@ -63,9 +63,9 @@ ORBextractor.nLevels: 8
 ORBextractor.iniThFAST: 20
 ORBextractor.minThFAST: 7
 
-#--------------------------------------------------------------------------------------------
+
 # Viewer params (not used headless)
-#--------------------------------------------------------------------------------------------
+
 
 Viewer.KeyFrameSize: 0.05
 Viewer.KeyFrameLineWidth: 1.0

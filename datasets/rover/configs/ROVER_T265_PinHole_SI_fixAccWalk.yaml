@@ -1,15 +1,15 @@
 %YAML:1.0
 
-#--------------------------------------------------------------------------------------------
+
 # Camera params Undistorted T265 fisheye -> PinHole 640x480, 110° hFoV
 # EXPERIMENT: AccWalk reduced from 0.01239 (calib) to 0.001 (BMI055 datasheet)
-#--------------------------------------------------------------------------------------------
+
 
 File.version: "1.0"
 
 Camera.type: "PinHole"
 
-# Left camera (cam0)
+# Left camera (cam0)   
 Camera1.fx: 224.07
 Camera1.fy: 224.07
 Camera1.cx: 320.00
@@ -50,12 +50,12 @@ Stereo.T_c1_c2: !!opencv-matrix
 Stereo.ThDepth: 30.0
 Stereo.b: 0.0635
 
-#--------------------------------------------------------------------------------------------
+
 # IMU params (T265 built-in)
 # CHANGE: AccWalk 0.01239 -> 0.001 (BMI055 datasheet typical)
 # all other params unchanged from calib_t265.yaml
 # freq=264 verified correct (measured 264.6 Hz)
-#--------------------------------------------------------------------------------------------
+
 
 # IMU-To-CamLeft from calib_t265.yaml (unchanged)
 IMU.T_b_c1: !!opencv-matrix
@@ -76,9 +76,9 @@ IMU.AccWalk:    0.001
 IMU.fastInit: 1
 IMU.insertKFsWhenLost: 1
 
-#--------------------------------------------------------------------------------------------
+
 # ORB params
-#--------------------------------------------------------------------------------------------
+
 
 ORBextractor.nFeatures: 2000
 ORBextractor.scaleFactor: 1.2
@@ -86,9 +86,9 @@ ORBextractor.nLevels: 8
 ORBextractor.iniThFAST: 15
 ORBextractor.minThFAST: 5
 
-#--------------------------------------------------------------------------------------------
+
 # Viewer params
-#--------------------------------------------------------------------------------------------
+
 
 Viewer.KeyFrameSize: 0.05
 Viewer.KeyFrameLineWidth: 1.0

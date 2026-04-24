@@ -1,11 +1,11 @@
 %YAML:1.0
 
-#--------------------------------------------------------------------------------------------
+
 # ROVER D435i RGB-D Configuration for ORB-SLAM3 (LOW-LIGHT variant)
 # Camera: Intel RealSense D435i (RGB-D, PinHole + radtan distortion)
 # Resolution: 640x480
 # changes vs default: more features, lower FAST thresholds for dark scenes
-#--------------------------------------------------------------------------------------------
+
 File.version: "1.0"
 
 Camera.type: "PinHole"
@@ -36,9 +36,9 @@ Stereo.b: 0.05
 # depth map factor: mm -> meters
 RGBD.DepthMapFactor: 1000.0
 
-#--------------------------------------------------------------------------------------------
+
 # ORB params
-#--------------------------------------------------------------------------------------------
+
 
 ORBextractor.nFeatures: 2500
 ORBextractor.scaleFactor: 1.2
@@ -46,9 +46,9 @@ ORBextractor.nLevels: 8
 ORBextractor.iniThFAST: 10
 ORBextractor.minThFAST: 3
 
-#--------------------------------------------------------------------------------------------
+
 # Viewer params
-#--------------------------------------------------------------------------------------------
+
 Viewer.KeyFrameSize: 0.05
 Viewer.KeyFrameLineWidth: 1.0
 Viewer.GraphLineWidth: 0.9

@@ -3,15 +3,6 @@
 
 creates association file and symlinks into TUM-style directory structure
 
-ROVER D435i structure:
-  {recording}/realsense_D435i/rgb/{ts_s}.png    (640x480 color)
-  {recording}/realsense_D435i/depth/{ts_s}.png  (640x480 16-bit depth, mm)
-
-TUM RGB-D format:
-  {out}/rgb/{ts_s}.png
-  {out}/depth/{ts_s}.png
-  {out}/associations.txt  (ts_rgb rgb/ts.png ts_depth depth/ts.png)
-
 Usage:
   python3 prepare_rover_rgbd.py /workspace/data/rover/garden_large_day_2024-05-29_1 \
       --output /workspace/data/rover/garden_large_day_2024-05-29_1_rgbd

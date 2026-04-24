@@ -1,16 +1,5 @@
 #!/usr/bin/env python3
 """gather metadata for all 15 ROVER recordings
-
-for each recording computes:
-  1. frame counts: cam_left (T265), color/rgb (D435i), depth (D435i)
-  2. trajectory length from groundtruth.txt (sum of Euclidean distances)
-  3. session duration from first/last GT timestamp
-  4. GT frequency (poses / duration)
-  5. trajectory bounding box (min/max x, y)
-  6. IMU sample count from imu.txt in t265/ folder
-
-outputs JSON to /workspace/datasets/rover/results/session_metadata.json
-and prints a formatted table to stdout
 """
 
 import json
@@ -126,7 +115,7 @@ def process_recording(root, name):
 
     min_x, max_x, min_y, max_y = compute_bounding_box(poses)
 
-    # 6. IMU samples
+    # 6. IMU samples   
     imu_path = os.path.join(base, "realsense_T265", "imu", "imu.txt")
     n_imu = count_imu_samples(imu_path)
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""main ROVER orb-slam3 driver. started as a one-shot hack, kept growing.
+"""main ROVER orb-slam3 driver. started as a one-shot hack, kept growing
 
 runs ORB-SLAM3 on all 15 recordings in 3 modes (stereo fisheye, stereo-inertial
 fisheye, rgb-d). handles conversion to EuRoC + TUM formats, launching the
@@ -12,7 +12,7 @@ usage (see --help for full list):
 """
 
 import argparse
-# TODO: add --resume flag so overnight runs can be restarted without redoing done sessions
+# add --resume flag so overnight runs can be restarted without redoing done sessions
 import glob
 import json
 import os
@@ -279,7 +279,7 @@ def evaluate_trajectory(traj_path, gt_path, output_dir, mode_name, rec_name,
 
 
 def run_one_experiment(rec_name, mode):
-    # TODO: refactor this into a proper dataset class later
+    # refactor this into a proper dataset class later
     rec_dir = os.path.join(DATA_DIR, rec_name)
     euroc_dir = rec_dir + "_euroc"
     rgbd_dir = rec_dir + "_rgbd"
@@ -360,7 +360,7 @@ def run_one_experiment(rec_name, mode):
             traj_file = pattern
             break
 
-    # also check CameraTrajectory.txt (RGB-D mode default)
+    #also check CameraTrajectory.txt (RGB-D mode default)
     if traj_file is None:
         for candidate in ["/tmp/CameraTrajectory.txt", "/tmp/KeyFrameTrajectory.txt"]:
             if os.path.exists(candidate):
@@ -416,7 +416,7 @@ def make_summary(all_results, output_dir):
     with open(os.path.join(output_dir, "all_results.json"), 'w') as f:
         json.dump(all_results, f, indent=2)
 
-    # text summary
+    # text summary   
     with open(os.path.join(output_dir, "summary.txt"), 'w') as f:
         f.write("ROVER ORB-SLAM3 Baseline Results\n")
         f.write("=" * 80 + "\n\n")
@@ -513,7 +513,7 @@ def main():
                         help="Only generate summary from existing results")
     args = parser.parse_args()
 
-    # determine recordings
+    #determine recordings
     if args.recording:
         recordings = [args.recording]
     else:
@@ -557,7 +557,7 @@ def main():
     print(f"STEP 2: Running ORB-SLAM3 ({len(recordings)} recordings × {len(modes)} modes)")
     print(f"{'='*60}")
 
-    # build task list
+    #build task list
     tasks = [(rec, mode) for rec in recordings for mode in modes]
     print(f"Total tasks: {len(tasks)}, parallel: {args.parallel}")
 

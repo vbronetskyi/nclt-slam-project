@@ -8,24 +8,24 @@
 
 This pipeline provides a complete set of scripts, configurations, and results for evaluating ORB-SLAM3 on the **ROVER** dataset (Esslingen University of Applied Sciences, Germany). The dataset is publicly available on HuggingFace: [iis-esslingen/ROVER](https://huggingface.co/datasets/iis-esslingen/ROVER).
 
-A total of **15 recordings** (~335 GB) were downloaded, and **45 experiments** (15 recordings x 3 ORB-SLAM3 modes) were conducted.
+A total of **15 recordings** (+-335 GB) were downloaded, and **45 experiments** (15 recordings x 3 ORB-SLAM3 modes) were conducted.
 
----
+
 
 ## Setup and Requirements
 
-**System:** Ubuntu 24.04, Python 3.10+
+System: Ubuntu 24.04, Python 3.10+
 
-**Dependencies:**
+Dependencies:
 ```bash
 pip install numpy matplotlib opencv-python evo
 ```
 
-**ORB-SLAM3:** must be built at `../third_party/ORB_SLAM3/` (see [main README](../README.md) for build instructions).
+ORB-SLAM3: must be built at `../third_party/ORB_SLAM3/` (see [main README](../README.md) for build instructions).
 
-**Dataset:** download all 15 recordings (~335 GB) from [HuggingFace](https://huggingface.co/datasets/iis-esslingen/ROVER) into `../data/rover/`.
+Dataset: download all 15 recordings (+-335 GB) from [HuggingFace](https://huggingface.co/datasets/iis-esslingen/ROVER) into `../data/rover/`.
 
----
+
 
 ## How to Run
 
@@ -45,7 +45,7 @@ bash scripts/run_overnight.sh
 
 Results are saved to `results/{recording}/{mode}/`.
 
----
+
 
 ## Robot and Sensor Suite
 
@@ -53,13 +53,13 @@ The ROVER platform is a differential-drive unmanned ground vehicle (UGV) equippe
 
 ### Intel RealSense T265 -- Stereo Tracking Camera
 
-The T265 is a stereo camera with two fisheye lenses intended for inside-out positional tracking. It uses the KannalaBrandt8 distortion model (equidistant fisheye projection). Each imager has a resolution of **848x800 pixels** at **30 fps**. The stereo baseline between the two cameras is only **~6.35 cm**, which is very short for outdoor environments. Left camera intrinsics: fx=286.18, fy=286.39, principal point cx=416.94, cy=403.27. Distortion coefficients: k1=-0.0115, k2=0.0502, k3=-0.0504, k4=0.0127.
+The T265 is a stereo camera with two fisheye lenses intended for inside-out positional tracking. It uses the KannalaBrandt8 distortion model (equidistant fisheye projection). Each imager has a resolution of **848x800 pixels** at **30 fps**. The stereo baseline between the two cameras is only **+-6.35 cm**, which is very short for outdoor environments. Left camera intrinsics: fx=286.18, fy=286.39, principal point cx=416.94, cy=403.27. Distortion coefficients: k1=-0.0115, k2=0.0502, k3=-0.0504, k4=0.0127.
 
 The T265 also includes a built-in **IMU running at 264 Hz**. Gyroscope noise density: 0.00324 rad/s/sqrt(Hz); accelerometer noise density: 0.01741 m/s^2/sqrt(Hz).
 
 ### Intel RealSense D435i - RGB-D Camera
 
-The D435i is a depth camera based on structured infrared light. It produces synchronized RGB and depth images at **640x480** resolution and **30 fps**. It uses a PinHole camera model with radial-tangential distortion (radtan). Intrinsics: fx=596.20, fy=593.14, cx=327.05, cy=245.16. Distortion: k1=0.1572, k2=-0.4894, p1=-0.00075, p2=0.00037. Depth factor: 1000 (values in mm, converted to meters).
+The D435i is a depth camera based on structured infrared light. It produces synchronized RGB and depth images at **640x480** resolution and **30 fps**. It uses a PinHole camera model with radial-tangential distortion (radtan). Intrinsics: fx=596.20, fy=593.14, cx=327.05, cy=245.16. Distortion: k1=0.1572, k2=-0.4894, p1=-0.00075, p2=0.00037. Depth factor: 1000 (values in mm, converted to meters).   
 
 An important characteristic of the D435i is that its depth sensor operates on infrared emission and **continues to function in complete darkness**, unlike the RGB camera.
 
@@ -72,7 +72,7 @@ The ground truth trajectory is obtained using a Leica Total Station that tracks 
 - **Pi Camera** (640x480) - wide-angle camera
 - **VN100** - external 9-DOF IMU at 66 Hz
 
----
+
 
 ## Downloaded Routes
 
@@ -90,7 +90,7 @@ Garden Large is an enclosed university garden area measuring approximately **13x
 
 3. **garden_large_winter** (2024-01-13) - winter, daytime. Trajectory **162.3 m**, duration 437 s (7.3 min). 12924 T265 frames, 12941 D435i frames, 776 GT poses, 113921 IMU samples. Possible snow, minimal vegetation, clear structural objects.
 
-4. **garden_large_spring** (2024-04-11) - spring, daytime. Trajectory **165.0 m**, duration 451 s (7.5 min). 13410 T265 frames, 13427 D435i frames, 1731 GT poses, 118344 IMU samples. Vegetation beginning to green.
+4. **garden_large_spring** (2024-04-11) - spring, daytime. Trajectory **165.0 m**, duration 451 s (7.5 min). 13410 T265 frames, 13427 D435i frames, 1731 GT poses, 118344 IMU samples. Vegetation begining to green.
 
 5. **garden_large_day** (2024-05-29) - late spring, daytime. Trajectory **150.3 m** (shortest in GL), duration 392 s (6.5 min). 11767 T265 frames, 11789 D435i frames, 1099 GT poses, 103775 IMU samples. Good lighting, full vegetation.
 
@@ -100,11 +100,11 @@ Garden Large is an enclosed university garden area measuring approximately **13x
 
 8. **garden_large_night-light** (2024-05-30) - night with artificial illumination. Trajectory **151.8 m**, duration 399 s (6.7 min). 11964 T265 frames, 11987 D435i frames, 705 GT poses, 105482 IMU samples. Artificial lighting creates harsh shadows and uneven brightness.
 
-**Garden Large summary:** trajectory lengths 150--170 m, durations 6.5--7.8 minutes, ~12000--14000 frames per session.
+Garden Large summary: trajectory lengths 150--170 m, durations 6.5--7.8 minutes, +-12000--14000 frames per session.
 
 ### Location: Park
 
-Park is an open parkland area measuring approximately **20x19 meters**. The route follows an irregular, larger loop through open spaces between trees. Fewer nearby structural objects compared to Garden Large - primarily trees, grass, and paths. This is a more challenging environment for visual SLAM due to repetitive texture (grass, foliage) and greater distances to landmarks.
+Park is an open parkland area measuring approximately **20x19 meters**. The route follows an irregular, larger loop thorugh open spaces between trees. Fewer nearby structural objects compared to Garden Large - primarily trees, grass, and paths. This is a more challenging environment for visual SLAM due to repetitive texture (grass, foliage) and greater distances to landmarks.
 
 **7 sessions recorded:**
 
@@ -114,7 +114,7 @@ Park is an open parkland area measuring approximately **20x19 meters**. The rout
 
 11. **park_spring** (2024-04-14) - spring, daytime. Trajectory **171.5 m**, duration 466 s (7.8 min). 13877 T265 frames, 13893 D435i frames, 752 GT poses, 122502 IMU samples. Spring bloom.
 
-12. **park_day** (2024-05-08) - late spring, daytime. Trajectory **183.0 m** (longest of all recordings), duration 484 s (8.1 min). 14429 T265 frames, 14446 D435i frames, 1046 GT poses, 127263 IMU samples.
+12. **park_day** (2024-05-08) - late spring, daytime. Trajectory **183.0 m** (longest of all recordings), duration 484 s (8.1 min). 14429 T265 frames, 14446 D435i frames, 1046 GT poses, 127263 IMU samples.   
 
 13. **park_dusk** (2024-05-13) - late spring, dusk. Trajectory **182.7 m**, duration 481 s (8.0 min). 14351 T265 frames, 14368 D435i frames, 1315 GT poses, 126632 IMU samples.
 
@@ -122,27 +122,27 @@ Park is an open parkland area measuring approximately **20x19 meters**. The rout
 
 15. **park_night-light** (2024-05-24) - night with artificial illumination. Trajectory **172.1 m**, duration 463 s (7.7 min). 13750 T265 frames, 13743 D435i frames, 1127 GT poses, 121273 IMU samples.
 
-**Park summary:** trajectory lengths 164--183 m (longer than Garden Large), durations 7.3--8.3 minutes, ~13000--15000 frames per session.
+Park summary: trajectory lengths 164--183 m (longer than Garden Large), durations 7.3--8.3 minutes, +-13000--15000 frames per session.
 
 ### Overall Statistics
 
 - **15 recordings**, 2 locations (8 garden_large + 7 park)
-- **Total data volume:** ~335 GB
-- **Trajectory length range:** 150.3 m (GL/day) - 183.0 m (P/day)
-- **Mean trajectory length:** ~165 m
-- **Mean duration:** ~450 s (7.5 minutes)
-- **Mean robot speed:** ~0.35 m/s
-- **Total T265 frames:** ~199,000
-- **Total D435i frames:** ~196,000
-- **Total IMU samples:** ~1,783,000
+- Total data volume: +-335 GB
+- Trajectory length range: 150.3 m (GL/day) - 183.0 m (P/day)
+- Mean trajectory length: +-165 m
+- Mean duration: +-450 s (7.5 minutes)
+- Mean robot speed: +-0.35 m/s
+- Total T265 frames: +-199,000
+- Total D435i frames: +-196,000
+- Total IMU samples: +-1,783,000
 
----
+
 
 ## Experiments and Results
 
 ### Experimental Setup
 
-**Phase 1 (Exp 1.1):** ORB-SLAM3 was evaluated in three modes on each of the 15 recordings:
+Phase 1 (Exp 1.1): ORB-SLAM3 was evaluated in three modes on each of the 15 recordings:
 
 1. **Stereo** - stereo fisheye T265 (KannalaBrandt8 model), no IMU
 2. **Stereo-Inertial** - stereo T265 + built-in IMU at 264 Hz
@@ -150,11 +150,11 @@ Park is an open parkland area measuring approximately **20x19 meters**. The rout
 
 This yielded **45 experiments** in total, executed 3 in parallel.
 
-**Phase 2 (Exp 1.1b):** Stereo and Stereo-Inertial modes were corrected by applying fisheye-to-pinhole undistortion.
+Phase 2 (Exp 1.1b): Stereo and Stereo-Inertial modes were corrected by applying fisheye-to-pinhole undistortion.
 
 ### Results: Stereo and Stereo-Inertial - Fisheye (KannalaBrandt8)
 
-**With original fisheye images: Stereo 0/15, Stereo-Inertial 0/15.**
+With original fisheye images: Stereo 0/15, Stereo-Inertial 0/15.
 
 Every recording produced only **1 keyframe**, after which ORB-SLAM3 either crashed with a segmentation fault (10 out of 15 cases) or terminated without producing a trajectory. The root cause is that the T265 has a stereo baseline of only **6.35 cm** with equidistant fisheye distortion. For objects at 5--10 m, stereo disparity is only 1--2 pixels - below the noise floor.
 
@@ -162,7 +162,7 @@ Every recording produced only **1 keyframe**, after which ORB-SLAM3 either crash
 
 The issue was resolved by transforming the T265 fisheye images into a standard **pinhole model** (640x480, 110 deg horizontal FoV). Each image is undistorted via `cv2.fisheye.initUndistortRectifyMap` with new camera parameters: **fx=224.07, fy=224.07, cx=320, cy=240**, zero distortion. ORB-SLAM3 then performs stereo rectification internally through T_c1_c2.
 
-**Results on garden_large_day (test):**
+Results on garden_large_day (test):
 
 | Mode | ATE RMSE | Scale | Tracking | KF | Loop closures |
 |------|----------|-------|----------|----|---------------|
@@ -170,7 +170,7 @@ The issue was resolved by transforming the T265 fisheye images into a standard *
 | Stereo-Inertial PinHole | **0.652 m** | 1.221 | 100% (11765/11767) | 1392 | 0 |
 | RGB-D (D435i) | **0.398 m** | 0.977 | 100% | -- | -- |
 
-The scale of ~1.21 for stereo modes represents a 21% overestimate, which is characteristic of the short 6.35 cm baseline in outdoor environments. RGB-D remains the most accurate due to direct depth measurement, but now **all three modes are functional**.
+The scale of +-1.21 for stereo modes represents a 21% overestimate, which is characteristic of the short 6.35 cm baseline in outdoor environments. RGB-D remains the most accurate due to direct depth measurement, but now **all three modes are functional**.
 
 Undistortion script: `scripts/rectify_t265_stereo.py`
 Configs: `configs/ROVER_T265_PinHole_Stereo.yaml`, `configs/ROVER_T265_PinHole_Stereo_Inertial.yaml`
@@ -179,7 +179,7 @@ Configs: `configs/ROVER_T265_PinHole_Stereo.yaml`, `configs/ROVER_T265_PinHole_S
 
 RGB-D is the most accurate mode on the ROVER dataset. Per-recording results follow.
 
-**Garden Large (6 of 8 successful):**
+Garden Large (6 of 8 successful):
 
 - **GL/autumn** - best result: **ATE RMSE 0.365 m** (mean 0.334 m, median 0.318 m, max 0.952 m). Scale 0.981, tracking 100%. Bare branches and stable winter-like illumination produce clear structural features for ORB detection.
 
@@ -197,9 +197,9 @@ RGB-D is the most accurate mode on the ROVER dataset. Per-recording results foll
 
 - **GL/night** - **FAILED** (segfault, exit code 139). Complete darkness - the RGB camera captures virtually nothing, and the ORB detector finds only noise. The depth sensor continues to operate (infrared), but visual tracking is impossible
 
-**Garden Large summary:** mean ATE **0.414 m**, median **0.409 m**. Results are highly consistant - all 6 successful runs fall within a narrow range of 0.37--0.48 m. Seasonal variation (summer/autumn/winter/spring) has **negligible impact** on RGB-D SLAM accuracy.
+Garden Large summary: mean ATE **0.414 m**, median **0.409 m**. Results are highly consistant - all 6 successful runs fall within a narrow range of 0.37--0.48 m. Seasonal variation (summer/autumn/winter/spring) has **negligible impact** on RGB-D SLAM accuracy.
 
-**Park (5 of 7 succesful):**
+Park (5 of 7 succesful):
 
 - **P/summer** - **ATE RMSE 0.448 m** (mean 0.415 m, median 0.400 m, max 1.107 m). Scale 1.021, but **tracking only 50.5%** - ORB-SLAM3 lost tracking for half the session (6387 of 12669 frames). The tracked portion shows good accuracy.
 
@@ -215,22 +215,22 @@ RGB-D is the most accurate mode on the ROVER dataset. Per-recording results foll
 
 - **P/night-light** - **FAILED** (segfault, exit code 139). Night with artificial illumination in the park - harsh shadows and specular reflections from streetlights confuse ORB matching, leading to numerical instability
 
-**Park summary:** mean ATE **2.208 m**, median **1.629 m**. Significantly worse than Garden Large, with high variance (from 0.45 m to 6.55 m).
+Park summary: mean ATE **2.208 m**, median **1.629 m**. Significantly worse than Garden Large, with high variance (from 0.45 m to 6.55 m).
 
----
+
 
 ## Error Analysis
 
 ### Why Stereo and Stereo-Inertial Failed with Fisheye and How It Was Fixed
 
-**Problem:** The T265 has a 6.35 cm baseline with equidistant fisheye distortion (~170 deg FoV). Outdoors, the stereo disparity is only 1--2 pixels, and fisheye projection stretches the image periphery (~5 pixels/degree). The ORB-SLAM3 KannalaBrandt8 pipeline cannot reliably match features, resulting in 0 keyframes followed by a crash.
+Problem: The T265 has a 6.35 cm baseline with equidistant fisheye distortion (+-170 deg FoV). Outdoors, the stereo disparity is only 1--2 pixels, and fisheye projection stretches the image periphery (+-5 pixels/degree). The ORB-SLAM3 KannalaBrandt8 pipeline cannot reliably match features, resulting in 0 keyframes followed by a crash.
 
-**Solution:** Undistort each camera independently from fisheye to pinhole (640x480, 110 deg hFoV, fx=224.07). This provides:
+Solution: Undistort each camera independently from fisheye to pinhole (640x480, 110 deg hFoV, fx=224.07). This provides:
 - Standard pinhole geometry for ORB detection
-- Higher effective resolution in the frame center (~3.5 pixels/degree instead of ~5)
+- Higher effective resolution in the frame center (+-3.5 pixels/degree instead of +-5)
 - ORB-SLAM3 handles stereo rectification internally via T_c1_c2
 
-**Result:** Stereo works (0.527 m ATE, 4 loop closures, 100% tracking). Scale ~1.21 is overestimated due to the short baseline, but the trajectory shape is correct.
+Result: Stereo works (0.527 m ATE, 4 loop closures, 100% tracking). Scale +-1.21 is overestimated due to the short baseline, but the trajectory shape is correct.
 
 ### Why RGB-D Works While Stereo Does Not
 
@@ -250,15 +250,15 @@ This creates a paradox: depth data is available, but there is nothing to track. 
 
 Three main factors:
 
-1. **Larger open spaces.** In Garden Large, building walls and dense vegetation are 1--5 m away - the depth sensor produces reliable measurements and ORB features are stable. In Park, trees and landmarks are farther away (5--15 m), and grass and foliage present repetitive texture.
+1. Larger open spaces. In Garden Large, building walls and dense vegetation are 1--5 m away - the depth sensor produces reliable measurements and ORB features are stable. In Park, trees and landmarks are farther away (5--15 m), and grass and foliage present repetitive texture.
 
-2. **Longer routes.** Park trajectories are 10--20 m longer on average (175 m vs. 155 m). On a longer route, more drift accumulates, especially without reliable loop closure.
+2. Longer routes. Park trajectories are 10--20 m longer on average (175 m vs. 155 m). On a longer route, more drift accumulates, especially without reliable loop closure.
 
-3. **Fewer distinctive landmarks.** Trees and lawns appear similar, complicating both tracking and loop closure detection. Garden Large has clear structures (building corners, fences, decorative elements) that serve as stable reference points.
+3. Fewer distinctive landmarks. Trees and lawns appear similar, complicating both tracking and loop closure detection. Garden Large has clear structures (building corners, fences, decorative elements) that serve as stable reference points.
 
 Even excluding the worst result P/night (6.55 m), the mean Park ATE is 1.12 m - still 2.7 times worse than Garden Large (0.41 m).
 
----
+
 
 ## Results Summary
 
@@ -268,9 +268,9 @@ Even excluding the worst result P/night (6.55 m), the mean Park ATE is 1.12 m - 
 | Stereo-Inertial (fisheye KB8) | 0/15 (0%) | FAIL | IMU cannot compensate for failed visual front-end |
 | **Stereo PinHole (undistorted)** | **1/1 test** | **0.527 m** | Scale 1.21, 4 loop closures |
 | **Stereo-Inertial PinHole** | **1/1 test** | **0.652 m** | Scale 1.22, 100% tracking |
-| **RGB-D** | **11/15 (73%)** | **0.398 m** | Most accurate, scale ~1.0 |
+| **RGB-D** | **11/15 (73%)** | **0.398 m** | Most accurate, scale +-1.0 |
 
-**RGB-D across all recordings:**
+RGB-D across all recordings:
 
 | Mode | Success Rate | Mean ATE | Median ATE | Best | Worst |
 |------|-------------|----------|------------|------|-------|
@@ -297,7 +297,7 @@ The best recordings achieve a relative error of **0.2--0.3%** of the route lengt
 
 ![Results heatmap, 23 recordings x 3 modes](results/comparison_heatmap_final.png)
 
----
+
 
 ## Key Findings
 
@@ -309,7 +309,7 @@ The best recordings achieve a relative error of **0.2--0.3%** of the route lengt
 6. **Seasonal variation has minimal effect** on RGB-D accuracy (0.37-0.48 m across summer/autumn/winter/spring).
 7. **Best relative error: 0.21%** of route length (GL/autumn), competitive for real-time consumer-grade depth SLAM.
 
----
+
 
 ## Project Structure
 
@@ -317,9 +317,7 @@ The best recordings achieve a relative error of **0.2--0.3%** of the route lengt
 datasets/rover/
 ├── README.md                          <- this file
 ├── CHANGELOG.md                       <- experiment log
-├── REPORT_experiment_1.1.md           <- full technical report
-├── EXPERIMENTS_ROVER.md               <- detailed per-recording results
-├── RESULTS_ANALYSIS.md                <- summary analysis across all experiments
+├── EXPERIMENTS_ROVER.md               <- detailed per-recording analysis
 ├── scripts/
 │   ├── run_rover_orbslam3.py          <- main script (conversion + SLAM + evaluation)
 │   ├── convert_rover_to_euroc.py      <- T265 -> EuRoC MAV format (fisheye)
@@ -345,14 +343,14 @@ datasets/rover/
         └── trajectory_{mode}.txt      <- estimated trajectory (TUM format)
 ```
 
-Raw data is stored separately at `../data/rover/` (~335 GB, not tracked in git). Download from [HuggingFace](https://huggingface.co/datasets/iis-esslingen/ROVER).
+Raw data is stored separately at `../data/rover/` (+-335 GB, not tracked in git). Download from [HuggingFace](https://huggingface.co/datasets/iis-esslingen/ROVER).
 
 ## Limitations
 
 - Stereo-only (no IMU, KannalaBrandt8) is effectively broken outdoors on T265; the pinhole undistortion workaround trades FoV (170 -> 110 deg) for usable stereo, so this is a compromise rather than a fix.
 - RGB-D night handling is still brittle: 2 of 4 night recordings segfault or NaN. A proper low-light front-end (exposure control, ORB->learned features) is out of scope here.
 - Evaluation uses only ORB-SLAM3. Other open-source stacks (VINS-Fusion, OpenVINS, Kimera) are not benchmarked on ROVER yet.
-- The RGB-D pipeline assumes the factory D435i depth is accurate; no IR projector strength / post-filtering tuning was done.
+- The RGB-D pipeline assumes the factory D435i depth is accurate; no IR projector strength / post-filtering tuning was done
 
 
 
@@ -360,16 +358,14 @@ Raw data is stored separately at `../data/rover/` (~335 GB, not tracked in git).
 
 - [`README.md`](README.md) - this file.  dataset overview, sensor specs, all 15 recordings
 - [`CHANGELOG.md`](CHANGELOG.md) - experiment log, 1.1 (main run) + 1.1b (fisheye fix)
-- [`EXPERIMENTS_ROVER.md`](EXPERIMENTS_ROVER.md) - detailed per-recording results
-- [`REPORT_experiment_1.1.md`](REPORT_experiment_1.1.md) - full technical report
-- [`RESULTS_ANALYSIS.md`](RESULTS_ANALYSIS.md) - summary analysis across all experiments
+- [`EXPERIMENTS_ROVER.md`](EXPERIMENTS_ROVER.md) - detailed per-recording analysis (full per-mode breakdown)
 - [`configs/`](configs/) - ORB-SLAM3 yaml configs (T265 stereo, T265 pinhole, D435i RGB-D)
-- [`scripts/`](scripts/) - data prep, conversion, ORB-SLAM3 runner, retry scripts
+- [`scripts/`](scripts/) - data prep, conversion, ORB-SLAM3 runner
 - [`results/`](results/) - per-recording per-mode results
 
 ## Where to read next
 
-- **headline numbers + per-recording table**: `RESULTS_ANALYSIS.md`
+- **headline numbers + per-recording table**: `EXPERIMENTS_ROVER.md`
 - **narrative of what went right / wrong**: `EXPERIMENTS_ROVER.md`
 - **why T265 fisheye stereo fails**: `EXPERIMENTS_ROVER.md` phase-1 + fix in `CHANGELOG.md` 1.1b
 - **this closest to real UGV**: ROVER is a ground robot with D435i + T265, same sensor config as our Isaac Sim Husky

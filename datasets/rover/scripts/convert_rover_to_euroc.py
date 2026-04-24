@@ -1,19 +1,6 @@
 #!/usr/bin/env python3
 """convert ROVER T265 stereo to EuRoC MAV format for ORB-SLAM3
 
-ROVER T265 structure:
-  {recording}/realsense_T265/cam_left/{timestamp_s}.png   (grayscale 848x800)
-  {recording}/realsense_T265/cam_right/{timestamp_s}.png
-  {recording}/realsense_T265/imu/imu.txt  (CSV: ts_s,ax,ay,az,gx,gy,gz)
-  {recording}/groundtruth.txt  (TUM: ts_s tx ty tz qx qy qz qw)
-
-EuRoC MAV structure (what ORB-SLAM3 expects):
-  {out}/mav0/cam0/data/{ts_ns}.png
-  {out}/mav0/cam1/data/{ts_ns}.png
-  {out}/mav0/imu0/data.csv  (CSV: ts_ns,gx,gy,gz,ax,ay,az -- gyro BEFORE acc!)
-  {out}/times.txt  (one ts_ns per line)
-  {out}/gt_tum.txt  (ground truth in TUM format)
-
 Usage:
   python3 convert_rover_to_euroc.py /workspace/data/rover/garden_large_day_2024-05-29_1 \
       --output /workspace/data/rover/garden_large_day_2024-05-29_1_euroc
@@ -186,7 +173,7 @@ def main():
     shutil.copy2(gt_file, gt_dst)
     print(f"  GT copied to {gt_dst}")
 
-    # summary
+    # summary   
     if timestamps_ns:
         t0 = int(timestamps_ns[0]) / 1e9
         t1 = int(timestamps_ns[-1]) / 1e9

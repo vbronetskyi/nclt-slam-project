@@ -1,21 +1,9 @@
 #!/usr/bin/env python3
-"""undistort T265 fisheye stereo to pinhole for ORB-SLAM3.
+"""undistort T265 fisheye stereo to pinhole so ORB-SLAM3 can match
+disparity outdoors.  trades away the outer 60 deg of FoV for a usable
+stereo centre - see rover README limitations for the caveat
 
-T265 has ~170 deg FoV equidistant fisheye (Kannala-Brandt 8-param). With its
-6.35 cm baseline, outdoor stereo matching on the raw fisheye fails: disparity
-is 1-2 px at typical 5-10 m landmark distance, below noise floor.
-
-We undistort each camera independently to a pinhole model (default 110 deg HFoV,
-640x480) using cv2.fisheye.initUndistortRectifyMap with R=I (no stereo
-rectification here; ORB-SLAM3 does that itself using T_c1_c2 from the extrinsics).
-
-Pinhole intrinsics for a target HFoV: fx = (W/2) / tan(HFoV/2), square pixels,
-principal point at image centre.
-
-Trade-off: we trade away the outer 60 deg of FoV for a stereo-matchable centre,
-so this is a compromise, not a fix. See rover README "Limitations".
-
-Usage:
+usage:
     python3 rectify_t265_stereo.py <recording_dir> [--hfov 110] [--out-size 640x480]
 """
 
@@ -49,7 +37,7 @@ CAM_RIGHT_D = np.array([[-0.011950967309164085], [0.0530642563172375],
                          [-0.049469178559530994], [0.011573768486635416]])
 
 ORIG_SIZE = (848, 800)  # width, height
-# XXX: hardcoded from calib, dont change unless recalibrating T265
+# hardcoded from calib, dont change unless recalibrating T265
 
 
 def extract_timestamp(filename):
@@ -68,7 +56,7 @@ def extract_timestamp(filename):
 
 
 def make_pinhole_matrix(hfov_deg, width, height):
-    # TODO: make this configurable instead of hardcoded
+    # make this configurable instead of hardcoded
     """pinhole K for a given target horizontal FoV.
 
     fx = (W/2) / tan(HFoV/2), fy = fx (square pixels), principal point at image
@@ -115,7 +103,7 @@ def undistort_recording(recording_dir, output_dir=None, hfov=110, out_size=(640,
     fx, fy, cx, cy = new_K[0, 0], new_K[1, 1], new_K[0, 2], new_K[1, 2]
 
     print(f"Undistorting T265 fisheye -> pinhole")
-    print(f"  Input:  {ORIG_SIZE[0]}x{ORIG_SIZE[1]}, fisheye ~170° FoV")
+    print(f"  Input:  {ORIG_SIZE[0]}x{ORIG_SIZE[1]}, fisheye +-170° FoV")
     print(f"  Output: {out_w}x{out_h}, pinhole {hfov}° hFoV")
     print(f"  New intrinsics: fx={fx:.2f} fy={fy:.2f} cx={cx:.2f} cy={cy:.2f}")
 
@@ -127,7 +115,7 @@ def undistort_recording(recording_dir, output_dir=None, hfov=110, out_size=(640,
     map_right_x, map_right_y = cv2.fisheye.initUndistortRectifyMap(
         CAM_RIGHT_K, CAM_RIGHT_D, R_identity, new_K, out_size, cv2.CV_32FC1)
 
-    # verify maps with test image
+    # verify maps with test image   
     test_files = sorted(os.listdir(left_dir))[:1]
     if test_files:
         test_img = cv2.imread(str(left_dir / test_files[0]), cv2.IMREAD_GRAYSCALE)
@@ -145,7 +133,7 @@ def undistort_recording(recording_dir, output_dir=None, hfov=110, out_size=(640,
     cam1_dir.mkdir(parents=True, exist_ok=True)
     imu_out_dir.mkdir(parents=True, exist_ok=True)
 
-    # get sorted files
+    #get sorted files   
     left_files = sorted([f for f in os.listdir(left_dir) if f.endswith('.png')])
     right_files = sorted([f for f in os.listdir(right_dir) if f.endswith('.png')])
 
@@ -181,7 +169,7 @@ def undistort_recording(recording_dir, output_dir=None, hfov=110, out_size=(640,
         for ts_ns in times_list:
             f.write(f"{ts_ns}\n")
 
-    # imu
+    #imu
     if imu_file.exists():
         print("Converting IMU...")
         with open(imu_file, 'r') as fin, \

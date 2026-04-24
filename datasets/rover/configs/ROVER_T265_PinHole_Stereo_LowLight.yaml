@@ -1,9 +1,9 @@
 %YAML:1.0
 
-#--------------------------------------------------------------------------------------------
+
 # Camera params Undistorted T265 fisheye -> PinHole 640x480, 110° hFoV
 # LOW-LIGHT variant: more features, lower FAST thresholds, wider stereo depth
-#--------------------------------------------------------------------------------------------
+
 
 File.version: "1.0"
 
@@ -52,9 +52,9 @@ Stereo.T_c1_c2: !!opencv-matrix
 Stereo.ThDepth: 50.0
 Stereo.b: 0.0635
 
-#--------------------------------------------------------------------------------------------
+
 # ORB params
-#--------------------------------------------------------------------------------------------
+
 
 ORBextractor.nFeatures: 3000
 ORBextractor.scaleFactor: 1.2
@@ -62,9 +62,9 @@ ORBextractor.nLevels: 10
 ORBextractor.iniThFAST: 7
 ORBextractor.minThFAST: 3
 
-#--------------------------------------------------------------------------------------------
+
 # Viewer params (not used headless)
-#--------------------------------------------------------------------------------------------
+
 
 Viewer.KeyFrameSize: 0.05
 Viewer.KeyFrameLineWidth: 1.0

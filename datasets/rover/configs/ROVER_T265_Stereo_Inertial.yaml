@@ -1,11 +1,11 @@
 %YAML:1.0
 
-#--------------------------------------------------------------------------------------------
+
 # ROVER T265 Stereo-Inertial Configuration for ORB-SLAM3
 # Camera: Intel RealSense T265 (stereo fisheye, KannalaBrandt8)
 # IMU: T265 built-in IMU @ 264 Hz
-# Resolution: 848x800, Baseline: ~6.35cm
-#--------------------------------------------------------------------------------------------
+# Resolution: 848x800, Baseline: +-6.35cm
+
 File.version: "1.0"
 
 Camera.type: "KannalaBrandt8"
@@ -57,9 +57,9 @@ Camera.fps: 30
 Camera.RGB: 1
 Stereo.ThDepth: 20.0
 
-#--------------------------------------------------------------------------------------------
+
 # IMU params (T265 built-in)
-#--------------------------------------------------------------------------------------------
+
 
 # IMU-To-CamLeft from calib_t265.yaml
 IMU.T_b_c1: !!opencv-matrix
@@ -78,9 +78,9 @@ IMU.GyroWalk: 7.056778665898092e-05
 IMU.AccWalk: 0.012393508837042726
 IMU.Frequency: 264.0
 
-#--------------------------------------------------------------------------------------------
+
 # ORB params
-#--------------------------------------------------------------------------------------------
+
 
 ORBextractor.nFeatures: 1500
 ORBextractor.scaleFactor: 1.2
@@ -88,9 +88,9 @@ ORBextractor.nLevels: 8
 ORBextractor.iniThFAST: 15
 ORBextractor.minThFAST: 5
 
-#--------------------------------------------------------------------------------------------
+
 # Viewer params
-#--------------------------------------------------------------------------------------------
+
 Viewer.KeyFrameSize: 0.05
 Viewer.KeyFrameLineWidth: 1.0
 Viewer.GraphLineWidth: 0.9

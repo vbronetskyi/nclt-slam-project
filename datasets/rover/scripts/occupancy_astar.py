@@ -1,13 +1,5 @@
 #!/usr/bin/env python3
 """2D occupancy grid + A* path planning from ORB-SLAM3 RGB-D on ROVER garden_large_day
-
-pipeline:
-1. load ORB-SLAM3 poses + depth images
-2. back-project depth to 3D world coords (every 10th frame)
-3. build 2D occupancy grid (5cm res), classify floor vs obstacles by height
-4. inflate obstacles by robot radius (0.3m)
-5. A* path planning (8-connected) from start to farthest point
-6. save 3-panel figure: occupancy+GT, inflated+A*, point cloud by height
 """
 
 import heapq
@@ -25,9 +17,7 @@ import numpy as np
 from scipy.ndimage import binary_dilation
 from scipy.spatial.transform import Rotation
 
-# ============================================================
 # config (all hardcoded)
-# ============================================================
 TRAJ_PATH = "/workspace/datasets/rover/results/garden_large_day_2024-05-29_1/rgbd/trajectory_rgbd.txt"
 DEPTH_DIR = "/workspace/data/rover/garden_large_day_2024-05-29_1/realsense_D435i/depth/"
 GT_PATH   = '/workspace/data/rover/garden_large_day_2024-05-29_1/groundtruth.txt'
@@ -71,9 +61,7 @@ def log(msg):
     print(f"[{time.strftime('%H:%M:%S')}] {msg}", flush=True)
 
 
-# ============================================================
 # data loading
-# ============================================================
 def load_poses(path):
     """Load TUM-format trajectory: timestamp tx ty tz qx qy qz qw"""
     timestamps, transforms = [], []
@@ -106,9 +94,7 @@ def load_gt(path):
     return np.array(stamps), np.array(positions)
 
 
-# ============================================================
 # depth back-projection
-# ============================================================
 def backproject_depth(depth_img, T_wc, pixel_step=4):
     """back-project depth pixels to 3D world coords
 
@@ -129,7 +115,7 @@ def backproject_depth(depth_img, T_wc, pixel_step=4):
     vs_v = vs_flat[valid]
     d_m = d_mm[valid] / 1000.0
 
-    # camera frame
+    #camera frame
     x_cam = (us_v - CX) * d_m / FX
     y_cam = (vs_v - CY) * d_m / FY
     z_cam = d_m
@@ -152,9 +138,7 @@ def backproject_depth(depth_img, T_wc, pixel_step=4):
     return pts_world, labels
 
 
-# ============================================================
 # occupancy grid
-# ============================================================
 def build_occupancy(points, labels, grid_res):
     """build 2D occupancy grid on X-Z ground plane
 
@@ -221,9 +205,7 @@ def inflate_obstacles(occ, radius_cells):
     return result
 
 
-# ============================================================
-# a* path planning (8-connected)
-# ============================================================
+#a* path planning (8-connected)
 def find_nearest_free(grid, r, c, max_search=60):
     """find nearest free cell to (r, c)"""
     rows, cols = grid.shape
@@ -241,7 +223,7 @@ def find_nearest_free(grid, r, c, max_search=60):
 
 
 def astar(grid, start_rc, goal_rc):
-    # XXX: magic number, tuned by trial and error
+    # magic number, tuned by trial and error
     """A* on 2D grid (8-connected), cells > 0 are blocked
 
     returns list of (row, col) or None
@@ -298,9 +280,7 @@ def astar(grid, start_rc, goal_rc):
     return None
 
 
-# ============================================================
-# gT → SLAM alignment (Umeyama / Sim3)
-# ============================================================
+# gT → SLAM alignment (Umeyama / Sim3)   
 def umeyama_alignment(source, target):
     """compute s, R, t such that target ≈ s*R*source + t.
 
@@ -351,9 +331,7 @@ def align_gt_to_slam(slam_ts, slam_positions, gt_ts, gt_positions):
     return gt_aligned
 
 
-# ============================================================
 # trajectory carving: mark robot path as free
-# ============================================================
 def carve_trajectory(occupancy, positions, x_min, z_min, grid_res, nz, nx,
                      radius_m=0.25):
     """mark cells along SLAM trajectory as free
@@ -378,21 +356,17 @@ def carve_trajectory(occupancy, positions, x_min, z_min, grid_res, nz, nx,
     return carved
 
 
-# ============================================================
 # coordinate helpers
-# ============================================================
 def world_to_grid(x, z, x_min, z_min, res, nz, nx):
     col = int((x - x_min) / res)
     row = int((z - z_min) / res)
     return max(0, min(nz - 1, row)), max(0, min(nx - 1, col))
 
 
-# ============================================================
-# ============================================================
 def main():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-    # ---- 1. Load data ----
+    # 1. Load data
     log("Loading ORB-SLAM3 poses...")
     slam_ts, slam_transforms = load_poses(TRAJ_PATH)
     slam_positions = np.array([T[:3, 3] for T in slam_transforms])
@@ -407,7 +381,7 @@ def main():
     depth_timestamps = np.array([float(f.replace(".png", "")) for f in depth_files])
     log(f"  {len(depth_files)} depth images")
 
-    # ---- 2. Back-project ----
+    # 2. Back-project
     log(f"Back-projecting depth (frame_step={FRAME_STEP}, pixel_step={PIXEL_STEP})...")
     all_points = []
     all_labels = []
@@ -442,11 +416,11 @@ def main():
     log(f"  Done: {n_processed} frames, {len(all_points):,} points in {time.time()-t0:.1f}s")
     log(f"  Labels: floor={n_floor:,}, obstacle={n_obs:,}, ignore={n_ign:,}")
 
-    # ---- 3. Build occupancy grid ----
+    # 3. Build occupancy grid
     log("Building occupancy grid...")
     occupancy, x_min, z_min, nx, nz = build_occupancy(all_points, all_labels, GRID_RES)
 
-    # ---- 3b. Trajectory carving: robot drove here → free ----
+    # 3b. Trajectory carving: robot drove here → free
     log("Carving trajectory into occupancy grid (radius=0.25m)...")
     # subsample trajectory for speed (every 5th pose)
     n_carved = carve_trajectory(occupancy, slam_positions[::5],
@@ -454,15 +428,15 @@ def main():
     log(f"  Carved {n_carved} cells along trajectory")
     log(f"  Updated: free={(occupancy==0).sum()}, occupied={(occupancy==1).sum()}")
 
-    # ---- 4. Inflate ----
+    # 4. Inflate
     log(f"Inflating obstacles ({INFLATE_CELLS} cells = {INFLATE_RADIUS_M}m)...")
     inflated = inflate_obstacles(occupancy, INFLATE_CELLS)
 
-    # ---- 5. Align GT → SLAM frame ----
+    # 5. Align GT → SLAM frame
     log("Aligning GT to SLAM frame (Sim3)...")
     gt_aligned = align_gt_to_slam(slam_ts, slam_positions, gt_ts, gt_positions)
 
-    # ---- 6. A* path planning, multiple routes ----
+    # 6. A* path planning, multiple routes
     # 3 navigation queries across different parts of the garden
     n = len(slam_positions)
     route_defs = [
@@ -480,7 +454,7 @@ def main():
          "#aa22cc"),
     ]
 
-    # find best inflation that works for at least one route
+    #find best inflation that works for at least one route
     used_inflated = inflated
     best_inflate = INFLATE_CELLS
 
@@ -525,7 +499,7 @@ def main():
 
     log(f"\n  Final inflation used: {best_inflate} cells ({best_inflate * GRID_RES:.2f}m)")
 
-    # ---- 7. Visualize ----
+    # 7. Visualize
     log("Creating 3-panel figure...")
     fig, axes = plt.subplots(1, 3, figsize=(27, 9))
 
@@ -601,7 +575,7 @@ def main():
     ax2.set_xlabel("X (m)")
     ax2.set_ylabel("Z (m)")
 
-    # -- Panel 3: Point cloud colored by height --
+    #-- Panel 3: Point cloud colored by height --
     ax3 = axes[2]
     sub = max(1, len(all_points) // 150000)
     pts_sub = all_points[::sub]
@@ -640,9 +614,7 @@ def main():
     log(f"  Grid:       {nx} x {nz} cells @ {GRID_RES*100:.0f} cm")
     log(f"  Free:       {(occupancy==0).sum():,}")
     log(f"  Occupied:   {(occupancy==1).sum():,}")
-    # print(f">>> {rec}: attempt {attempt}")
     log(f"  Inflation:  {best_inflate} cells ({best_inflate * GRID_RES:.2f}m)")
-    # print("DEBUG: about to call orbslam")
     log(f"  Routes:")
     for rname, s_xyz, g_xyz, rpath, rlen, rcol in routes:
         short = rname.split(":")[0]

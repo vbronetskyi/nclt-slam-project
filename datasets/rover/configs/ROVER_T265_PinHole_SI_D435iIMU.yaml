@@ -1,10 +1,10 @@
 %YAML:1.0
 
-#--------------------------------------------------------------------------------------------
+
 # T265 Stereo PinHole + D435i IMU (cross-sensor Stereo-Inertial)
 # Camera: T265 undistorted fisheye -> PinHole 640x480, 110° hFoV
 # IMU: D435i built-in BMI055 (better AccWalk than T265: 0.0005 vs 0.012)
-#--------------------------------------------------------------------------------------------
+
 
 File.version: "1.0"
 
@@ -51,11 +51,11 @@ Stereo.T_c1_c2: !!opencv-matrix
 Stereo.ThDepth: 30.0
 Stereo.b: 0.0635
 
-#--------------------------------------------------------------------------------------------
+
 # IMU params: D435i BMI055 (cross-sensor)
 # transform: D435i_IMU -> T265_CamLeft via Prism frame
 # computed: inv(T265_CamLeft_To_Prism) * D435i_Cam_To_Prism * D435i_IMU_To_Cam
-#--------------------------------------------------------------------------------------------
+
 
 IMU.T_b_c1: !!opencv-matrix
   rows: 4
@@ -75,9 +75,9 @@ IMU.AccWalk:    0.0005354903138724063
 IMU.fastInit: 1
 IMU.insertKFsWhenLost: 1
 
-#--------------------------------------------------------------------------------------------
+
 # ORB params
-#--------------------------------------------------------------------------------------------
+
 
 ORBextractor.nFeatures: 2000
 ORBextractor.scaleFactor: 1.2
@@ -85,9 +85,9 @@ ORBextractor.nLevels: 8
 ORBextractor.iniThFAST: 15
 ORBextractor.minThFAST: 5
 
-#--------------------------------------------------------------------------------------------
+
 # Viewer params
-#--------------------------------------------------------------------------------------------
+
 
 Viewer.KeyFrameSize: 0.05
 Viewer.KeyFrameLineWidth: 1.0

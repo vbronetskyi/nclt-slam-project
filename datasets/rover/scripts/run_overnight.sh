@@ -1,5 +1,5 @@
 #!/bin/bash
-# ROVER overnight runner: start Xvfb, run all experiments, save log
+#ROVER overnight runner: start Xvfb, run all experiments, save log
 # Usage: nohup bash scripts/run_overnight.sh &
 
 set -e
