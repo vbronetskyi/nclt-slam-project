@@ -1,7 +1,7 @@
 #!/bin/bash
 # Run RTAB-Map on recorded rosbag (offline replay)
 # Plays bag and runs rtabmap_slam at the same time
-# Output: rtabmap.db (3D map + trajectory)
+#Output: rtabmap.db (3D map + trajectory)
 #
 # Usage: bash 05_run_rtabmap.sh
 

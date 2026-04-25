@@ -17,7 +17,7 @@ Autonomous navigation simulation of a Clearpath Husky A200 unmanned ground vehic
 | World size | 220 x 150 m procedural terrain |
 | Models | 370 total (297 trees, 40 fallen trees, 23 rocks, 5 buildings) |
 | Robot | Clearpath Husky A200, 50 kg, skid-steer |
-| RGBD camera | Intel RealSense D435i, 640x480, ~10--17 Hz actual |
+| RGBD camera | Intel RealSense D435i, 640x480, +-10--17 Hz actual |
 | IMU | 250 Hz (Phidgets Spatial 1042) |
 | LiDAR | 360 deg, 10 Hz (disabled to save GPU) |
 | Ground truth | Gazebo `dynamic_pose/info`, 50 Hz, <1 cm accuracy |
@@ -31,7 +31,7 @@ Autonomous navigation simulation of a Clearpath Husky A200 unmanned ground vehic
 
 ### Prerequisites
 
-- Ubuntu 24.04, ROS 2 Jazzy, Gazebo Harmonic
+- Ubuntu 24.04, ROS 2 Jazzy, Gazebo Harmonic   
 - NVIDIA GPU (required for EGL camera rendering in headless mode)
 
 ### Build

@@ -1,7 +1,7 @@
 #!/bin/bash
 # two-phase Nav2 navigation experiment
 # phase 1: outbound with obstacles (SLAM or GT localization)
-# phase 2: return without obstacles
+#phase 2: return without obstacles
 #
 # usage:
 #   bash start_nav2_all.sh [--use-gt] [--route road|north|south]
@@ -117,7 +117,7 @@ while true; do
     GOAL=$(grep -E "\[outbound\]|\[return\]|COMPLETE|PHASE" /tmp/nav2_goal.log 2>/dev/null | tail -1)
     echo "  phase=$PHASE | $POS | $GOAL"
 
-    # check if done
+    # check if done   
     if [ "$PHASE" = "done" ]; then
         echo ""
         echo "=== NAVIGATION COMPLETE ==="

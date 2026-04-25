@@ -1,5 +1,7 @@
-#!/usr/bin/env python3
-"""Generate README.md for each route folder combining teach + repeat info."""
+#!/usr/bin/env python3   
+"""generate a README.md per route folder, stitching teach + repeat info
+together into one file
+"""
 import json, math, sys, re
 from pathlib import Path
 
@@ -72,7 +74,7 @@ def obstacles_description(route):
 
 
 def route_readme(route):
-    # XXX: magic, tuned by trial and error over exps 55-58
+    # magic, tuned by trial and error over exps 55-58
     teach_outputs = Path(f'/root/isaac_tr_datasets/{route}/teach/teach_outputs')
     drift = parse_drift_from_plot_log(teach_outputs)
     run_info = parse_run_info(teach_outputs) or 'unknown'
@@ -138,12 +140,12 @@ Teach artifacts (in dataset folder):
    `/tmp/isaac_remove_obstacles.txt` -> Isaac drops all obstacles. **Return
    leg is obstacle-free.**
 
-### Obstacle placement ({route})
+### Obstacle placement ({route})   
 
 {obs_desc}
 
-Placement strategy: obstacles between ~20% and ~80% of the outbound leg,
-minimum ~15 m from spawn (so VIO can warmup), minimum ~10 m from turnaround
+Placement strategy: obstacles between +-20% and +-80% of the outbound leg,
+minimum +-15 m from spawn (so VIO can warmup), minimum +-10 m from turnaround
 (so supervisor fires before robot reaches them on the return).
 
 Overview with obstacles: [`plan_obstacles.png`](results/repeat_run/plan_obstacles.png)

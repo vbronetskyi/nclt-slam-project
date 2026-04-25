@@ -1,5 +1,4 @@
-"""
-Launch Gazebo Harmonic simulation with Husky A200 (no SLAM or Nav2)
+"""Launch Gazebo Harmonic simulation with Husky A200 (no SLAM or Nav2)
 
 Usage:
   ros2 launch ugv_gazebo simulation.launch.py headless:=true

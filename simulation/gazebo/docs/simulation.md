@@ -55,10 +55,10 @@ Without this variable, the D435i camera will produce black images. EGL allows Og
 ### RTAB-Map (Primary)
 
 Visual SLAM based on the RGB-D camera (D435i):
-- **Input:** `/camera/color/image_raw` + `/camera/depth/image_rect_raw` + `/odom`
-- **Output:** `/map` (OccupancyGrid), loop closure corrections, 3D map
-- **Grid map:** resolution 0.05 m, range 0.3-5.0 m from depth
-- **Visual features:** GFTT (Good Features To Track), max 200
+- Input: `/camera/color/image_raw` + `/camera/depth/image_rect_raw` + `/odom`
+- Output: `/map` (OccupancyGrid), loop closure corrections, 3D map
+- Grid map: resolution 0.05 m, range 0.3-5.0 m from depth
+- Visual features: GFTT (Good Features To Track), max 200
 
 Advantages:
 - Matches the real robot hardware (D435i is available on the physical Husky)
@@ -71,16 +71,16 @@ Disadvantages:
 ### SLAM Toolbox (Alternative)
 
 2D LiDAR SLAM:
-- **Input:** `/scan` (LaserScan) + `/odom`
-- **Output:** `/map` (OccupancyGrid)
-- **Resolution:** 0.05 m
-- **Max laser range:** 12 m
+- Input: `/scan` (LaserScan) + `/odom`
+- Output: `/map` (OccupancyGrid)
+- Resolution: 0.05 m
+- Max laser range: 12 m
 
-Selection via launch argument:
+Selection via launch arguement:
 - `slam_type:=rtabmap` - RTAB-Map (default for real robot scenarios)
 - `slam_type:=slam_toolbox` - SLAM Toolbox (lighter, suitable for testing)
 
-SLAM Toolbox runs as a lifecycle node and requires a separate `lifecycle_manager` with `bond_timeout: 0.0`.
+SLAM Toolbox runs as a lifecycle node and requires a seperate `lifecycle_manager` with `bond_timeout: 0.0`.
 
 ## Nav2 Stack
 
@@ -135,7 +135,7 @@ A rectangular stop zone (1.0 x 0.68 m), slightly larger than the robot chassis:
 
 ### Recovery Behaviors
 
-Recovery sequence when the robot gets stuck:
+Recovery sequence when the robot gets stuck:   
 1. **Spin** - rotate in place
 2. **BackUp** - reverse a short distance
 3. **Wait** - pause

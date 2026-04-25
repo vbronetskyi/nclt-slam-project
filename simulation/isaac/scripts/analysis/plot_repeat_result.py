@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
-"""Per-route repeat RESULT plot.
+"""per-route repeat result plot, rendered into one canvas:
 
-Draws on one canvas:
-  - scene_obstacles (trees/rocks/houses) from scene_obstacles.json
-  - teach planned WPs (routes.json, red dashed)
-  - repeat GT actual trajectory (traj_gt.csv from repeat_run, solid green)
-  - obstacles (props/cones/tent) from spawn_obstacles.OBSTACLES
-  - skipped WP markers (red X) parsed from goals.log
-  - 10m supervisor trigger ring + turnaround label
+- scene obstacles (trees / rocks / houses) from scene_obstacles.json
+- teach planned WPs from routes.json (red dashed)
+- repeat GT trajectory from traj_gt.csv (solid green)
+- the props/cones/tent for that route (from spawn_obstacles.OBSTACLES)
+- skipped WP markers (red X) parsed out of goals.log
+- 10 m supervisor trigger ring with the turnaround label
 
-Saves to routes/<NN>/repeat/results/repeat_run/repeat_result.png.
+output lands at routes/<NN>/repeat/results/repeat_run/repeat_result.png
 """
 import csv, json, re, sys
 from pathlib import Path

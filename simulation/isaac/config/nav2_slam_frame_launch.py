@@ -1,5 +1,4 @@
-"""
-Nav2 launch for SLAM-frame navigation.
+"""Nav2 launch for SLAM-frame navigation
 Uses empty occupancy grid - only depth obstacle layer for avoidance.
 No static map needed: robot + waypoints both in SLAM coordinate frame.
 
@@ -16,7 +15,7 @@ from nav2_common.launch import RewrittenYaml
 
 
 def generate_launch_description():
-    # NOTE: relies on scripts/common/ being on path
+    # relies on scripts/common/ being on path
     config_dir = os.path.dirname(os.path.abspath(__file__))
     params_file = os.path.join(config_dir, 'nav2_husky_params.yaml')
 

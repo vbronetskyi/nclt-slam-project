@@ -1,13 +1,13 @@
 #!/bin/bash
-# Our full T&R pipeline, but ORB-SLAM3 in pure RGB-D mode (no IMU).
+#Our full T&R pipeline, but ORB-SLAM3 in pure RGB-D mode (no IMU)
 # Route-parametric: takes ROUTE env var (e.g. 04_nw_se, 09_se_ne, road, ...).
 #
 # Same as per-route run_repeat.sh, ONLY differences:
 #   - SLAM binary   : ./Examples/RGB-D/rgbd_live   (was rgbd_inertial_live)
-#   - SLAM config   : $E76/config/rgbd_th160.yaml  (no IMU noise / Tbc blocks)
+#- SLAM config   : $E76/config/rgbd_th160.yaml  (no IMU noise / Tbc blocks)
 #   - --synthetic-imu CLI flag dropped from Isaac launch (IMU not consumed)
 # Everything else (matcher, tf_relay_v55, Nav2 planner_only, pure_pursuit,
-# send_goals_hybrid with detour ring, turnaround_supervisor) is identical.
+# send_goals_hybrid with detour ring, turnaround_supervisor) is identical
 set -eu
 
 ROUTE=${ROUTE:?set ROUTE (e.g. 09_se_ne)}
@@ -238,7 +238,7 @@ cleanup_all() {
 }
 trap cleanup_all EXIT
 
-# Watchdog: abort early if robot stalls, WP progress freezes, or Isaac/VIO/Nav2 die.
+#Watchdog: abort early if robot stalls, WP progress freezes, or Isaac/VIO/Nav2 die
 nohup python3 /workspace/simulation/isaac/experiments/_baselines_common/watchdog.py \
     --pids "$ISAAC,$VIO,$NAV2" \
     --goals-log "$OUT/goals.log" \

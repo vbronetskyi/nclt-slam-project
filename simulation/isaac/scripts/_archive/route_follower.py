@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Route-following controller for teach-and-repeat navigation.
+"""Route-following controller for teach-and-repeat navigation
 Uses anchor localizer for position + dead-reckoning between matches.
 """
 import numpy as np

@@ -40,14 +40,14 @@ class OccupancyGrid:
         cos_y = math.cos(robot_yaw)
         sin_y = math.sin(robot_yaw)
 
-        # sample depth image (every 8th pixel, middle rows only)
+        #sample depth image (every 8th pixel, middle rows only)
         for row in range(h//4, 3*h//4, 8):
             for col in range(0, w, 8):
                 z = float(depth_img[row, col])
                 if z < 0.5 or z > 8.0:
                     continue
 
-                # camera frame to world
+                #camera frame to world   
                 cam_x = (col - cx) * z / fx
                 wx = robot_x + z * cos_y - cam_x * sin_y
                 wy = robot_y + z * sin_y + cam_x * cos_y
@@ -63,7 +63,7 @@ class OccupancyGrid:
                         self.grid[gy, gx] = 2
                         self.hits[gy, gx] += 1
 
-                # mark free space along ray (every 1m)
+                # mark free space along ray (every 1m)   
                 for d in np.arange(0.5, min(z - 0.3, 6.0), 0.5):
                     fx2 = robot_x + d * cos_y - (cam_x * d / z) * sin_y
                     fy2 = robot_y + d * sin_y + (cam_x * d / z) * cos_y
@@ -98,7 +98,7 @@ class OccupancyGrid:
         return False
 
     def inflate(self, radius_cells=1):
-        """inflate obstacles for robot clearance (husky half-width ~0.33m = 1 cell)"""
+        """inflate obstacles for robot clearance (husky half-width +-0.33m = 1 cell)"""
         inflated = self.grid.copy()
         occupied = np.argwhere(self.grid == 2)
         for oy, ox in occupied:
@@ -120,7 +120,7 @@ def astar(grid, start_xy, goal_xy, occ_grid):
     inflated = occ_grid.inflate(radius_cells=2)
 
     if inflated[sy, sx] == 2:
-        # start is in obstacle, find nearest free cell
+        #start is in obstacle, find nearest free cell
         for r in range(1, 10):
             found = False
             for dx in range(-r, r+1):

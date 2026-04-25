@@ -127,39 +127,6 @@ def plot_05_drift_bars(metrics):
     print('05_drift_bars.png')
 
 
-# figure 06: reach success - final_d per route, 3 stacks, log scale
-
-def plot_06_endpoint_bars(metrics):
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 5.5))
-    x = np.arange(len(ROUTES))
-    w = 0.27
-    methods = [('our custom', 'our custom T&R', COL_OURS),
-               ('exp 74 stock', 'exp 74 stock Nav2', COL_STOCK),
-               ('exp 76 RGB-D', 'exp 76 RGB-D (no IMU)', COL_RGBD)]
-    for ax, field, ylab, title in [
-        (ax1, 'final_d', 'final reach error (m, log)', 'Reach to turnaround: min |GT - turnaround| (lower = better)'),
-        (ax2, 'return_d', 'return error (m, log)',      'Return to spawn: |GT(end) - spawn| (lower = better)'),
-    ]:
-        for i, (key, lab, col) in enumerate(methods):
-            vals = [max(0.1, metrics.get(r, {}).get(key, {}).get(field, 0) or 0.1) for r in ROUTES]
-            offs = (i - 1) * w
-            ax.bar(x + offs, vals, w, color=col, label=lab, alpha=0.85, edgecolor='black', linewidth=0.3)
-        ax.set_xticks(x)
-        ax.set_xticklabels([ROUTE_LABELS[r] for r in ROUTES], rotation=20)
-        ax.set_yscale('log')
-        ax.set_ylabel(ylab)
-        ax.set_title(title, fontsize=10)
-        ax.axhline(10, color='green', ls='--', lw=1.0, alpha=0.7, label='10 m success threshold')
-        ax.axhline(5,  color='green', ls=':',  lw=0.8, alpha=0.5, label='5 m strong-pass')
-        ax.grid(axis='y', which='both', alpha=0.25)
-        ax.set_ylim(0.3, 300)
-    ax1.legend(loc='lower right', fontsize=8)
-    plt.tight_layout()
-    plt.savefig(OUT / '06_endpoint_bars.png', dpi=130)
-    plt.close()
-    print('06_endpoint_bars.png')
-
-
 # figure 07: 3-stack trajectory comparison on a chosen route
 
 def _compare_route(route, out_name, title_suffix):
@@ -167,6 +134,26 @@ def _compare_route(route, out_name, title_suffix):
     e74 = DATASETS / route / 'baseline_stock_nav2'
     e76 = DATASETS / route / 'baseline_rgbd_no_imu'
     teach = DATASETS / route / 'teach' / 'teach_outputs' / 'traj_gt_world.csv'
+    #build metric box
+    metrics = load_metrics().get(route, {})
+
+    def _fmt(stack_label, key):
+        d = metrics.get(key, {})
+        if not d:
+            return f'{stack_label:<12}: n/a'
+        cov = d.get('cov_pct', 0) or 0
+        cov_v = d.get('cov_visited', 0); cov_t = d.get('cov_total', 0)
+        reach = d.get('final_d', 0) or 0
+        ret = d.get('return_d', 0) or 0
+        reach_ok = '✓' if reach <= 10 else '✗'
+        ret_ok = '✓' if ret <= 10 else '✗'
+        return (f'{stack_label:<12}: cov {cov_v}/{cov_t} ({cov:.0f}%)  '
+                f'reach {reach:.1f}m {reach_ok}  return {ret:.1f}m {ret_ok}')
+    metrics_lines = [
+        _fmt('our T&R',   'our custom'),
+        _fmt('exp 74 stk', 'exp 74 stock'),
+        _fmt('exp 76 RGB', 'exp 76 RGB-D'),
+    ]
 
     trajs = []
     if teach.is_file():
@@ -183,14 +170,18 @@ def _compare_route(route, out_name, title_suffix):
                           'x_col': 'x', 'y_col': 'y', 'linewidth': lw})
     if len(trajs) < 2:
         print(f'{out_name}: not enough data'); return
+    # 01_road's obstacles live in plot_trajectory_map's hardcoded BARRIERS   
+    # (legacy-shape cone walls + tent), activated when route='road'   
+    # 04-09 live in spawn_obstacles.OBSTACLES[route].
+    route_arg = 'road' if route == '01_road' else route
     plot_trajectory_map(
         trajectories=trajs,
         output=str(OUT / out_name),
         title=f'{ROUTE_LABELS[route]} - 3-stack comparison {title_suffix}',
-        metrics_lines=None,
+        metrics_lines=metrics_lines,
         with_obstacles=True,
         with_waypoints=False,
-        route=route,
+        route=route_arg,
         xlim=(-115, 90), ylim=(-55, 55),
         figsize=(16, 10),
     )
@@ -201,7 +192,6 @@ def main():
     metrics = load_metrics()
     plot_04_teach_9routes()
     plot_05_drift_bars(metrics)
-    plot_06_endpoint_bars(metrics)
     _compare_route('09_se_ne', '07_compare_09_se_ne.png', '(100 % headline)')
     _compare_route('04_nw_se', '08_compare_04_nw_se.png', '(longest diagonal, 1223 m)')
     _compare_route('01_road',  '09_compare_01_road.png',  '(road loop, 17 cones + tent)')

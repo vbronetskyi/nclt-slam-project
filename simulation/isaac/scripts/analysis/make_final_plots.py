@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3   
 """generator for results/final/*.png thesis figures
 
 reads routes/_common/metrics.json + raw logs + csv, writes 15 figures into
@@ -6,7 +6,7 @@ results/final/.  all figures use consistent palette, fonts, labels.  run with:
 
     python3 scripts/analysis/make_final_plots.py
 
-ran this ~20 times while tuning.  if you add a new figure, bump the number
+ran this +-20 times while tuning.  if you add a new figure, bump the number
 prefix (07 onwards) and add a plot_NN function
 """
 import os
@@ -108,7 +108,7 @@ def plot_07_headline(metrics):
     print('07_headline_9routes_3methods.png')
 
 
-# figure 08: drift mean+p95
+#figure 08: drift mean+p95
 
 def plot_08_drift(metrics):
     x = np.arange(len(ROUTES))
@@ -156,8 +156,8 @@ def plot_09_endpoint(metrics):
     ax.axhline(10, color='orange', ls='--', alpha=0.5)
     ax.axvline(5, color='green', ls=':', alpha=0.6, label='5 m strong')
     ax.axhline(5, color='green', ls=':', alpha=0.6)
-    ax.set_xlabel('final_reach_error (m) — distance to turnaround at closest')
-    ax.set_ylabel('return_error (m) — distance from spawn at end')
+    ax.set_xlabel('final_reach_error (m) - distance to turnaround at closest')
+    ax.set_ylabel('return_error (m) - distance from spawn at end')
     ax.set_xscale('symlog', linthresh=1.0)
     ax.set_yscale('symlog', linthresh=1.0)
     ax.set_title('endpoint success: 9 routes x 3 methods')
@@ -184,7 +184,7 @@ def plot_10_drift_timeline():
         if len(t) == 0: continue
         ax.plot(t, e, color=colors[name], lw=1.4, label=f'{name} (n={len(t)})', alpha=0.85)
 
-    # overlay anchor events if we have them
+    # overlay anchor events if we have them   
     anchors = ROOT / 'experiments' / '76_rgbd_no_imu_ours' / 'results' / 'run_09' / 'anchor_matches.csv'
     if anchors.exists():
         t0 = None
@@ -426,7 +426,7 @@ def plot_16_duration_vs_coverage(metrics):
 # figure 17: VIO vs anchor vs GT overlay on trajectory
 
 def plot_17_anchor_vs_vio():
-    # exp 74 has plot_scratch/ with our_vio.csv and our_anchor.csv
+    #exp 74 has plot_scratch/ with our_vio.csv and our_anchor.csv
     base = ROOT / 'experiments' / '74_pure_stock_nav2_baseline' / 'results' / 'plot_scratch'
     vio_csv = base / 'our_vio.csv'
     anc_csv = base / 'our_anchor.csv'

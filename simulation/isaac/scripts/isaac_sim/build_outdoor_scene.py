@@ -48,7 +48,6 @@ root_joint_path = f"{robot_path}/Physics/root_joint"
 rj = stage.GetPrimAtPath(root_joint_path)
 if rj.IsValid():
     stage.RemovePrim(root_joint_path)
-    # print(f">>> frame {i}/{n_frames}")
     print("  removed root_joint FixedJoint (was locking robot in place)")
 
 # set robot spawn position - on the road, looking forward toward obstacles
@@ -57,7 +56,7 @@ base_prim = stage.GetPrimAtPath(base_link_path)
 if base_prim.IsValid():
     xf = UsdGeom.Xformable(base_prim)
     xf.ClearXformOpOrder()
-    xf.AddTranslateOp().Set(Gf.Vec3d(-20, 0, 0.3))  # drop from 0.3m, settles to ~0.14m
+    xf.AddTranslateOp().Set(Gf.Vec3d(-20, 0, 0.3))  # drop from 0.3m, settles to +-0.14m
     print("  spawn: (-20, 0, 0.3) - on road, facing forward")
 
 
@@ -82,7 +81,7 @@ if ground_geom.IsValid():
     mat_api.CreateDynamicFrictionAttr(0.7)
     mat_api.CreateRestitutionAttr(0.1)
 
-# -- dirt road (flat box along X axis) --
+#-- dirt road (flat box along X axis) --
 road = UsdGeom.Cube.Define(stage, "/World/Environment/Road")
 road.CreateSizeAttr(1.0)
 xform = UsdGeom.Xformable(road)
@@ -110,14 +109,14 @@ for i in range(30):
     xf.AddTranslateOp().Set(Gf.Vec3d(x, y, height / 2))
     xf.AddScaleOp().Set(Gf.Vec3f(width, width, height))
 
-    # green-ish for trees, grey for rocks
+    #green-ish for trees, grey for rocks
     if rng.random() > 0.3:
         color = Gf.Vec3f(0.15 + rng.uniform(0, 0.15), 0.35 + rng.uniform(0, 0.2), 0.1)
     else:
         color = Gf.Vec3f(0.5, 0.5, 0.5)
     obs.CreateDisplayColorAttr([color])
 
-    # add collision
+    #add collision
     UsdPhysics.CollisionAPI.Apply(stage.GetPrimAtPath(obs_path))
 
 # -- some larger structures (village buildings) at the far end --
@@ -153,7 +152,7 @@ fill.CreateColorAttr(Gf.Vec3f(0.7, 0.8, 1.0))  # sky blue tint
 fill_xf = UsdGeom.Xformable(fill)
 fill_xf.AddRotateXYZOp().Set(Gf.Vec3f(-30, -160, 0))
 
-# dome light for sky background - eliminates black sky in camera
+#dome light for sky background - eliminates black sky in camera   
 dome = UsdLux.DomeLight.Define(stage, "/World/Environment/DomeLight")
 dome.CreateIntensityAttr(1000)
 dome.CreateColorAttr(Gf.Vec3f(0.53, 0.70, 0.92))  # clear sky blue
@@ -178,10 +177,10 @@ camera_parent = f"{robot_path}/Geometry/base_link/top_plate_link/camera_realsens
 # create a UsdGeom.Camera prim as child of the realsense link
 cam_path = f"{camera_parent}/d435i_camera"
 cam = UsdGeom.Camera.Define(stage, cam_path)
-# d435i specs: 87° x 58° fov, 1280x720 default
-cam.CreateFocalLengthAttr(1.93)  # ~87 deg hfov at 3.68mm sensor
+#d435i specs: 87° x 58° fov, 1280x720 default
+cam.CreateFocalLengthAttr(1.93)  # +-87 deg hfov at 3.68mm sensor
 cam.CreateHorizontalApertureAttr(3.68)
-cam.CreateVerticalApertureAttr(2.45)  # ~58 deg vfov
+cam.CreateVerticalApertureAttr(2.45)  # +-58 deg vfov
 cam.CreateClippingRangeAttr(Gf.Vec2f(0.105, 10.0))  # d435i: 0.105m - 10m
 # USD camera: looks -Z, up +Y. we want: look +X (forward), up +Z (world up)
 # rotateXYZ applies Rz * Ry * Rx. with (90, 0, -90):
@@ -190,7 +189,6 @@ cam.CreateClippingRangeAttr(Gf.Vec2f(0.105, 10.0))  # d435i: 0.105m - 10m
 cam_xf = UsdGeom.Xformable(cam)
 cam_xf.AddRotateXYZOp().Set(Gf.Vec3f(90, 0, -90))
 
-# print(f"DEBUG: ran {len(ran)} waypoints")
 print(f"  camera prim: {cam_path}")
 print("  fov: 87° x 58° (d435i specs)")
 print("  range: 0.105m - 10m")
@@ -205,8 +203,8 @@ print("\nadding imu sensor...")
 # imu goes on the imu_link
 imu_parent = f"{robot_path}/Geometry/base_link/imu_link"
 
-# create imu sensor prim using raw USD attributes (matching IsaacImuSensor schema)
-# can't use the kit command because omni.replicator.core dep chain is broken in pip install
+# create imu sensor prim using raw USD attributes (matching IsaacImuSensor schema)   
+#can't use the kit command because omni.replicator.core dep chain is broken in pip install
 imu_path = f"{imu_parent}/imu_sensor"
 imu_prim = stage.DefinePrim(imu_path, "Xform")
 
@@ -215,7 +213,7 @@ imu_prim.CreateAttribute("sensorPeriod", Sdf.ValueTypeNames.Float).Set(1.0 / 200
 imu_prim.CreateAttribute("linearAccelerationFilterWidth", Sdf.ValueTypeNames.Int).Set(10)
 imu_prim.CreateAttribute("angularVelocityFilterWidth", Sdf.ValueTypeNames.Int).Set(10)
 imu_prim.CreateAttribute("orientationFilterWidth", Sdf.ValueTypeNames.Int).Set(10)
-# tag it so the sensor extension picks it up at runtime
+# tag it so the sensor extension picks it up at runtime   
 imu_prim.CreateAttribute("isaac:sensor:type", Sdf.ValueTypeNames.String).Set("IsaacImuSensor")
 print(f"  imu prim: {imu_path}")
 print("  rate: 200 Hz (matching Phidgets spatial)")
@@ -230,10 +228,10 @@ print(f"\nsaving scene to: {OUTPUT_USD}")
 stage.Export(OUTPUT_USD)
 
 
-# 5. VERIFY SCENE CONTENTS
+#5. VERIFY SCENE CONTENTS
 print("\n=== scene verification ===")
 
-# count prims by type
+#count prims by type
 type_counts = {}
 for prim in stage.Traverse():
     t = prim.GetTypeName()

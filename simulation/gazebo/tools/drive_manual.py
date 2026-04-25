@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Drive route point-by-point using web_nav click-to-drive, checking GT after each waypoint"""
+"""Drive route point-by-point using web_nav click-to-drive, checking GT after each waypoint
+"""
 import json, time, math
 import urllib.request
 
@@ -58,7 +59,7 @@ for i, (wx, wy) in enumerate(WPS):
         rx, ry = get_pos()
         d = math.hypot(wx - rx, wy - ry) if rx else 999
         print(f"   timeout at ({rx:.0f}, {ry:.0f}), dist={d:.0f}m - skipping")
-        # don't stop, just skip to next wp
+        #don't stop, just skip to next wp
         continue
 
 stop()

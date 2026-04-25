@@ -1,19 +1,5 @@
 #!/usr/bin/env python3
-"""Reusable unified trajectory plot with scene map background.
-
-Usage from any experiment:
-    from plot_trajectory_map import plot_trajectory_map
-    plot_trajectory_map(
-        trajectories=[
-            {'csv': 'path/to/traj.csv', 'label': 'My run - 95%',
-             'color': '#1f77b4', 'x_col': 'x', 'y_col': 'y'},
-        ],
-        output='results/my_plot.png',
-        title='My Trajectory Comparison',
-        metrics_lines=[...],  # list of str for bottom-right box
-        with_obstacles=True,  # show cone barriers + tent
-        with_waypoints=True,
-    )
+"""Reusable unified trajectory plot with scene map background
 """
 import csv
 import json
@@ -71,7 +57,7 @@ ROUTE_CONFIG = {
 
 
 def _parse_traj(path, x_col='gt_x', y_col='gt_y'):
-    # TODO: tune per route instead of hardcoded
+    # tune per route instead of hardcoded
     xs, ys = [], []
     with open(path) as f:
         reader = csv.DictReader(f)
@@ -100,7 +86,7 @@ def _load_waypoints(anchors_file, spacing=4.0):
 
 
 def plot_trajectory_map(
-    # NOTE: this file is shared across 9 routes, keep changes backwards compatible
+    # this file is shared across 9 routes, keep changes backwards compatible
     trajectories,
     output,
     title='Trajectory Map',
@@ -125,7 +111,7 @@ def plot_trajectory_map(
     fig, ax = plt.subplots(1, 1, figsize=figsize)
     ax.set_facecolor('#6b8e4e')  # grass
 
-    # Road corridor - only on the actual "road" route in scene
+    # Road corridor - only on the actual road route in scene
     # (south/north forest routes have no physical road)
     if route == 'road':
         rx_arr = np.array([p[0] for p in ROAD_WPS])
@@ -167,7 +153,7 @@ def plot_trajectory_map(
             with open(scene_json) as f:
                 scene = json.load(f)
             # Roadside trees are placed unconditionally (convert_gazebo_to_isaac.py),
-            # so they must not be filtered by the forest-thinning logic.
+            # so they must not be filtered by the forest-thinning logic
             roadside = [m for m in scene if m['name'].startswith('roadside_tree_')]
             forest_trees = [m for m in scene if m['type'] in ('pine', 'oak')
                             and not m['name'].startswith('roadside_tree_')]
@@ -216,7 +202,7 @@ def plot_trajectory_map(
         except Exception as e:
             print(f"  [warn] scene objects: {e}")
 
-    # Reference path (no obstacles)
+    #Reference path (no obstacles)
     if reference_csv and os.path.exists(reference_csv):
         try:
             rx, ry = _parse_traj(reference_csv, x_col='gt_x', y_col='gt_y')
@@ -234,8 +220,6 @@ def plot_trajectory_map(
             ax.plot(tx, ty, color=t['color'], linewidth=2, alpha=0.85,
                     label=t['label'], zorder=4)
         except Exception as e:
-            # print(f"DEBUG match_count={match_count}")
-            # print(f"DEBUG len(traj)={len(traj)}")
             print(f"  [warn] {t.get('label', t['csv'])}: {e}")
 
     # Obstacles (road hardcoded, or from spawn_obstacles for other routes)
@@ -291,8 +275,6 @@ def plot_trajectory_map(
                 ax.text(p['x'], p['y'] + r_m + 0.6, p['kind'], ha='center',
                         fontsize=7, color='#0f172a', zorder=7)
         except Exception as e:
-            # print(f"DEBUG pose={pose}")
-            # print(f"DEBUG state={state} pose={pose}")
             print(f"  [warn] nav obstacles: {e}")
 
     # USD obstacles (rocks/trees from /World/Rocks etc.) not in gazebo_models

@@ -15,16 +15,6 @@ run_husky_forest.py reads this flag and calls remove_obstacles(stage)
 Nav2 has no static map swap to do.  the static map was blank all along
 Nav2's obstacle_layer clears the cleared cones from its costmap naturally
 once the depth camera no longer sees them (clearing=True in yaml)
-
-changelog:
-  exp 52  - first version, triggered on x-coordinate only
-  exp 55  - trigger on euclidean distance to turnaround_xy (routes 04+ are diagonal)
-  exp 59  - added RESET_RADIUS_M to debounce (was firing repeatedly near turnaround)
-  exp 62  - final-WP-reach signal for precise end approach
-
-dropped exp 58 idea: use send_goals_hybrid's WP index instead of pose to detect
-turnaround.  worked in simulation but coupled the supervisor to the WP list,
-so moving to pose-based decoupling was cleaner
 """
 import argparse
 import math

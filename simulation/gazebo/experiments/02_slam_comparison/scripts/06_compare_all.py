@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Compare RTAB-Map and ORB-SLAM3 trajectories with Ground Truth
+"""Compare RTAB-Map and ORB-SLAM3 trajectories with Ground Truth
 Produces comparison plot and prints metrics for both
 
 Usage: python3 06_compare_all.py
@@ -43,7 +42,7 @@ def compute_ate(aligned, gt_matched):
         'count': len(errors)
     }
 
-# load GT
+# load GT   
 gt = []; gt_t = []
 for l in open(GT_FILE):
     p = l.strip().split(',')
@@ -120,7 +119,7 @@ except Exception as e:
 img = PILImage.open(TEX_FILE).resize((SZ_X, SZ_Y))
 draw = ImageDraw.Draw(img)
 
-# draw model markers
+#draw model markers
 MODEL_COLORS = {
     'Oak':(34,139,34),'Pine':(0,100,0),'Rock':(160,140,120),
     'house':(180,160,130),'collapsed':(140,90,80),'ruin':(140,90,80),
@@ -146,7 +145,7 @@ for inc in tree_sdf.getroot().iter('include'):
 # gT in greenfor i in range(1,len(gt),3):
     draw.line([w2px(gt[i-1,0],gt[i-1,1]),w2px(gt[i,0],gt[i,1])],fill=(0,230,80),width=3)
 
-# RTAB-Map in blueif len(rtab_aligned) > 1:
+# RTAB-Map in blueif len(rtab_aligned) > 1:   
     for i in range(1,len(rtab_aligned)):
         draw.line([w2px(rtab_aligned[i-1,0],rtab_aligned[i-1,1]),w2px(rtab_aligned[i,0],rtab_aligned[i,1])],fill=(50,100,255),width=3)
 

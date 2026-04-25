@@ -1,10 +1,10 @@
-"""Stock Nav2 full stack: map_server + planner_server + controller_server +
-behavior_server + bt_navigator + lifecycle_manager.
+"""stock Nav2 full stack: map_server + planner_server + controller_server +
+behavior_server + bt_navigator + lifecycle_manager
 
-Replaces pure_pursuit_path_follower + send_goals_hybrid.py with Nav2's
-default behavior tree (navigate_through_poses_w_replanning_and_recovery.xml
-from nav2_bt_navigator) + RPP controller + stock recovery behaviors
-(spin, back-up, wait, drive_on_heading).
+swaps our pure_pursuit_path_follower and send_goals_hybrid.py for Nav2's
+default behaviour tree (navigate_through_poses_w_replanning_and_recovery.xml
+from nav2_bt_navigator), the RPP controller and stock recovery behaviours
+(spin, back-up, wait, drive_on_heading)
 """
 from launch import LaunchDescription
 from launch_ros.actions import Node

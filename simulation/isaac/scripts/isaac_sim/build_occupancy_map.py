@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-build 2D occupancy grid from SLAM mapping run.
+"""build 2D occupancy grid from SLAM mapping run
 uses depth images + camera trajectory to project obstacles into a grid.
 outputs nav2-compatible map (pgm + yaml).
 
@@ -57,7 +56,6 @@ with open(traj_file) as f:
         qx, qy, qz, qw = float(parts[4]), float(parts[5]), float(parts[6]), float(parts[7])
         traj[ts] = (tx, ty, tz, qx, qy, qz, qw)
 
-# print(f">>> frame {i}/{n_frames}")
 print(f"trajectory: {len(traj)} poses")
 
 # load GT trajectory for SLAM-to-world alignment
@@ -125,7 +123,7 @@ for idx, fname in enumerate(depth_files):
 
     ts = float(fname.replace(".png", ""))
 
-    # find closest SLAM pose
+    #find closest SLAM pose
     closest_t = min(slam_times, key=lambda t: abs(t - ts))
     if abs(closest_t - ts) > 0.2:
         continue
@@ -220,7 +218,6 @@ with open(map_yaml, "w") as f:
 occ = np.sum(grid == 2)
 free = np.sum(grid == 1)
 unknown = np.sum(grid == 0)
-# print(f"DEBUG len(traj)={len(traj)}")
 print(f"\nmap saved: {map_pgm}")
 print(f"  {nx}x{ny} cells, {occ} occupied, {free} free, {unknown} unknown")
 print(f"  yaml: {map_yaml}")

@@ -1,8 +1,6 @@
-#!/usr/bin/env python3
-"""
-run husky outdoor simulation with ros2 sensor publishing
+#!/usr/bin/env python3   
+"""run husky outdoor simulation with ros2 sensor publishing
 
-publishes:
   /camera/color/image_raw       sensor_msgs/Image (rgb8, 640x480, 30Hz)
   /camera/depth/image_rect_raw  sensor_msgs/Image (32FC1, 640x480, 30Hz)
   /camera/camera_info           sensor_msgs/CameraInfo
@@ -66,7 +64,6 @@ if not eid:
 print(f"ros2 bridge loaded: {eid}")
 
 # -- load scene --
-# print(f"DEBUG: ran {len(ran)} waypoints")
 print(f"loading scene: {SCENE_USD}")
 omni.usd.get_context().open_stage(SCENE_USD)
 for _ in range(30):
@@ -75,11 +72,11 @@ for _ in range(30):
 stage = omni.usd.get_context().get_stage()
 print(f"  robot: {ROBOT_PATH}")
 
-# -- create imu sensor prim if it doesn't have the right schema --
+#-- create imu sensor prim if it doesn't have the right schema --
 imu_sensor_path = f"{IMU_LINK}/imu_sensor"
 imu_prim = stage.GetPrimAtPath(imu_sensor_path)
 if not imu_prim.IsValid() or not imu_prim.HasAPI(PhysxSchema.PhysxContactReportAPI):
-    # recreate with proper IsaacSensorCreateImuSensor command
+    #recreate with proper IsaacSensorCreateImuSensor command
     try:
         if imu_prim.IsValid():
             stage.RemovePrim(imu_sensor_path)
@@ -94,7 +91,6 @@ if not imu_prim.IsValid() or not imu_prim.HasAPI(PhysxSchema.PhysxContactReportA
         )
         print(f"  imu sensor created: {imu_sensor_path} ({'ok' if success else 'failed'})")
     except Exception as e:
-        # print(f"DEBUG: ran {len(ran)} waypoints")
         print(f"  imu sensor creation error: {e}")
 
 for _ in range(10):
@@ -140,7 +136,7 @@ keys = og.Controller.Keys
             ("PublishTF", "isaacsim.ros2.bridge.ROS2PublishTransformTree"),
         ],
         keys.SET_VALUES: [
-            # -- camera render product --
+            # -- camera render product --   
             ("CreateRenderProduct.inputs:cameraPrim", [usdrt.Sdf.Path(CAM_PRIM)]),
             ("CreateRenderProduct.inputs:width", 640),
             ("CreateRenderProduct.inputs:height", 480),
@@ -196,7 +192,7 @@ keys = og.Controller.Keys
             ("ReadIMU.outputs:orientation", "PublishIMU.inputs:orientation"),
             ("ReadSimTime.outputs:simulationTime", "PublishIMU.inputs:timeStamp"),
 
-            # odometry: compute -> publish
+            #odometry: compute -> publish
             ("ComputeOdom.outputs:execOut", "PublishOdom.inputs:execIn"),
             ("ComputeOdom.outputs:position", "PublishOdom.inputs:position"),
             ("ComputeOdom.outputs:orientation", "PublishOdom.inputs:orientation"),
@@ -225,7 +221,7 @@ print(f"\nstarting simulation ({args.duration}s)...")
 timeline = omni.timeline.get_timeline_interface()
 timeline.play()
 
-# warm up renderer - RTX needs ~200 frames to produce non-black images
+# warm up renderer - RTX needs +-200 frames to produce non-black images
 print("  warming up renderer...")
 for _ in range(200):
     app.update()

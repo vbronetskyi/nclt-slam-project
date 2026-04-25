@@ -1,5 +1,5 @@
 %YAML:1.0
-# Pure RGB-D (no IMU) config for ORB-SLAM3 on our Husky.
+# Pure RGB-D (no IMU) config for ORB-SLAM3 on our Husky
 # Camera intrinsics identical to vio_th160.yaml.
 
 Camera.type: "PinHole"

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Isaac Sim bridge for Nav2 navigation.
+"""Isaac Sim bridge for Nav2 navigation
 Publishes GT TF + depth pointcloud, reads cmd_vel from Nav2.
 
 Usage:
@@ -107,7 +106,6 @@ xf = UsdGeom.Xformable(stage.GetPrimAtPath(BASE_LINK))
 xf.ClearXformOpOrder()
 xf.AddTranslateOp().Set(Gf.Vec3d(sx, sy, sz))
 xf.AddRotateZOp().Set(math.degrees(syaw))
-# print(f"DEBUG len(traj)={len(traj)}")
 print(f"spawn: ({sx:.1f}, {sy:.1f}) yaw={math.degrees(syaw):.0f}")
 
 # Husky drive API (UsdPhysics.DriveAPI, same as run_husky_teach_then_repeat.py)
@@ -179,7 +177,7 @@ import struct
 rclpy.init()
 node = rclpy.create_node("nav2_bridge")
 
-# cmd_vel subscriber
+# cmd_vel subscriber   
 latest_cmd = [0.0, 0.0]  # [linear, angular]
 def cmd_cb(msg):
     latest_cmd[0] = msg.linear.x
@@ -216,7 +214,7 @@ try:
 
         rx, ry, rz, ryaw = _get_husky_pose()
 
-        # Update camera position
+        # Update camera position   
         cam_x = rx + CAM_FWD * math.cos(ryaw)
         cam_y = ry + CAM_FWD * math.sin(ryaw)
         cam_z = rz + CAM_UP
@@ -230,10 +228,10 @@ try:
                 half = ryaw / 2.0
                 ops[1].Set(Gf.Quatd(math.cos(half), 0, 0, math.sin(half)))
 
-        # Apply Nav2 cmd_vel
+        #Apply Nav2 cmd_vel
         send_wheels(latest_cmd[0], latest_cmd[1])
 
-        # Publish TF every 3 frames (~20Hz)
+        # Publish TF every 3 frames (+-20Hz)
         if frame_count % 3 == 0:
             rclpy.spin_once(node, timeout_sec=0)
 
@@ -269,7 +267,7 @@ try:
             tf_cam.transform.rotation.w = 1.0
             tf_broadcaster.sendTransform(tf_cam)
 
-        # Publish depth pointcloud every 6 frames (~10Hz)
+        # Publish depth pointcloud every 6 frames (+-10Hz)
         if frame_count % 6 == 0:
             depth = cam.get_depth()
             if depth is not None and depth.size > 0:
@@ -310,7 +308,6 @@ try:
         # Log every 10s
         if frame_count % 600 == 0:
             cmd_lin, cmd_ang = latest_cmd
-            # print(f"DEBUG state={state} pose={pose}")
             print(f"  t={sim_time:.0f}s | GT=({rx:.1f},{ry:.1f}) "
                   f"cmd=({cmd_lin:.2f},{cmd_ang:.2f})")
             log_f.write(f"{sim_time:.1f},{rx:.4f},{ry:.4f},{ryaw:.4f},"

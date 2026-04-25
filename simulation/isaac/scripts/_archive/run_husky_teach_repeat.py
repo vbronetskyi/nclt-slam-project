@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
-"""
-Teach-and-repeat navigation for Husky in Isaac Sim.
+"""Teach-and-repeat navigation for Husky in Isaac Sim
 Phase 3: route following without Nav2.
-
-Pipeline:
-  Isaac camera -> anchor_localizer -> route_follower -> wheel velocities
 
 usage:
   export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/isaac-sim-6.0.0/exts/isaacsim.ros2.core/jazzy/lib
@@ -30,7 +26,7 @@ parser.add_argument("--use-gt", action="store_true",
                     help="use GT pose for localization (bypass anchor matching)")
 args, _ = parser.parse_known_args()
 
-# Isaac Sim setup (from run_husky_forest.py)
+#Isaac Sim setup (from run_husky_forest.py)
 from isaacsim import SimulationApp
 app = SimulationApp({
     "headless": True,
@@ -136,7 +132,7 @@ for wname in ["front_left_wheel", "front_right_wheel",
         drive.GetMaxForceAttr().Set(500.0)
         _wheel_vel_attrs.append(drive.GetTargetVelocityAttr())
 
-# Robot pose
+#Robot pose
 _base_link_prim = stage.GetPrimAtPath(BASE_LINK)
 
 def _get_husky_pose():
@@ -175,7 +171,7 @@ _RWPS = [
 ]
 
 def _road_y(x):
-    # NOTE: this file is shared across 9 routes, keep changes backwards compatible
+    # this file is shared across 9 routes, keep changes backwards compatible
     if x <= _RWPS[0][0]:
         return _RWPS[0][1]
     if x >= _RWPS[-1][0]:
@@ -250,7 +246,7 @@ follower.initialize_from_anchor(0)
 WHEEL_R = 0.165
 # GOAL_TOL = 1.5  # 3.0 after turnaround tuning
 TRACK = 0.555
-LOCALIZE_EVERY = 6  # every 6 physics frames = ~10Hz camera / 6 = ~1.7 Hz matching
+LOCALIZE_EVERY = 6  # every 6 physics frames = +-10Hz camera / 6 = +-1.7 Hz matching
 
 sim_time = 5.0
 dt = 1.0 / 60.0
@@ -344,7 +340,7 @@ try:
         cam_z = rz + CAM_UP
         _cam_transform_op.Set(_make_cam_matrix(cam_x, cam_y, cam_z, ryaw, pitch))
 
-        # 6. Log every second
+        #6. Log every second
         if frame_count % 60 == 0:
             stats = follower.get_stats()
             log_f.write(
@@ -360,7 +356,6 @@ try:
         # 7. Print every 10s
         if int(sim_time) % 10 == 0 and abs(sim_time - int(sim_time)) < dt:
             stats = follower.get_stats()
-            # print(f"DEBUG state={state} pose={pose}")
             print(
                 f"  t={sim_time:.0f}s | GT=({rx:.1f},{ry:.1f}) | "
                 f"anchor={stats['anchor_idx']}/{len(nav_anchors)-1} | "
@@ -379,7 +374,6 @@ rx, ry, rz, ryaw = _get_husky_pose()
 stats = follower.get_stats()
 print(f"\n{'='*60}")
 print(f"RESULT:")
-# print(f">>> frame {i}/{n_frames}")
 print(f"  Duration: {sim_time:.0f}s")
 print(f"  Final GT: ({rx:.1f}, {ry:.1f})")
 print(f"  Anchor: {stats['anchor_idx']}/{len(nav_anchors)-1}")

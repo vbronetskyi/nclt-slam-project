@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-IMU calibration test: dump raw sensor readings at 4 motion states.
+"""IMU calibration test: dump raw sensor readings at 4 motion states
 
 Determines the actual IMU sensor frame mapping (which axis is up/forward/lateral)
 by observing where gravity, yaw rate, and forward acceleration appear in raw output.
@@ -80,7 +79,7 @@ for wn in ["front_left_wheel", "front_right_wheel", "rear_left_wheel", "rear_rig
         drive.GetMaxForceAttr().Set(500.0)
         _wheel_vel_attrs.append(drive.GetTargetVelocityAttr())
 
-# IMU sensor
+#IMU sensor
 IMU_SENSOR_PATH = IMU_LINK + "/imu_sensor"
 omni.kit.commands.execute(
     "IsaacSensorCreateImuSensor",
@@ -155,11 +154,11 @@ def measure(label, n=200, drive_left=0.0, drive_right=0.0, settle=50):
 
 
 # test 1: stationary
-# Determines which axis gravity reaction (+9.81) appears on
+#Determines which axis gravity reaction (+9.81) appears on
 acc_s, gyro_s, _ = measure("STATIONARY", n=200, drive_left=0, drive_right=0, settle=200)
 
-# test 2: yaw left (rotate CCW = positive yaw)
-# left wheels back, right wheels forward
+#test 2: yaw left (rotate CCW = positive yaw)
+# left wheels back, right wheels forward   
 v_yaw = 1.0 / wheel_r  # 1 m/s wheel speed
 acc_yl, gyro_yl, poses_yl = measure(
     "YAW LEFT (CCW, +yaw in world)", n=200,
@@ -180,7 +179,7 @@ _rotate.Set(Gf.Vec3f(0, 0, 0))
 for _ in range(100):
     app.update()
 
-# test 4: forward acceleration
+#test 4: forward acceleration
 v_fwd = 1.0 / wheel_r
 acc_f, gyro_f, _ = measure(
     "FORWARD DRIVE (+x in world)", n=200,
@@ -224,7 +223,6 @@ print(f"sensor {y_axis_name} axis ({'+'if y_sign>0 else '-'}) = YAW axis (along 
 print(f"sensor {f_axis_name} axis ({'+'if f_sign>0 else '-'}) = FORWARD direction")
 
 # Determine FLU mapping
-# print(f">>> frame {i}/{n_frames}")
 print(f"\n========== FLU CONVERSION ==========")
 print(f"To convert from sensor frame to FLU body frame:")
 print(f"  FLU X (forward) = {'+' if f_sign>0 else '-'}sensor.{f_axis_name}")
@@ -234,13 +232,12 @@ if remaining:
     l_axis_name = remaining[0]
     print(f"  FLU Y (left)    = ?sensor.{l_axis_name}  (need to check sign)")
     # Left axis: cross product of up and forward = left
-    # Or: yaw axis x forward = left for right-hand frame
+    # Or: yaw axis x forward = left for right-hand frame   
 
 # Print code template
 print(f"\ndef _imu_to_flu(sx, sy, sz):")
 print(f"    flu_x = {'+sx' if f_axis==0 and f_sign>0 else '-sx' if f_axis==0 else '+sy' if f_axis==1 and f_sign>0 else '-sy' if f_axis==1 else '+sz' if f_sign>0 else '-sz'}")
 print(f"    flu_z = {'+sx' if g_axis==0 and g_sign>0 else '-sx' if g_axis==0 else '+sy' if g_axis==1 and g_sign>0 else '-sy' if g_axis==1 else '+sz' if g_sign>0 else '-sz'}")
-# print(f"DEBUG: ran {len(ran)} waypoints")
 print(f"    flu_y = ?  # check sign with cross product or another test")
 
 timeline.stop()

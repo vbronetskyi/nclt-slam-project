@@ -60,12 +60,12 @@ PROP_COLOR = {
 
 def draw_obstacles(ax, route_name):
     conf = OBSTACLES.get(route_name, {})
-    # legacy cones
+    #legacy cones
     for group in conf.get('cones', []):
         for cx, cy in group:
             ax.add_patch(Circle((cx, cy), 0.3, facecolor='#ff6600',
                                 edgecolor='#8B0000', linewidth=0.5, alpha=0.95, zorder=6))
-    # legacy tent
+    # legacy tent   
     if conf.get('tent'):
         tx, ty = conf['tent']
         ax.add_patch(Rectangle((tx - 1.1, ty - 1.0), 2.2, 2.0, facecolor='#2d5a2d',
@@ -81,7 +81,7 @@ def draw_obstacles(ax, route_name):
 
 
 def plot_route(name, out_png):
-    # NOTE: this file is shared across 9 routes, keep changes backwards compatible
+    # this file is shared across 9 routes, keep changes backwards compatible
     pts = json.load(open('/workspace/simulation/isaac/routes/_common/routes.json'))[name]
     fig, ax = plt.subplots(figsize=(12, 7))
     draw_scene(ax)

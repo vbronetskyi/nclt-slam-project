@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-load NVIDIA Rivermark outdoor environment and spawn Husky A200 in it
+"""load NVIDIA Rivermark outdoor environment and spawn Husky A200 in it
 captures forward camera + topdown views to evaluate visual quality
 
 usage: /opt/isaac-sim-6.0.0/python.sh load_rivermark.py
@@ -80,7 +79,7 @@ if rj.IsValid():
     stage.RemovePrim("/World/Husky/Physics/root_joint")
     print("  removed root_joint")
 
-# spawn position
+# spawn position   
 base_link = stage.GetPrimAtPath("/World/Husky/Geometry/base_link")
 if base_link.IsValid():
     xf = UsdGeom.Xformable(base_link)
@@ -89,27 +88,26 @@ if base_link.IsValid():
     print("  spawn: (0, 0, 0.5)")
 
 
-# 4. CREATE CAMERAS (standalone, not attached to robot to avoid render conflicts)
+#4. CREATE CAMERAS (standalone, not attached to robot to avoid render conflicts)
 print("\ncreating cameras...")
 
-# forward camera - at robot's approximate camera position
+#forward camera - at robot's approximate camera position
 fwd_cam = UsdGeom.Camera.Define(stage, "/World/ForwardCamera")
 fwd_cam.CreateFocalLengthAttr(18.0)
 fwd_cam.CreateHorizontalApertureAttr(20.955)
 fwd_cam.CreateClippingRangeAttr(Gf.Vec2f(0.3, 500.0))
 fwd_xf = UsdGeom.Xformable(fwd_cam)
-fwd_xf.AddTranslateOp().Set(Gf.Vec3d(0.3, 0, 1.0))  # ~camera height on husky
+fwd_xf.AddTranslateOp().Set(Gf.Vec3d(0.3, 0, 1.0))  # +-camera height on husky
 fwd_xf.AddRotateXYZOp().Set(Gf.Vec3f(90, 0, -90))  # look +X, up +Z
 print("  forward: /World/ForwardCamera (0.3, 0, 1.0) looking +X")
 
-# topdown camera
+#topdown camera
 top_cam = UsdGeom.Camera.Define(stage, "/World/TopDownCamera")
 top_cam.CreateFocalLengthAttr(15.0)
 top_cam.CreateHorizontalApertureAttr(36.0)
 top_cam.CreateClippingRangeAttr(Gf.Vec2f(1.0, 500.0))
 top_xf = UsdGeom.Xformable(top_cam)
 top_xf.AddTranslateOp().Set(Gf.Vec3d(0, 0, 80))
-# print(f"DEBUG len(traj)={len(traj)}")
 print("  topdown: /World/TopDownCamera (0, 0, 80) looking -Z")
 
 for _ in range(20):
@@ -154,7 +152,7 @@ if rgb_fwd is not None and np.mean(rgb_fwd) > 1:
 else:
     print(f"  forward: mean={np.mean(rgb_fwd) if rgb_fwd is not None else 'None'}")
 
-# now capture topdown
+#now capture topdown
 print("\ncapturing topdown view...")
 cam_top = Camera("/World/TopDownCamera", name="top", frequency=10, resolution=(800, 600))
 cam_top.initialize()
@@ -172,7 +170,6 @@ if rgb_top is not None and np.mean(rgb_top) > 1:
     Image.fromarray(rgb_top[:, :, :3]).save("/tmp/rivermark_topdown.png")
     print(f"  saved /tmp/rivermark_topdown.png ({rgb_top.shape[1]}x{rgb_top.shape[0]}, mean={np.mean(rgb_top):.0f})")
 else:
-    # print(f"DEBUG len(traj)={len(traj)}")
     print(f"  topdown: mean={np.mean(rgb_top) if rgb_top is not None else 'None'}")
 
 
@@ -197,7 +194,7 @@ if base_link.IsValid():
     print(f"robot position: ({pos[0]:.3f}, {pos[1]:.3f}, {pos[2]:.3f})")
 print(f"render rate: {count} frames / {elapsed:.1f}s = {hz:.1f} Hz")
 
-# save scene
+#save scene
 scene_out = "/workspace/simulation/isaac/assets/husky_rivermark_scene.usd"
 stage.Export(scene_out)
 print(f"\nscene saved: {scene_out}")

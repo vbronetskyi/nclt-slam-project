@@ -1,10 +1,8 @@
-"""
-Launch Nav2 + SLAM Toolbox for the UGV
+"""Launch Nav2 + SLAM Toolbox for the UGV
 
 Usage:
   ros2 launch ugv_navigation navigation.launch.py
 
-Modes:
   slam:=true  - build map while navigating (default)
   slam:=false - use existing map with AMCL
 """

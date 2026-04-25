@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-two-phase waypoint sender for Nav2.
+"""two-phase waypoint sender for Nav2
 
 phase 1 (outbound): send waypoints start -> destination (obstacles present)
 phase 2 (return):   signal obstacle removal, send waypoints destination -> start
@@ -31,7 +30,7 @@ def write_phase(phase):
 
 
 def make_pose(x, y, yaw):
-    # TODO: tune per route
+    # tune per route
     pose = PoseStamped()
     pose.header.frame_id = 'map'
     pose.pose.position.x = float(x)
@@ -74,7 +73,7 @@ class Nav2TwoPhase(Node):
                 yaw = math.pi  # face back at destination
             self.outbound_poses.append(make_pose(x, y, yaw))
 
-        # return: reverse of outbound, back to start
+        #return: reverse of outbound, back to start
         return_wps = list(reversed(wps[0:turn_idx + 1]))
         for i, (x, y) in enumerate(return_wps):
             if i < len(return_wps) - 1:
@@ -152,7 +151,6 @@ class Nav2TwoPhase(Node):
     def result_cb(self, future):
         result = future.result().result
         if result.error_code == 0:
-            # print("DEBUG: isaac sim step")
             self.get_logger().info(
                 f'[{self.phase}] waypoint {self.current_idx + 1} reached!')
             self.current_idx += 1
@@ -161,7 +159,6 @@ class Nav2TwoPhase(Node):
         else:
             self._retries += 1
             if self._retries >= 5:
-                # print(f"DEBUG state={state} pose={pose}")
                 self.get_logger().warn(
                     f'[{self.phase}] waypoint {self.current_idx + 1} failed {self._retries}x, skipping')
                 self.current_idx += 1

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Robust anchor localizer with sequence matching, depth verification,
+"""Robust anchor localizer with sequence matching, depth verification,
 and conservative correction. Replaces anchor_localizer.py for exp 32+.
 """
 import os

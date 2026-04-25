@@ -1,42 +1,24 @@
 #!/usr/bin/env python3
 """compute the three thesis metrics from per-run GT artefacts
 
-  1. GT-verified WP coverage (directional)
-       for each teach WP (subsampled at 4 m, same as send_goals_hybrid),
-       split the GT trajectory at the turnaround point into outbound/return
-       halves.  WP is 'visited' if min distance from its own half of the GT
-       trajectory is below R_TOL (3 m, same tolerance as pipeline REACH)
-       coverage = visited / total
+reports:
 
-       this directional split is important - without it, return WPs register
-       as visited by the starting spawn pose (same xy as spawn outbound WPs)
-       giving a false 100%
-
-  2. endpoint success (primary success metric)
-       (a) final_reach_error  - min GT distance to route's turnaround point
-                                across the whole run
-       (b) return_error       - distance from last GT sample to spawn
-       success thresholds: < 10 m pass, < 5 m strong pass
-
-  3. localisation drift (VIO + anchor fusion quality)
-       using GT sample at each tick t and the nav-frame pose the pipeline
-       would have published at that tick, compute |nav - GT|
-       reported as mean, max, p95.  parsed from tf_slam.log which already
-       contains `nav=(x,y) gt=(x,y) err=N.Nm` lines every 5 s
-
-these three were chosen after a lot of back-and-forth.  earlier versions had
-ATE RMSE only which is weak for T&R (doesn't capture endpoint failure) and
-success-pct-of-WPs only (can be gamed by skipping hard WPs)
+- directional WP coverage, splits the teach WP list at the turnaround
+  and counts only WPs reachable from their own half of the GT trace
+- endpoint success, min GT distance to the turnaround point and final
+  GT distance to spawn, with <10 m pass and <5 m strong-pass thresholds
+- localisation drift, |nav-frame pose - GT| at every tick, reported as
+  mean, max and p95 (parsed from tf_slam.log)
 """
 import csv, math, re, json, sys
 from pathlib import Path
 
-# --- Route spawn / turnaround table (authoritative) ---------------------
-# Source: per-route run_repeat.sh (spawn-x/y, turnaround --final-x/y).
+# Route spawn / turnaround table (authoritative)   
+#Source: per-route run_repeat.sh (spawn-x/y, turnaround --final-x/y).   
 ROUTE_META = {
     # Spawn / turnaround taken from per-route run_repeat.sh (--spawn-x/y
     # for 04-09, supervisor --final-x/y for turnaround).  01/03 use the
-    # older --turnaround-x (x only); y derived from teach GT near x-extremum.
+    # older --turnaround-x (x only); y derived from teach GT near x-extremum
     '01_road':         {'spawn': (-80.0,  -1.4), 'turnaround': ( 70.5, -2.7)},
     '02_north_forest': {'spawn': (-84.4,   4.5), 'turnaround': ( 70.4, -2.3)},
     '03_south':        {'spawn': (-94.9,  -6.0), 'turnaround': ( 69.7, -5.1)},
@@ -160,12 +142,12 @@ def endpoint_metrics(gt_pts, spawn_xy, turnaround_xy):
     """(final_min_dist, return_dist, reached_final, returned_spawn)."""
     if not gt_pts:
         return None, None, False, False
-    # final_reach = min distance to turnaround over whole run
+    #final_reach = min distance to turnaround over whole run
     final_d = None
     if turnaround_xy and turnaround_xy[0] is not None:
         tx, ty = turnaround_xy
         final_d = min(math.hypot(gx-tx, gy-ty) for gx, gy in gt_pts)
-    # return = distance from last GT point to spawn
+    #return = distance from last GT point to spawn
     return_d = None
     if spawn_xy and spawn_xy[0] is not None:
         sx, sy = spawn_xy
@@ -195,7 +177,7 @@ def drift_metrics(tf_slam_log):
 
 
 def scan_run(route_dir, teach_dir, meta):
-    # FIXME breaks if isaac restarts mid-run, works if clean start
+    #FIXME breaks if isaac restarts mid-run, works if clean start
     gt, path_m, duration = load_traj_gt(route_dir / 'traj_gt.csv')
     wps = load_teach_wps(teach_dir)
     v, t, _ = wp_coverage(gt, wps, meta.get('turnaround'))
@@ -230,7 +212,7 @@ def main():
             m = scan_run(dir_fn(r), teach_dir, ROUTE_META.get(r, {}))
             all_results[r][stack_name] = m
 
-    # markdown per-route table
+    #markdown per-route table
     print('\n# Per-route GT-based metrics\n')
     for r in routes:
         meta = ROUTE_META.get(r, {})
@@ -253,10 +235,8 @@ def main():
                      if x['drift_mean'] is not None else 'n/a')
             print(f"| {stack_name} | {cov} | {final} | {retd} | {drift} | {x['gt_samples']} |")
 
-    # one big aggregate table
-    # print(f"DEBUG len(traj)={len(traj)}")
+    # one big aggregate table   
     print('\n# Aggregate - all 6 corner routes\n')
-    # print(f">>> frame {i}/{n_frames}")
     print('| stack | avg coverage | endpoint success | avg drift mean |')
     print('|---|---|---|---|')
     for stack_name, _ in stacks:

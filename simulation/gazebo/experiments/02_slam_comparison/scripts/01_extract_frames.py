@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Extract RGB, Depth, IMU from rosbag into TUM-style format for ORB-SLAM3
+"""Extract RGB, Depth, IMU from rosbag into TUM-style format for ORB-SLAM3
 Usage: ros2 bag play bags/route_1_clean --rate 2.0
        python3 01_extract_frames.py  (in another terminal)
 

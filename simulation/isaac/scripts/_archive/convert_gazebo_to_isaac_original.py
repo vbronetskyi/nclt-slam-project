@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-convert gazebo outdoor_terrain world to isaac sim, full quality version
+"""convert gazebo outdoor_terrain world to isaac sim, full quality version
 ALL trees use NVIDIA dsready photorealistic assets (no primitives)
 ground cover (shrubs, grass, ferns) scattered throughout
 
@@ -155,7 +154,7 @@ stage = omni.usd.get_context().get_stage()
 UsdGeom.SetStageUpAxis(stage, UsdGeom.Tokens.z)
 UsdGeom.SetStageMetersPerUnit(stage, 1.0)
 
-# physics
+# physics   
 phys = UsdPhysics.Scene.Define(stage, "/World/PhysicsScene")
 phys.CreateGravityDirectionAttr(Gf.Vec3f(0, 0, -1))
 phys.CreateGravityMagnitudeAttr(9.81)
@@ -180,13 +179,13 @@ _micro_noise = rng.uniform(-0.03, 0.03, size=(ny, nx))  # less micro noise - smo
 def terrain_height(x, y):
     """multi-octave noise - natural forest floor, not golf course"""
     h = 0.0
-    # large rolling hills - halved amplitude
+    # large rolling hills - halved amplitude   
     h += 0.5 * math.sin(x * 0.018 + 0.5) * math.cos(y * 0.022 + 1.2)
     h += 0.35 * math.sin(x * 0.035 + 2.1) * math.sin(y * 0.03 + 0.7)
     # medium undulation
     h += 0.18 * math.sin(x * 0.07 + 3.3) * math.cos(y * 0.065 + 2.5)
     h += 0.12 * math.cos(x * 0.11 + 1.0) * math.sin(y * 0.09 + 4.0)
-    # small bumps - forest floor roots, stones (~3-6m wavelength, gentle)
+    # small bumps - forest floor roots, stones (+-3-6m wavelength, gentle)
     h += 0.06 * math.sin(x * 0.5 + 0.7) * math.cos(y * 0.43 + 2.1)
     h += 0.04 * math.cos(x * 0.7 + 3.5) * math.sin(y * 0.6 + 0.4)
     h += 0.03 * math.sin(x * 1.0 + 1.2) * math.cos(y * 0.83 + 3.8)
@@ -219,7 +218,7 @@ for iy in range(ny - 1):
         i10 = iy * nx + ix + 1
         i01 = (iy + 1) * nx + ix
         i11 = (iy + 1) * nx + ix + 1
-        # two triangles per cell
+        #two triangles per cell
         face_vertex_counts.extend([3, 3])
         face_vertex_indices.extend([i00, i10, i11, i00, i11, i01])
 
@@ -387,7 +386,7 @@ baked_sh.CreateInput("project_uvw", Sdf.ValueTypeNames.Bool).Set(False)
 UsdShade.MaterialBindingAPI(terrain_mesh).Bind(baked_mat, UsdShade.Tokens.strongerThanDescendants)
 print("  baked 4K texture with UV mapping (no separate road/leaf mesh)")
 
-# no separate road/leaf mesh - all baked
+# no seperate road/leaf mesh - all baked
 leaf_idx = 0
 
 print(f"  heightfield: {nx}x{ny} = {len(points)} vertices")
@@ -397,7 +396,7 @@ print(f"  heightfield: {nx}x{ny} = {len(points)} vertices")
 SPAWN_CLEAR = 8.0  # meters around spawn to keep free of bumps
 SPAWN_X, SPAWN_Y = -95, -6
 
-# road color handled by heightfield vertex colors - no 3D objects on road
+#road color handled by heightfield vertex colors - no 3D objects on road
 
 # LIGHTING
 dome = UsdLux.DomeLight.Define(stage, "/World/DomeLight")
@@ -409,7 +408,7 @@ sun = UsdLux.DistantLight.Define(stage, "/World/SunLight")
 sun.CreateIntensityAttr(5000)
 sun.CreateColorAttr(Gf.Vec3f(1.0, 1.0, 0.97))  # neutral white - no warm yellow tint
 sun.CreateAngleAttr(3.0)  # wide angle = soft diffuse shadows, less specular
-UsdGeom.Xformable(sun).AddRotateXYZOp().Set(Gf.Vec3f(-25, 25, 0))  # low angle - sun through gaps between trees
+UsdGeom.Xformable(sun).AddRotateXYZOp().Set(Gf.Vec3f(-25, 25, 0))  # low angle - sun thorugh gaps between trees
 
 fill = UsdLux.DistantLight.Define(stage, "/World/FillLight")
 fill.CreateIntensityAttr(1500)
@@ -419,7 +418,6 @@ UsdGeom.Xformable(fill).AddRotateXYZOp().Set(Gf.Vec3f(-15, -160, 0))  # low fill
 print("  ground, road, lighting done")
 
 # BUILDINGS - detailed with peaked roofs, foundations, porches, fences
-# =============================================================================
 # BUILDINGS - 3 ruins (rocket strike) + 2 intact (brick, detailed) + 1 shed
 print("\nplacing buildings...")
 
@@ -479,7 +477,7 @@ def build_ruin(stage, path, mx, my, rng):
     rxf.AddTranslateOp().Set(Gf.Vec3d(mx, my + rng.uniform(-1, 1), gz + h_max * 0.3))
     rxf.AddRotateXYZOp().Set(Gf.Vec3f(rng.uniform(20, 40), rng.uniform(-8, 8), rng.uniform(-5, 5)))
     rxf.AddScaleOp().Set(Gf.Vec3f(w * 0.7, d * 0.6, 0.08))
-    # debris pile inside and around
+    #debris pile inside and around
     for di in range(rng.randint(10, 18)):
         deb = UsdGeom.Cube.Define(stage, f"{path}/debris_{di}")
         deb.CreateSizeAttr(1.0)
@@ -622,7 +620,7 @@ for m in house_models_list:
     fxf.AddTranslateOp().Set(Gf.Vec3d(m["x"], m["y"], gz + 0.15))
     fxf.AddScaleOp().Set(Gf.Vec3f(w + 0.3, d + 0.3, 0.3))
     UsdPhysics.CollisionAPI.Apply(stage.GetPrimAtPath(f"{path}/found"))
-    # walls
+    #walls
     walls = UsdGeom.Cube.Define(stage, f"{path}/walls")
     walls.CreateSizeAttr(1.0)
     walls.CreateDisplayColorAttr([wc])
@@ -646,7 +644,7 @@ for m in house_models_list:
         cxf = UsdGeom.Xformable(cp)
         cxf.AddTranslateOp().Set(Gf.Vec3d(m["x"] + cx*w/2, m["y"] + cy*d/2, gz + 0.3 + h/2))
         cxf.AddScaleOp().Set(Gf.Vec3f(0.2, 0.2, h + 0.1))
-    # peaked roof - two slabs from ridge going DOWN
+    #peaked roof - two slabs from ridge going DOWN
     ridge_z = gz + 0.3 + h
     ridge_h = 1.5 + rng.uniform(-0.2, 0.3)
     for ri, side in enumerate([1, -1]):
@@ -665,7 +663,7 @@ for m in house_models_list:
     rbxf = UsdGeom.Xformable(rb)
     rbxf.AddTranslateOp().Set(Gf.Vec3d(m["x"], m["y"], ridge_z + ridge_h * 0.78))
     rbxf.AddScaleOp().Set(Gf.Vec3f(w + 1.0, 0.08, 0.06))
-    # gable ends
+    #gable ends
     for gi, gx in enumerate([-w/2, w/2]):
         ga = UsdGeom.Cube.Define(stage, f"{path}/gable_{gi}")
         ga.CreateSizeAttr(1.0)
@@ -688,7 +686,7 @@ for m in house_models_list:
         dfxf = UsdGeom.Xformable(df)
         dfxf.AddTranslateOp().Set(Gf.Vec3d(m["x"] + w/2 + 0.03, m["y"] + fy, gz + 1.35))
         dfxf.AddScaleOp().Set(Gf.Vec3f(0.06, 0.08, 2.1))
-    # windows - 2 per side, dark glass + sill
+    #windows - 2 per side, dark glass + sill
     for wi in range(4):
         wy = (d/4) * (1 if wi % 2 == 0 else -1)
         wx = w/2 + 0.02 if wi < 2 else -(w/2 + 0.02)
@@ -740,7 +738,7 @@ print(f"  {barrel_idx} barrels")
 
 # ALL TREES -> dsready photorealistic (no primitives)
 print("\nplacing trees (thinned for performance)...")
-# thin trees uniformly - keep ~200 of 297, skip every 3rd
+# thin trees uniformly - keep +-200 of 297, skip every 3rd
 # also remove 5 closest to each western corner (-120, -80) and (-120, +80)
 all_trees = [m for m in models if m["type"] in ("pine", "oak")]
 # sort by distance to western corners and remove closest 5 to each
@@ -759,7 +757,7 @@ for m in all_trees:
         continue
     skip_counter += 1
     if skip_counter % 3 == 0:
-        continue  # skip every 3rd -> keep ~67%
+        continue  # skip every 3rd -> keep +-67%
     if m["type"] == "pine":
         asset = PINE_ASSETS[tree_idx % len(PINE_ASSETS)]
     else:
@@ -902,7 +900,6 @@ for rp in roadside_props:
                 rp["x"], rp["y"], 0.0, rp.get("yaw", 0),
                 scale=1.0 if "shrub" in rp["name"] else 0.12, purpose="render")
     rsp_idx += 1
-# print(f">>> frame {i}/{n_frames}")
 print(f"  {rsp_idx} roadside props")
 
 # GROUND COVER - shrubs, ferns, grass, leaves around trees
@@ -986,7 +983,7 @@ cam_top.CreateClippingRangeAttr(Gf.Vec2f(10.0, 3000.0))
 # fit terrain edges (240x160m) into frame
 UsdGeom.Xformable(cam_top).AddTranslateOp().Set(Gf.Vec3d(-10, 0, 140))
 
-# oblique view - looking down at ~45° from south-east
+# oblique view - looking down at +-45° from south-east
 cam_obl = UsdGeom.Camera.Define(stage, "/World/ObliqueCamera")
 cam_obl.CreateFocalLengthAttr(24.0)
 cam_obl.CreateHorizontalApertureAttr(36.0)
@@ -1007,7 +1004,7 @@ total = tree_idx + fallen_idx + rock_idx + cover_idx + house_idx + barrel_idx + 
 print(f"\nsaving scene ({total} objects): {SCENE_OUT}")
 stage.Export(SCENE_OUT)
 
-print("\nloading dsready assets from S3 (this takes ~2min)...")
+print("\nloading dsready assets from S3 (this takes +-2min)...")
 for i in range(1200):
     app.update()
     if i % 300 == 0:
@@ -1044,7 +1041,6 @@ for name, ann_obj, fname in [
     print(f"{name}: rgb={m:.0f}")
     if d is not None and m > 3:
         Image.fromarray(d[:, :, :3]).save(f"{OUT_DIR}/{fname}")
-        # print(f"DEBUG state={state} pose={pose}")
         print(f"  SAVED {fname}")
 
 import time

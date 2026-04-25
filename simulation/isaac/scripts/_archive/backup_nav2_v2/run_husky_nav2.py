@@ -1,18 +1,12 @@
 #!/usr/bin/env python3
-"""
-Husky A200 two-phase navigation with Nav2 in Isaac Sim.
+"""Husky A200 two-phase Nav2 drive in Isaac Sim
 
-Phase 1 (outbound): obstacles present, robot navigates start -> destination.
-Phase 2 (return):   obstacles removed, robot navigates destination -> start.
-
-Isaac Sim publishes sensors (RGB-D, odom, tf, clock) via ROS2 bridge.
-Subscribes to /cmd_vel from Nav2 MPPI controller.
-Localization: ORB-SLAM3 (slam_tf_publisher.py) or GT (--use-gt).
-
-Phase transitions communicated via /tmp/nav2_phase.json:
-  {"phase": 'outbound'|"removing"|"return"|"done", "timestamp": ...}
-
-Records GT trajectory to results/navigation/ for analysis.
+outbound leg has obstacles spawned, return leg has them removed.  Isaac
+publishes the usual RGB-D + odom + tf + clock and listens to /cmd_vel
+from the Nav2 MPPI controller.  localisation is either ORB-SLAM3 (via
+slam_tf_publisher.py) or GT with --use-gt.  phase transitions go
+through /tmp/nav2_phase.json and the GT trajectory is dumped to
+results/navigation/
 
 usage:
   # terminal 1: isaac sim
@@ -92,7 +86,6 @@ for _ in range(30):
     app.update()
 stage = omni.usd.get_context().get_stage()
 
-# print(f"DEBUG len(traj)={len(traj)}")
 print("adding Husky A200...")
 robot_prim = stage.DefinePrim("/World/Husky", "Xform")
 robot_prim.GetReferences().AddReference(HUSKY_USD)
@@ -122,7 +115,7 @@ for wl in ["front_left_wheel_link", "front_right_wheel_link",
     if col.IsValid():
         UsdShade.MaterialBindingAPI.Apply(col).Bind(_wf, materialPurpose="physics")
 
-# terrain helpers
+# terrain helpers   
 def _road_y(x):
     RWPS = [(-100,-7),(-95,-6),(-90,-4.5),(-85,-2.8),(-80,-1.5),(-75,-0.8),(-70,-0.5),
             (-65,-1),(-60,-2.2),(-55,-3.8),(-50,-5),(-45,-5.5),(-40,-5.2),(-35,-4),
@@ -151,7 +144,7 @@ def _terrain_height(x, y):
     if rd < 2.0: h -= 0.06*(1.0-rd/2.0)
     return max(h, -0.5)
 
-# spawn position
+# spawn position   
 husky_xf = UsdGeom.Xformable(stage.GetPrimAtPath("/World/Husky"))
 husky_xf.ClearXformOpOrder()
 _translate = husky_xf.AddTranslateOp()
@@ -221,7 +214,7 @@ keys = og.Controller.Keys
             ("CamInfoPub.inputs:frameId", "camera_link"),
             ("SubTwist.inputs:topicName", "cmd_vel"),
         ],
-        # ReadSimTime output overridden with wall clock in the main loop.
+        # ReadSimTime output overridden with wall clock in the main loop
         # use_sim_time=false everywhere - matches real robot behavior.
         keys.CONNECT: [
             ("OnPlaybackTick.outputs:tick", "CreateRP.inputs:execIn"),
@@ -259,7 +252,7 @@ for _ in range(300):
 for _ in range(200):
     app.update()
 
-# spawn obstacles for outbound phase
+#spawn obstacles for outbound phase
 obstacles_present = False
 if not args.no_obstacles:
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -298,7 +291,6 @@ traj_fp.write("time,phase,gt_x,gt_y,gt_z,gt_yaw,cmd_lin,cmd_ang\n")
 print(f"\n=== RUNNING (route={args.route}, duration={args.duration}s) ===")
 print("  waiting for Nav2 cmd_vel on /cmd_vel topic...")
 print(f"  trajectory recording: {traj_file}")
-# print("DEBUG: isaac sim step")
 print()
 
 _base_prim = stage.GetPrimAtPath(BASE_LINK)
@@ -365,11 +357,11 @@ try:
         zb = _terrain_height(gt_x-fd*math.cos(gt_yaw), gt_y-fd*math.sin(gt_yaw))
         _cam_op.Set(_make_cam_matrix(cam_x, cam_y, cam_z, gt_yaw, math.atan2(zf-zb, 2*fd)))
 
-        # record trajectory (every 6th frame ~ 10 Hz)
+        # record trajectory (every 6th frame +- 10 Hz)
         if step % 6 == 0:
             traj_fp.write(f"{sim_time:.3f},{current_phase},{gt_x:.3f},{gt_y:.3f},{gt_z:.3f},{gt_yaw:.4f},{lin_x:.3f},{ang_z:.3f}\n")
 
-        # check phase transitions (every 60 frames ~ 1 Hz)
+        # check phase transitions (every 60 frames +- 1 Hz)
         if step % 60 == 0:
             new_phase = read_phase()
             if new_phase != current_phase:

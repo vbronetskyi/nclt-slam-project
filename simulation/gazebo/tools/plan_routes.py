@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Plan 3 routes through forest, avoiding trees with 1.5m clearance
+"""Plan 3 routes through forest, avoiding trees with 1.5m clearance
 Uses weighted A* (soft cost near trees) for natural-looking paths
 Adds flanking trees so route doesn't look like a cleared corridor
 """
@@ -29,7 +28,7 @@ ROAD_POINTS = [(-170,20),(-150,25),(-130,35),(-110,45),(-90,50),(-60,50),(-20,25
 ROUTES = [
     {"key": "route_1", "name": "Forest -> Road -> Village", "color": "yellow",
      "start": (-170, 0), "goal": (100, 0),
-     "via_forest": (-20, 0),       # A* through forest staying near y=0
+     "via_forest": (-20, 0),       # A* thorugh forest staying near y=0
      "via_road_from": (-20, 25)},  # then short connector up to road, follow road east
     {"key": "route_2", "name": "SW -> Road -> Village", "color": "orange",
      "start": (-160, -130), "goal": (100, 0)},
@@ -63,7 +62,7 @@ def g2w(gx, gy):
 def build_cost_grid(trees):
     cols = int((GRID_XMAX - GRID_XMIN) / GRID_RES) + 1
     rows = int((GRID_YMAX - GRID_YMIN) / GRID_RES) + 1
-    # base cost 1, blocked=inf, 1-10 near trees (soft gradient)
+    #base cost 1, blocked=inf, 1-10 near trees (soft gradient)
     cost = np.ones((cols, rows), dtype=np.float32)  # base cost = 1
     blocked = np.zeros((cols, rows), dtype=bool)
 
@@ -81,14 +80,14 @@ def build_cost_grid(trees):
                     if dist_m < TREE_CLEARANCE:
                         blocked[nx, ny] = True
                     elif dist_m < SOFT_RADIUS:
-                        # quadratic falloff - closer = pricier
+                        #quadratic falloff - closer = pricier
                         proximity = 1.0 - (dist_m - TREE_CLEARANCE) / (SOFT_RADIUS - TREE_CLEARANCE)
                         extra = 8.0 * proximity * proximity  # up to 8x cost near trees
                         cost[nx, ny] = max(cost[nx, ny], 1.0 + extra)
 
     return cost, blocked, cols, rows
 
-# weighted A*
+#weighted A*
 def astar(cost, blocked, start_w, goal_w, cols, rows):
     sx, sy = w2g(*start_w)
     gx, gy = w2g(*goal_w)
@@ -229,7 +228,7 @@ def generate_flanking_trees(all_routes, existing_trees, n_target=30):
         bx = route[idx][0] + t * (route[idx+1][0] - route[idx][0])
         by = route[idx][1] + t * (route[idx+1][1] - route[idx][1])
 
-        # density bias: forest=always, open=25%, village=5%
+        # density bias: forest=always, open=25%, village=5%   
         if bx > 50 and random.random() > 0.05:
             continue
         elif bx > -20 and random.random() > 0.25:
@@ -265,7 +264,7 @@ def generate_flanking_trees(all_routes, existing_trees, n_target=30):
         all_t.append((name, cx, cy))
     return new
 
-# visualization (same style as web_nav.py)
+#visualization (same style as web_nav.py)
 TEXTURE_PATH = Path("/workspace/simulation/src/ugv_gazebo/worlds/terrain_texture.png")
 
 WEB_MODEL_COLORS = {
@@ -396,7 +395,7 @@ def visualize(all_models, new_trees_info, old_routes, new_routes, output):
     draw.line([gx-r, gy+r, gx+r, gy-r], fill=(255, 0, 0), width=3)
     draw.ellipse([gx-r, gy-r, gx+r, gy+r], outline=(255, 0, 0), width=2)
 
-    # legend
+    #legend
     y0 = 10
     legend = [
         ("R1 new (forest)", ROUTE_COLORS_NEW["route_1"]),
@@ -416,7 +415,7 @@ def visualize(all_models, new_trees_info, old_routes, new_routes, output):
         draw.text((26, y0), label, fill=(255, 255, 255))
         y0 += 16
 
-    # scale + compass
+    #scale + compass   
     bar_m = 10
     bar_px = int(bar_m / WORLD_SIZE * MAP_PX)
     draw.rectangle([10, MAP_PX-25, 10+bar_px, MAP_PX-20], fill=(255,255,255))

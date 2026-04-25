@@ -1,6 +1,5 @@
-#!/usr/bin/env python3
-"""
-build a forest-to-village outdoor scene using local primitives
+#!/usr/bin/env python3   
+"""build a forest-to-village outdoor scene using local primitives
 no S3 dependencies - everything renders reliably with RayTracedLighting
 
 scene layout (200m x 100m):
@@ -33,7 +32,7 @@ stage = omni.usd.get_context().get_stage()
 UsdGeom.SetStageUpAxis(stage, UsdGeom.Tokens.z)
 UsdGeom.SetStageMetersPerUnit(stage, 1.0)
 
-# physics
+#physics
 phys = UsdPhysics.Scene.Define(stage, "/World/PhysicsScene")
 phys.CreateGravityDirectionAttr(Gf.Vec3f(0, 0, -1))
 phys.CreateGravityMagnitudeAttr(9.81)
@@ -42,7 +41,7 @@ PhysxSchema.PhysxSceneAPI.Apply(stage.GetPrimAtPath("/World/PhysicsScene")).Crea
 rng = np.random.RandomState(42)
 
 
-# GROUND
+#GROUND
 print("building ground...")
 PhysicsSchemaTools.addGroundPlane(
     stage, "/World/Ground", "Z", 200.0,
@@ -92,7 +91,7 @@ fxf = UsdGeom.Xformable(fill)
 fxf.AddRotateXYZOp().Set(Gf.Vec3f(-30, -160, 0))
 
 
-# TREE HELPER - cylinder trunk + cone/sphere canopy
+#TREE HELPER - cylinder trunk + cone/sphere canopy
 def make_tree(parent_path, x, y, trunk_h, trunk_r, canopy_h, canopy_r, tree_type="conifer"):
     """conifer = cone canopy, deciduous = sphere canopy"""
     trunk_color = Gf.Vec3f(0.35 + rng.uniform(-0.05, 0.05),
@@ -102,7 +101,7 @@ def make_tree(parent_path, x, y, trunk_h, trunk_r, canopy_h, canopy_r, tree_type
                             0.35 + rng.uniform(-0.1, 0.1),
                             0.08 + rng.uniform(-0.03, 0.03))
 
-    # trunk
+    #trunk
     trunk = UsdGeom.Cylinder.Define(stage, f"{parent_path}/trunk")
     trunk.CreateHeightAttr(trunk_h)
     trunk.CreateRadiusAttr(trunk_r)
@@ -124,7 +123,7 @@ def make_tree(parent_path, x, y, trunk_h, trunk_r, canopy_h, canopy_r, tree_type
     cxf = UsdGeom.Xformable(canopy)
     cxf.AddTranslateOp().Set(Gf.Vec3d(x, y, trunk_h + canopy_h * 0.4))
 
-    # collision on trunk
+    # collision on trunk   
     UsdPhysics.CollisionAPI.Apply(stage.GetPrimAtPath(f"{parent_path}/trunk"))
 
 
@@ -134,7 +133,7 @@ tree_idx = 0
 for _ in range(40):
     x = rng.uniform(-50, -10)
     y = rng.uniform(-30, 30)
-    # keep off the road (|y| > 3)
+    #keep off the road (|y| > 3)
     if abs(y) < 4:
         y = 4 * np.sign(y) + rng.uniform(0, 2) * np.sign(y)
     trunk_h = rng.uniform(3, 8)
@@ -164,7 +163,7 @@ for _ in range(20):
 print(f"  total trees: {tree_idx}")
 
 
-# ROCKS
+# ROCKS   
 print("placing rocks...")
 for i in range(20):
     x = rng.uniform(-50, 40)
@@ -248,8 +247,7 @@ txf = UsdGeom.Xformable(top)
 txf.AddTranslateOp().Set(Gf.Vec3d(0, 0, 80))
 
 
-# SAVE, START, CAPTURE
-# print(f">>> frame {i}/{n_frames}")
+# SAVE, START, CAPTURE   
 print(f"\nsaving scene: {SCENE_OUT}")
 stage.Export(SCENE_OUT)
 
@@ -262,7 +260,6 @@ for _ in range(300):
 from isaacsim.sensors.camera import Camera
 from PIL import Image
 
-# print(f"DEBUG state={state} pose={pose}")
 print("\ncapturing forward view...")
 c_fwd = Camera("/World/ForwardCamera", name="fwd", frequency=30, resolution=(640, 480))
 c_fwd.initialize()

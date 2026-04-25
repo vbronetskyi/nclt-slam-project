@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
-"""Ranking visualisation - two panels:
-  (a) horizontal bar chart of composite score (outdoor UGV weighting),
-      sorted worst -> best, broken down by sub-score contribution
-  (b) heatmap of raw sub-scores per experiment, rows sorted by composite
+"""
 """
 import csv
 from pathlib import Path
@@ -34,7 +31,7 @@ contribs = {s: np.array(subs[s]) * WEIGHTS_OUTDOOR[s] for s in SUBS}
 fig = plt.figure(figsize=(18, 9))
 gs = fig.add_gridspec(1, 2, width_ratios=[1.4, 1.0], wspace=0.25)
 
-# -------- (a) stacked horizontal bars --------
+# 1) stacked horizontal bars
 ax1 = fig.add_subplot(gs[0, 0])
 y = np.arange(len(names))
 left = np.zeros(len(names))
@@ -51,7 +48,7 @@ for s in SUBS:
              label=f'{s} (w={WEIGHTS_OUTDOOR[s]:.2f})',
              edgecolor='white', linewidth=0.5)
     left += contribs[s]
-# annotations: composite value + also show research/production in grey ticks
+# annotations: composite value + also show research/production in grey ticks   
 for i, (comp, res, prd) in enumerate(zip(composites, research, production)):
     ax1.text(comp + 0.01, i, f"  {comp:.3f}",
              va='center', fontsize=10, weight='bold')
@@ -68,7 +65,7 @@ ax1.axvline(0.5, color='gray', linestyle=':', alpha=0.5)
 ax1.legend(loc='lower right', fontsize=8, framealpha=0.95)
 ax1.grid(axis='x', alpha=0.3)
 
-# -------- (b) heatmap of raw sub-scores --------
+# 2) heatmap of raw sub-scores
 ax2 = fig.add_subplot(gs[0, 1])
 mat = np.array([[float(r[s]) for s in SUBS] for r in rows])
 # Keep same order (worst bottom, best top) - aligns with bar chart

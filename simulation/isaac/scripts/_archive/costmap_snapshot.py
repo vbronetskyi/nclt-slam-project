@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Costmap snapshot logger for exp 33.
+"""Costmap snapshot logger for exp 33
 
 Subscribes to /global_costmap/costmap and /local_costmap/costmap.
 Tracks robot pose via TF. When the robot reaches max_x near -10 and
@@ -22,10 +21,10 @@ from nav_msgs.msg import OccupancyGrid
 from tf2_ros import Buffer, TransformListener
 
 
-# SPAWN_X = -95.0  # south route default, route 04-09 override this
+#SPAWN_X = -95.0  # south route default, route 04-09 override this
 WINDOW_M = 10.0    # half-window in meters around robot for snapshot
 # TRIGGER_MIN_X is in the frame published by the TF relay. In SLAM-frame
-# mode this is SLAM forward coordinate - exp 30 stuck zone is ~SLAM x=85.
+# mode this is SLAM forward coordinate - exp 30 stuck zone is +-SLAM x=85
 TRIGGER_MIN_X = 70.0
 REGRESSION_DELTA = 1.0  # trigger if robot regressed by this much from max_x
 POSE_POLL_HZ = 5.0

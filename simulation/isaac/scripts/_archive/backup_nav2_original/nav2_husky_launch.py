@@ -1,5 +1,4 @@
-"""
-Nav2 launch for Husky A200 in Isaac Sim.
+"""Nav2 launch for Husky A200 in Isaac Sim
 Starts: controller_server (MPPI), planner_server, costmap nodes,
         behavior_server, bt_navigator, velocity_smoother, lifecycle_manager.
 Does NOT start localization (ORB-SLAM3 handles map->odom tf separately).
@@ -43,7 +42,7 @@ def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument('use_sim_time', default_value='true'),
 
-        # map server - publishes static SLAM map for global costmap
+        #map server - publishes static SLAM map for global costmap
         Node(
             package='nav2_map_server',
             executable='map_server',

@@ -35,7 +35,7 @@ for ext in ["isaacsim.ros2.core", "isaacsim.ros2.nodes",
 for _ in range(50):
     app.update()
 
-# load scene
+#load scene   
 print("loading scene...")
 omni.usd.get_context().open_stage(SCENE_USD)
 for _ in range(30):
@@ -61,7 +61,7 @@ if root_joint.IsValid():
     # set mass
     if not base_prim.HasAPI(UsdPhysics.MassAPI):
         mass_api = UsdPhysics.MassAPI.Apply(base_prim)
-        mass_api.CreateMassAttr(46.0)  # husky is ~46kg
+        mass_api.CreateMassAttr(46.0)  # husky is +-46kg
         print("  set base_link mass to 46 kg")
 else:
     print("  root_joint not found, skipping")
@@ -69,9 +69,9 @@ else:
 
 # FIX 2: raise robot spawn height above ground
 print("\nfix 2: setting robot spawn height...")
-# husky wheel radius = 0.1651m, so base_link should be ~0.13m above ground
+# husky wheel radius = 0.1651m, so base_link should be +-0.13m above ground
 # (wheel center is 0.03282m above base_link origin)
-# set the robot root xform to spawn slightly above ground
+#set the robot root xform to spawn slightly above ground
 # set initial position on base_link (the physics rigid body root)
 # PhysX uses this as the starting pose
 base_prim = stage.GetPrimAtPath(BASE_LINK)
@@ -88,7 +88,6 @@ if robot_root.IsValid():
 
 
 # FIX 3: fix camera orientation
-# print(f"DEBUG len(traj)={len(traj)}")
 print("\nfix 3: fixing camera orientation...")
 cam_prim = stage.GetPrimAtPath(CAM_PRIM)
 if cam_prim.IsValid():
@@ -97,14 +96,14 @@ if cam_prim.IsValid():
     # USD camera default: looks -Z, up +Y
     # target: look +X (robot forward), up +Z (world up)
     # verified: rotateXYZ(90, 0, -90) maps:
-    #   Rx(90): y->z, z->-y -> cam(-Z)->+Y, cam(+Y)->+Z
+    #   Rx(90): y->z, z->-y -> cam(-Z)->+Y, cam(+Y)->+Z   
     #   Rz(-90): x->y, y->-x -> cam(+Y from prev)->-X... wrong?
     # actually for rotateXYZ, the matrix is Rz * Ry * Rx (applied right to left)
     # so the full transform on view dir (0,0,-1):
     #   Rx(90)(0,0,-1) = (0,1,0)
     #   Ry(0)(0,1,0) = (0,1,0)
     #   Rz(-90)(0,1,0) = (1,0,0) <- +X forward 
-    # and on up dir (0,1,0):
+    #and on up dir (0,1,0):
     #   Rx(90)(0,1,0) = (0,0,1)
     #   Ry(0)(0,0,1) = (0,0,1)
     #   Rz(-90)(0,0,1) = (0,0,1) <- +Z up 
@@ -125,7 +124,7 @@ dome.CreateTextureFormatAttr("latlong")
 # no HDR texture available, but the color tint gives a blue sky
 print("  dome light: sky blue, intensity 1000")
 
-# reduce sun intensity now that we have ambient sky light
+#reduce sun intensity now that we have ambient sky light
 sun = stage.GetPrimAtPath("/World/Environment/SunLight")
 if sun.IsValid():
     UsdLux.DistantLight(sun).GetIntensityAttr().Set(3000)
@@ -155,7 +154,7 @@ for _ in range(10):
     app.update()
 
 
-# SET UP RENDER + ROS2 GRAPH
+#SET UP RENDER + ROS2 GRAPH
 print("\nsetting up omnigraph for camera capture...")
 
 keys = og.Controller.Keys
@@ -253,7 +252,6 @@ node.create_subscription(Image, "/camera/color/image_raw", make_cb("/camera/colo
 node.create_subscription(Image, "/topdown/image_raw", make_cb("/topdown/image_raw", "topdown"), 10)
 
 # run for 5 seconds, capturing frames
-# print("DEBUG: isaac sim step")
 print("capturing frames (5s)...")
 cam_count = 0
 start = time.time()

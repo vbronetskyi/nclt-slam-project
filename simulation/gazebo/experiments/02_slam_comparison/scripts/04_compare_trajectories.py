@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Compare ORB-SLAM3 (and optionally RTAB-Map) trajectory with Ground Truth
+"""Compare ORB-SLAM3 (and optionally RTAB-Map) trajectory with Ground Truth
 Produces trajectory_comparison.png and prints ATE/RPE metrics
 
 Usage: python3 04_compare_trajectories.py
@@ -53,7 +52,7 @@ print(f"GT: {len(gt)} points, ({gt[0,0]:.0f},{gt[0,1]:.0f}) -> ({gt[-1,0]:.0f},{
 gt_dist = sum(math.hypot(gt[i,0]-gt[i-1,0], gt[i,1]-gt[i-1,1]) for i in range(1, len(gt)))
 print(f"GT distance: {gt_dist:.0f}m")
 
-# load ORB-SLAM3
+#load ORB-SLAM3
 slam = []
 slam_times = []
 try:
@@ -110,7 +109,7 @@ if len(slam) > 10:
             print(f"  RMSE: {np.sqrt((rpe**2).mean()):.2f}m")
             print(f"  Mean: {rpe.mean():.2f}m")
 
-        # dump metrics to json
+        # dump metrics to json   
         results = {
             'ate_rmse': float(ate_rmse), 'ate_mean': float(ate_mean),
             'ate_max': float(errors.max()), 'scale': float(scale),
@@ -151,14 +150,14 @@ for inc in tree_sdf.getroot().iter('include'):
     elif 'rock' in nl:
         draw.polygon([(px,py-4),(px+4,py),(px,py+4),(px-4,py)], fill=color)
 
-# gT in greenfor i in range(1, len(gt), 3):
+#gT in greenfor i in range(1, len(gt), 3):
     draw.line([w2px(gt[i-1,0],gt[i-1,1]), w2px(gt[i,0],gt[i,1])], fill=(0,230,80), width=3)
 
 # ORB-SLAM3 aligned in redif len(aligned) > 1:
     for i in range(1, len(aligned)):
         draw.line([w2px(aligned[i-1,0],aligned[i-1,1]), w2px(aligned[i,0],aligned[i,1])], fill=(255,40,40), width=3)
 
-# start/end dots
+#start/end dots
 sx,sy = w2px(gt[0,0],gt[0,1])
 draw.ellipse([sx-6,sy-6,sx+6,sy+6], fill=(0,255,0), outline=(255,255,255), width=2)
 ex,ey = w2px(gt[-1,0],gt[-1,1])

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Teach-and-repeat in a single Isaac Sim session.
+"""Teach-and-repeat in a single Isaac Sim session
 Phase 1 (teach): drive via GT waypoints, record anchors in-memory.
 Phase 2 (repeat): teleport to start, drive via visual anchor matching.
 
@@ -96,12 +95,12 @@ for _ in range(30):
     app.update()
 stage = omni.usd.get_context().get_stage()
 
-# Scene already pre-built by convert_gazebo_to_isaac.py with:
+#Scene already pre-built by convert_gazebo_to_isaac.py with:
 # - Trees thinned 33%, no ferns, reduced cover, debris instead of fallen
 # - No runtime deactivation needed (was causing 6+ min delays)
 print("scene pre-built (no runtime thinning needed)")
 
-# Thin gazebo_models.json for collision list (match scene)
+#Thin gazebo_models.json for collision list (match scene)
 _gm = json.load(open("/tmp/gazebo_models_dense.json"))
 _thinned = []
 _tree_idx = 0
@@ -229,7 +228,7 @@ else:
     max_x_idx = max(range(len(file_anchors)), key=lambda i: file_anchors[i]["x"])
     teach_waypoints = [(a["x"], a["y"]) for a in file_anchors[max_x_idx:]]
 
-# Terrain height
+#Terrain height
 _RWPS = [
     (-100,-7),(-95,-6),(-90,-4.5),(-85,-2.8),(-80,-1.5),(-75,-0.8),(-70,-0.5),
     (-65,-1),(-60,-2.2),(-55,-3.8),(-50,-5),(-45,-5.5),(-40,-5.2),(-35,-4),
@@ -298,7 +297,7 @@ TRACK = 0.555
 dt = 1.0 / 60.0
 
 def send_wheels(lin_v, ang_v):
-    # TODO: tune per route
+    # tune per route
     vl = (lin_v - ang_v * TRACK / 2) / WHEEL_R
     vr = (lin_v + ang_v * TRACK / 2) / WHEEL_R
     for i, vel in enumerate([vl, vr, vl, vr]):
@@ -425,7 +424,6 @@ if args.skip_teach:
 if not args.skip_teach:
     print(f"\n{'='*60}")
     print(f"PHASE 1: TEACH - driving {len(teach_waypoints)} waypoints")
-    # print("DEBUG: isaac sim step")
     print(f"{'='*60}\n")
 
 clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
@@ -585,7 +583,7 @@ if teleport_err > 5.0:
 # Initialize encoder prev from actual GT position after teleport
 enc_prev_x, enc_prev_y, enc_prev_yaw = p[0], p[1], p[3]
 
-# PHASE 2: REPEAT - odometry-primary + visual correction
+#PHASE 2: REPEAT - odometry-primary + visual correction
 print(f"\n{'='*60}")
 print(f"PHASE 2: REPEAT - {len(anchors)} anchors, odometry-primary")
 print(f"{'='*60}\n")
@@ -608,7 +606,7 @@ def find_anchor_by_s(s_val):
             best_i = i
     return best_i
 
-# Robust anchor localizer - in-memory (no file I/O)
+#Robust anchor localizer - in-memory (no file I/O)
 from robust_anchor_localizer import RobustAnchorLocalizer
 robust_loc = RobustAnchorLocalizer.__new__(RobustAnchorLocalizer)
 robust_loc.anchor_dir = "in-memory"
@@ -640,7 +638,7 @@ follower.initialize_from_anchor(REPEAT_START_ANCHOR)
 odom_s = anchors[REPEAT_START_ANCHOR]["s"]
 odom_anchor_idx = REPEAT_START_ANCHOR
 
-VISUAL_EVERY = 30  # every 30 frames = ~2Hz; visual is soft correction only
+VISUAL_EVERY = 30  # every 30 frames = +-2Hz; visual is soft correction only
 frame_count = 0
 prev_lin = 0.0
 repeat_start = sim_time
@@ -656,7 +654,7 @@ log_f = open(log_path, "w")
 log_f.write("time,gt_x,gt_y,gt_yaw,odom_x,odom_y,odom_yaw,anchor_id,"
             "odom_s,vis_conf,cmd_lin,cmd_ang\n")
 
-# Encoder-based odometry state (initialized after teleport from GT)
+# Encoder-based odometry state (initialized after teleport from GT)   
 odom_yaw = p[3]  # from teleport GT
 odom_x = p[0]
 odom_y = p[1]
@@ -719,7 +717,7 @@ try:
         sim_time += dt
         frame_count += 1
 
-        # Update camera (GT needed for rendering + encoder simulation)
+        # Update camera (GT needed for rendering + encoder simulation)   
         rx, ry, rz, ryaw = update_camera()
 
         # 1. Encoder odometry: PhysX pose diff (simulates wheel encoders)
@@ -778,7 +776,7 @@ try:
             if rgb is not None:
                 loc_id, vis_conf, _ = robust_loc.localize(rgb, depth_for_match)
 
-                # Soft odom_s correction from confirmed anchor
+                #Soft odom_s correction from confirmed anchor
                 if vis_conf > 0.3:
                     vis_s = anchors[robust_loc.confirmed_anchor_id]["s"]
                     corr = (vis_s - odom_s) * 0.2
@@ -817,17 +815,17 @@ try:
         # 4. Route desired heading (from follower lookahead)
         la = follower.get_adaptive_lookahead()
         tx, ty, _ = follower.get_lookahead_point(la)
-        # Find nearest anchor to GT position for correct lookahead
+        #Find nearest anchor to GT position for correct lookahead
         _gt_anchor = min(range(len(anchors)),
                          key=lambda i: math.hypot(anchors[i]["x"]-rx, anchors[i]["y"]-ry))
-        _gt_la = min(_gt_anchor + 4, len(anchors) - 1)  # lookahead ~8m
+        _gt_la = min(_gt_anchor + 4, len(anchors) - 1)  # lookahead +-8m
         _gt_tx, _gt_ty = anchors[_gt_la]["x"], anchors[_gt_la]["y"]
         desired_heading = math.atan2(_gt_ty - ry, _gt_tx - rx)
         heading_err = desired_heading - ryaw
         heading_err = math.atan2(math.sin(heading_err), math.cos(heading_err))
         _turning_to_route = False
 
-        # 5. GAP NAVIGATOR - primary cmd_vel (skip 1s for depth settle)
+        #5. GAP NAVIGATOR - primary cmd_vel (skip 1s for depth settle)
         if frame_count > 60 and frame_count % DEPTH_EVERY == 0:
             depth_raw = get_depth()
             if depth_raw is not None:
@@ -845,7 +843,7 @@ try:
                     last_nav_debug["trav"] = trav_filter.stats(depth_raw, depth_img)
 
                 elif obstacle_grid is not None:
-                    # Grid mode: accumulate depth into grid
+                    #Grid mode: accumulate depth into grid
                     obstacle_grid.update(rx, ry, ryaw, depth_img)
                     gs = obstacle_grid.get_stats()
 
@@ -863,7 +861,7 @@ try:
                                                math.cos(plan_herr))
                         last_nav_ang = float(np.clip(
                             plan_herr * 1.5, -0.5, 0.5))
-                        # Speed: maintain high speed, slow only for sharp turns
+                        #Speed: maintain high speed, slow only for sharp turns
                         herr_abs = abs(plan_herr)
                         if herr_abs < 0.3:
                             last_nav_lin = 0.6
@@ -900,7 +898,7 @@ try:
                     last_nav_debug["grid_pct"] = gs["obstacle_pct"]
                     last_nav_debug["grid_max"] = gs["max_hits"]
                 else:
-                    # Single-frame mode (original)
+                    #Single-frame mode (original)
                     last_nav_lin, last_nav_ang, last_nav_mode, last_nav_debug = \
                         gap_nav.compute_cmd_vel(depth_img, heading_err)
 
@@ -1018,7 +1016,6 @@ log_f.close()
 rx, ry, rz, ryaw = _get_husky_pose()
 odom_err = math.hypot(rx - odom_x, ry - odom_y)
 repeat_dur = sim_time - repeat_start
-# print("DEBUG: isaac sim step")
 print(f"\n{'='*60}")
 print(f"RESULT:")
 print(f"  Mode: odom+IMU (no GT)")

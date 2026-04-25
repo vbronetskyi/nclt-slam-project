@@ -8,9 +8,6 @@ why: helps the repeat-time Nav2 costmap start with a reasonable static layer
 instead of discovering everything fresh from the depth camera.  means the
 first few WPs after spawn already have planner-friendly costs, no startup
 wobble
-
-dropped exp 36 idea: full 3D voxel grid.  overkill - Nav2 is 2D, we only
-need a top-down occupancy slice.  the YAML output is just that
 """
 import argparse
 import os
@@ -27,7 +24,7 @@ from rclpy.node import Node
 from sensor_msgs.msg import PointCloud2
 
 
-# --- log-odds occupancy ---
+# log-odds occupancy
 L_FREE = -0.4
 L_OCC = +1.4
 L_MIN = -5.0
@@ -52,14 +49,14 @@ def _parse_pc2(msg: PointCloud2):
     raw = np.frombuffer(msg.data, dtype=np.uint8)
     # Stride is point_step; extract x, y, z floats
     n = msg.width * msg.height
-    # Reshape into (n, point_step) then slice
+    # Reshape into (n, point_step) then slice   
     stride = msg.point_step
     data = raw.reshape(n, stride)
     xs = np.frombuffer(data[:, offsets['x']:offsets['x']+4].tobytes(), dtype=np.float32)
     ys = np.frombuffer(data[:, offsets['y']:offsets['y']+4].tobytes(), dtype=np.float32)
     zs = np.frombuffer(data[:, offsets['z']:offsets['z']+4].tobytes(), dtype=np.float32)
     pts = np.stack([xs, ys, zs], axis=-1)
-    # Filter NaN/Inf
+    #Filter NaN/Inf
     finite = np.isfinite(pts).all(axis=1)
     return pts[finite]
 
@@ -126,7 +123,7 @@ class TeachDepthMapper(Node):
         return r, c  # row, col
 
     def cb(self, msg: PointCloud2):
-        # Get transform map -> camera_link at msg timestamp
+        # Get transform map -> camera_link at msg timestamp   
         try:
             tf_msg = self.tf_buf.lookup_transform(
                 'map', msg.header.frame_id, rclpy.time.Time())
@@ -145,7 +142,7 @@ class TeachDepthMapper(Node):
         pts_h = np.column_stack([pts_cam, np.ones(n)])
         pts_map = (T @ pts_h.T).T[:, :3]
 
-        # Height filter (exclude ground ~z<0.2 and canopy ~z>2.0)
+        # Height filter (exclude ground +-z<0.2 and canopy +-z>2.0)
         z = pts_map[:, 2]
         mask = (z > 0.2) & (z < 2.0)
         pts_map = pts_map[mask]
@@ -181,7 +178,7 @@ class TeachDepthMapper(Node):
         r, c = r0, c0
         while True:
             if (r, c) != (r1, c1):
-                # Free cell along ray (excluding endpoint)
+                #Free cell along ray (excluding endpoint)
                 v = self.grid[r, c] + L_FREE
                 self.grid[r, c] = max(L_MIN, v)
             else:
@@ -198,7 +195,6 @@ class TeachDepthMapper(Node):
                 err += dr; c += sc
 
     def _save_and_exit(self, *a):
-        # print(f">>> teach step {step}")
         self.get_logger().warn(f"Saving map to {self.out_prefix}.pgm/.yaml and exiting")
         self.save()
         rclpy.shutdown()
@@ -206,7 +202,6 @@ class TeachDepthMapper(Node):
 
     def _save_partial(self, *a):
         """Periodic/on-signal save without exiting - lets us peek at the map."""
-        # print(f"DEBUG match_count={match_count}")
         self.get_logger().info(f"[PARTIAL] saving intermediate to {self.out_prefix}.pgm/.yaml")
         self.save()
 
@@ -238,8 +233,6 @@ class TeachDepthMapper(Node):
                 'negate': 0,
             }, f, default_flow_style=False)
 
-        # print(f"DEBUG pose={pose}")
-        # print(f"DEBUG turnaround fire? {fired}")
         self.get_logger().info(
             f"Saved {pgm_path} + {yaml_path}. "
             f"frames_integrated={self.frames_integrated} "

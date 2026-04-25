@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Generate v2 trajectory plots for south/north route experiments (30-33)."""
+"""Generate v2 trajectory plots for south/north route experiments (30-33)
+"""
 import glob
 import os
 import sys
@@ -31,7 +32,7 @@ for prefix, label, title, color, metrics in [
      '#ff7f0e',
      ['Method:   Encoder + IMU (no vision)',
       'Route:    South forest',
-      'Result:   ~25m before drift failure',
+      'Result:   +-25m before drift failure',
       'Shows: dead-reckoning alone insufficient']),
     ('teach_then_repeat_south_', 'Full T&R pipeline',
      'Exp 30: Full Teach-then-Repeat - South Route',
@@ -88,7 +89,7 @@ if csv:
         route='south', with_obstacles=False, with_waypoints=False,
     )
 
-# Exp 34 south (in addition to road done earlier)
+#Exp 34 south (in addition to road done earlier)
 exp = '34_traversability'
 results = f'{BASE}/{exp}/results'
 csv = pick_newest(f'{BASE}/{exp}', 'trav_south_')

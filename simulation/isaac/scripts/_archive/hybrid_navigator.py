@@ -15,17 +15,17 @@ class HybridNavigator:
         self.mode = "CRUISE"
 
         # Mode transition - tuned for DECAY_RATE=0.997, OBSTACLE_HITS=8.0
-        # Roadside steady-state: ~50-70 cells. Cones add ~20-40 more.
+        # Roadside steady-state: +-50-70 cells. Cones add +-20-40 more.
         self.PLAN_TRIGGER_CELLS = 100
         self.CRUISE_RESTORE_CELLS = 60
         self.CENTER_OBSTACLE_DIST = 2.5  # only very close center obstacles
 
-        # Speed
+        #Speed
         self.CRUISE_SPEED = 0.55
         self.PLAN_SPEED_HIGH = 0.45
         self.PLAN_SPEED_LOW = 0.2
 
-        # Steering smoothing
+        #Steering smoothing
         self.prev_steer = 0.0
         self.STEER_SMOOTHING = 0.3
 

@@ -1,5 +1,4 @@
-"""
-Full Husky A200 simulation: Gazebo + SLAM + Nav2
+"""Full Husky A200 simulation: Gazebo + SLAM + Nav2
 
 Usage:
   # SLAM Toolbox (default, lightweight, uses 2D LiDAR):
@@ -7,7 +6,7 @@ Usage:
 
   # RTAB-Map SLAM (uses D435i depth, heavier):  ros2 launch ugv_gazebo full_sim.launch.py slam_type:=rtabmap headless:=true
 
-  # use warehouse world:  ros2 launch ugv_gazebo full_sim.launch.py world:=warehouse headless:=true
+  # use warehouse world:  ros2 launch ugv_gazebo full_sim.launch.py world:=warehouse headless:=true   
 """
 from launch import LaunchDescription
 from launch.actions import (
@@ -52,8 +51,8 @@ def generate_launch_description():
         "' == 'true' else '-r ' + '", world_file, "'"
     ])
 
-    # GZ_SIM_RESOURCE_PATH lets Gazebo find file:// URIs for heightmap/textures.
-    # Without this the outdoor_terrain heightmap renders as a flat plane.
+    #GZ_SIM_RESOURCE_PATH lets Gazebo find file:// URIs for heightmap/textures
+    # Without this the outdoor_terrain heightmap renders as a flat plane
     worlds_dir = PathJoinSubstitution([pkg_gazebo, 'worlds'])
 
     nav2_common = {'use_sim_time': True}
@@ -215,7 +214,7 @@ def generate_launch_description():
         DeclareLaunchArgument('world', default_value='outdoor_terrain'),
         # tell Gazebo where file:// resources live
         SetEnvironmentVariable('GZ_SIM_RESOURCE_PATH', worlds_dir),
-        # Gazebo
+        #Gazebo
         gz_sim,
         spawn_robot,
         bridge,

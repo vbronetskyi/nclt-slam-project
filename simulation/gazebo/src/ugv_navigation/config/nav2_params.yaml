@@ -138,7 +138,7 @@ velocity_smoother:
     odom_topic: "/odom"
     odom_duration: 0.1
 
-# Husky A200: 670mm wide -> radius ~0.55m with margin
+# Husky A200: 670mm wide -> radius +-0.55m with margin
 local_costmap:
   local_costmap:
     ros__parameters:

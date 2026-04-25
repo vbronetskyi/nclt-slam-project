@@ -29,7 +29,7 @@ A four-wheeled unmanned ground vehicle (UGV) with skid-steer drive, modeled afte
 | Contact min_depth | 0.0 |
 | Contact max_vel | 0.01 m/s |
 
-High friction (mu=5.0) is necessary for skid-steer on uneven terrain; without it, the wheels slip during turns.
+High friction (mu=5.0) is neccessary for skid-steer on uneven terrain; without it, the wheels slip during turns.
 
 ## Motion Dynamics
 
@@ -60,7 +60,7 @@ Gazebo plugin `gz::sim::systems::DiffDrive`:
 | Resolution | 640 x 480 |
 | Horizontal FOV | 85.2 degrees (1.487 rad) |
 | Requested rate | 30 Hz |
-| Actual rate | ~10-17 Hz (GPU-limited in simulation) |
+| Actual rate | +-10-17 Hz (GPU-limited in simulation) |
 | Near clip (color) | 0.4 m |
 | Far clip (color) | 300.0 m |
 | Near clip (depth) | 0.4 m |
@@ -112,7 +112,7 @@ The far clip for RGB is set to 300 m so the camera can see distant objects in th
 | Topic | `/scan` |
 | Gazebo frame | husky_a200/lidar_link/gpu_lidar |
 
-**Note:** The LiDAR is disabled in the current configuration to save GPU resources for camera rendering. It is a simulation-only sensor (the real Husky A200 does not include one). When enabled, it is used by SLAM Toolbox and Nav2 costmaps.
+Note: The LiDAR is disabled in the current configuration to save GPU resources for camera rendering. It is a simulation-only sensor (the real Husky A200 does not include one). When enabled, it is used by SLAM Toolbox and Nav2 costmaps.
 
 ## TF Tree
 
@@ -136,7 +136,7 @@ map
 - **URDF** (`src/ugv_description/urdf/husky_frames.urdf`) - TF tree for ROS 2 (robot_state_publisher)
 - Identity transforms from sensor frames to Gazebo frames (e.g., `camera_optical_frame -> husky_a200/camera_link/rgbd_camera`) ensure correct bridging of sensor data
 
-A single `robot_state_publisher` process publishes all static transforms, replacing what would otherwise be 8 separate `static_transform_publisher` instances and saving process slots.
+A single `robot_state_publisher` process publishes all static transforms, replacing what would otherwise be 8 seperate `static_transform_publisher` instances and saving process slots.
 
 ## Chassis Model
 

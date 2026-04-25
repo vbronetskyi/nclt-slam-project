@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
-"""
-Fix extracted data: remove null bytes, align timestamps, deduplicate
+"""Fix extracted data: remove null bytes, align timestamps, deduplicate
 Run after 01_extract_frames.py
 """
 import os
 
 OUT = '/workspace/simulation/orb_slam3_data'
 
-# strip null bytes from text files
+#strip null bytes from text files
 for fname in ['imu.txt', 'associations.txt', 'rgb.txt', 'depth.txt']:
     fpath = f'{OUT}/{fname}'
     if not os.path.exists(fpath): continue
@@ -64,7 +63,7 @@ if len(fa) >= 2:
 with open(f'{OUT}/associations.txt', 'w') as f: f.write('\n'.join(fa) + '\n')
 with open(f'{OUT}/imu.txt', 'w') as f: f.write('\n'.join(fi) + '\n')
 
-# sparse version (every 3rd frame) for quick testing
+#sparse version (every 3rd frame) for quick testing
 sparse = [fa[i] for i in range(0, len(fa), 3)]
 with open(f'{OUT}/associations_sparse.txt', 'w') as f: f.write('\n'.join(sparse) + '\n')
 

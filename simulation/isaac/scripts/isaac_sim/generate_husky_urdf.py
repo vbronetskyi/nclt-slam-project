@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-generate husky a200 urdf with d435i camera and imu
+"""generate husky a200 urdf with d435i camera and imu
 patches xacro $(find ...) calls to use local paths since we don't have ROS2 installed
 """
 import subprocess
@@ -48,9 +47,7 @@ def patch_find_directives(xacro_dir, dummy_dir):
 def main():
     print("generating husky urdf with d435i...")
     print(f"  husky description: {HUSKY_DESC}")
-    # print("DEBUG: isaac sim step")
     print(f"  realsense description: {REALSENSE_DESC}")
-    # print(f"DEBUG state={state} pose={pose}")
     print(f"  output: {OUTPUT_URDF}")
 
     # work on copies so we don't trash the originals
@@ -69,10 +66,10 @@ def main():
     for pkg, path in PKG_MAP.items():
         PKG_MAP[pkg] = local_map[pkg]
 
-    # create dummy dir with an empty xacro for unknown packages
+    # create dummy dir with an empty xacro for unknown packages   
     dummy_dir = os.path.join(work_dir, "dummy_pkg")
     os.makedirs(os.path.join(dummy_dir, "urdf"), exist_ok=True)
-    # write stub xacro files that unknown packages might reference
+    # write stub xacro files that unknown packages might reference   
     for stub_name in [
         "urdf/lockmount.urdf.xacro",
         "urdf/flir_blackflys.urdf.xacro",
@@ -106,7 +103,7 @@ def main():
         cwd=husky_work
     )
 
-    # cleanup temp dir
+    # cleanup temp dir   
     shutil.rmtree(work_dir)
 
     if result.returncode != 0:

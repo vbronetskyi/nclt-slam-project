@@ -28,7 +28,7 @@ for _ in range(20):
 
 print("isaac sim started, importing husky urdf...")
 
-# -- import urdf using 6.0 api --
+# -- import urdf using 6.0 api --   
 from isaacsim.asset.importer.urdf import URDFImporter, URDFImporterConfig
 
 config = URDFImporterConfig(
@@ -44,7 +44,7 @@ importer = URDFImporter(config)
 usd_path = importer.import_urdf()
 print(f"  urdf converted to usd: {usd_path}")
 
-# -- open the converted USD in the stage --
+# -- open the converted USD in the stage --   
 omni.usd.get_context().open_stage(usd_path)
 for _ in range(20):
     app.update()
@@ -82,13 +82,13 @@ xform = UsdGeom.Xformable(light_prim)
 xform.AddRotateXYZOp().Set(Gf.Vec3f(-45, 30, 0))
 print("  sun light added")
 
-# -- list all links and joints --
+#-- list all links and joints --
 print("\n  links:")
 for prim in stage.Traverse():
     if prim.GetTypeName() == "Xform":
         name = prim.GetName()
         path = prim.GetPath().pathString
-        # check if it's a link we care about
+        #check if it's a link we care about
         if any(k in name for k in ["link", "base", "wheel", "imu", "camera", "bumper", "plate", "chassis"]):
             print(f"    {path}")
 
@@ -107,10 +107,8 @@ print(f"\n  scene saved to: {scene_path}")
 print("\n=== husky a200 setup complete ===")
 print(f"  robot usd: {usd_path}")
 print(f"  scene usd: {scene_path}")
-# print(f"DEBUG len(traj)={len(traj)}")
 print(f"  sensors: d435i rgbd camera, imu")
 print(f"  drive: 4-wheel skid-steer")
 
 app.close()
-# print("DEBUG: isaac sim step")
 print("done")

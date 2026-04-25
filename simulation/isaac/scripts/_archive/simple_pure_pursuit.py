@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Simple pure pursuit publisher for mapping runs (no Nav2).
+"""Simple pure pursuit publisher for mapping runs (no Nav2)
 
 Reads robot pose from /tmp/isaac_pose.txt and publishes /cmd_vel
 to follow road waypoints. Used for SLAM mapping runs.
@@ -26,7 +25,7 @@ ROAD = [(-100,-7),(-95,-6),(-90,-4.5),(-85,-2.8),(-80,-1.5),(-75,-0.8),(-70,-0.5
 LOOKAHEAD = 2.5
 MAX_LIN = 0.6
 MAX_ANG = 0.6
-# GOAL_TOL = 1.5  # 3.0 after turnaround tuning
+#GOAL_TOL = 1.5  # 3.0 after turnaround tuning
 GOAL_TOL = 1.0
 POSE_FILE = '/tmp/isaac_pose.txt'
 
@@ -100,7 +99,7 @@ class PurePursuit(Node):
             return
         rx, ry, ryaw = pose
 
-        # skip waypoints behind robot (X is forward axis on road route)
+        #skip waypoints behind robot (X is forward axis on road route)
         while self.idx < len(ROAD) and ROAD[self.idx][0] < rx:
             self.idx += 1
         # find lookahead point ahead of robot

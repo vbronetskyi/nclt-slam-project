@@ -1,16 +1,5 @@
 #!/usr/bin/env python3
-"""Offline post-hoc analysis across exps 52-62.
-
-Produces:
-  - metrics_full.csv          - raw per-experiment metrics
-  - metrics_normalized.csv    - same columns in [0,1]
-  - composite_scores.csv      - three composite weightings
-
-Metric families:
-  F1 smoothness / idle     from pp_follower.log + GT trajectory
-  F2 clearance profile     from GT trajectory + hardcoded obstacle positions
-  F3 obstacle-conditional  TRACK split by proximity (far/transition/near)
-  F4 anchor contribution   from anchor_matches.csv (T&R exps only)
+"""Offline post-hoc analysis across exps 52-62
 """
 import csv
 import math
@@ -26,7 +15,7 @@ OUT.mkdir(parents=True, exist_ok=True)
 CONES = [(-75,-24),(-75,-25),(-75,-26),(-18,-24),(-18,-25),
          (5,-17),(5,-18),(5,-19),(5,-20)]
 TENT_C, TENT_HX, TENT_HY = (-45.0,-38.0), 1.1, 1.0
-ROBOT_HALF = 0.35            # per task spec (not 0.5)
+ROBOT_HALF = 0.35 # per task spec (not 0.5 a)
 SPACING = 4.0
 
 # Teach reference
@@ -37,7 +26,7 @@ with open(TEACH_CSV) as f:
 teach_len = sum(math.hypot(teach_pts[i+1][0]-teach_pts[i][0],
                            teach_pts[i+1][1]-teach_pts[i][1])
                 for i in range(len(teach_pts)-1))
-# Approx teach time: assume teach ran at ~1.0 m/s average -> 391s
+#Approx teach time: assume teach ran at +-1.0 m/s average -> 391s
 TEACH_TIME_S = 391.0
 wps = [teach_pts[0]]
 for p in teach_pts[1:]:
@@ -105,7 +94,7 @@ def load_tf_gt(run_dir):
 
 
 def parse_pp(run_dir):
-    # NOTE: relies on scripts/common/ being on path
+    # relies on scripts/common/ being on path
     """Return list of (ts, v, w) from pp_follower.log."""
     out = []
     p = run_dir / 'pp_follower.log'
@@ -165,14 +154,14 @@ def compute_run(name, run_dir):
     reached = parse_reached(run_dir)
     anchors = parse_anchors(run_dir)
 
-    # --- basic geometry ---
+    # basic geometry
     plen = path_length(gt)
     run_time = gt[-1][0] - gt[0][0]
     path_ratio = plen / teach_len
     loop_residual = math.hypot(gt[-1][1]-gt[0][1], gt[-1][2]-gt[0][2])
     finished = loop_residual < 20.0
     # Mission time: start -> first approach within 10 m of teach_end AFTER
-    # turnaround. This excludes post-run Isaac idle that inflated full_t
+    #turnaround. This excludes post-run Isaac idle that inflated full_t
     # (exp 56 was 2050 s, not 9572 s; exp 61 was 387 s, not 1495 s).
     teach_end_pt = teach_pts[-1]
     teach_start_pt = teach_pts[0]
@@ -184,11 +173,11 @@ def compute_run(name, run_dir):
             mission_t = gt[i][0] - gt[0][0]
             break
     if mission_t is None:
-        time_ratio = float('inf')       # never returned
+        time_ratio = float('inf')# never returned
     else:
         time_ratio = mission_t / TEACH_TIME_S
 
-    # --- F1 smoothness from pp log ---
+    # F1 smoothness from pp log
     sum_dv = 0.0; sum_dw = 0.0
     for i in range(1, len(pp)):
         sum_dv += abs(pp[i][1] - pp[i-1][1])
@@ -196,22 +185,23 @@ def compute_run(name, run_dir):
     v_per_m = sum_dv / plen if plen > 0 else float('nan')
     w_per_m = sum_dw / plen if plen > 0 else float('nan')
 
-    # --- F1 idle time: follower wanting to drive but not moving ---
+    # F1 idle time: follower wanting to drive but not moving
+
     # GT velocity from Δpos/Δt; pp v (command) from pp log.
-    # Align via wall-clock; but older runs have ts (wall), newer have sim_t.
+    # Align via wall-clock; but older runs have ts (wall), newer have sim_t
     # For idle, simplest: compute GT speed over sliding window; count samples
     # where GT_speed < 0.02 AND a nearby pp sample shows |cmd_v| > 0.05
-    # for > 0.5 s continuously.
+    # for > 0.5 s continuously
     idle_time_s = 0.0
     if len(pp) and len(gt) > 2:
-        # GT speed samples
+        # GT speed samples   
         gt_speed = []
         for i in range(1, len(gt)):
             dt = gt[i][0] - gt[i-1][0]
             if dt <= 0: continue
             d = math.hypot(gt[i][1]-gt[i-1][1], gt[i][2]-gt[i-1][2])
             gt_speed.append((gt[i][0], d / dt))
-        # Index pp by ts for fast lookup. pp is ~2Hz.
+        # Index pp by ts for fast lookup. pp is +-2Hz.
         pp_sorted = pp
         pp_idx = 0
         run_start = gt[0][0]
@@ -219,7 +209,7 @@ def compute_run(name, run_dir):
         # gt is sim_time from 0. Need alignment. Use relative time from start.
         pp_rel = [(t - pp[0][0], v, w) for t, v, w in pp] if pp else []
         gt_start = gt[0][0]
-        # idle state machine
+        #idle state machine
         stalled_duration = 0.0
         last_t = None
         for t_abs, spd in gt_speed:
@@ -242,14 +232,14 @@ def compute_run(name, run_dir):
                 stalled_duration = 0.0
     idle_ratio = idle_time_s / run_time if run_time > 0 else 0.0
 
-    # --- F2 clearance profile ---
+    # F2 clearance profile
     clearances = [nearest_obstacle_dist(p[1], p[2]) - ROBOT_HALF for p in gt]
     clear_p50 = percentile(clearances, 50)
     clear_p05 = percentile(clearances, 5)
     near_miss = sum(1 for c in clearances if c < 0.30)
     contact = sum(1 for c in clearances if c < 0.05)
 
-    # --- F3 obstacle-conditional TRACK ---
+    # F3 obstacle-conditional TRACK
     # For each GT pose: closest teach pt AND nearest obstacle edge (not inflated by robot).
     track_far = []; track_trans = []; track_near = []
     for _, x, y in gt:
@@ -260,7 +250,7 @@ def compute_run(name, run_dir):
         else: track_near.append(t_err)
     def p50(a): return percentile(a, 50) if a else float('nan')
 
-    # --- F4 anchor contribution ---
+    # F4 anchor contribution
     if anchors:
         disps = [math.hypot(ax-vx, ay-vy) for vx, vy, ax, ay in anchors]
         mean_disp = sum(disps) / len(disps)
@@ -270,7 +260,7 @@ def compute_run(name, run_dir):
         mean_disp = float('nan')
         useful_rate = float('nan')
 
-    # --- ARRIVAL p50/p95 ---
+    # arrival p50/p95
     arrivals = []
     if reached and tf_gt:
         for wall, wpi in reached:
@@ -279,7 +269,7 @@ def compute_run(name, run_dir):
             if abs(s[0] - wall) > 10.0: continue
             arrivals.append(math.hypot(s[1]-wps[wpi][0], s[2]-wps[wpi][1]))
 
-    # --- TRACK overall ---
+    # track overall
     all_track_errs = track_far + track_trans + track_near
     track_p50 = percentile(all_track_errs, 50)
     track_p95 = percentile(all_track_errs, 95)
@@ -325,13 +315,11 @@ def compute_run(name, run_dir):
     )
 
 
-# Compute all
 results = []
 for name, run_dir in RUNS:
     r = compute_run(name, run_dir)
     if r: results.append(r)
 
-# --- save raw metrics ---
 cols = ['name', 'finished', 'route_covered', 'path_length_m', 'run_time_s',
         'mission_time_s', 'path_ratio', 'time_ratio', 'loop_residual_m',
         'sum_dv', 'sum_dw', 'v_per_m', 'w_per_m', 'idle_time_s', 'idle_ratio',
@@ -345,7 +333,7 @@ with open(OUT / 'metrics_full.csv', 'w') as f:
         w.writerow([r[c] for c in cols])
 
 
-# --- composite scores ---
+# composite scores
 def clip01(x):
     return max(0.0, min(1.0, x))
 
@@ -353,7 +341,7 @@ def clip01(x):
 def s_safety(r):
     # A robot that never reached obstacles earns no safety credit - only
     # exposure-adjusted score counts. Scale by route_covered so non-runners
-    # can't get safety points by default.
+    # can't get safety points by default
     contact_penalty = min(r['contact_count'] / 50.0, 1.0)
     near_penalty = min(r['near_miss_count'] / 100.0, 1.0)
     exposure = r['route_covered']
@@ -368,7 +356,7 @@ def s_precision(r):
 
 def s_efficiency(r):
     # Zero credit for path_ratio < 1 (robot didn't travel the route) -
-    # efficiency is only meaningful once the run covers a real distance.
+    # efficiency is only meaningful once the run covers a real distance
     if r['path_ratio'] < 0.9:
         return 0.0
     return clip01(1 - (r['path_ratio'] - 1.0) / 2.0)
@@ -382,7 +370,7 @@ def s_completion(r):
 
 
 def s_speed(r):
-    # Only earned after actually covering the route.
+    # Only earned after actually covering the route
     if r['path_ratio'] < 0.9 or r['time_ratio'] == float('inf'):
         return 0.0
     return clip01(1 - (r['time_ratio'] - 1.0) / 10.0)
@@ -413,7 +401,7 @@ with open(OUT / 'composite_scores.csv', 'w') as f:
                   speed=s_speed(r), smoothness=s_smoothness(r))
         comps = {k: sum(sc[m] * v for m, v in wv.items())
                  for k, wv in WEIGHTS.items()}
-        # Non-finishers are capped at 0.5 - half credit for partial work.
+        # Non-finishers are capped at 0.5 - half credit for partial work.   
         if not r['finished']:
             comps = {k: v * 0.5 for k, v in comps.items()}
         w.writerow([r['name']] + [f"{sc[k]:.3f}" for k in ['safety','precision','efficiency','completion','speed','smoothness']]
@@ -422,7 +410,7 @@ with open(OUT / 'composite_scores.csv', 'w') as f:
         r.update({f'composite_{k}': v for k, v in comps.items()})
 
 
-# --- normalized metrics for display ---
+# normalized metrics for display
 def norm01(values, higher_better=True):
     xs = [v for v in values if not math.isnan(v) and v != float('inf')]
     if not xs: return [0.0] * len(values)
@@ -454,7 +442,7 @@ with open(OUT / 'metrics_normalized.csv', 'w') as f:
             row.append(f"{nn:.3f}")
         w.writerow(row)
 
-# Print summary
+#Print summary
 print(f"Ran analysis over {len(results)} experiments -> {OUT}")
 for r in sorted(results, key=lambda x: -x['composite_outdoor_ugv']):
     print(f"  {r['name']:<10}  outdoor={r['composite_outdoor_ugv']:.3f}  "

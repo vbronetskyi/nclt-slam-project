@@ -1,15 +1,5 @@
 #!/usr/bin/env python3
-"""
-Procedural outdoor world generator V2 - extended 220x150m map
-
-Full outdoor environment for UGV Husky A200 simulation:
-  - Heightmap 257x257 (FBM noise + domain warping)
-  - Terrain mesh: OBJ visual (257x257) + STL collision (65x65, smoothed, +15cm offset)
-  - Texture: 2048x2048 procedural (grass/dirt/rock blend + dirt road)
-  - 370+ objects: trees, bushes, stumps, fallen trees, rocks, buildings, ruins, barriers
-  - 3 routes with A* pathfinding, 2m+ clearance from obstacles
-  - Zones: dense forest (west), open field (center), village (east)
-  - Road from spawn (-105,-8) through curved path to village (82,-13)
+"""Procedural outdoor world generator V2 - extended 220x150m map
 
 Usage:
     python3 generate_world_v2.py [--seed 42] [--size 220] [--max-height 10]
@@ -53,19 +43,19 @@ ROAD_POINTS = [
 ROAD_WIDTH = 5.0
 ROAD_BLEND = 3.0
 
-# Zones
+#Zones
 # dense forest: x < -60
 # open field: -60 < x < 40
 # village: x > 40
 
 # Objects by zone
 ZONE_MODELS = [
-    # dense forest west
+    # dense forest west   
     {"name": "Oak tree", "uri": "https://fuel.gazebosim.org/1.0/OpenRobotics/models/Oak tree",
      "count": 80, "radius": 3.0, "x_range": (-190, -60), "y_range": (-190, 190)},
     {"name": "Pine Tree", "uri": "https://fuel.gazebosim.org/1.0/OpenRobotics/models/Pine Tree",
      "count": 60, "radius": 2.5, "x_range": (-190, -60), "y_range": (-190, 190)},
-    # bushes in the forest
+    #bushes in the forest
     {"name": "Bush", "uri": "https://fuel.gazebosim.org/1.0/OpenRobotics/models/Oak tree",
      "count": 40, "radius": 1.5, "x_range": (-190, -40), "y_range": (-190, 190),
      "scale": 0.3},
@@ -97,7 +87,7 @@ ZONE_MODELS = [
      "count": 12, "radius": 0.5, "x_range": (50, 150), "y_range": (-60, 60)},
 ]
 
-# village buildings (Fuel models)
+#village buildings (Fuel models)
 BUILDINGS = [
     {"name": "house_1", "x": 70, "y": -25, "yaw": 0.2, "footprint": 14,
      "uri": "https://fuel.gazebosim.org/1.0/OpenRobotics/models/House 1"},
@@ -379,7 +369,7 @@ def generate_terrain_obj(hmap, terrain_size, z_off):
         f.write(f"mtllib terrain.mtl\n")
         f.write(f"usemtl terrain_mat\n\n")
 
-        # vertices
+        #vertices
         for r in range(rows):
             for c in range(cols):
                 f.write(f"v {xx[r,c]:.3f} {yy[r,c]:.3f} {zz[r,c]:.3f}\n")

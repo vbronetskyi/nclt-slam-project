@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
-"""Reusable unified trajectory plot with scene map background.
+"""shared trajectory plot template with scene-map background.  drop-in
+helper used by every experiment that wants the same scene + colours +
+legend layout
 
-Usage from any experiment:
+usage:
     from plot_trajectory_map import plot_trajectory_map
     plot_trajectory_map(
         trajectories=[
-            {'csv': 'path/to/traj.csv', 'label': 'My run - 95%',
+            {'csv': 'path/to/traj.csv', 'label': 'my run - 95%',
              'color': '#1f77b4', 'x_col': 'x', 'y_col': 'y'},
         ],
         output='results/my_plot.png',
-        title='My Trajectory Comparison',
-        metrics_lines=[...],  # list of str for bottom-right box
+        title='my trajectory comparison',
+        metrics_lines=[...],  # list of str for the bottom-right box
         with_obstacles=True,  # show cone barriers + tent
         with_waypoints=True,
     )
@@ -120,9 +122,12 @@ def plot_trajectory_map(
     anchors_json = anchors_json or rc['anchors']
     if route != 'road':
         reference_csv = None  # no road reference for forest routes
-        # with_obstacles kept as passed - south/north now support nav obstacles
+        # with_obstacles kept as passed - south/north now support nav obstacles   
     fig, ax = plt.subplots(1, 1, figsize=figsize)
     ax.set_facecolor('#6b8e4e')  # grass
+    # collect per-route obstacle legend entries (counts) so the scene_handles
+    # legend shows "cone group ×N (3 cones)" etc. and the map stays uncluttered
+    obstacle_legend = []
 
     # Road corridor - only on the actual "road" route in scene
     # (south/north forest routes have no physical road)
@@ -148,7 +153,7 @@ def plot_trajectory_map(
                         color='#d9b783', alpha=0.5, zorder=1)
 
     # Teach reference path (dashed black) - only for forest routes
-    # (road route already uses reference_csv below)
+    #(road route already uses reference_csv below)
     if route != 'road':
         pts = _route_points_from_json(route)
         if pts:
@@ -166,7 +171,7 @@ def plot_trajectory_map(
             with open(scene_json) as f:
                 scene = json.load(f)
             # Roadside trees are placed unconditionally (convert_gazebo_to_isaac.py),
-            # so they must not be filtered by the forest-thinning logic.
+            # so they must not be filtered by the forest-thinning logic
             roadside = [m for m in scene if m['name'].startswith('roadside_tree_')]
             forest_trees = [m for m in scene if m['type'] in ('pine', 'oak')
                             and not m['name'].startswith('roadside_tree_')]
@@ -224,7 +229,7 @@ def plot_trajectory_map(
         except Exception as e:
             print(f"  [warn] reference: {e}")
 
-    # Trajectories
+    #Trajectories
     for t in trajectories:
         try:
             tx, ty = _parse_traj(t['csv'],
@@ -244,31 +249,42 @@ def plot_trajectory_map(
                                     facecolor='#ff6600', edgecolor='#8B0000',
                                     linewidth=0.5, alpha=0.95, zorder=6))
                 n += 1
-            ax.text(bx, y2 + 1.0, f'{name}\n{n} cones', ha='center', fontsize=9,
-                    color='#8B0000', fontweight='bold', zorder=7)
+            obstacle_legend.append(
+                Line2D([0], [0], marker='o', color='w', markerfacecolor='#ff6600',
+                       markeredgecolor='#8B0000', markersize=8, linestyle='none',
+                       label=f'{name}: {n} cones @ x={bx}'))
         ax.add_patch(Rectangle((-20-1.0, -0.9), 2.0, 1.8,
                                facecolor='#2d5a2d', edgecolor='#0d2d0d',
                                linewidth=0.8, alpha=0.9, zorder=6))
-        ax.text(-20, 1.5, 'Tent', ha='center', fontsize=9,
-                color='#8B0000', fontweight='bold', zorder=7)
+        obstacle_legend.append(
+            Patch(facecolor='#2d5a2d', edgecolor='#0d2d0d',
+                  label='tent @ (-20, 0)'))
     elif with_obstacles and route not in ('road',):
         try:
             import sys as _sys
             _sys.path.insert(0, '/workspace/simulation/isaac/scripts')
             from spawn_obstacles import OBSTACLES as _OBS, PROP_ASSETS as _PA
             _nav = _OBS.get(route, {})
-            for group in _nav.get('cones', []):
+            # cone groups: one legend entry per group, no on-graph label
+            for gi, group in enumerate(_nav.get('cones', [])):
+                gx_c = sum(c[0] for c in group) / len(group)
+                gy_c = sum(c[1] for c in group) / len(group)
                 for cx, cy in group:
                     ax.add_patch(Circle((cx, cy), 0.3,
                                         facecolor='#ff6600', edgecolor='#8B0000',
                                         linewidth=0.5, alpha=0.95, zorder=6))
+                obstacle_legend.append(
+                    Line2D([0], [0], marker='o', color='w', markerfacecolor='#ff6600',
+                           markeredgecolor='#8B0000', markersize=8, linestyle='none',
+                           label=f'cone group {gi+1} ({len(group)} cones) @ ({gx_c:.0f}, {gy_c:.0f})'))
             if _nav.get('tent'):
                 tx, ty = _nav['tent']
                 ax.add_patch(Rectangle((tx-1.1, ty-1.0), 2.2, 2.0,
                                        facecolor='#2d5a2d', edgecolor='#0d2d0d',
                                        linewidth=0.8, alpha=0.9, zorder=6))
-                ax.text(tx, ty+1.5, 'Tent', ha='center', fontsize=9,
-                        color='#8B0000', fontweight='bold', zorder=7)
+                obstacle_legend.append(
+                    Patch(facecolor='#2d5a2d', edgecolor='#0d2d0d',
+                          label=f'tent @ ({tx:.0f}, {ty:.0f})'))
             _PROP_COLOR = {
                 'barrel_large': '#d97706', 'barrel_medium': '#d97706',
                 'barrel_small': '#d97706', 'crate_plastic': '#94a3b8',
@@ -279,14 +295,51 @@ def plot_trajectory_map(
                 'trashcan': '#16a34a', 'firehydrant': '#dc2626',
                 'railing': '#fbbf24', 'bench': '#7c3aed',
             }
-            for p in _nav.get('props', []):
-                _, r_m = _PA.get(p['kind'], (None, 0.5))
-                col = _PROP_COLOR.get(p['kind'], '#888')
-                ax.add_patch(Circle((p['x'], p['y']), r_m, facecolor=col,
-                                    edgecolor='#000', linewidth=0.6, alpha=0.9,
-                                    zorder=6))
-                ax.text(p['x'], p['y'] + r_m + 0.6, p['kind'], ha='center',
-                        fontsize=7, color='#0f172a', zorder=7)
+            # props: cluster by spatial proximity (≤ 2 m apart) -> one label
+            #per cluster naming the dominant kind + count
+            props = _nav.get('props', [])
+            unassigned = list(range(len(props)))
+            clusters = []
+            while unassigned:
+                seed = unassigned.pop(0)
+                cur = [seed]
+                changed = True
+                while changed:
+                    changed = False
+                    for i in list(unassigned):
+                        for j in cur:
+                            if (props[i]['x'] - props[j]['x']) ** 2 + \
+                               (props[i]['y'] - props[j]['y']) ** 2 < 4.0:
+                                cur.append(i); unassigned.remove(i)
+                                changed = True; break
+                clusters.append(cur)
+            for cluster in clusters:
+                from collections import Counter
+                col_counts = Counter()
+                for idx in cluster:
+                    p = props[idx]
+                    _, r_m = _PA.get(p['kind'], (None, 0.5))
+                    col = _PROP_COLOR.get(p['kind'], '#888')
+                    ax.add_patch(Circle((p['x'], p['y']), r_m, facecolor=col,
+                                        edgecolor='#000', linewidth=0.6,
+                                        alpha=0.9, zorder=6))
+                    col_counts[col] += 1
+                # cluster legend entry: dominant kind + count + centroid
+                kinds = Counter(props[i]['kind'] for i in cluster)
+                top, top_n = kinds.most_common(1)[0]
+                cx_c = sum(props[i]['x'] for i in cluster) / len(cluster)
+                cy_c = sum(props[i]['y'] for i in cluster) / len(cluster)
+                if len(cluster) == 1:
+                    label = f'{top} @ ({cx_c:.0f}, {cy_c:.0f})'
+                elif len(kinds) == 1:
+                    label = f'{top} ×{len(cluster)} @ ({cx_c:.0f}, {cy_c:.0f})'
+                else:
+                    label = f'{top}+{len(cluster)-top_n}other ×{len(cluster)} @ ({cx_c:.0f}, {cy_c:.0f})'
+                marker_col = max(col_counts.items(), key=lambda x: x[1])[0]
+                obstacle_legend.append(
+                    Line2D([0], [0], marker='o', color='w',
+                           markerfacecolor=marker_col, markeredgecolor='#000',
+                           markersize=8, linestyle='none', label=label))
         except Exception as e:
             print(f"  [warn] nav obstacles: {e}")
 
@@ -302,7 +355,6 @@ def plot_trajectory_map(
                                         facecolor='#6b6b6b', edgecolor='#3a3a3a',
                                         linewidth=0.4, alpha=0.7, zorder=2))
         except Exception as e:
-            # print(f"DEBUG len(traj)={len(traj)}")
             print(f"  [warn] usd obstacles: {e}")
 
     # Waypoints
@@ -315,7 +367,6 @@ def plot_trajectory_map(
                        edgecolors='black', linewidths=0.6,
                        alpha=0.9, zorder=5, label=f'Waypoints (×{len(wps)})')
         except Exception as e:
-            # print("DEBUG: isaac sim step")
             print(f"  [warn] waypoints: {e}")
 
     ax.set_xlabel('X (m)', fontsize=11)
@@ -336,12 +387,8 @@ def plot_trajectory_map(
                markersize=7, linestyle='none', label='Rock (r=0.8m)'),
         Patch(facecolor='#8b5a2b', edgecolor='#3a2810', label='House (6×6m)'),
     ]
-    if with_obstacles:
-        scene_handles += [
-            Line2D([0], [0], marker='o', color='w', markerfacecolor='#ff6600',
-                   markersize=5, linestyle='none', label='Cone (barrier)'),
-            Patch(facecolor='#2d5a2d', edgecolor='#0d2d0d', label='Tent (2×1.8m)'),
-        ]
+    if with_obstacles and obstacle_legend:
+        scene_handles += obstacle_legend
 
     handles, _ = ax.get_legend_handles_labels()
     handles = handles + scene_handles
@@ -349,11 +396,13 @@ def plot_trajectory_map(
               fontsize=9, frameon=True, framealpha=0.95, ncol=2)
 
     if metrics_lines:
-        fig.text(0.98, 0.02, "\n".join(metrics_lines),
-                 fontsize=9, family='monospace',
-                 verticalalignment='bottom', horizontalalignment='right',
-                 bbox=dict(boxstyle='round,pad=0.5', facecolor='white',
-                           edgecolor='gray', alpha=0.95))
+        # bottom-left of axes (not figure) so it stays inside the map area
+        ax.text(0.02, 0.02, "\n".join(metrics_lines),
+                fontsize=10, family='monospace',
+                verticalalignment='bottom', horizontalalignment='left',
+                transform=ax.transAxes, zorder=12,
+                bbox=dict(boxstyle='round,pad=0.5', facecolor='white',
+                          edgecolor='#475569', linewidth=0.8, alpha=0.92))
 
     plt.tight_layout()
     plt.savefig(output, dpi=150, bbox_inches='tight')

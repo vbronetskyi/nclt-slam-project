@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Send teach-repeat waypoints to Nav2 as navigation goals.
+"""Send teach-repeat waypoints to Nav2 as navigation goals
 
 Reads world-frame waypoints from JSON, sends them one by one to Nav2.
 Nav2 handles obstacle avoidance via depth costmap.
@@ -35,7 +34,6 @@ class TRWaypointSender(Node):
         self.nav_client = ActionClient(self, NavigateToPose, "navigate_to_pose")
         self.get_logger().info("Waiting for Nav2 action server...")
         self.nav_client.wait_for_server()
-        # print(f">>> frame {i}/{n_frames}")
         self.get_logger().info("Nav2 ready.")
 
         self.current_wp = 0
@@ -43,7 +41,7 @@ class TRWaypointSender(Node):
         self.total_failed = 0
         self.start_time = time.time()
 
-        # Waypoint skip: if robot is already past a waypoint, skip it
+        # Waypoint skip: if robot is already past a waypoint, skip it   
         self.SKIP_DISTANCE = 3.0   # meters
         self.GOAL_TIMEOUT = 30.0   # seconds per waypoint
         self.MAX_RETRIES = 2
@@ -64,7 +62,6 @@ class TRWaypointSender(Node):
                 self.get_logger().info(f"  WP {i} REACHED")
             else:
                 self.total_failed += 1
-                # print("DEBUG: isaac sim step")
                 self.get_logger().warn(f"  WP {i} FAILED - skipping")
 
         elapsed = time.time() - self.start_time

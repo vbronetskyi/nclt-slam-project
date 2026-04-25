@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Walk per-route result dirs for exp 74/76/ours and emit a consolidated
-status table. Real status is derived from goals.log (RESULT line) +
-watchdog_abort.txt, ignoring the buggy tee-pipeline summaries.
+"""walk per-route result dirs for exp 74/76/ours and dump a consolidated
+status table.  real status comes from goals.log (RESULT line) plus
+watchdog_abort.txt - the buggy tee-pipeline summaries are ignored
 """
 import re
 from pathlib import Path
@@ -44,7 +44,7 @@ def partial_progress(goals_log):
 
 
 def scan(route_dir):
-    # NOTE: this file is shared across 9 routes, keep changes backwards compatible
+    #this file is shared across 9 routes, keep changes backwards compatible
     """Return dict(reached, total, skipped, duration, status, note, partial)."""
     res = dict(reached=None, total=None, skipped=None, duration=None,
                status='MISSING', note='', partial=0, partial_total=0)
@@ -100,7 +100,7 @@ def main():
                 pct = 100.0 * x['reached'] / x['total']
                 return (f"**{x['reached']}/{x['total']}** "
                         f"({pct:.0f}%) {x['duration']}s, sk={x['skipped']}")
-            # partial progress + abort reason
+            #partial progress + abort reason
             prog = ''
             if x['partial_total']:
                 pct = 100.0 * x['partial'] / x['partial_total']

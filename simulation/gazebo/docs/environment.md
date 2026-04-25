@@ -54,7 +54,7 @@ Parameters:
 
 ### Terrain Mesh
 
-Two separate meshes are used for rendering and collision:
+Two seperate meshes are used for rendering and collision:
 
 **Visual mesh (OBJ)**:
 - Resolution: 257 x 257 vertices (66049 vertices, 131072 triangles)
@@ -72,12 +72,12 @@ Two separate meshes are used for rendering and collision:
 
 Procedural texture, 2048 x 2048 px:
 - **Grass base** - FBM noise with 5 octaves, green tones
-- **Rock blend** - on steep slopes (slope > 5%), gradually transitions to rock tones
+- **Rock blend** - on steep slopes (slope > 5%), gradually transitions to rock tones   
 - **Dirt road** - along the road polyline, width ROAD_WIDTH, brown tones
 
 ## Road System
 
-A dirt road connects the western part of the map to the village. The road path is defined as a Bezier curve through a series of control points in the world frame.
+A dirt road connects the western part of the map to the village. The road path is defined as a Bezier curve thorugh a series of control points in the world frame.
 
 - Width: 5 m
 - Blend zone: 3 m (smooth transition between road and grass)
@@ -89,13 +89,13 @@ All objects are static models sourced from Gazebo Fuel (OpenRobotics):
 
 | Type | Count | Zone | Fuel Model |
 |------|-------|------|------------|
-| Oak trees | ~170 | Forest + transition + village | OpenRobotics/Oak tree |
-| Pine trees | ~127 | Forest + transition + village | OpenRobotics/Pine Tree |
+| Oak trees | +-170 | Forest + transition + village | OpenRobotics/Oak tree |
+| Pine trees | +-127 | Forest + transition + village | OpenRobotics/Pine Tree |
 | Fallen trees | 40 | Forest | Pine Tree (pitch 1.5 rad) |
 | Rocks | 23 | All zones | OpenRobotics/Falling Rock 1 |
 | Buildings | 5 | Village | Lake House, Depot, Collapsed House |
-| Barrels | ~10 | Village | OpenRobotics/Construction Barrel |
-| Misc (cones, hydrants) | ~5 | Village | Various OpenRobotics models |
+| Barrels | +-10 | Village | OpenRobotics/Construction Barrel |
+| Misc (cones, hydrants) | +-5 | Village | Various OpenRobotics models |
 
 **Total: 370 models**
 
@@ -106,15 +106,15 @@ Each object is validated against:
 2. **Road clearance** - ROAD_WIDTH/2 + 2 m from the road centerline
 3. **Building clearance** - footprint/2 + 4 m from building centers
 4. **Slope limit** - no more than 25 degrees
-5. Up to 300 stochastic placement attempts per object
+5. Up to 300 stochastic placement attempts per object   
 
 ## Physics
 
-- **Engine:** Bullet (more stable than ODE on uneven terrain)
-- **Step size:** 4 ms (250 Hz)
-- **Real-time factor:** 1.0
-- **Collision mesh:** separate STL (65x65, smoothed, +15 cm offset)
-- **Road friction:** mu=1.0, mu2=0.8
+- Engine: Bullet (more stable than ODE on uneven terrain)
+- Step size: 4 ms (250 Hz)
+- Real-time factor: 1.0
+- Collision mesh: separate STL (65x65, smoothed, +15 cm offset)
+- Road friction: mu=1.0, mu2=0.8
 
 ## Lighting
 

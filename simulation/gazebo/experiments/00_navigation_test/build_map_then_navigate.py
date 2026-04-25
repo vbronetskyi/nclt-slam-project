@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Build SLAM map by driving in expanding squares, then navigate to a safe goal nearby"""
+"""Build SLAM map by driving in expanding squares, then navigate to a safe goal nearby
+"""
 import rclpy
 from rclpy.node import Node
 from rclpy.action import ActionClient
@@ -56,7 +57,7 @@ class MapAndNavigate(Node):
             # forward-turn pattern (expanding square)
             for _ in range(4):
                 self.drive(0.5, 0.0, 2.5 * scale)  # forward
-                self.drive(0.0, 0.7, 2.2)            # turn ~90deg
+                self.drive(0.0, 0.7, 2.2)            # turn +-90deg
             rclpy.spin_once(self, timeout_sec=0.5)
 
         self.get_logger().info(f'Map built: {self._free_cells} free cells')
@@ -168,7 +169,7 @@ def main():
     rclpy.init()
     node = MapAndNavigate()
 
-    # phase 1: build the map
+    #phase 1: build the map
     node.build_map(target_free_cells=15000)
     time.sleep(2.0)
 

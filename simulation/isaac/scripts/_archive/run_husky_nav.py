@@ -55,7 +55,7 @@ for _ in range(300):
 
 BASE_LINK = "/World/Husky/Geometry/base_link"
 
-# physics 200Hz TGS
+#physics 200Hz TGS
 _phys = stage.GetPrimAtPath("/World/PhysicsScene")
 if _phys.IsValid():
     PhysxSchema.PhysxSceneAPI(_phys).GetTimeStepsPerSecondAttr().Set(200)
@@ -74,7 +74,7 @@ for wl in ["front_left_wheel_link", "front_right_wheel_link",
     if col.IsValid():
         UsdShade.MaterialBindingAPI.Apply(col).Bind(_wf, materialPurpose="physics")
 
-# camera
+#camera
 CAM_PATH = "/World/HuskyCamera"
 cam = UsdGeom.Camera.Define(stage, CAM_PATH)
 cam.CreateFocalLengthAttr(1.93)
@@ -152,7 +152,7 @@ timeline.play()
 for _ in range(300):
     app.update()
 
-# camera render product
+#camera render product
 import omni.replicator.core as rep
 rp = rep.create.render_product(CAM_PATH, (640, 480))
 ann_rgb = rep.AnnotatorRegistry.get_annotator("rgb")
@@ -172,9 +172,9 @@ def get_gt_pose():
     yaw = math.atan2(rot[0][1], rot[0][0])
     return float(pos[0]), float(pos[1]), float(pos[2]), yaw
 
-# SLAM pose reading (from rgbd_live process via /tmp/slam_pose.txt)
+#SLAM pose reading (from rgbd_live process via /tmp/slam_pose.txt)
 # the SLAM pose is in camera frame, need to convert to world frame
-# for navigation we need the initial transform (first SLAM pose = first GT pose)
+#for navigation we need the initial transform (first SLAM pose = first GT pose)
 _slam_origin = None      # (slam_x, slam_y, slam_z, gt_x, gt_y, gt_z, gt_yaw) at init
 _slam_pose_file = "/tmp/slam_pose.txt"
 
@@ -198,19 +198,18 @@ def get_slam_pose():
             # first SLAM pose: record offset between SLAM frame and world frame
             gt = get_gt_pose()
             _slam_origin = (sx, sy, sz, slam_yaw, gt[0], gt[1], gt[2], gt[3])
-            # print(f"DEBUG state={state} pose={pose}")
             print(f"  SLAM origin: slam=({sx:.2f},{sy:.2f},{sz:.2f}) gt=({gt[0]:.1f},{gt[1]:.1f})")
 
         # transform SLAM pose to world frame using initial offset
         s0x, s0y, s0z, s0yaw, g0x, g0y, g0z, g0yaw = _slam_origin
 
-        # delta in SLAM frame
+        #delta in SLAM frame
         dx_s = sx - s0x
         dy_s = sy - s0y
         dz_s = sz - s0z
         dyaw = slam_yaw - s0yaw
 
-        # SLAM frame: Z=forward, X=right(=-world Y), Y=down
+        #SLAM frame: Z=forward, X=right(=-world Y), Y=down
         # rotate by initial heading to world frame
         cos_g = math.cos(g0yaw)
         sin_g = math.sin(g0yaw)
@@ -315,7 +314,7 @@ def check_path_blocked(d_img, target_bearing):
         return False, 999.0
     try:
         h, w = d_img.shape[:2]
-        # D435i FOV ~87 deg = ±43.5 deg. map bearing to pixel column
+        # D435i FOV +-87 deg = ±43.5 deg. map bearing to pixel column
         col = int(w / 2 - target_bearing * w / 1.52)
         col = max(0, min(w - 1, col))
         # vertical strip: rows h//4 to h//2 only (above horizon, no ground)
@@ -334,7 +333,7 @@ def check_path_blocked(d_img, target_bearing):
 
 def plan_detour(rx, ry, ryaw, d_img):
     """plan a smooth detour around an obstacle.
-    5 waypoints, max ~20 deg turn angle to keep SLAM tracking stable.
+    5 waypoints, max +-20 deg turn angle to keep SLAM tracking stable.
     returns list of (x, y) waypoints."""
     # which side is more open?
     go_left = True
@@ -390,7 +389,7 @@ for _ in range(100):
     if os.path.exists("/tmp/slam_status.txt"): break
     time.sleep(0.1)
 
-# spawn obstacles
+# spawn obstacles   
 print(f"  spawning obstacles on {args.route}...")
 spawn_obstacles(stage, args.route)
 for _ in range(30): app.update()
@@ -465,7 +464,7 @@ def drive_phase(current_path, dest_x, dest_y, phase_name):
 
         frame_n = int(sim_time * 60)
 
-        # read depth + save images every ~6 frames (~10Hz)
+        # read depth + save images every +-6 frames (+-10Hz)
         if frame_n % 6 == 0:
             _last_depth = ann_depth.get_data()
             rgb = ann_rgb.get_data()
@@ -486,7 +485,7 @@ def drive_phase(current_path, dest_x, dest_y, phase_name):
         dodging = _detour is not None
 
         if _detour is not None:
-            # detour mode: follow detour waypoints
+            #detour mode: follow detour waypoints
             dtx, dty = _detour[_detour_idx]
             dist_to_dpt = math.hypot(dtx - rx, dty - ry)
             if dist_to_dpt < 2.5:
@@ -506,7 +505,7 @@ def drive_phase(current_path, dest_x, dest_y, phase_name):
             tx, ty = find_target(rx, ry, current_path)
             lin_v, ang_v = steer(ryaw, tx, ty, rx, ry)
 
-            # check if path is blocked (every ~1s = every 60 frames)
+            #check if path is blocked (every +-1s = every 60 frames)
             _check_interval += 1
             if _check_interval >= 60 and _last_depth is not None:
                 _check_interval = 0
@@ -580,7 +579,6 @@ try: slam_proc.wait(timeout=30)
 except: pass
 
 print(f"\n=== NAVIGATION COMPLETE ===")
-# print("DEBUG: isaac sim step")
 print(f"  {rec_dir}")
 print(f"  {img_count} images, {len(traj_out)}+{len(traj_back)} poses")
 
@@ -600,7 +598,7 @@ rx = np.linspace(-100, 78, 300)
 ry = np.array([_road_y(x) for x in rx])
 ax.plot(rx, ry, '--', color='gray', alpha=0.5, linewidth=1.5, label='Road')
 
-# route waypoints
+#route waypoints
 px_out = [p[0] for p in path_out]
 py_out = [p[1] for p in path_out]
 ax.plot(px_out, py_out, ':', color='blue', alpha=0.4, linewidth=1, label='Route (SLAM map)')

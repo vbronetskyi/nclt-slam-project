@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Extract RGB, Depth, IMU from ROS2 topics to files for ORB-SLAM3"""
+"""Extract RGB, Depth, IMU from ROS2 topics to files for ORB-SLAM3
+"""
 import rclpy, numpy as np, cv2, time
 from rclpy.node import Node
 from sensor_msgs.msg import Image, Imu

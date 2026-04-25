@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
-"""
-run the converted gazebo forest scene with husky a200 + ros2 sensor publishing
+"""run the converted gazebo forest scene with husky a200 + ros2 sensor publishing
 
-publishes:
   /camera/color/image_raw       sensor_msgs/Image (rgb8, 640x480)
   /camera/depth/image_rect_raw  sensor_msgs/Image (32FC1, 640x480)
   /imu/data                     sensor_msgs/Imu
@@ -80,7 +78,7 @@ base = stage.GetPrimAtPath(BASE_LINK)
 
 # fix mass - URDF import left it at 0, PhysX can't move massless objects
 mass_api = UsdPhysics.MassAPI.Apply(base)
-mass_api.CreateMassAttr().Set(46.0)  # husky is ~46kg
+mass_api.CreateMassAttr().Set(46.0)  # husky is +-46kg
 print("  mass: 46 kg")
 
 # add collision box so robot sits on ground plane
@@ -95,7 +93,7 @@ if not stage.GetPrimAtPath(col_path).IsValid():
     col.CreatePurposeAttr("guide")
     print("  added collision box")
 
-# fix wheel drives - need damping for velocity control
+# fix wheel drives - need damping for velocity control   
 # without damping, targetVelocity has no effect
 for wname in ["front_left_wheel", "front_right_wheel",
               "rear_left_wheel", "rear_right_wheel"]:
@@ -115,7 +113,6 @@ if geom.IsValid():
     xf = UsdGeom.Xformable(geom)
     xf.ClearXformOpOrder()
     xf.AddTranslateOp().Set(Gf.Vec3d(-105, 0, 0.3))
-# print(f"DEBUG state={state} pose={pose}")
 print("  spawn: (-105, 0, 0.3)")
 
 # -- forward camera (d435i simulation) --
@@ -166,13 +163,12 @@ omni.kit.commands.execute(
     orientation_filter_size=10,
 )
 IMU_PATH = f"{IMU_PARENT}/imu_sensor"
-# print(f"DEBUG: ran {len(ran)} waypoints")
 print(f"  imu: {IMU_PATH}")
 
 for _ in range(20):
     app.update()
 
-# -- ros2 omnigraph --
+# -- ros2 omnigraph --   
 print("\ncreating ros2 graph...")
 keys = og.Controller.Keys
 
@@ -232,7 +228,7 @@ og.Controller.edit(
             ("CreateRP.outputs:execOut", "DepthPub.inputs:execIn"),
             ("CreateRP.outputs:renderProductPath", "RGBPub.inputs:renderProductPath"),
             ("CreateRP.outputs:renderProductPath", "DepthPub.inputs:renderProductPath"),
-            # chase camera connections
+            #chase camera connections
             ("CreateChaseRP.outputs:execOut", "ChasePub.inputs:execIn"),
             ("CreateChaseRP.outputs:renderProductPath", "ChasePub.inputs:renderProductPath"),
             ("ReadIMU.outputs:execOut", "PubIMU.inputs:execIn"),
@@ -273,7 +269,7 @@ def get_xform_op(path):
         return ops[0] if ops else None
     return None
 
-# cameras stay at initial positions from make_camera()
+# cameras stay at initial positions from make_camera()   
 # forward: (-105, -8, 1.5), chase: (-110, -8, 4)
 for _ in range(100):
     app.update()
@@ -355,7 +351,7 @@ print("\nmeasuring topic rates (5s)...")
 last_cam_msg = [None]
 orig_cam_cb = make_cb("/camera/color/image_raw")
 def cam_save_cb(msg):
-    # TODO: tune per route
+    #tune per route
     orig_cam_cb(msg)
     if len(msg.data) > 0:
         last_cam_msg[0] = msg
@@ -377,7 +373,7 @@ for topic in sorted(topic_counts):
 if not topic_counts:
     print("  no messages received")
 
-# save ROS2 camera frame
+#save ROS2 camera frame
 if last_cam_msg[0] is not None:
     msg = last_cam_msg[0]
     img = np.frombuffer(msg.data, dtype=np.uint8)
@@ -399,7 +395,7 @@ mat = xfc.GetLocalToWorldTransform(base)
 pos = mat.ExtractTranslation()
 print(f"\nrobot position: ({pos[0]:.1f}, {pos[1]:.1f}, {pos[2]:.2f})")
 
-# -- main loop with follow-cam --
+# -- main loop with follow-cam --   
 # update static camera position each frame to track the robot
 print(f"\nrunning for {args.duration}s... (ctrl+c to stop)")
 sim_time = 5.0
@@ -418,7 +414,7 @@ def cmd_vel_cb(msg):
     latest_cmd[0] = msg
 node.create_subscription(Twist, "/cmd_vel", cmd_vel_cb, 10)
 
-# cameras are STATIC - no follow-cam
+#cameras are STATIC - no follow-cam
 # moving cameras after Replicator render_product creation causes black frames
 # cameras show the initial view from spawn point
 

@@ -1,6 +1,5 @@
-#!/usr/bin/env python3
-"""
-Route-relative localizer: determines current position on a taught route
+#!/usr/bin/env python3   
+"""Route-relative localizer: determines current position on a taught route
 by visual matching against anchor keyframes.
 """
 import cv2

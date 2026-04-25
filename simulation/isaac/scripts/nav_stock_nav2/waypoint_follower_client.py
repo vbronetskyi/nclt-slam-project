@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
-"""Stock-Nav2 baseline client v2 - via FollowWaypoints action.
+"""stock-Nav2 baseline client (v2) - drives via the FollowWaypoints action
 
-The canonical Nav2 way to "visit a list of waypoints with skip-on-failure"
-is the WaypointFollower action (stop_on_failure: false). Each WP is
-delegated to NavigateToPose internally; if one fails, the follower logs it
-and moves to the next.
-
-Compared to v1 (NavigateThroughPoses single-trajectory) this survives
-individual WP failures instead of aborting the whole route.
+the canonical Nav2 way to "visit a list of waypoints with skip-on-failure"
+is the WaypointFollower action (stop_on_failure: false).  each WP is
+delegated to NavigateToPose internally; if one fails the follower just
+logs it and moves to the next.  v1 used NavigateThroughPoses with a
+single trajectory and any WP failure killed the whole route, this version
+survives that
 """
 import argparse, csv, math, time, sys
 import rclpy
@@ -69,7 +68,7 @@ class WaypointClient(Node):
     # before sending, peek global costmap at every WP.  If cell cost ≥
     # LETHAL_INFLATED, try nearest free cell within PROJ_RADIUS_M; if
     # nothing found, drop that WP altogether (so robot doesn't stall
-    # at an unreachable goal in forest inflation).
+    # at an unreachable goal in forest inflation)
     LETHAL_INFLATED = 70
     PROJ_RADIUS_M = 2.0
 
@@ -205,7 +204,6 @@ class WaypointClient(Node):
             self.last_idx = idx
             wps_list = self.wps_final if hasattr(self, 'wps_final') else self.wps
             x, y = wps_list[idx] if 0 <= idx < len(wps_list) else (0.0, 0.0)
-            # print(f"DEBUG: ran {len(ran)} waypoints")
             self.get_logger().info(
                 f'  WP progress  idx={idx}/{len(wps_list)-1}  '
                 f'target=({x:.1f},{y:.1f})  t={dur}s')
@@ -218,7 +216,6 @@ if __name__ == '__main__':
     args = ap.parse_args()
 
     wps = subsample(args.trajectory, args.spacing)
-    # print("DEBUG: isaac sim step")
     print(f'Subsampled to {len(wps)} WPs at {args.spacing}m spacing')
     robot_xy = robot_pose_from_tmp()
     wps_after = skip_initial_reached(wps, robot_xy, tol=3.5)

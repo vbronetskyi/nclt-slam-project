@@ -1,13 +1,10 @@
 #!/usr/bin/env python3
-"""Stock-Nav2 baseline client v2 - via FollowWaypoints action.
+"""waypoint follower client for the RGB-D-no-IMU baseline
 
-The canonical Nav2 way to 'visit a list of waypoints with skip-on-failure'
-is the WaypointFollower action (stop_on_failure: false). Each WP is
-delegated to NavigateToPose internally; if one fails, the follower logs it
-and moves to the next.
-
-Compared to v1 (NavigateThroughPoses single-trajectory) this survives
-individual WP failures instead of aborting the whole route.
+drives via the FollowWaypoints action so failed WPs get skipped instead
+of killing the whole route.  each WP is dispatched to NavigateToPose
+internally, the v1 single-trajectory NavigateThroughPoses path used to
+abort everything if one WP failed
 """
 import argparse, csv, math, time, sys
 import rclpy
@@ -41,7 +38,7 @@ def robot_pose_from_tmp():
 
 
 def skip_initial_reached(wps, robot_xy, tol=3.5):
-    # FIXME: hardcoded spawn, read from routes.json
+    # hardcoded spawn, read from routes.json
     """Drop leading WPs already within `tol` of robot pose. Stock Nav2
     goal_checker declares them reached but BT gets stuck in wait
     recovery with trivial single-pose plans."""
@@ -69,7 +66,7 @@ class WaypointClient(Node):
     # before sending, peek global costmap at every WP.  If cell cost ≥
     # LETHAL_INFLATED, try nearest free cell within PROJ_RADIUS_M; if
     # nothing found, drop that WP altogether (so robot doesn't stall
-    # at an unreachable goal in forest inflation).
+    #at an unreachable goal in forest inflation)   
     LETHAL_INFLATED = 70
     PROJ_RADIUS_M = 2.0
 
@@ -171,7 +168,6 @@ class WaypointClient(Node):
         poses = self._prepare_poses()
         goal = FollowWaypoints.Goal()
         goal.poses = poses
-        # print(f"DEBUG state={state} pose={pose}")
         self.get_logger().info(
             f'Sending {len(poses)} WPs to stock Nav2 FollowWaypoints action')
         fut = self.client.send_goal_async(goal, feedback_callback=self._on_feedback)
@@ -221,7 +217,6 @@ if __name__ == '__main__':
     print(f'Subsampled to {len(wps)} WPs at {args.spacing}m spacing')
     robot_xy = robot_pose_from_tmp()
     wps_after = skip_initial_reached(wps, robot_xy, tol=3.5)
-    # print(f"DEBUG: ran {len(ran)} waypoints")
     print(f'Skipped {len(wps) - len(wps_after)} leading WP(s) already within 3.5 m of robot '
           f'pose {robot_xy} - stock Nav2 gets stuck on trivial plans.')
     wps = wps_after

@@ -1,5 +1,4 @@
-"""
-Nav2 launch for Husky A200 in Isaac Sim.
+"""Nav2 launch for Husky A200 in Isaac Sim
 Starts: controller_server (MPPI), planner_server, costmap nodes,
         behavior_server, bt_navigator, velocity_smoother, lifecycle_manager.
 Does NOT start localization (ORB-SLAM3 handles map->odom tf separately).
@@ -17,7 +16,7 @@ from nav2_common.launch import RewrittenYaml
 
 
 def generate_launch_description():
-    # NOTE: relies on scripts/common/ being on path
+    #relies on scripts/common/ being on path
     config_dir = os.path.dirname(os.path.abspath(__file__))
     params_file = os.path.join(config_dir, 'nav2_husky_params.yaml')
 

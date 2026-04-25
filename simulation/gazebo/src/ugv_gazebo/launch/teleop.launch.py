@@ -1,5 +1,4 @@
-"""
-Teleop launch for Husky A200: keyboard + Xbox 360 gamepad
+"""Teleop launch for Husky A200: keyboard + Xbox 360 gamepad
 
 Usage:
   # keyboard only:

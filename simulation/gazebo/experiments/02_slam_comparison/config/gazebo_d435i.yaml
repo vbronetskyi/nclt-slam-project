@@ -1,8 +1,8 @@
 %YAML:1.0
 
-#--------------------------------------------------------------------------------------------
+
 # Gazebo Simulated D435i - Camera Parameters
-#--------------------------------------------------------------------------------------------
+
 File.version: "1.0"
 
 Camera.type: "PinHole"
@@ -60,18 +60,18 @@ IMU.GyroWalk: 1e-4       # rad/s^1.5
 IMU.AccWalk: 1e-3        # m/s^2.5
 IMU.Frequency: 230.0
 
-#--------------------------------------------------------------------------------------------
+
 # ORB Parameters
-#--------------------------------------------------------------------------------------------
+
 ORBextractor.nFeatures: 1500
 ORBextractor.scaleFactor: 1.2
 ORBextractor.nLevels: 8
 ORBextractor.iniThFAST: 20
 ORBextractor.minThFAST: 7
 
-#--------------------------------------------------------------------------------------------
+
 # Viewer Parameters (disabled for headless)
-#--------------------------------------------------------------------------------------------
+
 Viewer.KeyFrameSize: 0.05
 Viewer.KeyFrameLineWidth: 1.0
 Viewer.GraphLineWidth: 0.9

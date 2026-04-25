@@ -1,13 +1,5 @@
 #!/usr/bin/env python3
-"""Three-panel comparison of the top-3 ranked runs.
-
-Each panel shows:
-  - green terrain base
-  - dashed black teach reference
-  - orange cone barriers + green tent at true positions
-  - colored run trajectory
-  - start / turnaround / end markers
-  - metrics overlay
+"""Three-panel comparison of the top-3 ranked runs
 """
 import csv
 import math
@@ -55,7 +47,7 @@ RUNS = [
     ),
 ]
 
-# Load teach path
+#Load teach path
 teach_x, teach_y = [], []
 with open(TEACH_CSV) as f:
     for r in csv.DictReader(f):
@@ -89,7 +81,7 @@ for ax, run in zip(axes, RUNS):
                 xs.append(float(r[run['x']])); ys.append(float(r[run['y']]))
             except: pass
     ax.plot(xs, ys, color=run['color'], linewidth=1.8, alpha=0.9, label='GT trajectory')
-    # markers
+    #markers   
     ax.plot(*START, marker='o', color='white', markersize=14, markeredgecolor='black',
             markeredgewidth=2, zorder=10)
     ax.plot(*TURN,  marker='s', color='yellow', markersize=14, markeredgecolor='black',
@@ -101,7 +93,7 @@ for ax, run in zip(axes, RUNS):
         ax.plot(xs[-1], ys[-1], marker='*', color='black', markersize=16,
                 markeredgecolor=run['color'], markeredgewidth=2, zorder=11,
                 label='robot stopped here')
-    # labels on markers (first axis only to avoid clutter)
+    #labels on markers (first axis only to avoid clutter)
     if ax is axes[0]:
         ax.annotate('START',     START,     xytext=(6, 6),  textcoords='offset points', fontsize=9, weight='bold')
         ax.annotate('TURNAROUND', TURN,     xytext=(6, 6),  textcoords='offset points', fontsize=9, weight='bold')
@@ -113,7 +105,7 @@ for ax, run in zip(axes, RUNS):
     ax.set_aspect('equal')
     ax.grid(alpha=0.2)
     ax.set_title(run['label'], color=run['color'], fontsize=13, weight='bold')
-    # metrics overlay
+    #metrics overlay
     ax.text(0.02, 0.02, '\n'.join(run['metrics']),
             transform=ax.transAxes, fontsize=9, family='monospace',
             bbox=dict(facecolor='white', alpha=0.85, edgecolor='gray'),

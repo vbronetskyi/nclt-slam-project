@@ -1,50 +1,11 @@
 #!/usr/bin/env python3
-"""repeat-time visual landmark matcher, core of our T&R anchor correction
+"""repeat-time visual landmark matcher, the core of our T&R anchor correction
 
-picks up south_landmarks.pkl (or whichever *_landmarks.pkl matches the active
-route), subscribes to live RGB-D + VIO pose, and at ~1-2 Hz tries to anchor
-the current camera pose to a recorded teach landmark:
-
-  1. find candidate teach landmarks within CANDIDATE_RADIUS m of current VIO
-     position (in teach-map world frame, if VIO has drifted this search
-     radius tolerates the drift)
-  2. match current-frame ORB descriptors to each candidate (Lowe ratio,
-     >= MIN_MATCHES good matches)
-  3. PnP-RANSAC: candidate's 3D keypoints (teach camera frame) <-> current
-     frame's 2D keypoints.  solution + enough inliers + reprojection error
-     below REPROJ_MAX_PX = valid match
-  4. compose: anchor world pose of current camera =
-        teach_camera_world * (PnP = teach_camera_from_current)^-1
-     then convert to base_link using known base->camera static offset
-  5. consistency check - discard if |anchor - current_vio| > CONSISTENCY_M
-  6. publish `/anchor_correction` (PoseWithCovarianceStamped),  covariance
-     diagonal derived from inlier count
-
-changelog (exps 51-64, one of the more painful parts of the thesis):
-  exp 51 v1 - naive ORB descriptor match, no geometric verification
-              teleports on repetitive structure (trees all look alike far away)
-  exp 55    - added PnP-RANSAC.  ~20% matches still garbage (reprojection 10+ px),
-              added REPROJ_MAX_PX filter
-  exp 57    - dropped depth-correlation matcher idea.  see commented block below
-  exp 58    - running accumulator of new landmarks every 5s/5m.  drift
-              REINFORCEMENT loop - new landmarks got registered at drifted
-              pose, next anchor pulled even further away
-              had 83 m drift peak before I spotted it
-  exp 59    - accumulator OFF, tightened CONSISTENCY_M from 10 to 3
-              drift mean 1.67 m
-  exp 61    - tried dense anchor period (2s/2m),  also reinforcement, reverted
-  exp 62    - anchor sanity gate against encoder,  mostly did nothing, removed
-  exp 63    - global relocalisation fallback (descriptor search when silent >20s)
-  exp 64    - current
-
-inputs:
-  /camera/color/image_raw, /camera/depth/image_rect_raw
-  /tmp/isaac_pose.txt        VIO/encoder-blended pose from tf_wall_clock_relay_v55
-  <route>_landmarks.pkl      from visual_landmark_recorder during teach
-
-outputs:
-  /anchor_correction         geometry_msgs/PoseWithCovarianceStamped
-  anchor_matches.csv         log of every attempt (success + failure reason)
+picks up <route>_landmarks.pkl, subscribes to the live RGB-D + VIO pose,
+and at +-1-2 Hz tries to anchor the current camera pose to a recorded
+teach landmark.  output is /anchor_correction (PoseWithCovarianceStamped)
+plus an anchor_matches.csv log with the success or failure reason for
+every attempt
 """
 import argparse
 import csv
@@ -84,18 +45,18 @@ def _img_msg_to_depth_mm(msg):
     raise ValueError(f'unexpected depth encoding {msg.encoding}')
 
 # camera intrinsics, must match the recorder (visual_landmark_recorder.py)
-# if you change one, change the other or matches break silently
+#if you change one, change the other or matches break silently
 FX, FY = 320.0, 320.0
 CX, CY = 320.0, 240.0
 K = np.array([[FX, 0, CX], [0, FY, CY], [0, 0, 1]], dtype=np.float32)
 DIST = np.zeros((4, 1), dtype=np.float32)
 
-# candidate-selection knobs.  8 m radius tolerates ~6 m VIO drift + 2 m slop
+# candidate-selection knobs.  8 m radius tolerates +-6 m VIO drift + 2 m slop
 # larger radius = more candidates = slower + more false matches
 CANDIDATE_RADIUS_M = 8.0
 MAX_CANDIDATES = 5                    # top-5 by VIO distance
 HEADING_TOL_DEG = 90.0                # teach heading must be within this of current
-# exp 56-A: match only on ground-half of current frame (teach landmarks also
+#exp 56-A: match only on ground-half of current frame (teach landmarks also
 # restricted to below-horizon pixels).  helped in forest because tree
 # canopies at different heights kept giving confusing feature matches
 GROUND_Y_THRESHOLD = 180
@@ -110,12 +71,12 @@ MIN_INLIERS = 10                      # gate on RANSAC inlier count
 
 # the all-important consistency gate.  exp 59 found that anything bigger than
 # 3-5 m and PnP outliers teleport the robot.  5 m is the compromise value
-# that worked on every route without missing legitimate corrections
+# that worked on every route without missing legitimate corrections   
 CONSISTENCY_M = 5.0
 TICK_HZ = 2.0
 
 # dropped exp 58: continuous landmark accumulation.  the ACCUM_ENABLE flag is
-# still True because run_husky_forest.py expects it, but ACCUM_MIN_DIST_M was
+#still True because run_husky_forest.py expects it, but ACCUM_MIN_DIST_M was
 # bumped so high in practice that no new landmarks ever get added.  keeping
 # the scaffolding in case the drift-reinforcement problem ever gets solved
 # the original idea: if no anchor for ACCUM_SILENCE_S and nearest teach
@@ -131,8 +92,8 @@ ACCUM_SAVE_PKL = True
 # current depth map vs teach depth maps (on a 4x4 grid) as an alternative to
 # ORB descriptor matching, would be invariant to lighting changes
 # tried it on route 03_south.  0 of 300 matches were valid.  depth in forest
-# is too regular (trees of similiar height everywhere), score surface was flat
-# leaving this here as documentation of the attempt
+#is too regular (trees of similiar height everywhere), score surface was flat   
+# leaving this here as documentation of the attempt   
 # def _match_by_depth_correlation(cur_depth, teach_depths, grid=(4, 4)):
 #     scores = []
 #     for td in teach_depths:
@@ -141,7 +102,7 @@ ACCUM_SAVE_PKL = True
 #         s = np.corrcoef(sub_cur.flatten(), sub_td.flatten())[0, 1]
 #         scores.append(s)
 #     i = int(np.argmax(scores))
-#     return (i, scores[i]) if scores[i] > 0.7 else None
+#return (i, scores[i]) if scores[i] > 0.7 else None
 
 BASE_TO_CAM_TRANSLATION = np.array([0.35, 0.0, 0.18])
 BASE_TO_CAM_ROT = np.array([
@@ -166,7 +127,7 @@ def quat_to_rot(qx, qy, qz, qw):
 
 
 def rot_to_quat(R):
-    # XXX: magic, came out of exp 59 tuning
+    # magic, came out of exp 59 tuning
     tr = R[0, 0] + R[1, 1] + R[2, 2]
     if tr > 0:
         s = 0.5 / math.sqrt(tr + 1.0)
@@ -300,7 +261,6 @@ class VisualLandmarkMatcher(Node):
         try:
             self.last_depth = _img_msg_to_depth_mm(msg)
         except Exception as e:
-            # print(f"DEBUG turnaround fire? {fired}")
             self.get_logger().warn(f'depth: {e}')
 
     def _read_pose(self):
@@ -329,7 +289,7 @@ class VisualLandmarkMatcher(Node):
         ts = time.time()
 
         # Candidates within radius AND within heading tolerance (reject
-        # return-path landmarks that would false-match an outbound frame)
+        # return-path landmarks that would false-match an outbound frame)   
         cur_hdg = self._current_heading_rad(base_pose)
         dxy = self.xy - np.array(vio_xy)
         d = np.linalg.norm(dxy, axis=1)
@@ -362,7 +322,7 @@ class VisualLandmarkMatcher(Node):
                 continue
             # Cross-check match: teach->current (smaller set first gives
             # better precision with crossCheck=True).  queryIdx=teach,
-            # trainIdx=current.
+            # trainIdx=current
             try:
                 good = self.matcher.match(desc_t, desc_curr)
             except cv2.error:
@@ -385,7 +345,7 @@ class VisualLandmarkMatcher(Node):
                 reprojectionError=RANSAC_REPROJ_PX,
                 flags=cv2.SOLVEPNP_ITERATIVE)
             # exp 55 had SOLVEPNP_EPNP which is faster but produced more outliers
-            # on the narrow-FoV d435i,  iterative is slower (~2x) but more accurate
+            # on the narrow-FoV d435i,  iterative is slower (+-2x) but more accurate
             if not ok or inliers is None or len(inliers) < MIN_INLIERS:
                 continue
             # reprojection error on inliers, single most important filter in the
@@ -394,7 +354,7 @@ class VisualLandmarkMatcher(Node):
             err = float(np.linalg.norm(
                 proj.reshape(-1, 2) - img_pts[inliers[:, 0]], axis=1).mean())
             if err > REPROJ_MAX_PX:
-                # exp 56 had REPROJ_MAX_PX=4 and let through matches that later
+                # exp 56 had REPROJ_MAX_PX=4 and let thorugh matches that later
                 # caused pose jumps of 4-6 m,  2 px is the tight setting that works
                 continue
             # rvec/tvec -> teach-cam pose as seen from current cam
@@ -468,7 +428,6 @@ class VisualLandmarkMatcher(Node):
                   f'published_std{std:.2f}_shift{consistency_d:.1f}')
 
         if self.n_published % 20 == 0:
-            # print(f"DEBUG match_count={match_count}")
             self.get_logger().info(
                 f'[MATCH {self.n_published}/{self.n_attempts}] lm#{lm_idx} '
                 f'inliers={n_inliers} err={reproj_err:.2f}px shift={consistency_d:.2f}m')
@@ -512,7 +471,7 @@ class VisualLandmarkMatcher(Node):
         y_cam = (vv - cy_) * d_c / fy
         z_cam = d_c
         kpts_3d_cam = np.stack([x_cam, y_cam, z_cam], axis=-1).astype(np.float32)
-        # Camera pose in world: from base via static offset
+        #Camera pose in world: from base via static offset
         R_wb = quat_to_rot(*base_pose[3:7])
         cam_xyz = np.array([base_pose[0], base_pose[1], base_pose[2]]) + \
                   R_wb @ self.base_to_cam_t
@@ -535,8 +494,6 @@ class VisualLandmarkMatcher(Node):
         self.xy = np.vstack([self.xy, [vio_xy[0], vio_xy[1]]])
         self.heading = np.append(self.heading, self._lm_heading_rad(new_lm))
         self.n_accumulated += 1
-        # print(f">>> tick {n}")
-        # print(f"DEBUG matches={matches}")
         self.get_logger().info(
             f'[ACCUM #{self.n_accumulated}] new landmark at ({vio_xy[0]:.1f},'
             f'{vio_xy[1]:.1f})  n_kpts={new_lm["n_features"]}  '
@@ -544,7 +501,7 @@ class VisualLandmarkMatcher(Node):
 
 
 def main():
-    # NOTE: keep in sync with send_goals_hybrid tolerance
+    # keep in sync with send_goals_hybrid tolerance
     ap = argparse.ArgumentParser()
     ap.add_argument('--landmarks', required=True)
     ap.add_argument('--out-csv', required=True)

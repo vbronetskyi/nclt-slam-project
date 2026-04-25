@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
-"""Extract ALL collision objects from the Isaac Sim scene USD directly.
+"""pulls every collision object straight from the Isaac scene USD
 
-Authoritative source: /opt/husky_forest_scene.usd. Avoids missing objects
-that /tmp/gazebo_models.json lacks (e.g. /World/RoadsideTrees, which are
-not in the Gazebo dump).
-
-Writes /workspace/simulation/isaac/routes/_common/scene_obstacles.json as:
-    [{"type": '...', "x": ..., "y": ..., "r": ...}, ...]
+reads /opt/husky_forest_scene.usd as the source of truth.  catches
+objects /tmp/gazebo_models.json misses (eg /World/RoadsideTrees - those
+never made it into the Gazebo dump).  output goes to
+routes/_common/scene_obstacles.json as
+[{"type": "...", "x": ..., "y": ..., "r": ...}, ...]
 """
 import json
 from pathlib import Path

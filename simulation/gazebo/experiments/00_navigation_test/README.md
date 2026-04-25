@@ -13,7 +13,7 @@
 - Global costmap: 30x30m rolling window, 0.05m resolution
 
 ## Result: SUCCESS
-- Map built: 20,473 free cells in 3 exploration loops (~90s)
+- Map built: 20,473 free cells in 3 exploration loops (+-90s)
 - Auto-goal found: (0.85, -1.66), 3.42m from robot in verified free space
 - Navigation: 2.70m to 0.44m in 7.2 seconds
 - Final distance to goal: 1.00m (within tolerance)

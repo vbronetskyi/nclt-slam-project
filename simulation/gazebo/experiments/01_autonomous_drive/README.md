@@ -5,13 +5,13 @@
 
 ## Overview
 
-Autonomous drive of Husky A200 UGV through a 390x390m outdoor terrain with 541 objects (trees, buildings, obstacles). The robot drives from the forest (west) through a dirt road to the village (east).
+Autonomous drive of Husky A200 UGV thorugh a 390x390m outdoor terrain with 541 objects (trees, buildings, obstacles). The robot drives from the forest (west) through a dirt road to the village (east).
 
 **Route 1: Forest -> Road -> Village**
 - Start: (-170, 0) - dense forest
 - Goal: (100, 0) - village with houses
-- Path: gradually rises through forest (y=0->25), follows dirt road, descends to village
-- Distance: 271m, 54 waypoints every 5m
+- Path: gradually rises thorugh forest (y=0->25), follows dirt road, descends to village
+- Distance: 271m, 54 waypoints every 5m   
 
 ## Latest Drive Results (GT-verified)
 
@@ -76,7 +76,7 @@ Village approach (WP38-WP54): descends to village at (100,0)
 
 ### Navigation Method
 
-**Web-based click-to-drive + automated dense waypoint following:**
+Web-based click-to-drive + automated dense waypoint following:
 - 54 waypoints every 5m along pre-planned route
 - P-controller: proportional steering toward next waypoint
 - Acceptance radius: 3m
@@ -84,13 +84,37 @@ Village approach (WP38-WP54): descends to village at (100,0)
 - No runtime obstacle avoidance - relies on pre-planned clearance (2m+ from trees)
 - GT position used for navigation decisions (no odom drift issues)
 
+## ORB-SLAM3 offline evaluation
+
+ran ORB-SLAM3 RGB-D offline on the recorded rosbag (every 5th frame, 3699
+of 18493 usable frames after timestamp alignment).  RGB-D mode only -
+IMU init failed because the robot drives at 0.5 m/s with not enough
+acceleration excitation for bias estimation
+
+| Metric | Value |
+|--------|-------|
+| Tracked frames | 3035 / 3699 (82 %) |
+| ATE RMSE | 41.76 m |
+| ATE Mean | 35.45 m |
+| ATE Max | 83.69 m |
+| Sim(3) scale | 10.85 (should be +-1.0 for RGB-D) |
+| Maps created | 174 |
+
+constant tracking loss + re-initialisation - ORB-SLAM3 found only 30-200
+map points per map, well below the +-500 needed for stable tracking. root
+cause is Gazebo ogre2 procedural rendering: smooth grass, low-poly tree
+canopies and mipmap-flattened terrain all kill ORB feature density and
+descriptor repeatability.  this was the trigger to switch to RTAB-Map +
+build a smaller, denser-object world for [exp 02](../02_slam_comparison/),
+where RTAB-Map's dense depth matcher works in the forest section while
+ORB-SLAM3 still fails
+
 ## Files
 
 | File | Description |
 |------|-------------|
 | `gt_trajectory.csv` | Ground truth trajectory, 33,453 points @ 50Hz. Columns: `time,x,y,yaw` |
 | `trajectory_r1.csv` | Earlier run with odom+IMU (5,232 points). Columns: `time,wx,wy,yaw,pitch,roll,imu_ax,imu_ay,imu_az` |
-| `orb_slam3_results.md` | ORB-SLAM3 evaluation results and analysis |
 | `trajectory_comparison.png` | Visual comparison of GT vs ORB-SLAM3 trajectory |
 | `/workspace/simulation/routes/routes.json` | Route definition (11 coarse waypoints + road) |
 | `/workspace/simulation/tools/drive_route.py` | Automated drive script with rosbag recording |
@@ -114,7 +138,7 @@ Village approach (WP38-WP54): descends to village at (100,0)
 
 ### Goal
 
-Build a 3D map from this route for:
+Build a 3D map from this route for:   
 1. **Path planning** - navigate by pre-built map, not blind waypoints
 2. **Visual SLAM localization** - know position from camera, not just odometry
 3. **Autonomous re-navigation** - re-drive route or explore using the map
@@ -123,40 +147,40 @@ Build a 3D map from this route for:
 
 Run RTAB-Map during the drive instead of slam_toolbox. Processes RGB-D + IMU + odom in real-time.
 
-**After one drive we get `rtabmap.db` containing:**
+After one drive we get `rtabmap.db` containing:
 - Dense 3D point cloud (from depth camera)
 - 2D occupancy grid (for Nav2 path planning)
 - Visual vocabulary (for relocalization)
 - Optimized pose graph (trajectory)
 - Compressed keyframe images + depth
 
-**Pipeline:**
+Pipeline:
 ```
 1. Launch with slam_type:=rtabmap (config exists: rtabmap_params.yaml)
 2. Drive Route 1 (11 min)
-3. Save rtabmap.db (~50-200MB)
+3. Save rtabmap.db (+-50-200MB)
 4. Export 2D map -> .pgm/.yaml -> Nav2 loads it
 5. Next drive: RTAB-Map localization mode (no re-mapping)
 6. Nav2 plans paths on the built map
 ```
 
-**Pros:** One drive = complete map, Nav2-ready, compact storage, handles loop closures
-**Cons:** Heavier CPU/RAM (depth processing), may need reduced camera rate
+Pros: One drive = complete map, Nav2-ready, compact storage, handles loop closures
+Cons: Heavier CPU/RAM (depth processing), may need reduced camera rate
 
-**Config:** `/workspace/simulation/src/ugv_navigation/config/rtabmap_params.yaml`
-**Launch:** `full_sim.launch.py` accepts `slam_type:=rtabmap`
+Config: `/workspace/simulation/src/ugv_navigation/config/rtabmap_params.yaml`
+Launch: `full_sim.launch.py` accepts `slam_type:=rtabmap`
 
 ### Option B: ORB-SLAM3
 
 Standalone visual-inertial SLAM. Needs camera frames + IMU.
 
-**What we get:** Sparse 3D feature map + accurate trajectory
-**What we don't get:** No dense point cloud, no 2D grid, no Nav2 integration
+What we get: Sparse 3D feature map + accurate trajectory
+What we don't get: No dense point cloud, no 2D grid, no Nav2 integration
 
-**To feed data:** Record rosbag during drive, replay through ORB-SLAM3 offline. Or run live with ROS 2 wrapper.
+To feed data: Record rosbag during drive, replay through ORB-SLAM3 offline. Or run live with ROS 2 wrapper.
 
-**Pros:** Lightweight, good accuracy, works with monocular camera
-**Cons:** No Nav2 maps, needs octomap for grid, separate ROS 2 wrapper
+Pros: Lightweight, good accuracy, works with monocular camera
+Cons: No Nav2 maps, needs octomap for grid, separate ROS 2 wrapper
 
 ### Option C: Hybrid
 
@@ -166,7 +190,7 @@ RTAB-Map for mapping (3D map + 2D grid) -> ORB-SLAM3 for fast relocalization on 
 
 | | RTAB-Map Live | ORB-SLAM3 Live | Rosbag + offline |
 |---|---|---|---|
-| Storage | ~100MB (.db) | ~50MB (map) | ~1-2GB (compressed) |
+| Storage | +-100MB (.db) | +-50MB (map) | +-1-2GB (compressed) |
 | Post-processing | None | Minimal | Full replay needed |
 | Nav2 ready | Yes | No | After processing |
 | 3D point cloud | Dense | Sparse | Depends |
@@ -176,7 +200,7 @@ RTAB-Map for mapping (3D map + 2D grid) -> ORB-SLAM3 for fast relocalization on 
 
 ### Recommendation
 
-**Start with RTAB-Map Live (Option A):**
+Start with RTAB-Map Live (Option A):
 1. Drive Route 1 with `slam_type:=rtabmap` -> get `rtabmap.db`
 2. Export 2D map for Nav2 path planning
 3. Test autonomous navigation on built map

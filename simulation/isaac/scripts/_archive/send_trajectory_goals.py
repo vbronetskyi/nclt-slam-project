@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Follow recorded teach-run trajectory via Nav2 sequential goals.
+"""Follow recorded teach-run trajectory via Nav2 sequential goals
 On failure: backup, clear costmap, skip to next waypoint.
 """
 import argparse
@@ -134,7 +133,6 @@ class TrajectoryFollower(Node):
             leth = int(np.sum(local >= 253))
             infl = int(np.sum((local > 0) & (local < 253)))
             unk = int(np.sum(local == -1))
-            # print(f"DEBUG state={state} pose={pose}")
             self.get_logger().warn(
                 f"  [{tag} cm ±4m] free={free*100//tot}% lethal={leth*100//tot}% "
                 f"inflated={infl*100//tot}% unknown={unk*100//tot}%"
@@ -144,7 +142,6 @@ class TrajectoryFollower(Node):
             self.get_logger().warn("  [diag] /plan empty - PLANNER FAILED")
         else:
             last = self.latest_plan.poses[-1].pose.position
-            # print("DEBUG: isaac sim step")
             self.get_logger().warn(
                 f"  [diag] /plan has {len(self.latest_plan.poses)} poses, "
                 f"ends at ({last.x:.1f},{last.y:.1f}) "
@@ -170,7 +167,7 @@ class TrajectoryFollower(Node):
                 dx = wp["x"] - rx
                 dist = math.hypot(wp["x"] - rx, wp["y"] - ry)
                 # For outbound (positive x), WP behind = dx < -2
-                # For return (negative x), WP behind = dx > 2
+                #For return (negative x), WP behind = dx > 2
                 behind = dx < -2.0 if self.direction == "outbound" else dx > 2.0
                 if behind:
                     self.get_logger().info(f"  WP {i} behind robot ({wp['x']:.0f} vs {rx:.0f}), skip")
@@ -206,7 +203,7 @@ class TrajectoryFollower(Node):
                     )
 
                 if attempt < self.MAX_ATTEMPTS - 1:
-                    # v11: NO backup - accumulates drift over many WP failures.
+                    # v11: NO backup - accumulates drift over many WP failures
                     # Just clear costmap and retry.
                     self._clear_local_only()
                     time.sleep(0.3)

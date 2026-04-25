@@ -2,18 +2,12 @@
 """web UI for isaac sim husky navigation
 camera feed + 2D map + click-to-drive + stop button
 
-subscribes to isaac sim ros2 topics:
-  /camera/color/image_raw, /odom, /tf
-
-publishes:
-  /cmd_vel (Twist)
-
 usage:
   # start isaac sim first:
   /opt/isaac-sim-6.0.0/python.sh simulation/isaac/scripts/run_forest_sim.py &
   # then start web UI:
   python3 simulation/isaac/tools/web_nav.py
-  # open http://localhost:8765
+  #open http://localhost:8765
 """
 import sys, os
 # add isaac sim's bundled rclpy
@@ -245,24 +239,24 @@ def render_map():
         if not (0 <= px < sx and 0 <= py < sy):
             continue
         if mtype in ("pine", "oak"):
-            # tree trunk ~0.5m radius (what robot drives between)
+            # tree trunk +-0.5m radius (what robot drives between)
             r = max(2, int(0.5 * ppm))
             draw.ellipse([px-r, py-r, px+r, py+r], fill=color, outline=(200, 200, 200))
         elif mtype == "shrub":
-            # shrub ~1m radius
+            # shrub +-1m radius
             r = max(2, int(1.0 * ppm))
             draw.ellipse([px-r, py-r, px+r, py+r], fill=color, outline=(40, 90, 30))
         elif mtype == "rock":
-            # rock ~0.7m
+            # rock +-0.7m
             r = max(2, int(0.7 * ppm))
             draw.polygon([(px, py-r), (px+r, py), (px, py+r), (px-r, py)], fill=color)
         elif mtype == "house":
-            # house ~5x5m
+            # house +-5x5m
             r = max(5, int(5.0 * ppm))
             draw.rectangle([px-r, py-r, px+r, py+r], fill=color, outline=(60, 40, 30), width=2)
         elif "fallen" in mtype:
             # fallen trees: actual size in sim is smaller than tree height
-            # trunk visible part ~5-8m depending on scale
+            # trunk visible part +-5-8m depending on scale
             scale = _fallen_scales.get(name, 1.0)
             trunk_len = 8.0 * scale
             half = max(3, int(trunk_len / 2 * ppm))
@@ -271,7 +265,7 @@ def render_map():
             dy = int(-half * math.sin(yaw))
             draw.line([px-dx, py-dy, px+dx, py+dy], fill=color, width=w)
         elif mtype == "barrel":
-            # barrel ~0.4m
+            # barrel +-0.4m
             r = max(2, int(0.4 * ppm))
             draw.ellipse([px-r, py-r, px+r, py+r], fill=color)
 
@@ -435,7 +429,7 @@ def map_png():
 
 @app.route("/camera.jpg")
 def camera_jpg():
-    # NOTE: relies on scripts/common/ being on path
+    #relies on scripts/common/ being on path
     # file first (atomic write from sim), then ROS2 fallback
     try:
         with open("/tmp/isaac_cam_fwd.jpg", "rb") as f:

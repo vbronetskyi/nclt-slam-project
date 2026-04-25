@@ -44,7 +44,7 @@ controller_server:
       yaw_goal_tolerance: 0.5
 
     # MPPI with 4.8s horizon for obstacle group bypass
-    # 96 steps * 0.05s = 4.8s ~ 3.8m at 0.8 m/s - enough to go 3m sideways
+    # 96 steps * 0.05s = 4.8s +- 3.8m at 0.8 m/s - enough to go 3m sideways
     FollowPath:
       plugin: "nav2_mppi_controller::MPPIController"
       time_steps: 96

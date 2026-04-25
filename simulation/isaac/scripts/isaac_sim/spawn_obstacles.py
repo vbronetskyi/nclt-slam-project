@@ -1,5 +1,4 @@
-"""
-spawn/remove dynamic obstacles for navigation testing.
+"""spawn/remove dynamic obstacles for navigation testing
 obstacles placed ON route trajectory with space for bypass.
 
 usage:
@@ -18,24 +17,24 @@ def _frange(start, stop, step):
         v += step
     return vals
 
-# per-route obstacle definitions
-# Barriers: dense cone walls (0.5m spacing) blocking part of road
-# Robot MUST go around - cannot pass through
+#per-route obstacle definitions
+# barriers: dense cone walls (0.5m spacing) blocking part of road
+# Robot MUST go around - cannot pass thorugh
 
 OBSTACLES = {
     "road": {
         "cones": [
             # BARRIER 1 (x=-50): cone wall blocks south half of road
-            # Route y≈-4.8. Wall from y=-8 to y=-2.5, 1.0m spacing (halved density)
-            # Bypass: north side y>-2 (3m free)
+            #Route y≈-4.8. Wall from y=-8 to y=-2.5, 1.0m spacing (halved density)
+            #Bypass: north side y>-2 (3m free)
             [(-50, y) for y in _frange(-8.0, -2.5, 1.0)],
             # BARRIER 2 (x=15): cone wall blocks north half
             # Route y≈-2.0. Wall from y=-1 to y=+4, 1.0m spacing
-            # Bypass: south side y<-1.5 (4m free)
+            #Bypass: south side y<-1.5 (4m free)
             [(15, y) for y in _frange(-1.0, 4.0, 1.0)],
             # BARRIER 3 (x=45): cone wall blocks center
             # Route y≈-1.2. Wall from y=-3 to y=+1, 1.0m spacing
-            # Bypass: south y<-3.5 (2m) or north y>+1.5 (3m)
+            #Bypass: south y<-3.5 (2m) or north y>+1.5 (3m)
             [(45, y) for y in _frange(-3.0, 1.0, 1.0)],
         ],
         "tent": (-20, 0.0),
@@ -51,7 +50,7 @@ OBSTACLES = {
     "north_forest": {
         # exp 72 north-forest repeat obstacles (on outbound path):
         # - 2 cones in deep forest @ x=-45, route y≈+23
-        # - 2 cones further east @ x=-10, route y≈+28
+        # - 2 cones further east @ x=-10, route y≈+28   
         # - tent at route exit (x≈0, y≈+24)
         # - 3 cones after tent @ x=+21, route y≈+3
         'cones': [
@@ -70,13 +69,13 @@ OBSTACLES = {
             # Obstacle C (x=+5, on route @ y~-17.8): 4-cone wall y=-17..-20
             [(5, -17.0), (5, -18.0), (5, -19.0), (5, -20.0)],
         ],
-        # Tent placed ON route between group 0 (x=-75) and group 1 (x=-18).
-        # Route passes through (-45,-38) outbound - tent sits across the path.
+        # Tent placed ON route between group 0 (x=-75) and group 1 (x=-18)
+        #Route passes thorugh (-45,-38) outbound - tent sits across the path
         "tent": (-45.0, -38.0),
     },
     "04_nw_se": {
-        # Repeat obstacles along 04 outbound (LT -> RB diagonal).
-        # Placed on the teach path at 15/40/65/85% through outbound.
+        # Repeat obstacles along 04 outbound (LT -> RB diagonal)
+        # Placed on the teach path at 15/40/65/85% thorugh outbound
         "cones": [
             [(-65.0, 28.0), (-65.0, 29.5)],                  # cones group 1 - early forest
             [(4.0, -19.0), (4.0, -18.0)],                    # cones group 2 - mid outbound
@@ -96,7 +95,7 @@ OBSTACLES = {
         ],
     },
     "06_nw_ne": {
-        # Auto-generated obstacle config - 6 props along outbound
+        # Auto-generated obstacle config - 6 props along outbound   
         "props": [
             {"kind": "firehydrant", "x": -62.74, "y": +18.77},
             {"kind": "cardbox_large", "x": -38.07, "y": -4.89},
@@ -119,8 +118,8 @@ OBSTACLES = {
         ],
     },
     "08_nw_sw": {
-        # Auto-generated obstacle config - 5 props along outbound
-        # Color-diverse: grey trashcan / grey concrete / blue dumpster / wood bench / brown cardboxes
+        #Auto-generated obstacle config - 5 props along outbound
+        #Color-diverse: grey trashcan / grey concrete / blue dumpster / wood bench / brown cardboxes
         "props": [
             {"kind": "trashcan",         "x": -100.80, "y": +13.31},
             {"kind": "trashcan",         "x": -100.80, "y": +14.41},
@@ -178,7 +177,7 @@ def _terrain_height(x, y):
 
 
 def _make_cone(stage, path, x, y):
-    # FIXME: hardcoded spawn, read from routes.json
+    # hardcoded spawn, read from routes.json
     """traffic cone: orange cone with collision"""
     gz = _terrain_height(x, y)
     cone = UsdGeom.Cone.Define(stage, path)
@@ -206,14 +205,14 @@ PROP_ASSETS = {
     "cardbox_cube":       (f"{_PROPS_DIR}/SM_CardBoxB_01.usd",              0.3),
     "cardbox_flat":       (f"{_PROPS_DIR}/SM_CardBoxC_01.usd",              0.3),
     "cardbox_small":      (f"{_PROPS_DIR}/SM_CardBoxD_01.usd",              0.2),
-    # Rivermark (use *_inst.usd - geometry resides there)
+    #Rivermark (use *_inst.usd - geometry resides there)
     "concrete_block_a":   (f"{_PROPS_DIR}/concrete_block_01_inst.usd",      0.6),
     "concrete_block_b":   (f"{_PROPS_DIR}/concrete_block_02_inst.usd",      0.6),
     "dumpster_large":     (f"{_PROPS_DIR}/dumpster_lrg_01_inst.usd",        1.3),
     "dumpster_small":     (f"{_PROPS_DIR}/dumpster_blue_sm_01_inst.usd",    1.2),
     "trashcan":           (f"{_PROPS_DIR}/trashcan_cylinder_01_inst.usd",   0.4),
     "firehydrant":        (f"{_PROPS_DIR}/firehydrant04_inst.usd",          0.3),
-    "railing":            (f"{_PROPS_DIR}/safety_railing_01_inst.usd",      1.2),  # x-length ~2.2 m
+    "railing":            (f"{_PROPS_DIR}/safety_railing_01_inst.usd",      1.2),  # x-length +-2.2 m
     "bench":              (f"{_PROPS_DIR}/bench_curved_01_inst.usd",        1.5),
 }
 
@@ -238,11 +237,11 @@ def _spawn_prop(stage, prim_path, asset_key, x, y, yaw_rad=0.0, scale=1.0):
     if scale != 1.0:
         xf.AddScaleOp().Set(Gf.Vec3f(scale, scale, scale))
     # INNER prim references the asset - its own xformOps live here and
-    # don't collide with ours on the outer.
+    # don't collide with ours on the outer
     inner_path = f"{prim_path}/ref"
     inner = stage.DefinePrim(inner_path, "Xform")
     inner.GetReferences().AddReference(asset_path)
-    # Apply solid collision to every mesh descendant of the referenced asset.
+    # Apply solid collision to every mesh descendant of the referenced asset
     _apply_collision_recursive(stage, inner_path)
     return outer
 
@@ -322,7 +321,6 @@ def spawn_obstacles(stage, route="road"):
             _make_cone(stage, f"{root}/cone_{cone_idx:02d}", cx, cy)
             cone_idx += 1
     if cone_idx:
-        # print(f">>> frame {i}/{n_frames}")
         print(f"  spawned {cone_idx} cones in {len(obs['cones'])} groups")
 
     if obs.get("tent"):
@@ -337,7 +335,6 @@ def spawn_obstacles(stage, route="road"):
         _spawn_prop(stage, path, p["kind"], p["x"], p["y"],
                     yaw_rad=p.get("yaw", 0.0), scale=p.get("scale", 1.0))
         prop_count += 1
-        # print(f"DEBUG state={state} pose={pose}")
         print(f"  spawned prop '{p['kind']}' at ({p['x']}, {p['y']})")
 
     total = cone_idx + (1 if obs.get("tent") else 0) + prop_count

@@ -1,13 +1,5 @@
 #!/usr/bin/env python3
-"""
-Two-phase waypoint sender for Nav2.
-
-Supports two modes:
-  --slam-frame: load SLAM-frame waypoints from /tmp/slam_waypoints.json
-  default: load world-frame waypoints from /tmp/slam_routes.json
-
-Adaptive speed based on drift from mapped trajectory.
-Waypoint skipping when robot passes waypoint along forward axis.
+"""Two-phase waypoint sender for Nav2
 
 usage:
   source /opt/ros/jazzy/setup.bash
@@ -27,9 +19,9 @@ from tf2_ros import Buffer, TransformListener
 
 PHASE_FILE = "/tmp/nav2_phase.json"
 
-# drift-based speed
+#drift-based speed
 DRIFT_LOW = 2.0
-# COSTMAP_INFLATION = 0.5  # tighter = squeeze, looser = miss narrow gaps
+#COSTMAP_INFLATION = 0.5  # tighter = squeeze, looser = miss narrow gaps
 DRIFT_MED = 4.0
 DRIFT_HIGH = 7.0
 SPEED_FULL = 0.8
@@ -207,12 +199,10 @@ class Nav2TwoPhase(Node):
     def send_next_goal(self):
         if self.current_idx >= len(self.current_poses):
             if self.phase == "outbound":
-                # print(f">>> frame {i}/{n_frames}")
                 self.get_logger().info('=== OUTBOUND COMPLETE ===')
                 self.get_logger().info('signaling obstacle removal...')
                 write_phase("removing")
                 time.sleep(5.0)
-                # print("DEBUG: isaac sim step")
                 self.get_logger().info('=== PHASE 2: RETURN (obstacles removed) ===')
                 self.phase = "return"
                 self.current_poses = self.return_poses
@@ -282,7 +272,7 @@ class Nav2TwoPhase(Node):
 
 
 def main():
-    # NOTE: this file is shared across 9 routes, keep changes backwards compatible
+    # this file is shared across 9 routes, keep changes backwards compatible
     route = 'road'
     slam_frame = '--slam-frame' in sys.argv
 

@@ -12,7 +12,7 @@ def main():
     os.makedirs(f"{output_dir}/camera_rgb", exist_ok=True)
     os.makedirs(f"{output_dir}/camera_depth", exist_ok=True)
 
-    # --- 1. Read warmup IMU ---
+    # 1. Read warmup IMU
     with open(f"{warmup_dir}/imu.csv") as f:
         warmup_imu = list(csv.DictReader(f))
     warmup_t0 = float(warmup_imu[0]['timestamp'])
@@ -20,11 +20,10 @@ def main():
     warmup_duration = warmup_t_end - warmup_t0
     print(f"warmup: {len(warmup_imu)} IMU, t=[{warmup_t0:.3f}..{warmup_t_end:.3f}]")
 
-    # --- 2. Read forest IMU ---
+    # 2. Read forest IMU
     with open(f"{forest_dir}/imu.csv") as f:
         forest_imu = list(csv.DictReader(f))
     forest_t0 = float(forest_imu[0]['timestamp'])
-    # print(f"DEBUG len(traj)={len(traj)}")
     print(f"forest: {len(forest_imu)} IMU, t=[{forest_t0:.3f}..{forest_imu[-1]['timestamp']}]")
 
     # Forest timestamps shifted to start right after warmup with small gap
@@ -32,7 +31,7 @@ def main():
     time_offset = warmup_t_end - forest_t0 + GAP
     print(f"time_offset for forest: {time_offset:+.3f}s")
 
-    # --- 3. Write combined imu.csv ---
+    # 3. Write combined imu.csv
     with open(f"{output_dir}/imu.csv", 'w') as f:
         f.write("timestamp,ax,ay,az,gx,gy,gz,qx,qy,qz,qw\n")
         for r in warmup_imu:
@@ -45,7 +44,7 @@ def main():
                     f"{r['gx']},{r['gy']},{r['gz']},"
                     f"{r['qx']},{r['qy']},{r['qz']},{r['qw']}\n")
 
-    # --- 4. Copy/rename camera frames ---
+    # 4. Copy/rename camera frames
     n_warmup_rgb = 0
     for src in sorted(glob.glob(f"{warmup_dir}/camera_rgb/*.jpg")):
         fname = os.path.basename(src)
@@ -68,7 +67,7 @@ def main():
 
     print(f"frames: warmup={n_warmup_rgb}, forest={n_forest_rgb}, total={n_warmup_rgb+n_forest_rgb}")
 
-    # --- 5. Concatenate GT (warmup GT then shifted forest GT) ---
+    # 5. Concatenate GT (warmup GT then shifted forest GT)
     with open(f"{output_dir}/groundtruth_tum.txt", "w") as f:
         # Warmup GT
         if os.path.exists(f"{warmup_dir}/groundtruth_tum.txt"):
@@ -85,13 +84,13 @@ def main():
                     new_t = float(parts[0]) + time_offset
                     f.write(f"{new_t:.4f} {' '.join(parts[1:])}\n")
 
-    # --- 6. Save forest_start_time.txt for evaluation ---
+    # 6. Save forest_start_time.txt for evaluation
     forest_start_t = forest_t0 + time_offset
     with open(f"{output_dir}/forest_start_time.txt", "w") as f:
         f.write(f"{forest_start_t:.4f}\n")
     print(f"forest_start_time = {forest_start_t:.4f}s")
 
-    # --- 7. Generate associations.txt and imu_orbslam.txt ---
+    # 7. Generate associations.txt and imu_orbslam.txt
     rgbs = sorted(glob.glob(f"{output_dir}/camera_rgb/*.jpg"),
                   key=lambda x: float(os.path.basename(x).replace(".jpg", "")))
     n_assoc = 0
@@ -114,7 +113,6 @@ def main():
                 ts, ax, ay, az, gx, gy, gz = p[:7]
                 fout.write(f"{ts} {gx} {gy} {gz} {ax} {ay} {az}\n")
                 n += 1
-    # print(f">>> frame {i}/{n_frames}")
     print(f"imu_orbslam: {n}")
 
     print(f"\nCombined dataset ready at {output_dir}")

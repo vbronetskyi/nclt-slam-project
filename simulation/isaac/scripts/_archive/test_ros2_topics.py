@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-test ros2 topic publishing from isaac sim
+"""test ros2 topic publishing from isaac sim
 runs the simulation for a few seconds and checks topics from within the same process
 
 usage: /opt/isaac-sim-6.0.0/python.sh test_ros2_topics.py
@@ -153,7 +152,7 @@ print("warming up renderer (200 frames)...")
 for _ in range(200):
     app.update()
 
-# now check topics from within the same process using rclpy
+#now check topics from within the same process using rclpy
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Image, Imu
@@ -182,7 +181,6 @@ checker.create_subscription(Odometry, "/odom", make_cb("/odom"), 10)
 checker.create_subscription(TFMessage, "/tf", make_cb("/tf"), 10)
 
 # run for 5 seconds, interleaving sim steps and rclpy spins
-# print(f">>> frame {i}/{n_frames}")
 print("measuring topic rates for 5 seconds...")
 start = time.time()
 while time.time() - start < 5.0:
@@ -227,7 +225,7 @@ if imu_data:
     print(f"\nimu sample:")
     print(f"  lin_acc: [{imu_data['lin_acc'][0]:.3f}, {imu_data['lin_acc'][1]:.3f}, {imu_data['lin_acc'][2]:.3f}] m/s²")
     print(f"  ang_vel: [{imu_data['ang_vel'][0]:.4f}, {imu_data['ang_vel'][1]:.4f}, {imu_data['ang_vel'][2]:.4f}] rad/s")
-    # gravity check: z accel should be ~9.81 when stationary
+    # gravity check: z accel should be +-9.81 when stationary
     if abs(imu_data["lin_acc"][2] - 9.81) < 2.0:
         print("  gravity check: PASS (z accel ≈ 9.81)")
     else:
@@ -238,5 +236,4 @@ rclpy.shutdown()
 
 timeline.stop()
 app.close()
-# print(f"DEBUG len(traj)={len(traj)}")
 print("\ndone")

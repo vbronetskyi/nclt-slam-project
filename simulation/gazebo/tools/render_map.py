@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Render 2D world map with routes, objects, and terrain
+"""Render 2D world map with routes, objects, and terrain
 
 Generates map images for docs and route planning
 Uses heightmap + SDF file
@@ -125,7 +124,7 @@ def render_map(terrain_size=250.0, map_px=1600, show_routes=True, output_path=No
     img = load_heightmap_terrain(terrain_size, map_px)
     draw = ImageDraw.Draw(img)
 
-    # 2. road
+    #2. road
     road_points = [(-170, -20), (-150, -25), (-130, -35), (-110, -45),
                    (-90, -50), (-60, -50), (-20, -25), (20, -10), (60, -3), (100, 0)]
     road_px = [world_to_px(x, y) for x, y in road_points]

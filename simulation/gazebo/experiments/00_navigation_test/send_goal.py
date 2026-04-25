@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-First autonomous navigation goal test
+"""First autonomous navigation goal test
 Robot: Husky A200 sim, SLAM Toolbox + Nav2
 Goal: navigate from (0,0) to (5,5) in outdoor terrain
 """

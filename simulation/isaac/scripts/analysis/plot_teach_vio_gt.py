@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
-"""For each route, build a VIO-vs-GT teach plot using the canonical
-plot_trajectory_map template.
-
-Reads teach_outputs/vio_pose_dense.csv, computes Procrustes 2D alignment
-(with reflection) VIO -> GT, saves vio_vs_gt.png into the route's
-teach_outputs dir.
+"""build a VIO-vs-GT teach plot per route using the standard
+plot_trajectory_map template.  reads teach_outputs/vio_pose_dense.csv,
+runs a 2D Procrustes alignment (with reflection) VIO -> GT, drops
+vio_vs_gt.png next to the input csv
 """
 import csv, math, sys
 from pathlib import Path
@@ -68,7 +66,7 @@ def run_route(name):
     mean_err, err, rvx, rvy, flip = align_vio_to_gt(vio, gt)
     gt_path_m = float(np.sum(np.hypot(np.diff(gt[:, 0]), np.diff(gt[:, 1]))))
 
-    # Emit aligned CSVs for the plotter
+    # Emit aligned CSVs for the plotter   
     aligned_gt = base / 'traj_gt_world.csv'
     aligned_vio = base / 'traj_vio_world.csv'
     with open(aligned_gt, 'w', newline='') as f:

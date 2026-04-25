@@ -3,9 +3,9 @@
 *[thesis root](../../../../README.md) > [simulation](../../../README.md) > gazebo > experiments > 02_slam_comparison*
 
 
-Compared two Visual SLAM algorithms on the same 216m route through a procedurally generated Gazebo world. The robot was driven manually via a web UI, recording RGB-D + IMU data for offline evaluation.
+Compared two Visual SLAM algorithms on the same 216m route thorugh a procedurally generated Gazebo world. The robot was driven manually via a web UI, recording RGB-D + IMU data for offline evaluation.
 
-![Trajectory comparison](trajectory_comparison.png)
+![Trajectory comparison](trajectory_comparison.png)   
 
 ## Setup
 
@@ -14,22 +14,22 @@ Compared two Visual SLAM algorithms on the same 216m route through a procedurall
 | World | 220 x 150m, 370 models (trees, rocks, buildings) |
 | Route | (-105, -8) -> curved dirt road -> (82, -13), 216m total |
 | Robot | Husky A200, 50kg, skid-steer, max 0.9 m/s |
-| RGB-D camera | 640x480, fx=fy=382, ~10-15 Hz actual (30 Hz requested) |
+| RGB-D camera | 640x480, fx=fy=382, +-10-15 Hz actual (30 Hz requested) |
 | IMU | 250 Hz (Phidgets Spatial 1042) |
 | LiDAR | disabled to save GPU for camera |
 | Ground truth | Gazebo dynamic_pose, 50 Hz, <1cm accuracy |
 | Drive method | manual click-to-drive via Flask web UI |
-| Rosbag | uncompressed, ~41 GB for a typical 5 min drive |
+| Rosbag | uncompressed, +-41 GB for a typical 5 min drive |
 
-The world has three zones: dense forest (west), open field with dirt road (center), and a village with houses (east). Camera FPS drops to ~6 Hz during rosbag recording.
+The world has three zones: dense forest (west), open field with dirt road (center), and a village with houses (east). Camera FPS drops to +-6 Hz during rosbag recording.
 
 ## Results
 
 | Algorithm | Mode | ATE RMSE | Keyframes | Coverage | Status |
 |-----------|------|----------|-----------|----------|--------|
-| RTAB-Map | RGB-D (live) | **9.23 m** | 269 | ~80m (37%) | partial - forest only |
+| RTAB-Map | RGB-D (live) | **9.23 m** | 269 | +-80m (37%) | partial - forest only |
 | ORB-SLAM3 | RGB-D (offline) | n/a | - | 1.2m (<1%) | **failed** - 174 map resets |
-| ORB-SLAM3 | RGB-D Inertial (offline) | n/a | - | ~300 frames | **failed** - IMU never initialized |
+| ORB-SLAM3 | RGB-D Inertial (offline) | n/a | - | +-300 frames | **failed** - IMU never initialized |
 
 Ground truth: 108,327 poses over 216m route, recorded at 50 Hz.
 
@@ -37,9 +37,9 @@ Ground truth: 108,327 poses over 216m route, recorded at 50 Hz.
 
 Ran live during manual drive (not offline replay - rosbag TF conflicts made replay impossible).
 
-- tracked well through **forest section** (~80m): trees create depth discontinuities at 2-5m range, giving the depth matcher plenty of structure
+- tracked well thorugh **forest section** (+-80m): trees create depth discontinuities at 2-5m range, giving the depth matcher plenty of structure
 - **lost tracking** when exiting forest into open field: flat green terrain with no depth variation
-- scale factor 0.28 indicates significant wheel slip on skid-steer (robot thinks it moved ~3.6x less than it did)
+- scale factor 0.28 indicates significant wheel slip on skid-steer (robot thinks it moved +-3.6x less than it did)
 - 660-690 visual features per frame in forest - drops to <100 on open grass
 - database: 240 MB (rtabmap.db, gitignored)
 
@@ -47,8 +47,8 @@ Ran live during manual drive (not offline replay - rosbag TF conflicts made repl
 
 Ran offline on extracted frames (every 3rd frame = 3024 total).
 
-- constant tracking loss: ORB detector finds 30-196 map points per map (needs ~500 for stable tracking)
-- created 174 separate maps in one run - essentially re-initializes every few seconds
+- constant tracking loss: ORB detector finds 30-196 map points per map (needs +-500 for stable tracking)
+- created 174 separate maps in one run - just re-initializes every few seconds
 - total trajectory coverage: 1.2m x 0.5m (robot barely moves in SLAM's view)
 - root cause: Gazebo ogre2 renderer produces smooth, low-contrast textures - ORB features need corners and edges that simply aren't there
 
@@ -57,7 +57,7 @@ Ran offline on extracted frames (every 3rd frame = 3024 total).
 Attempted to fix tracking with IMU fusion (250 Hz Phidgets data).
 
 - map resets dropped from **174 to 2** - IMU stabilizes frame-to-frame tracking significantly
-- however, IMU initialization never completes: ORB-SLAM3 needs ~10 seconds of continuous visual tracking to calibrate IMU biases
+- however, IMU initialization never completes: ORB-SLAM3 needs +-10 seconds of continuous visual tracking to calibrate IMU biases
 - the algorithm can't sustain 10s of tracking in this low-texture environment, so it gets stuck in a loop: track -> lose -> reset -> track -> lose
 - tested with multiple configs (lower noise params, aggressive ORB extraction, no usleep) - same result
 
@@ -66,7 +66,7 @@ Attempted to fix tracking with IMU fusion (250 Hz Phidgets data).
 ORB-SLAM3 relies on sparse feature matching (ORB descriptors). It needs:
 - **corners and edges** in the image - Gazebo procedural textures are smooth gradients with very few sharp features
 - **texture repeatability** across frames - ogre2 rendering produces slightly different pixel values between frames due to floating-point shading, breaking descriptor matching
-- **sufficient feature density** - needs ~500 map points for stable tracking; Gazebo scenes typically produce 30-200
+- **sufficient feature density** - needs +-500 map points for stable tracking; Gazebo scenes typically produce 30-200
 
 This is a basic limit of testing feature-based SLAM in simulation, not a config issue.
 
@@ -84,7 +84,7 @@ RTAB-Map uses **dense depth matching** rather than sparse features. It doesn't n
 - there's geometric structure (tree trunks, fallen logs)
 
 It fails when:
-- terrain is flat (open field = depth image is uniform ~10m plane)
+- terrain is flat (open field = depth image is uniform +-10m plane)
 - no close objects for depth matching
 
 ## Config Files
@@ -133,7 +133,6 @@ RTAB-Map runs live during step 2 (add `slam_type:=rtabmap` to launch command). R
 | `trajectory_comparison.png` | 900 KB | GT + RTAB-Map + ORB-SLAM3 overlay plot |
 | `results.json` | 1 KB | ATE/RPE metrics for both algorithms |
 | `rtabmap.db` | 282 MB | RTAB-Map database (gitignored, reproduce via step 2) |
-| `slam_results.md` | - | detailed per-algorithm analysis |
 
 ## Next Steps
 

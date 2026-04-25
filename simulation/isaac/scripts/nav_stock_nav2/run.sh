@@ -2,7 +2,7 @@
 # Pure stock Nav2 baseline on an arbitrary route (takes ROUTE env var).
 #
 # Shared infrastructure with per-route run_repeat.sh:
-#   - Isaac Sim (run_husky_forest.py --route X --obstacles)   - same
+#- Isaac Sim (run_husky_forest.py --route X --obstacles)   - same
 #   - ORB-SLAM3 RGB-D-Inertial VIO                            - same
 #   - tf_wall_clock_relay.py --use-gt   (Phase 1 warmup)      - same
 #   - tf_wall_clock_relay_v55.py --slam-encoder               - same (stays no_anchor)
@@ -41,7 +41,7 @@ TEACH=/root/isaac_tr_datasets/${RP_TEACH_SUBDIR[$ROUTE]}
 
 OUT=${STOCK_OUT_DIR:-/root/isaac_tr_datasets/$ROUTE/baseline_stock_nav2}
 mkdir -p $OUT
-# back-compat symlink at $E74/results/run_$ROUTE
+#back-compat symlink at $E74/results/run_$ROUTE
 LINK=$E74/results/run_$ROUTE
 if [ ! -L "$LINK" ] && [ ! -e "$LINK" ]; then
   mkdir -p "$(dirname "$LINK")"
@@ -193,7 +193,7 @@ echo "PIDs: Isaac=$ISAAC VIO=$VIO TF=$TF Nav2=$NAV2 Sup=$SUP Client=$CLIENT"
 echo "OUT: $OUT"
 
 # WAIT_LOOP_FOR_RESULT (with watchdog early-abort)
-# 7200 s wall = 2 h, comfortably above our custom's longest run (68 min on 07).
+# 7200 s wall = 2 h, comfortably above our custom's longest run (68 min on 07)
 ROUTE_TIMEOUT_S=${ROUTE_TIMEOUT_S:-7200}
 START_TS=$(date +%s)
 cleanup_all() {
@@ -205,7 +205,7 @@ cleanup_all() {
 trap cleanup_all EXIT
 
 # Launch watchdog: ABORTs run early if
-#   - any critical PID dies (Isaac, VIO, Nav2)
+#- any critical PID dies (Isaac, VIO, Nav2)
 #   - robot GT stalls (<1.5 m movement in 180 s after 240 s warmup)
 #   - no new WP REACHED in last 600 s (after 240 s warmup)
 nohup python3 /workspace/simulation/isaac/experiments/_baselines_common/watchdog.py \

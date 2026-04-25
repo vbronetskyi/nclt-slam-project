@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-bridges ORB-SLAM3 pose to Nav2 TF: publishes map->odom correction.
+"""bridges ORB-SLAM3 pose to Nav2 TF: publishes map->odom correction
 
 subscribes to /clock from Isaac Sim and uses those timestamps for TF,
 ensuring all transforms are in the same time domain (sim time).
@@ -67,7 +66,7 @@ class SlamTFPublisher(Node):
     def publish_tf(self):
         if not self.odom_received or self.latest_clock is None:
             return
-        # skip if clock is still at 0 (Isaac Sim not yet running)
+        #skip if clock is still at 0 (Isaac Sim not yet running)
         if self.latest_clock.sec == 0 and self.latest_clock.nanosec == 0:
             return
 

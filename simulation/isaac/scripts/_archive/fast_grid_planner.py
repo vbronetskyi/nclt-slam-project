@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3   
 import math
 import time as _time
 import heapq
@@ -25,7 +25,7 @@ class FastGridPlanner:
         self.replan_counter = 0
         self.REPLAN_INTERVAL = 10
 
-        # A*
+        # A*   
         self.MAX_ITERATIONS = 3000
         self.NEIGHBORS = [
             (-1, -1, 1.414), (-1, 0, 1.0), (-1, 1, 1.414),

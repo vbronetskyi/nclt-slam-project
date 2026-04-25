@@ -1,5 +1,5 @@
 #!/bin/bash
-# Record north and south forest routes, then run ORB-SLAM3 on both.
+# Record north and south forest routes, then run ORB-SLAM3 on both
 # Usage: bash record_and_slam.sh [north|south|both]
 
 set -e
@@ -16,9 +16,9 @@ ROUTES="${1:-both}"
 
 record_route() {
     local route=$1
-    echo "============================================"
+    echo ""
     echo "  Recording $route forest route..."
-    echo "============================================"
+    echo ""
 
     /opt/isaac-sim-6.0.0/python.sh "$SCRIPT_DIR/run_jackal_forest.py" \
         --route "$route" --duration 600 2>&1 | tee "/tmp/record_${route}.log"
@@ -118,7 +118,7 @@ run_slam() {
         "$tum_dir" \
         "$tum_dir/associations.txt" 2>&1 | tee "/tmp/slam_${route}.log"
 
-    # Copy results
+    #Copy results
     cp CameraTrajectory.txt "$tum_dir/CameraTrajectory.txt"
     cp KeyFrameTrajectory.txt "$tum_dir/KeyFrameTrajectory.txt"
 

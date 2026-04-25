@@ -1,6 +1,7 @@
-"""Nav2 launch: planner_server ONLY (no controller, no BT, no recoveries).
+"""Nav2 launch with planner_server ONLY (no controller, no BT, no recoveries)
 
-Pure pursuit follower takes path from /plan topic and publishes /cmd_vel directly.
+The pure pursuit follower picks up the path from /plan and writes /cmd_vel
+directly, so the rest of the Nav2 stack stays out of the way
 """
 import os
 from launch import LaunchDescription

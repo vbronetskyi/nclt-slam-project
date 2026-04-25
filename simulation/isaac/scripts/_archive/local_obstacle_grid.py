@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Small ego-centric grid (20m x 20m, 0.2m resolution = 100x100 cells)
+"""Small ego-centric grid (20m x 20m, 0.2m resolution = 100x100 cells)
 that accumulates depth obstacle detections over time.
 
 As robot approaches obstacles, hits accumulate from multiple frames
@@ -26,14 +25,14 @@ class LocalObstacleGrid:
         self.center = self.grid_size // 2  # robot at center
 
         # Tuning
-        self.DECAY_RATE = 0.997       # per-frame decay: half-life ~4s at 60fps
+        self.DECAY_RATE = 0.997       # per-frame decay: half-life +-4s at 60fps
         self.HIT_VALUE = 1.5          # stronger hits per observation
         self.OBSTACLE_HITS = 8.0      # higher threshold with slower decay
         self.MAX_DEPTH_FOR_GRID = 5.0 # 5m detection (was 4m)
         self.MIN_DEPTH = 0.3
 
         # Camera
-        self.CAMERA_FOV = 1.2  # rad (~69 degrees, D435)
+        self.CAMERA_FOV = 1.2  # rad (+-69 degrees, D435)
         self.DEPTH_WIDTH = 640
         self.DEPTH_HEIGHT = 480
 

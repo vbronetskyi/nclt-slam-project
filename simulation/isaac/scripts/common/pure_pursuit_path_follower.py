@@ -4,35 +4,6 @@
 this is our custom path controller, replaces Nav2 RPP.  RPP kept sending the
 robot into obstacles when SLAM drifted, so we built a simpler follower with
 explicit costmap-aware speed limiting
-
-proximity speed limiter:
-    subscribes to /global_costmap/costmap.  before every cmd publish, samples
-    costs in a forward arc (0.3-1.5 m ahead of robot, +/-0.3 m lateral).  caps
-    cmd.linear.x based on the max cost seen:
-
-        cost < 30                -> full speed (MAX_VEL)
-        30 <= cost < 70          -> 0.15 m/s (slowdown)
-        70 <= cost < 99          -> 0.08 m/s (crawl, near inflation edge)
-        cost >= 99 or unknown    -> 0.03 m/s (near stop)
-
-    inflation radius is 1.2 m, so cost 30 roughly starts 0.7-0.9 m from the
-    occupied center.  robot begins slowing BEFORE contact range which gives
-    SLAM time to converge and planner time to re-plan
-
-    this removes the run 4 failure mode (driving into tent while SLAM drifts)
-
-v9 anti-spin layer is preserved unchanged
-
-changelog:
-  exp 51  - naive pure pursuit, no costmap awarness
-  exp 53  - added forward-arc costmap sampling + speed cap
-  exp 56  - tuned thresholds,  tried cost<50/<80/<99 too jumpy,  30/70/99 works
-  exp 58  - added v9 anti-spin layer (RPP was getting stuck rotating in place)
-  exp 64  - current
-
-dropped exp 55 idea: use the full costmap footprint (not just forward arc)
-for speed limiting.  too conservative, robot crawled on wide corridors where
-obstacles were off to the side.  forward arc is enough
 """
 import argparse
 import math
@@ -61,7 +32,7 @@ class PurePursuitFollower(Node):
         self.MAX_ANG = 0.8
         self.GOAL_TOL = goal_tol
 
-        # v9 anti-spin
+        # v9 anti-spin   
         self.SPIN_W_THRESH = 0.5
         self.SPIN_V_THRESH = 0.05
         self.SPIN_LIMIT_S = 5.0
@@ -72,7 +43,7 @@ class PurePursuitFollower(Node):
         # v55 wedge recovery (from exp 54): if we've been emitting v>0 for
         # WEDGE_WINDOW_S but robot displacement < WEDGE_MIN_DISP_M, reverse
         # for WEDGE_BACKUP_S.  Gets us out of contact with obstacles when
-        # PP drives robot into infeasible inflation.
+        #PP drives robot into infeasible inflation
         self.WEDGE_WINDOW_S = 4.0
         self.WEDGE_MIN_DISP_M = 0.15
         self.WEDGE_BACKUP_S = 2.5
@@ -80,10 +51,10 @@ class PurePursuitFollower(Node):
         self.wedge_backup_until = 0.0
         self.wedge_activations = 0
 
-        # v53 proximity speed limiter - ego-tube shaped to robot half-footprint.
-        # Narrow arc: only trigger when the robot's body path genuinely
-        # intersects an inflated obstacle cell, not when a tree 0.5 m to the
-        # side happens to sit in the teach map.
+        #v53 proximity speed limiter - ego-tube shaped to robot half-footprint.
+        #Narrow arc: only trigger when the robot's body path genuinely
+        #intersects an inflated obstacle cell, not when a tree 0.5 m to the
+        # side happens to sit in the teach map
         # v55 speed profile (user spec):  cruise 0.8 m/s,  0.4 near obstacle,
         # 0.15 at true contact range.
         self.PROX_SAMPLE_DIST = [0.3, 0.7, 1.1]     # longer arc for 0.8 m/s stopping

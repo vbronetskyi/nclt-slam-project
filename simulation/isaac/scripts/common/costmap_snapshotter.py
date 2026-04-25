@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3   
 """periodic costmap snapshot logger
 
 subscribes to /global_costmap/costmap (OccupancyGrid) and dumps a snapshot
@@ -67,7 +67,7 @@ class CostmapSnapshotter(Node):
         rx, ry = self._read_robot_pose()
 
         base = os.path.join(self.out_dir, f"costmap_{self.snapshot_id:04d}")
-        # Numeric save: .npy raw occupancy (int8, -1/0/1-100), loadable via
+        # Numeric save: .npy raw occupancy (int8, -1/0/1-100), loadable via   
         # np.load() directly. One numeric file, no image conversions.
         np.save(base + '.npy', data)
 

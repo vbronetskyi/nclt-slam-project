@@ -108,7 +108,7 @@ def draw_routes(draw, routes_data, w2px):
         px, py = w2px(sx, sy)
         draw.ellipse([px-8, py-8, px+8, py+8], fill=(0,200,0), outline=(255,255,255), width=2)
 
-    # goal
+    #goal
     gx, gy = w2px(100, 0)
     r = 12
     draw.line([gx-r, gy-r, gx+r, gy+r], fill=(255,0,0), width=3)
@@ -150,7 +150,7 @@ def render_world_routes(models, routes_data):
     img.save(str(out), optimize=True)
     print(f"Saved: {out}")
 
-# world_scenario.png -- zones + labels + routes
+#world_scenario.png -- zones + labels + routes
 def render_world_scenario(models, routes_data):
     WS, SZ = 390.0, 1000
     half = WS / 2.0
@@ -161,12 +161,12 @@ def render_world_scenario(models, routes_data):
     draw = ImageDraw.Draw(img, 'RGBA')
 
     # zone overlays (semi-transparent rects)
-    # forest: x < -30
+    #forest: x < -30
     fx1, fy1 = w2px(-195, 195)
     fx2, fy2 = w2px(-30, -195)
     draw.rectangle([fx1, fy1, fx2, fy2], fill=(0, 80, 0, 40), outline=(0, 120, 0, 100), width=2)
 
-    # open field: -30 < x < 60
+    # open field: -30 < x < 60   
     ox1, oy1 = w2px(-30, 195)
     ox2, oy2 = w2px(60, -195)
     draw.rectangle([ox1, oy1, ox2, oy2], fill=(180, 160, 80, 30), outline=(180, 160, 80, 80), width=2)
@@ -176,7 +176,7 @@ def render_world_scenario(models, routes_data):
     vx2, vy2 = w2px(195, -195)
     draw.rectangle([vx1, vy1, vx2, vy2], fill=(160, 120, 80, 40), outline=(160, 120, 80, 100), width=2)
 
-    # switch back to RGB for solid stuff
+    #switch back to RGB for solid stuff
     draw = ImageDraw.Draw(img)
     draw_models(draw, models, w2px, SZ)
     draw_routes(draw, routes_data, w2px)
@@ -225,7 +225,7 @@ def render_map_routes(models, routes_data):
     img = full_img.crop((left, top, right, bot)).resize((SZ, SZ), PILImage.BILINEAR)
     draw = ImageDraw.Draw(img)
 
-    # coord transform for cropped region
+    #coord transform for cropped region
     def w2px(wx, wy):
         px = int((wx - XMIN) / (XMAX - XMIN) * SZ)
         py = int((YMAX - wy) / (YMAX - YMIN) * SZ)
@@ -255,7 +255,7 @@ def render_map_routes(models, routes_data):
     img.save(str(out), optimize=True)
     print(f"Saved: {out}")
 
-# world_realistic.png -- clean world overview, no routes
+#world_realistic.png -- clean world overview, no routes   
 def render_world_realistic(models):
     """Full world map with all objects and terrain, no routes"""
     WS, SZ = 390.0, 1200  # higher res

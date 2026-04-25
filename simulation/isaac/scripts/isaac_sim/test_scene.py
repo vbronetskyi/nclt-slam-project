@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-validate the husky outdoor scene loads correctly and physics works
+"""validate the husky outdoor scene loads correctly and physics works
 tests what we can without the full isaac sim runtime (sensor extensions)
 """
 import sys
@@ -31,7 +30,6 @@ def check(name, condition):
         print(f"  [PASS] {name}")
     else:
         errors.append(name)
-        # print("DEBUG: isaac sim step")
         print(f"  [FAIL] {name}")
 
 
@@ -60,14 +58,14 @@ if cam.IsValid():
     check("camera focal length set", focal is not None and focal > 0)
     check("camera clip range (d435i: 0.105-10m)", clip is not None and abs(clip[0] - 0.105) < 0.01)
 
-# -- test 5: imu prim --
+#-- test 5: imu prim --
 imu_path = "/husky/Geometry/base_link/imu_link/imu_sensor"
 imu = stage.GetPrimAtPath(imu_path)
 check("imu prim exists", imu.IsValid())
 
 if imu.IsValid():
     period = imu.GetAttribute("sensorPeriod").Get()
-    check("imu period ~200Hz", period is not None and abs(period - 1.0/200.0) < 0.001)
+    check("imu period +-200Hz", period is not None and abs(period - 1.0/200.0) < 0.001)
     filt = imu.GetAttribute("linearAccelerationFilterWidth").Get()
     check("imu filter width = 10", filt == 10)
 
@@ -89,7 +87,7 @@ check("sun light", stage.GetPrimAtPath("/World/Environment/SunLight").IsValid())
 check("fill light", stage.GetPrimAtPath("/World/Environment/FillLight").IsValid())
 check("dome light (sky)", stage.GetPrimAtPath("/World/Environment/DomeLight").IsValid())
 
-# count obstacles
+# count obstacles   
 obstacle_count = 0
 for prim in stage.Traverse():
     if "obstacle_" in prim.GetName():
@@ -103,7 +101,7 @@ for prim in stage.Traverse():
         building_count += 1
 check(f"buildings ({building_count} found)", building_count == 3)
 
-# -- test 8: run 100 physics steps --
+# -- test 8: run 100 physics steps --   
 print("\nrunning physics test (100 steps)...")
 timeline = omni.timeline.get_timeline_interface()
 timeline.play()
@@ -111,7 +109,7 @@ timeline.play()
 for i in range(100):
     app.update()
 
-# check robot hasn't fallen through ground (z should be near 0, not -inf)
+# check robot hasn't fallen thorugh ground (z should be near 0, not -inf)
 robot_xform = UsdGeom.Xformable(stage.GetPrimAtPath("/husky/Geometry/base_link"))
 # get world transform
 xform_cache = UsdGeom.XformCache()
@@ -123,7 +121,6 @@ check("robot above ground (z > -1)", pos[2] > -1.0)
 timeline.stop()
 
 # -- summary --
-# print("DEBUG: isaac sim step")
 print(f"\n{'='*50}")
 print(f"PASSED: {len(passes)}/{len(passes) + len(errors)}")
 if errors:

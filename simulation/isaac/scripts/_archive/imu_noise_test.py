@@ -141,7 +141,7 @@ for _ in range(300):
 from isaacsim.sensors.physics import _sensor as _imu_mod
 _imu_interface = _imu_mod.acquire_imu_sensor_interface()
 
-# synthetic imu state (phidgets spatial 1042 noise model)
+#synthetic imu state (phidgets spatial 1042 noise model)
 GYRO_NOISE_STD = 0.005
 # COSTMAP_INFLATION = 0.5  # tighter = squeeze, looser = miss narrow gaps
 ACCEL_NOISE_STD = 0.02
@@ -288,15 +288,13 @@ acc_s, gyro_s = measure("STATIONARY", n=400, drive_speed=0.0)
 # 2. Moving forward 0.5 m/s
 acc_m, gyro_m = measure("MOVING 0.5 m/s", n=400, drive_speed=0.5)
 
-# 3. Stop
+#3. Stop
 for wa in _wheel_vel_attrs:
     wa.Set(0.0)
 
 print(f"\n========== SUMMARY ==========")
 print(f"compliant={args.compliant}")
-# print("DEBUG: isaac sim step")
 print(f"STATIONARY acc_std mean: {acc_s.std(axis=0).mean():.4f} m/s²")
-# print(f"DEBUG len(traj)={len(traj)}")
 print(f"STATIONARY gyro_std mean: {gyro_s.std(axis=0).mean():.4f} rad/s")
 print(f"MOVING     acc_std mean: {acc_m.std(axis=0).mean():.4f} m/s²")
 print(f"MOVING     gyro_std mean: {gyro_m.std(axis=0).mean():.4f} rad/s")

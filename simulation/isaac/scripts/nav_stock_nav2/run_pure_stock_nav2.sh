@@ -1,5 +1,5 @@
 #!/bin/bash
-# Pure stock Nav2 baseline - removes our anchor-correction contribution.
+# Pure stock Nav2 baseline - removes our anchor-correction contribution
 #
 # Keeps from our pipeline:
 #   tf_wall_clock_relay_v55 (--slam-encoder)  - publishes map->base_link from
@@ -7,16 +7,16 @@
 #       the landmark matcher is NOT started (pure VIO drift).
 #   turnaround_supervisor  - writes /tmp/isaac_remove_obstacles.txt when
 #       robot is <10 m from the final goal; fair to let stock Nav2 have a
-#       clean return leg.
+#       clean return leg
 #
-# Removes:
-#   visual_landmark_matcher  - no anchor correction, VIO drifts uncorrected.
+#Removes:
+#visual_landmark_matcher  - no anchor correction, VIO drifts uncorrected
 #
 # Stock:
 #   Nav2 full stack (planner + controller_server RPP + bt_navigator with
-#   stock navigate_through_poses BT + behavior_server recoveries + waypoint_follower).
+#   stock navigate_thorugh_poses BT + behavior_server recoveries + waypoint_follower)
 #   RPP configured with rotate_to_heading=true, allow_reversing=true (v3 fix
-#   for the turnaround overshoot observed in exp 73 v2).
+#   for the turnaround overshoot observed in exp 73 v2)
 set -eu
 
 ROUTE=09_se_ne

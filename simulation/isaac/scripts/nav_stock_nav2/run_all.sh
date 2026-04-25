@@ -1,5 +1,5 @@
 #!/bin/bash
-# Orchestrator for exp 74 (pure stock Nav2 baseline) across all 9 routes.
+# Orchestrator for exp 74 (pure stock Nav2 baseline) across all 9 routes   
 #
 # Usage:
 #   bash scripts/run_all.sh                   # all 9 routes
@@ -67,12 +67,12 @@ on_interrupt() {
 }
 trap on_interrupt INT TERM
 
-echo "================================================================"
+echo ""
 echo "RUN_ALL_BASELINE (exp 74 pure stock Nav2)   started $(date +'%F %T')"
 echo "routes: ${ROUTES[*]}"
 echo "timeout:  short (08,09) ${TIMEOUT_SHORT_S}s   long ${TIMEOUT_LONG_S}s   cooldown: ${COOLDOWN_S}s"
 echo "summary: $SUMMARY_FILE"
-echo "================================================================"
+echo ""
 
 for R in "${ROUTES[@]}"; do
     if [ -z "${RP_ISAAC_ROUTE[$R]:-}" ]; then
@@ -85,13 +85,13 @@ for R in "${ROUTES[@]}"; do
     LOG=$OUT/_orchestrator.log
 
     echo ""
-    echo "================================================================"
+    echo ""
     echo "=== EXP 74 / $R  start $(date +'%T') ==="
-    echo "================================================================"
+    echo ""
     kill_all_sim
     sleep "$COOLDOWN_S"
 
-    # Pick timeout based on route tier (short vs long).
+    # Pick timeout based on route tier (short vs long)
     IS_SHORT=0
     for S in "${SHORT_ROUTES[@]}"; do [ "$S" = "$R" ] && IS_SHORT=1; done
     if [ "$IS_SHORT" = 1 ]; then RTO=$TIMEOUT_SHORT_S; else RTO=$TIMEOUT_LONG_S; fi
@@ -121,7 +121,7 @@ done
 
 kill_all_sim
 echo ""
-echo "================================================================"
+echo ""
 echo "EXP 74 ALL RUNS DONE   $(date +'%F %T')"
-echo "================================================================"
+echo ""
 cat "$SUMMARY_FILE"

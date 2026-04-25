@@ -13,22 +13,6 @@ at PROJ_MAX_SEARCH_M).  sends the PROJECTED WP to Nav2 not the original
 two lists kept: original (frozen) and projected (dynamic)
 
 if no free cell found within search radius - WP gets SKIP'd and we move to the next
-
-changelog:
-  exp 52: crude version, projected only when robot was within 3 m of WP.  too
-          reactive, by then the robot was already commited to approach angle
-  exp 53: proactive projection on every costmap update, full future window
-  exp 58: added look-ahead skip for WPs inside infl zone with no free cell
-  exp 59: detour ring (insert detour WPs around blocked regions).  main version
-  exp 60: tried 10 cm precision finisher for final WP.  got 10 cm but some
-          routes timed out.  see final-WP policy around line 400
-  exp 64: current - exp 59 plus GT open-loop finisher via supervisor signal
-
-dropped exp 58 variant: tangential shift instead of BFS projection.  idea was
-to move WPs 2 m along the path tangent out of inflation zone.  in practice
-this put WPs right next to the obstacle edge, robot drove within 1 m of cones
-- looks terrible and ocassionally clipped them.  BFS to nearest free cell is
-the way
 """
 import argparse
 import csv
@@ -76,13 +60,13 @@ class HybridGoalSender(Node):
         self.LOOKAHEAD_N = 3
 
         # No hardcoded obstacle list - Nav2 obstacle_layer gets live
-        # observations from the depth camera (/depth_points) and updates the
+        #observations from the depth camera (/depth_points) and updates the
         # costmap online. Robot detours are planned from that costmap alone.
         self.KNOWN_CONES = []
         self.KNOWN_TENT = None
-        # Minimum allowed clearance from any known obstacle - WP center
-        # must be ≥ this many metres from obstacle edge.
-        # robot_radius 0.7 + 0.2 margin = 0.9 m from obstacle edge
+        # Minimum allowed clearance from any known obstacle - WP center   
+        # must be ≥ this many metres from obstacle edge
+        #robot_radius 0.7 + 0.2 margin = 0.9 m from obstacle edge
         self.KNOWN_CLEARANCE_M = 0.9
 
         # v59-fix: use map->base_link tf (SLAM pose, consistent with
@@ -152,7 +136,7 @@ class HybridGoalSender(Node):
         Costmap-independent: catches collisions even before depth sees
         the obstacle.
         """
-        # Cones - radius 0.3 m
+        #Cones - radius 0.3 m
         for cx, cy in self.KNOWN_CONES:
             if math.hypot(x - cx, y - cy) < 0.3 + self.KNOWN_CLEARANCE_M:
                 return True, ('cone', cx, cy)
@@ -324,13 +308,12 @@ class HybridGoalSender(Node):
                 time.sleep(0.5); continue
             d = math.hypot(px - rx, py - ry)
             if d < self.TOLERANCE:
-                # print(f"DEBUG pose={pose}")
                 self.get_logger().info(f"  WP {i} REACHED (d={d:.1f}m)")
                 return True
             # v59 continuous lookahead: only abort if VERY close to
             # unsafe target (d<3m) AND known obstacle proximity.  Costmap
             # cost alone can spike from teach-map tree inflation - don't
-            # abort on that.
+            #abort on that
             if d < 3.0:
                 too_close, _ = self._wp_too_close_to_known(px, py)
                 if too_close:
@@ -362,7 +345,7 @@ class HybridGoalSender(Node):
         return False
 
     def run(self):
-        # Wait for map->base_link tf (listener needs a few spin cycles).
+        # Wait for map->base_link tf (listener needs a few spin cycles)
         for _ in range(40):
             rclpy.spin_once(self, timeout_sec=0.25)
             rx0, ry0 = self._read_robot_pose()
@@ -383,7 +366,6 @@ class HybridGoalSender(Node):
             self.current_idx = i
             x, y = self.projected_wps[i]
             if self.skip_flags[i]:
-                # print(f"DEBUG matches={matches}")
                 self.get_logger().warn(
                     f'WP {i}/{self.n_wps - 1}: SKIP (projection failed)')
                 self.skipped += 1
@@ -395,7 +377,7 @@ class HybridGoalSender(Node):
             # (b) if costmap is available, also check cell cost.
             # Final WPs bypass this guard (ghost inflation after FIRE is
             # spurious - obstacles were removed; follow_waypoint keeps
-            # replanning until it succeeds or the 2× timeout elapses).
+            # replanning until it succeeds or the 2× timeout elapses)
             is_final_wp = (i >= self.n_wps - 5)
             unsafe_reason = None
             if not is_final_wp:
@@ -409,7 +391,6 @@ class HybridGoalSender(Node):
             if unsafe_reason is not None:
                 dx, dy = self._find_detour(x, y)
                 if dx is not None:
-                    # print(f"DEBUG matches={matches}")
                     self.get_logger().warn(
                         f'WP {i}/{self.n_wps - 1}: unsafe ({unsafe_reason}) '
                         f'-> DETOUR to ({dx:.1f},{dy:.1f})')
@@ -453,7 +434,6 @@ class HybridGoalSender(Node):
             f"RESULT: reached {self.reached}/{self.n_wps} "
             f"skipped {self.skipped} duration {total:.0f}s "
             f"projections={self.n_projections} skip_by_proj={self.n_skips_by_proj}")
-        # print("DEBUG: entering main loop")
         self.get_logger().info('=' * 50)
 
 

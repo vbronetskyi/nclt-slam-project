@@ -1,13 +1,6 @@
 #!/usr/bin/env python3
-"""
-Husky A200 navigation with obstacle avoidance in Isaac Sim.
+"""Husky A200 navigation with obstacle avoidance in Isaac Sim
 Uses ORB-SLAM3 map + depth-based obstacle detection + local planner.
-
-Scenario:
-  1) spawn obstacles on road (tent + cones)
-  2) drive start -> houses, avoiding obstacles via depth camera
-  3) remove obstacles
-  4) drive houses -> start on clear road
 
 usage:
   export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/isaac-sim-6.0.0/exts/isaacsim.ros2.core/jazzy/lib
@@ -189,7 +182,7 @@ def get_gt_pose():
     return float(pos[0]), float(pos[1]), float(pos[2]), yaw
 
 # SLAM pose reading (from rgbd_live process via /tmp/slam_pose.txt)
-# the SLAM pose is in camera frame, need to convert to world frame
+# the SLAM pose is in camera frame, need to convert to world frame   
 # for navigation we need the initial transform (first SLAM pose = first GT pose)
 _slam_origin = None      # (slam_x, slam_y, slam_z, gt_x, gt_y, gt_z, gt_yaw) at init
 _slam_pose_file = "/tmp/slam_pose.txt"
@@ -239,7 +232,7 @@ def get_slam_pose():
     except (FileNotFoundError, ValueError, IndexError):
         return None
 
-# navigation uses SLAM pose when available, falls back to GT
+# navigation uses SLAM pose when available, falls back to GT   
 def get_pose():
     slam = get_slam_pose()
     if slam is not None:
@@ -270,7 +263,7 @@ for m in models:
     elif m["type"] == "shrub":
         _static_obstacles.append((m["x"], m["y"], 0.4))
 
-# navigation: follow SLAM route waypoints + reactive depth dodge
+#navigation: follow SLAM route waypoints + reactive depth dodge
 import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from spawn_obstacles import spawn_obstacles, remove_obstacles
@@ -329,7 +322,7 @@ def check_path_blocked(d_img, target_bearing):
         return False, 999.0
     try:
         h, w = d_img.shape[:2]
-        # D435i FOV ~87 deg = ±43.5 deg. map bearing to pixel column
+        # D435i FOV +-87 deg = ±43.5 deg. map bearing to pixel column
         col = int(w / 2 - target_bearing * w / 1.52)
         col = max(0, min(w - 1, col))
         # vertical strip: rows h//4 to h//2 only (above horizon, no ground)
@@ -348,7 +341,7 @@ def check_path_blocked(d_img, target_bearing):
 
 def plan_detour(rx, ry, ryaw, d_img):
     """plan a smooth detour around an obstacle.
-    5 waypoints, max ~20 deg turn angle to keep SLAM tracking stable.
+    5 waypoints, max +-20 deg turn angle to keep SLAM tracking stable.
     returns list of (x, y) waypoints."""
     # which side is more open?
     go_left = True
@@ -386,21 +379,19 @@ def plan_detour(rx, ry, ryaw, d_img):
 
 
 # main scenario
-# print(f"DEBUG state={state} pose={pose}")
 print("\n=== NAVIGATION SCENARIO ===\n")
 
 rec_dir = f"/root/bags/husky_real/isaac_nav_{int(time.time())}"
 os.makedirs(f"{rec_dir}/camera_rgb", exist_ok=True)
 os.makedirs(f"{rec_dir}/camera_depth", exist_ok=True)
 
-# start SLAM
+#start SLAM
 os.remove("/tmp/slam_stop") if os.path.exists("/tmp/slam_stop") else None
 os.remove("/tmp/slam_pose.txt") if os.path.exists("/tmp/slam_pose.txt") else None
 os.remove("/tmp/slam_status.txt") if os.path.exists("/tmp/slam_status.txt") else None
 slam_proc = subprocess.Popen(
     [_slam_binary, _slam_vocab, _slam_config, rec_dir],
     stdout=open(f"{rec_dir}/slam_log.txt", "w"), stderr=subprocess.STDOUT)
-# print("DEBUG: isaac sim step")
 print(f"  SLAM started (PID {slam_proc.pid})")
 for _ in range(100):
     if os.path.exists("/tmp/slam_status.txt"): break
@@ -455,7 +446,7 @@ def drive_phase(current_path, dest_x, dest_y, phase_name):
         slam = get_slam_pose()
         if slam is not None:
             sx, sy, sz, syaw = slam
-            # sanity check: reject SLAM jumps > 5m from last good pose
+            #sanity check: reject SLAM jumps > 5m from last good pose
             if _last_good_pose is not None:
                 jump = math.hypot(sx - _last_good_pose[0], sy - _last_good_pose[1])
                 if jump > 5.0:
@@ -481,7 +472,7 @@ def drive_phase(current_path, dest_x, dest_y, phase_name):
 
         frame_n = int(sim_time * 60)
 
-        # read depth + save images every ~6 frames (~10Hz)
+        # read depth + save images every +-6 frames (+-10Hz)
         if frame_n % 6 == 0:
             _last_depth = ann_depth.get_data()
             rgb = ann_rgb.get_data()
@@ -508,7 +499,7 @@ def drive_phase(current_path, dest_x, dest_y, phase_name):
             if dist_to_dpt < 2.5:
                 _detour_idx += 1
                 if _detour_idx >= len(_detour):
-                    # detour complete - rejoin route
+                    #detour complete - rejoin route
                     print(f"    DETOUR complete at ({rx:.0f},{ry:.0f})")
                     _detour = None
                     _detour_idx = 0
@@ -518,11 +509,11 @@ def drive_phase(current_path, dest_x, dest_y, phase_name):
                 lin_v, ang_v = steer(ryaw, tx, ty, rx, ry)
                 lin_v = min(lin_v, 0.4)  # slow during detour for stable SLAM
         else:
-            # normal mode: pure pursuit on route
+            #normal mode: pure pursuit on route
             tx, ty = find_target(rx, ry, current_path)
             lin_v, ang_v = steer(ryaw, tx, ty, rx, ry)
 
-            # check if path is blocked (every ~1s = every 60 frames)
+            # check if path is blocked (every +-1s = every 60 frames)
             _check_interval += 1
             if _check_interval >= 60 and _last_depth is not None:
                 _check_interval = 0
@@ -602,7 +593,7 @@ print(f"  {img_count} images, {len(traj_out)}+{len(traj_back)} poses")
 timeline.stop()
 app.close()
 
-# plot results
+#plot results
 print("\ngenerating plots...")
 import matplotlib
 matplotlib.use("Agg")
@@ -610,7 +601,7 @@ import matplotlib.pyplot as plt
 
 fig, ax = plt.subplots(figsize=(18, 5))
 
-# road centerline
+#road centerline
 rx = np.linspace(-100, 78, 300)
 ry = np.array([_road_y(x) for x in rx])
 ax.plot(rx, ry, '--', color='gray', alpha=0.5, linewidth=1.5, label='Road')
@@ -630,7 +621,7 @@ if traj_back:
     by = [p[1] for p in traj_back[::3]]
     ax.plot(bx, by, '-', color='green', linewidth=1.5, label='Return (clear)')
 
-# obstacles: cones + tent
+#obstacles: cones + tent
 from spawn_obstacles import OBSTACLES
 obs = OBSTACLES[args.route]
 for group in obs["cones"]:
@@ -664,7 +655,7 @@ import shutil
 result_dir = "/workspace/simulation/isaac/results/navigation"
 os.makedirs(result_dir, exist_ok=True)
 shutil.copy(plot_path, f"{result_dir}/08_nav_preplanned.png")
-# and to final
+#and to final
 shutil.copy(plot_path, "/workspace/simulation/isaac/results/final/08_nav_preplanned.png")
 print(f"  copied to results/navigation/ and results/final/")
 print("\ndone.")

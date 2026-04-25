@@ -1,6 +1,6 @@
 #!/bin/bash
 # Exp 67 REPEAT run on road route -
-# exp 59 pipeline + exp 66 teach artifacts + accel-noise IMU.
+# exp 59 pipeline + exp 66 teach artifacts + accel-noise IMU
 #
 # Consumes:
 #   /workspace/.../71_teach_09_se_ne_accel_noise/teach/09_se_ne/
@@ -146,7 +146,7 @@ nohup bash /tmp/r04r_nav2.sh > $OUT/nav2.log 2>&1 &
 NAV2=$!; disown $NAV2; echo "Nav2: $NAV2"
 
 cat > /tmp/r04r_pp.sh <<EOF
-#!/bin/bash
+#!/bin/bash   
 source /opt/ros/jazzy/setup.bash
 export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 export ROS_DOMAIN_ID=$DOMAIN
@@ -218,7 +218,7 @@ echo "  tail -f $OUT/goals.log          # WP progress"
 
 # WAIT_LOOP_FOR_RESULT - block until goals.log emits RESULT line or timeout.
 # Without this the orchestrator would see run_repeat.sh exit immediately and
-# kill all background sim processes.
+# kill all background sim processes
 ROUTE_TIMEOUT_S=${ROUTE_TIMEOUT_S:-8400}
 START_TS=$(date +%s)
 cleanup_all() {

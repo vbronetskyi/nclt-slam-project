@@ -1,5 +1,5 @@
 #!/bin/bash
-# two-phase Nav2 navigation experiment
+#two-phase Nav2 navigation experiment
 # phase 1: outbound with obstacles (SLAM or GT localization)
 # phase 2: return without obstacles
 #

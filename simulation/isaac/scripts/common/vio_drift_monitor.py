@@ -1,23 +1,5 @@
 #!/usr/bin/env python3
 """dense VIO+GT recorder with drift gate
-
-what it does:
-  - reads /tmp/slam_pose.txt (ORB-SLAM3 current pose) at ~10 Hz
-  - reads /tmp/isaac_pose.txt (Isaac GT) at the same rate
-  - writes both to a dense CSV every tick
-  - every CHECK_INTERVAL_S computes best-fit rotation+translation (Procrustes,
-    no scale) between the two trajectories and reports max/mean position error
-    if max drift > MAX_DRIFT_M after a settling period, writes
-    /tmp/teach_drift_abort.txt and exits
-  - writes a live /tmp/teach_drift_status.txt for the orchestrator
-
-this is only used during TEACH runs.  the goal is to kill a teach early if
-VIO is hopelessly drifted vs GT, otherwise we'd record a bad teach reference
-that would ruin all repeat runs on that route
-
-dropped exp 22 idea: include yaw error in the abort criterion.  turned out
-yaw drift was correlated with position drift 95% of the time so position
-alone was enough
 """
 import argparse, csv, math, os, sys, time
 import numpy as np
@@ -69,8 +51,8 @@ def read_gt():
         return None
 
 def compute_drift(arr):
-    # FIXME: crashes if matcher silent >30s, need fallback
-    # NOTE: keep in sync with run_repeat.sh spawn-x/y
+    # crashes if matcher silent >30s, need fallback
+    # keep in sync with run_repeat.sh spawn-x/y
     """Procrustes VIO->GT including possible reflection.
 
     ORB-SLAM3's initial frame can have either handedness relative to
@@ -122,8 +104,8 @@ while True:
         if len(rows) < 50:
             continue
         arr = np.array([[r[2], r[3], r[4], r[9], r[10]] for r in rows])
-        # Gate on GT travel: drift is only meaningful once the robot has
-        # physically moved enough that Procrustes can resolve orientation.
+        #Gate on GT travel: drift is only meaningful once the robot has
+        # physically moved enough that Procrustes can resolve orientation
         gt_path = float(np.sum(np.hypot(np.diff(arr[:, 3]),
                                         np.diff(arr[:, 4]))))
         if gt_path < 5.0:

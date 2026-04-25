@@ -1,7 +1,7 @@
 # Fix 01: planner_server OOM kill due to unbounded global_costmap
 
 ## Problem
-planner_server silently killed by kernel after ~60-90s.
+planner_server silently killed by kernel after +-60-90s.
 Global costmap grew unbounded (1913x1973 cells = 3.7M cells).
 SLAM Toolbox map grew continuously -> costmap resize every 5s -> OOM.
 

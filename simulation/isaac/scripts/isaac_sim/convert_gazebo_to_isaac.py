@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3   
 import json
 import numpy as np
 import math
@@ -17,7 +17,7 @@ DSREADY = f"{ASSETS}/NVIDIA/dsready_content/nv_content/common_assets/props_veget
 OUT_DIR = "/workspace/simulation/isaac/assets/renders/maps"
 SCENE_OUT = "/opt/husky_forest_scene.usd"
 
-# dsready photorealistic assets - multiple variants per type
+# dsready photorealistic assets - multiple variants per type   
 PINE_ASSETS = [
     f"{DSREADY}/veg_tree_fir_douglas_01/veg_tree_fir_douglas_01.usd",
     f"{DSREADY}/veg_tree_fir_douglas_02/veg_tree_fir_douglas_02.usd",
@@ -166,19 +166,19 @@ GRID_RES = 2.0  # coarse mesh - smooth surface, texture handles detail
 nx = int((GRID_X1 - GRID_X0) / GRID_RES) + 1
 ny = int((GRID_Y1 - GRID_Y0) / GRID_RES) + 1
 
-# pre-generate micro noise grid for cheap per-vertex roughness
+# pre-generate micro noise grid for cheap per-vertex roughness   
 _micro_noise = rng.uniform(-0.03, 0.03, size=(ny, nx))  # less micro noise - smoother surface
 
 
 def terrain_height(x, y):
     h = 0.0
-    # large rolling hills - halved amplitude
+    #large rolling hills - halved amplitude
     h += 0.5 * math.sin(x * 0.018 + 0.5) * math.cos(y * 0.022 + 1.2)
     h += 0.35 * math.sin(x * 0.035 + 2.1) * math.sin(y * 0.03 + 0.7)
     # medium undulation
     h += 0.18 * math.sin(x * 0.07 + 3.3) * math.cos(y * 0.065 + 2.5)
     h += 0.12 * math.cos(x * 0.11 + 1.0) * math.sin(y * 0.09 + 4.0)
-    # small bumps - forest floor roots, stones (~3-6m wavelength, gentle)
+    # small bumps - forest floor roots, stones (+-3-6m wavelength, gentle)
     h += 0.06 * math.sin(x * 0.5 + 0.7) * math.cos(y * 0.43 + 2.1)
     h += 0.04 * math.cos(x * 0.7 + 3.5) * math.sin(y * 0.6 + 0.4)
     h += 0.03 * math.sin(x * 1.0 + 1.2) * math.cos(y * 0.83 + 3.8)
@@ -237,7 +237,7 @@ for iy in range(ny):
             # dark soil - exposed earth under trees
             r, g, b = 0.10, 0.07, 0.03
         elif zone < -0.3:
-            # wet dark earth
+            #wet dark earth
             r, g, b = 0.14, 0.10, 0.05
         elif zone < -0.05:
             # dead leaf litter - brown/orange
@@ -246,7 +246,7 @@ for iy in range(ny):
             # dark green grass
             r, g, b = 0.10, 0.17, 0.05
         elif zone < 0.5:
-            # medium grass
+            # medium grass   
             r, g, b = 0.14, 0.22, 0.07
         elif zone < 0.8:
             # dry grass / straw
@@ -262,7 +262,7 @@ for iy in range(ny):
         # height tint
         r += z * 0.015
         g += z * 0.02
-        # dirt road - compacted earth with tire ruts and grass center
+        #dirt road - compacted earth with tire ruts and grass center
         road_dist = abs(y - road_y_at(x))
         if road_dist < 3.5:
             t = max(0, 1.0 - road_dist / 3.5)
@@ -380,7 +380,7 @@ baked_sh.CreateInput("project_uvw", Sdf.ValueTypeNames.Bool).Set(False)
 UsdShade.MaterialBindingAPI(terrain_mesh).Bind(baked_mat, UsdShade.Tokens.strongerThanDescendants)
 print("  baked 4K texture with UV mapping (no separate road/leaf mesh)")
 
-# no separate road/leaf mesh - all baked
+#no seperate road/leaf mesh - all baked
 leaf_idx = 0
 
 print(f"  heightfield: {nx}x{ny} = {len(points)} vertices")
@@ -401,7 +401,7 @@ sun = UsdLux.DistantLight.Define(stage, "/World/SunLight")
 sun.CreateIntensityAttr(5000)
 sun.CreateColorAttr(Gf.Vec3f(1.0, 1.0, 0.97))  # neutral white - no warm yellow tint
 sun.CreateAngleAttr(3.0)  # wide angle = soft diffuse shadows, less specular
-UsdGeom.Xformable(sun).AddRotateXYZOp().Set(Gf.Vec3f(-25, 25, 0))  # low angle - sun through gaps between trees
+UsdGeom.Xformable(sun).AddRotateXYZOp().Set(Gf.Vec3f(-25, 25, 0))  # low angle - sun thorugh gaps between trees
 
 fill = UsdLux.DistantLight.Define(stage, "/World/FillLight")
 fill.CreateIntensityAttr(1500)
@@ -410,8 +410,7 @@ UsdGeom.Xformable(fill).AddRotateXYZOp().Set(Gf.Vec3f(-15, -160, 0))  # low fill
 
 print("  ground, road, lighting done")
 
-# BUILDINGS - detailed with peaked roofs, foundations, porches, fences
-# =============================================================================
+#BUILDINGS - detailed with peaked roofs, foundations, porches, fences
 # BUILDINGS - 3 ruins (rocket strike) + 2 intact (brick, detailed) + 1 shed
 print("\nplacing buildings...")
 
@@ -526,7 +525,7 @@ def build_intact(stage, path, mx, my, rng, style_name):
     wxf.AddTranslateOp().Set(Gf.Vec3d(mx, my, gz + 0.3 + h / 2))
     wxf.AddScaleOp().Set(Gf.Vec3f(w, d, h))
     UsdPhysics.CollisionAPI.Apply(stage.GetPrimAtPath(f"{path}/walls"))
-    # corner pillars
+    #corner pillars
     for ci, (cx_off, cy_off) in enumerate([(-1,-1),(-1,1),(1,-1),(1,1)]):
         corner = UsdGeom.Cube.Define(stage, f"{path}/corner_{ci}")
         corner.CreateSizeAttr(1.0)
@@ -534,7 +533,7 @@ def build_intact(stage, path, mx, my, rng, style_name):
         cxf = UsdGeom.Xformable(corner)
         cxf.AddTranslateOp().Set(Gf.Vec3d(mx + cx_off * w/2, my + cy_off * d/2, gz + 0.3 + h/2))
         cxf.AddScaleOp().Set(Gf.Vec3f(0.2, 0.2, h + 0.1))
-    # roof - two slabs tilting DOWN from ridge (not up!)
+    #roof - two slabs tilting DOWN from ridge (not up!)
     ridge_z = gz + 0.3 + h + 1.2
     for ri, side in enumerate([1, -1]):
         slab = UsdGeom.Cube.Define(stage, f"{path}/roof_{ri}")
@@ -577,7 +576,7 @@ def build_intact(stage, path, mx, my, rng, style_name):
         slxf = UsdGeom.Xformable(sill)
         slxf.AddTranslateOp().Set(Gf.Vec3d(mx + wx_side * 1.01, my + wy_off, wz - 0.4))
         slxf.AddScaleOp().Set(Gf.Vec3f(0.06, 0.7, 0.05))
-    # chimney
+    #chimney
     chim = UsdGeom.Cube.Define(stage, f"{path}/chimney")
     chim.CreateSizeAttr(1.0)
     chim.CreateDisplayColorAttr([Gf.Vec3f(0.32, 0.26, 0.20)])
@@ -729,12 +728,11 @@ for m in models:
         UsdGeom.Xformable(b).AddTranslateOp().Set(Gf.Vec3d(m["x"], m["y"], bz + 0.5))
         UsdPhysics.CollisionAPI.Apply(stage.GetPrimAtPath(f"/World/Props/barrel_{barrel_idx:02d}"))
         barrel_idx += 1
-# print(f"DEBUG len(traj)={len(traj)}")
 print(f"  {barrel_idx} barrels")
 
 # ALL TREES -> dsready photorealistic (no primitives)
 print("\nplacing trees (thinned for performance)...")
-# thin trees uniformly - keep ~200 of 297, skip every 3rd
+# thin trees uniformly - keep +-200 of 297, skip every 3rd
 # also remove 5 closest to each western corner (-120, -80) and (-120, +80)
 all_trees = [m for m in models if m["type"] in ("pine", "oak")]
 # sort by distance to western corners and remove closest 5 to each
@@ -753,7 +751,7 @@ for m in all_trees:
         continue
     skip_counter += 1
     if skip_counter % 3 == 0:
-        continue  # skip every 3rd -> keep ~67%
+        continue  # skip every 3rd -> keep +-67%
     if m["type"] == "pine":
         asset = PINE_ASSETS[tree_idx % len(PINE_ASSETS)]
     else:
@@ -764,7 +762,6 @@ for m in all_trees:
 print(f"  {tree_idx} photorealistic trees (thinned from {len(all_trees)})")
 
 # tree trunk collision
-# print(f"DEBUG state={state} pose={pose}")
 print("  adding tree trunk collisions...")
 skip_counter = 0
 for m in all_trees:
@@ -899,16 +896,16 @@ for rp in roadside_props:
     rsp_idx += 1
 print(f"  {rsp_idx} roadside props")
 
-# GROUND COVER - shrubs, ferns, grass, leaves around trees
+#GROUND COVER - shrubs, ferns, grass, leaves around trees
 # + bare earth patches at tree bases + scattered fill between trees
 print("\nscattering ground cover (very dense)...")
 cover_idx = 0
 all_tree_models = [m for m in models if m["type"] in ("pine", "oak")]
 
-# earth under trees - baked into heightfield vertex colors, no separate objects
+# earth under trees - baked into heightfield vertex colors, no seperate objects
 print("  (tree litter baked into terrain colors)")
 
-# shrubs - placed from gazebo_models.json (deterministic positions, shared with collision)
+#shrubs - placed from gazebo_models.json (deterministic positions, shared with collision)
 shrub_models = [m for m in models if m["type"] == "shrub"]
 print(f"  placing {len(shrub_models)} shrubs from gazebo_models.json...")
 for sm in shrub_models:
@@ -980,7 +977,7 @@ cam_top.CreateClippingRangeAttr(Gf.Vec2f(10.0, 3000.0))
 # fit terrain edges (240x160m) into frame
 UsdGeom.Xformable(cam_top).AddTranslateOp().Set(Gf.Vec3d(-10, 0, 140))
 
-# oblique view - looking down at ~45° from south-east
+# oblique view - looking down at +-45° from south-east
 cam_obl = UsdGeom.Camera.Define(stage, "/World/ObliqueCamera")
 cam_obl.CreateFocalLengthAttr(24.0)
 cam_obl.CreateHorizontalApertureAttr(36.0)
@@ -1001,7 +998,7 @@ total = tree_idx + fallen_idx + rock_idx + cover_idx + house_idx + barrel_idx + 
 print(f"\nsaving scene ({total} objects): {SCENE_OUT}")
 stage.Export(SCENE_OUT)
 
-print("\nloading dsready assets from S3 (this takes ~2min)...")
+print("\nloading dsready assets from S3 (this takes +-2min)...")
 for i in range(1200):
     app.update()
     if i % 300 == 0:

@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
-"""Canonical-style comparison plots for exp 74 pure-stock-Nav2 baseline
-vs our custom T&R pipeline on route 09_se_ne.
+"""comparison plots for exp 74 pure-stock-Nav2 baseline vs our custom T&R
+on route 09_se_ne.  writes two PNGs into the experiment results dir:
 
-Outputs:
-  compare_routes.png              GT trajectories (our custom, pure-stock)
-                                  on scene map + props + skipped markers.
-  compare_localisation.png        VIO raw + our system's anchor-corrected vs
-                                  stock-run's uncorrected VIO - the
-                                  'with matcher' vs "without matcher" diff.
+  compare_routes.png         GT trajectories (our custom, pure-stock) on the
+                             scene map + props + skipped markers
+  compare_localisation.png   VIO raw + our system's anchor-corrected vs the
+                             stock run's uncorrected VIO - the "with matcher"
+                             vs "without matcher" diff
 """
 import csv, math, sys
 from pathlib import Path
@@ -60,7 +59,7 @@ _NAV_RE = re.compile(r'nav=\(([-\d.]+),([-\d.]+)\)')
 
 
 def mean_shift(vio_p, anc_p):
-    # TODO: write proper unit tests one day
+    #write proper unit tests one day
     v = list(csv.DictReader(open(vio_p)))
     a = list(csv.DictReader(open(anc_p)))
     errs = [math.hypot(float(vi['x']) - float(ai['x']),
@@ -73,7 +72,7 @@ def main():
     our_gt = OUR / 'traj_gt.csv'
     stk_gt = STOCK / 'traj_gt.csv'
 
-    # compare_routes.png
+    # compare_routes.png   
     plot_trajectory_map(
         trajectories=[
             {'csv': str(our_gt),  'label': 'Our custom T&R (ours)  36/36 reached, 689 s',
@@ -107,7 +106,7 @@ def main():
     our_mean, our_max = mean_shift(our_vio, our_anc)
 
     # stock run has no matcher -> no anchor_matches to use; fall back to
-    # tf_slam.log fused SLAM+encoder track
+    #tf_slam.log fused SLAM+encoder track
     stk_nav = SCRATCH / 'stock_nav_fused.csv'
     n_stk = tf_slam_to_csv(STOCK / 'tf_slam.log', stk_nav)
 

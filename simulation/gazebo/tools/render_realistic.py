@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Render 3D world image with pyrender - loads .dae meshes from Fuel cache + heightmap"""
+"""Render 3D world image with pyrender - loads .dae meshes from Fuel cache + heightmap
+"""
 
 import os
 os.environ['PYOPENGL_PLATFORM'] = 'egl'
@@ -19,7 +20,7 @@ HEIGHTMAP_PATH = '/workspace/simulation/src/ugv_gazebo/worlds/heightmap.png'
 OUTPUT_PATH = '/workspace/simulation/docs/images/world_realistic.png'
 FUEL_BASE = os.path.expanduser('~/.gz/fuel/fuel.gazebosim.org/openrobotics/models')
 
-# heightmap params - auto-parsed from SDF
+#heightmap params - auto-parsed from SDF
 TERRAIN_SIZE_X = 100.0
 TERRAIN_SIZE_Y = 100.0
 TERRAIN_HEIGHT = 5.0
@@ -166,12 +167,12 @@ def create_terrain_mesh(heightmap_path):
 
     vertices = np.stack([xx.ravel(), yy.ravel(), zz.ravel()], axis=-1).astype(np.float32)
 
-    # faces - vectorized indexing
+    # faces - vectorized indexing   
     r_idx = np.arange(rows - 1)
     c_idx = np.arange(cols - 1)
     rr, cc = np.meshgrid(r_idx, c_idx, indexing='ij')
     i = (rr * cols + cc).ravel()
-    # two tris per quad (CCW winding)
+    # two tris per quad (CCW winding)   
     faces1 = np.stack([i, i + 1, i + cols], axis=-1)
     faces2 = np.stack([i + 1, i + cols + 1, i + cols], axis=-1)
     faces = np.concatenate([faces1, faces2], axis=0).astype(np.uint32)
@@ -234,7 +235,7 @@ def load_dae_model(model_key):
             return None
     except Exception as e:
         print(f"  [WARN] Failed to load {full_path}: {e}")
-        # fallback - just use a box
+        #fallback - just use a box
         box = trimesh.creation.box(extents=[0.5, 0.5, 1.0])
         return box
 

@@ -41,7 +41,7 @@ WORLD_SIZE = WORLD_SIZE_X  # for w2px X axis
 MAP_PX = 1000  # width
 MAP_PX_Y = int(MAP_PX * WORLD_SIZE_Y / WORLD_SIZE_X)  # height = 682
 
-# --- load model positions from SDF ---
+# load model positions from SDF
 MODEL_POSITIONS = []
 MODEL_COLORS = {
     'Oak': (34, 139, 34), 'Pine': (0, 100, 0), 'Rock': (139, 119, 101),
@@ -75,7 +75,7 @@ def load_model_positions():
 load_model_positions()
 
 
-# --- Gazebo ground truth pose ---
+# Gazebo ground truth pose
 def odom_tracking_thread():
     """Odom -> world coords via spawn offset - drifts but updates fast"""
     global robot_world, robot_trail
@@ -124,7 +124,7 @@ class NavWebNode(Node):
     def __init__(self):
         super().__init__('nav_web')
         # SLAM map disabled - we don't have LiDAR
-        # self.map_sub = self.create_subscription(OccupancyGrid, '/map', self.map_cb, 1)
+        #self.map_sub = self.create_subscription(OccupancyGrid, '/map', self.map_cb, 1)
         self.cam_sub = self.create_subscription(Image, '/camera/color/image_raw', self.cam_cb, 1)
         self.overhead_sub = self.create_subscription(Image, '/chase_camera/image', self.overhead_cb, 1)
         from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
@@ -147,7 +147,7 @@ class NavWebNode(Node):
 
     def cam_cb(self, msg):
         global camera_jpeg
-        # no skip needed - camera only ~1-2 Hz anyway
+        # no skip needed - camera only +-1-2 Hz anyway
         arr = np.frombuffer(msg.data, dtype=np.uint8).reshape(msg.height, msg.width, -1)
         img = PILImage.fromarray(arr[:, :, :3])
         img = img.resize((320, 240), PILImage.BILINEAR)
@@ -253,7 +253,7 @@ class NavWebNode(Node):
         """Old GT method - find entity closest to last known pos"""
         global robot_world, robot_trail
 
-        # only stuff at terrain height (~1.5-8m Z)
+        # only stuff at terrain height (+-1.5-8m Z)
         curr = []
         for t in msg.transforms:
             gx = t.transform.translation.x
@@ -411,7 +411,7 @@ class NavWebNode(Node):
 node = None
 
 
-# --- heightmap terrain background ---
+# heightmap terrain background
 TERRAIN_IMG = None
 
 def _load_terrain():
@@ -448,7 +448,7 @@ def render_map_image():
         py = int((half_y - wy) / WORLD_SIZE_Y * sy)
         return px, py
 
-    # map->world transform (inverse)
+    #map->world transform (inverse)
     with lock:
         _, _, myaw = robot_pos
         _, _, ryaw_w = robot_world
@@ -463,7 +463,7 @@ def render_map_image():
         wy = st * dx + ct * dy + ry
         return world_to_px(wx, wy)
 
-    # terrain background
+    # terrain background   
     if TERRAIN_IMG is not None:
         img = TERRAIN_IMG.copy()
     else:
@@ -557,7 +557,7 @@ def render_map_image():
         draw.line([gx-r, gy+r, gx+r, gy-r], fill=(255, 0, 0), width=3)
         draw.ellipse([gx-r, gy-r, gx+r, gy+r], outline=(255, 0, 0), width=2)
 
-    # robot dot (GT pos)
+    #robot dot (GT pos)
     rpx, rpy = world_to_px(rx, ry)
     r = 8
     draw.ellipse([rpx-r, rpy-r, rpx+r, rpy+r], fill=(0, 150, 255), outline=(255,255,255), width=2)
@@ -590,7 +590,7 @@ def render_map_image():
     return img
 
 
-# --- flask routes ---
+# flask routes
 
 @app.route('/')
 def index():

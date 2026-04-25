@@ -2,10 +2,6 @@
 """Drive a route point-to-point, record trajectory + rosbag for SLAM replay
 
 Usage: python3 drive_route.py [1|2|3]
-
-Records:
-  - /tmp/trajectory_r{N}.csv - timestamped x,y,yaw,pitch,roll,imu_ax,imu_ay,imu_az
-  - rosbag in /workspace/simulation/bags/route_{N}/ - camera, IMU, lidar, odom, tf
 """
 import rclpy, math, sys, time, subprocess, os, json
 from rclpy.node import Node
@@ -36,7 +32,7 @@ class RouteDriver(Node):
         self.done = False
         self.timer = self.create_timer(0.1, self.control_loop)
         self.gt_sub = self.create_subscription(
-            TFMessage, '/gz_poses', self.gz_poses_cb, 10)  # GT ~50Hz
+            TFMessage, '/gz_poses', self.gz_poses_cb, 10)  # GT +-50Hz
         self.last_print = 0
         self.last_move_time = time.time()
         self.last_move_x = None
@@ -53,7 +49,7 @@ class RouteDriver(Node):
     def odom_cb(self, msg):
         q = msg.pose.pose.orientation
         self.yaw = 2 * math.atan2(q.z, q.w)
-        # odom + GT offset for world pos
+        #odom + GT offset for world pos
         self.odom_x = msg.pose.pose.position.x
         self.odom_y = msg.pose.pose.position.y
         self.ox = self.odom_x + self.gt_offset_x
@@ -84,7 +80,7 @@ class RouteDriver(Node):
             gx = t.transform.translation.x
             gy = t.transform.translation.y
             gz = t.transform.translation.z
-            if gz < 1.0 or gz > 10.0:  # robot Z ~3m (terrain height)
+            if gz < 1.0 or gz > 10.0:  # robot Z +-3m (terrain height)
                 continue
             d = math.hypot(gx - expect_x, gy - expect_y)
             if d < best_d:
@@ -260,7 +256,7 @@ try:
 except:
     pass
 
-# read odom to compute offset - doesn't reset on teleport
+#read odom to compute offset - doesn't reset on teleport
 rclpy.init()
 print('Reading odom offset after teleport...')
 
