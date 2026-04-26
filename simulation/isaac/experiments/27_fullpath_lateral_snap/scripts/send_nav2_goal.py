@@ -1,13 +1,5 @@
 #!/usr/bin/env python3
-"""
-Two-phase waypoint sender for Nav2.
-
-Supports two modes:
-  --slam-frame: load SLAM-frame waypoints from /tmp/slam_waypoints.json
-  default: load world-frame waypoints from /tmp/slam_routes.json
-
-Adaptive speed based on drift from mapped trajectory.
-Waypoint skipping when robot passes waypoint along forward axis.
+"""Two-phase waypoint sender for Nav2
 
 usage:
   source /opt/ros/jazzy/setup.bash
@@ -40,11 +32,11 @@ WAYPOINT_SKIP_MARGIN = 3.0
 CHECK_INTERVAL = 2.0
 WAYPOINT_TIMEOUT = 20.0  # seconds - skip if robot stuck on a waypoint too long
 # Lateral corridor: if robot drifts > MAX_LATERAL_DEV from the waypoint
-# line, send an intermediate goal back onto the path.
+# line, send an intermediate goal back onto the path
 MAX_LATERAL_DEV = 3.0
 RETURN_TO_PATH_DIST = 1.5
 # Forward regression watchdog (exp 26): if robot's max-x-reached doesn't
-# increase for REGRESSION_TIMEOUT seconds, we're in a recovery loop.
+# increase for REGRESSION_TIMEOUT seconds, we're in a recovery loop
 REGRESSION_TIMEOUT = 30.0
 FORWARD_SKIP_DISTANCE = 5.0
 
@@ -87,7 +79,7 @@ class Nav2TwoPhase(Node):
         # lateral corridor state: 'NAVIGATING' or 'RETURNING_TO_PATH'
         self._corridor_state = 'NAVIGATING'
         self._return_target = None
-        # Forward-regression watchdog state
+        #Forward-regression watchdog state
         self._max_x_reached = -1e9
         self._max_x_time = time.time()
         self._regression_escape_count = 0
@@ -583,8 +575,8 @@ class Nav2TwoPhase(Node):
                         self.send_next_goal()
                     return
 
-                # Case 2: robot moved but result reported success far from wp.
-                # Trust that the robot is in the right general area; advance.
+                # Case 2: robot moved but result reported success far from wp
+                # Trust that the robot is in the right general area; advance
                 if real_dist > 5.0:
                     self.get_logger().warn(
                         f'[{self.phase}] wp {self.current_idx+1} FALSE POSITIVE '

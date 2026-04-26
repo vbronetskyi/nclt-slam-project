@@ -1,15 +1,5 @@
 #!/usr/bin/env python3
-"""
-Optimized A* local planner - wraps GridPlanner with caching.
-
-Key optimizations vs running GridPlanner every frame:
-1. Replan every N frames (10), use cached path between replans
-2. Reduced A* iterations (3000)
-3. Early goal proximity termination
-4. Timing instrumentation
-
-scipy distance_transform is already fast (~1ms). The real overhead was
-replanning every 3 frames. With caching, we plan 6× per second instead of 20×.
+"""Optimized A* local planner - wraps GridPlanner with caching
 """
 import math
 import time as _time
@@ -31,7 +21,7 @@ class FastGridPlanner:
         self.ROBOT_RADIUS = 2       # cells
         self.HITS_THRESHOLD = 8.0
 
-        # Cache
+        # Cache   
         self.cached_path = None
         self.cached_goal = None
         self.replan_counter = 0

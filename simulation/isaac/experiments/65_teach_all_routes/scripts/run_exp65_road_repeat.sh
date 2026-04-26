@@ -21,7 +21,7 @@ TRAJ_CSV=$TEACH/traj_gt.csv
 [ -f "$LANDMARKS" ]  || { echo "ERROR: missing $LANDMARKS"; exit 1; }
 [ -f "$TRAJ_CSV"  ]  || { echo "ERROR: missing $TRAJ_CSV"; exit 1; }
 
-# v65: also need traj CSV with gt_x,gt_y columns (used by goal sender).
+# v65: also need traj CSV with gt_x,gt_y columns (used by goal sender)
 # Our teach writes t,x,y,yaw -> remap headers on a temp copy.
 TRAJ_FOR_GOALS=$OUT/traj_gt_for_goals.csv
 python3 -c "
@@ -45,8 +45,8 @@ source /tmp/ros_env.sh 2>/dev/null || true
 export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 export ROS_DOMAIN_ID=$DOMAIN
 
-# patch road obstacle positions into spawn_obstacles (no-op here since road
-# already defined, but matches exp 52-59 flow):
+#patch road obstacle positions into spawn_obstacles (no-op here since road
+#already defined, but matches exp 52-59 flow):
 python3 $E52/scripts/patch_obstacles_exp52.py 2>/dev/null || true
 
 setsid /opt/isaac-sim-6.0.0/python.sh $SCRIPTS/run_husky_forest.py \

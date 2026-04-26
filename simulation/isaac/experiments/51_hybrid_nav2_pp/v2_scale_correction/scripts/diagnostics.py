@@ -38,9 +38,9 @@ def inspect_imu_header(bag):
         return f.readline().strip()
 
 
-# ---------------------------------------------------------------------------
+
 # Diagnostic 1: IMU quality comparison
-# ---------------------------------------------------------------------------
+
 def diag1():
     header("DIAGNOSTIC 1: IMU quality - exp 48 vs exp 51")
     for label, bag in [("exp48", EXP48_BAG), ("exp51", EXP51_BAG)]:
@@ -83,9 +83,9 @@ def diag1():
                   f"|a|_mean={np.sqrt((motion[:,1:4]**2).sum(axis=1)).mean():.3f}")
 
 
-# ---------------------------------------------------------------------------
+
 # Diagnostic 3: IMU ↔ camera timestamp alignment
-# ---------------------------------------------------------------------------
+
 def diag3():
     header("DIAGNOSTIC 3: IMU ↔ camera timestamp alignment")
     for label, bag in [("exp48", EXP48_BAG), ("exp51", EXP51_BAG)]:
@@ -127,9 +127,9 @@ def diag3():
             print(f"    t={imu[g,0]:.2f}s gap={imu_dt[g]*1000:.0f}ms")
 
 
-# ---------------------------------------------------------------------------
+
 # Diagnostic 4: Gravity magnitude during rotation
-# ---------------------------------------------------------------------------
+
 def diag4():
     header("DIAGNOSTIC 4: accel magnitude during rotation-in-place")
     for label, bag in [("exp48", EXP48_BAG), ("exp51", EXP51_BAG)]:
@@ -142,7 +142,7 @@ def diag4():
         gt_v[1:] = np.sqrt(np.sum(np.diff(gt[:, 1:3], axis=0) ** 2, axis=1)) / np.diff(gt_t)
 
         # Find rotation-in-place periods: low linear velocity, high |gz|
-        # Slice by 2-second windows
+        # Slice by 2-second windows   
         win = 2.0
         t_start = imu[0, 0]
         t_end = imu[-1, 0]
@@ -152,7 +152,7 @@ def diag4():
             seg = imu[m]
             if len(seg) < 50:
                 continue
-            # GT velocity at center
+            #GT velocity at center
             gt_idx = np.searchsorted(gt_t, t0 + win / 2)
             if gt_idx >= len(gt_v):
                 continue
@@ -170,7 +170,7 @@ def diag4():
         if len(rip) > 0:
             print(f"  ROTATE-IN-PLACE ({len(rip)} windows): "
                   f"|a| mean={rip[:,3].mean():.3f}±{rip[:,3].std():.3f}  "
-                  f"(expect ~9.81)")
+                  f"(expect +-9.81)")
             print(f"  samples: " + "  ".join(
                 [f"t={r[0]:.0f}:|a|={r[3]:.2f}±{r[4]:.2f}" for r in rip[:5]]))
         else:

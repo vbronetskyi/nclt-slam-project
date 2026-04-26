@@ -1,18 +1,12 @@
 #!/usr/bin/env python3
-"""
-Husky A200 two-phase navigation with Nav2 in Isaac Sim.
+"""Husky A200 two-phase Nav2 drive in Isaac Sim
 
-Phase 1 (outbound): obstacles present, robot navigates start -> destination.
-Phase 2 (return):   obstacles removed, robot navigates destination -> start.
-
-Isaac Sim publishes sensors (RGB-D, odom, tf, clock) via ROS2 bridge.
-Subscribes to /cmd_vel from Nav2 MPPI controller.
-Localization: ORB-SLAM3 (slam_tf_publisher.py) or GT (--use-gt).
-
-Phase transitions communicated via /tmp/nav2_phase.json:
-  {"phase": "outbound"|"removing"|"return"|"done", "timestamp": ...}
-
-Records GT trajectory to results/navigation/ for analysis.
+outbound leg has obstacles spawned, return leg has them removed.  Isaac
+publishes the usual RGB-D + odom + tf + clock and listens to /cmd_vel
+from the Nav2 MPPI controller.  localisation is either ORB-SLAM3 (via
+slam_tf_publisher.py) or GT with --use-gt.  phase transitions go
+through /tmp/nav2_phase.json and the GT trajectory is dumped to
+results/navigation/
 
 usage:
   # terminal 1: isaac sim
@@ -122,14 +116,14 @@ for wl in ["front_left_wheel_link", "front_right_wheel_link",
     if col.IsValid():
         UsdShade.MaterialBindingAPI.Apply(col).Bind(_wf, materialPurpose="physics")
 
-# IMU frame rotation: imu_link in USD has ~90deg rotation
+# IMU frame rotation: imu_link in USD has +-90deg rotation
 # IMU sensor frame: X=up, Y=right(world-Y), Z=forward(world+X)  (URF)
-# We rotate readings in Python to FLU: X=forward, Y=left, Z=up
-# Rotation matrix URF->FLU:
+#We rotate readings in Python to FLU: X=forward, Y=left, Z=up
+# Rotation matrix URF->FLU:   
 #   flu_x(fwd)  = urf_z(fwd)
 #   flu_y(left) = -urf_y(right->left)
 #   flu_z(up)   = urf_x(up)
-# Applied to both ang_vel and lin_acc before writing to file.
+#Applied to both ang_vel and lin_acc before writing to file
 def _imu_urf_to_flu(ax, ay, az):
     """Convert IMU reading from URF (sensor) to FLU (base_link) frame."""
     return az, -ay, ax  # flu_x=urf_z, flu_y=-urf_y, flu_z=urf_x
@@ -218,9 +212,9 @@ keys = og.Controller.Keys
 (graph, nodes, _, _) = og.Controller.edit(
     {"graph_path": "/ROS2NavGraph", "evaluator_name": "execution"},
     {
-        # MINIMAL OmniGraph: only cameras + cmd_vel subscriber.
+        # MINIMAL OmniGraph: only cameras + cmd_vel subscriber
         # NO odom/TF/clock publishing from OmniGraph - all Isaac ROS2 bridge nodes
-        # force-publish TF on /tf with sim_time, breaking Nav2.
+        # force-publish TF on /tf with sim_time, breaking Nav2
         # Instead, robot pose written to /tmp/isaac_pose.txt each frame,
         # tf_wall_clock_relay.py reads it and publishes TF/odom with wall clock.
         keys.CREATE_NODES: [
@@ -264,7 +258,7 @@ print("  subscribing: /cmd_vel")
 
 POSE_FILE = "/tmp/isaac_pose.txt"
 IMU_FILE = "/tmp/isaac_imu.txt"
-IMU_BUFFER_SIZE = 100  # ~0.5s at 200Hz physics, ~3s at 30Hz render
+IMU_BUFFER_SIZE = 100  # +-0.5s at 200Hz physics, +-3s at 30Hz render
 _imu_buffer = []
 
 # IMU direct interface (bypasses OmniGraph, reads at physics rate)
@@ -416,7 +410,7 @@ def _make_cam_matrix(x, y, z, yaw, pitch=0):
     r2x, r2y, r2z = (-cy)*cp, (-sy)*cp, -sp
     return Gf.Matrix4d(r0x,r0y,r0z,0, r1x,r1y,r1z,0, r2x,r2y,r2z,0, x,y,z,1)
 
-# get cmd_vel twist subscriber node
+#get cmd_vel twist subscriber node
 twist_node = None
 for n in nodes:
     if "SubTwist" in str(og.Controller.node(n) if hasattr(n, '__str__') else n):
@@ -442,13 +436,13 @@ try:
             lin_x = 0.0
             ang_z = 0.0
 
-        # differential drive
+        #differential drive
         v_left = (lin_x - ang_z * track / 2) / wheel_r
         v_right = (lin_x + ang_z * track / 2) / wheel_r
         for i, wa in enumerate(_wheel_vel_attrs):
             wa.Set(math.degrees(v_left if i % 2 == 0 else v_right))
 
-        # camera follow robot
+        #camera follow robot
         xf = UsdGeom.XformCache()
         tf = xf.GetLocalToWorldTransform(_base_prim)
         pos = tf.ExtractTranslation()
@@ -483,7 +477,7 @@ try:
                 print(f"  IMU first reading (FLU): lin_acc=({ax:.2f}, {ay:.2f}, {az:.2f})"
                       f"  (raw URF: {_imu_reading.lin_acc_x:.2f}, {_imu_reading.lin_acc_y:.2f}, {_imu_reading.lin_acc_z:.2f})")
 
-        # write pose to file for TF relay (every 3rd frame ~ 20Hz)
+        # write pose to file for TF relay (every 3rd frame +- 20Hz)
         if step % 3 == 0:
             with open(POSE_FILE, 'w') as pf:
                 pf.write(f"{gt_x:.6f} {gt_y:.6f} {gt_z:.6f} 0.0 0.0 {qz_half:.6f} {qw_half:.6f}\n")
@@ -496,7 +490,7 @@ try:
         zb = _terrain_height(gt_x-fd*math.cos(gt_yaw), gt_y-fd*math.sin(gt_yaw))
         _cam_op.Set(_make_cam_matrix(cam_x, cam_y, cam_z, gt_yaw, math.atan2(zf-zb, 2*fd)))
 
-        # record trajectory + SLAM frames (every 6th frame ~ 10 Hz)
+        #record trajectory + SLAM frames (every 6th frame +- 10 Hz)
         if step % 6 == 0:
             traj_fp.write(f"{sim_time:.3f},{current_phase},{gt_x:.3f},{gt_y:.3f},{gt_z:.3f},{gt_yaw:.4f},{lin_x:.3f},{ang_z:.3f}\n")
 
@@ -515,7 +509,7 @@ try:
                 except Exception:
                     pass
 
-        # check phase transitions (every 60 frames ~ 1 Hz)
+        # check phase transitions (every 60 frames +- 1 Hz)
         if step % 60 == 0:
             new_phase = read_phase()
             if new_phase != current_phase:

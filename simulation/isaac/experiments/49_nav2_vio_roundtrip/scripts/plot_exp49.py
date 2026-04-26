@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Plot exp 49 - Nav2 + VIO SLAM localization on full roundtrip."""
+"""Plot exp 49 - Nav2 + VIO SLAM localization on full roundtrip
+"""
 import sys
 sys.path.insert(0, '/workspace/simulation/isaac/scripts')
 from plot_trajectory_map import plot_trajectory_map
@@ -24,7 +25,7 @@ plot_trajectory_map(
     metrics_lines=[
         'Method:      Nav2 MPPI + SmacPlanner2D',
         'Localiz:     VIO SLAM (ORB-SLAM3 RGB-D-Inertial live)',
-        'Warmup:      ~60s pure-pursuit before switching to VIO TF',
+        'Warmup:      +-60s pure-pursuit before switching to VIO TF',
         'Route:       Pre-planned 91 goals @ 4m (from 797 dense WPs)',
         'Roundtrip:   outbound + natural turnaround loop + return',
         'ATE RMSE:    0.534m (max 0.891m, median 0.527m)',

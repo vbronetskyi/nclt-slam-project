@@ -1,5 +1,4 @@
-"""
-spawn/remove dynamic obstacles for navigation testing.
+"""spawn/remove dynamic obstacles for navigation testing
 obstacles placed ON route trajectory with space for bypass.
 
 usage:
@@ -9,7 +8,7 @@ usage:
 import math
 from pxr import UsdGeom, UsdPhysics, Gf, Sdf
 
-# per-route obstacle definitions
+#per-route obstacle definitions
 # each group: cones on trajectory, one side open for bypass
 
 OBSTACLES = {
@@ -22,7 +21,7 @@ OBSTACLES = {
             # Bypass south (y<-5): clear road.
             [(15, -3.5), (15, -1.5), (15, 0.5)],
             # x=45: route y≈-1.2. Cones 2m apart.
-            # Bypass south (y<-3): clear road.
+            # Bypass south (y<-3): clear road
             [(45, -2.5), (45, -0.5), (45, 1.5)],
         ],
         "tent": (-20, 0.0),

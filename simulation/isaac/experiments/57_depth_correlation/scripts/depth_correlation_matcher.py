@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Exp 57 depth cross-correlation anchor matcher (grid template matching).
+"""Exp 57 depth cross-correlation anchor matcher (grid template matching)
 
 NOT ICP.  Deliberate choice of cross-correlation over ICP because:
 
@@ -14,20 +14,6 @@ NOT ICP.  Deliberate choice of cross-correlation over ICP because:
 Runs in parallel with the ORB-based visual_landmark_matcher.  Both
 publish `/anchor_correction`; tf_wall_clock_relay_v55 accepts whichever
 is fresher.
-
-Pipeline:
-  1. Load teach occupancy grid from south_teach_map.pgm at startup.
-  2. Subscribe /depth_points (2D point cloud in `camera_link`).
-  3. At 1 Hz: project current frame's depth points to 2D world cells
-     using the live VIO base pose, then search for the (dx, dy) offset
-     (within ±SEARCH_WINDOW_M) that maximises how many current cells
-     land on teach-occupied cells.
-  4. If the best offset has at least MIN_HITS cells and the hit
-     *fraction* exceeds `min_fraction_peak * 2nd_best_fraction`
-     (significance test), publish `/anchor_correction`.
-
-No ORB, no RANSAC.  Geometry-only: robust to cones/tent (new obstacles
-just don't contribute hits - they dilute but don't mislead the peak).
 """
 import argparse
 import math
@@ -82,7 +68,7 @@ def quat_to_rot(qx, qy, qz, qw):
 def load_teach_map(yaml_path, dilate_cells=1):
     """Load teach occupancy, optionally dilate to widen the "hit zone".
 
-    The raw teach map from teach_run_depth_mapper is very sparse (~0.1 %
+    The raw teach map from teach_run_depth_mapper is very sparse (+-0.1 %
     occupied cells in forest scenes) because log-odds thresholding only
     promotes cells with strong evidence.  Correlation needs broader
     overlap to discriminate - we dilate by N cells (default 3 = 0.3 m),
@@ -145,7 +131,7 @@ class DepthCorrelationMatcher(Node):
         with open(log_csv, 'w') as f:
             f.write('ts,vio_x,vio_y,n_cells,best_dx,best_dy,best_hits,best_frac,peak_ratio,outcome\n')
 
-        # Precompute search grid
+        #Precompute search grid
         ns = int(SEARCH_WINDOW_M / SEARCH_STEP_M)
         self.search_offsets = []
         for i in range(-ns, ns + 1):

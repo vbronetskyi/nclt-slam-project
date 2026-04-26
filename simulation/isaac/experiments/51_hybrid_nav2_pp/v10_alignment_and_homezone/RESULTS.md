@@ -4,8 +4,8 @@
 
 v10 applied two control-layer fixes on top of v9:
 - **Fix A** - alignment averaging in `_slam_se3_to_nav` (50 samples
-  SLAM-stationary window, SLERP quaternion average, jitter rejection).
-- **Fix B** - home-zone goal collapsing in `send_goals_hybrid.py`.
+  SLAM-stationary window, SLERP quaternion average, jitter rejection).   
+- **Fix B** - home-zone goal collapsing in `send_goals_hybrid.py`.   
 
 Fix A worked **technically perfectly** (GT disp 0.0 cm, yaw std 0.000° on
 first attempt in the second launch after reordering the run script).
@@ -30,7 +30,7 @@ Per-distance err:
 
 | bin | v9 (mean / max) | **v10 (mean / max)** | delta |
 |---|---|---|---|
-| 0-50 m | 0.50 / 0.97 | **0.18 / 0.39** | v10 **5× tighter** x |
+| 0-50 m | 0.50 / 0.97 | **0.18 / 0.39** | v10 **5* tighter** x |
 | 50-100 m | 1.42 / 1.70 | 0.93 / 2.01 | v10 better mean |
 | 100-150 m | **1.95 / 2.47** | **3.47 / 4.53** | v10 worse, cascade |
 | 150-200 m | 1.28 / 1.70 | 4.12 / 4.55 | v10 stuck |
@@ -38,11 +38,11 @@ Per-distance err:
 ## Why v10 beat v9 at 0-50 m but lost 100-150 m
 
 The initial alignment bias in v9 (+1.8° yaw) and the underlying VIO
-drift were acting in **opposite directions** through the 100-150 m zone.
-v9's 1.95 m mean err there was really a partial cancellation:
+drift were acting in **opposite directions** thorugh the 100-150 m zone.
+v9's 1.95 m mean err there was realy a partial cancellation:
 
 ```
-v9 err  ≈  |(alignment bias × travel)  +  (VIO drift, opposite sign)|
+v9 err  ≈  |(alignment bias * travel)  +  (VIO drift, opposite sign)|
          ≈  |small||
 ```
 
@@ -55,12 +55,12 @@ v10 err  ≈  |(0)  +  (VIO drift, now unattenuated)|
 ```
 
 At 0-50 m there's very little VIO drift yet, so removing the alignment
-bias is a pure win - err drops from 0.50 -> 0.18 m (5×). At 100-150 m the
+bias is a pure win - err drops from 0.50 -> 0.18 m (5*). At 100-150 m the
 VIO drift is larger, and no longer has an alignment bias to cancel
 against, so err grows to 3.5 m - large enough to cross the Nav2
 goal-tolerance (3 m) and trigger the cascade that got the robot stuck.
 
-v9 was partially **"lucky"** - the alignment bias happened to reduce the
+v9 was partially **lucky** - the alignment bias happened to reduce the
 total err in the bin that matters most for Nav2 tolerance. v10 exposes
 the **real** VIO drift magnitude.
 
@@ -71,12 +71,12 @@ acceleration to GT-derived body-frame acceleration, straight-motion
 samples only:
 
 ```
-GT-derived body accel:   ax +0.001 ± 0.398  ay +0.011 ± 0.208
-IMU body accel:          ax -0.001 ± 3.852  ay +0.010 ± 1.265
+GT-derived body accel:   ax +0.001 +- 0.398  ay +0.011 +- 0.208
+IMU body accel:          ax -0.001 +- 3.852  ay +0.010 +- 1.265
 difference (IMU - GT):   ax -0.002             ay -0.000
 ```
 
-**IMU mean matches GT within 2 mm/s² on both axes.** No bias. Only the
+IMU mean matches GT within 2 mm/s² on both axes. No bias. Only the
 noise std is larger (known-documented; calibrated in yaml). IMU means
 are also stable across all distance bins - no distance-dependent drift.
 
@@ -111,16 +111,16 @@ around, not reduce them.
 
 Practical options for v11:
 
-1. **Map reuse (teach-and-repeat proper).** Save the ORB-SLAM3 Atlas
+1. Map reuse (teach-and-repeat proper). Save the ORB-SLAM3 Atlas
    during a clean teach run, load it on repeat so VIO localises against
    known map points instead of building its own. Eliminates drift
    accumulation - the teach map has global consistency.
-2. **Encoder scale fusion revisited.** Now that alignment is clean and
+2. Encoder scale fusion revisited. Now that alignment is clean and
    we know IMU is mean-correct, a `rolling_scale = enc_dist / vio_dist`
    correction could actually work. This was v5 but noisy because
    phantom-motion was not fixed; now it is.
-3. **Accept v9 as the working answer.** The user-visible effect of v9
-   was "robot drives full roundtrip". v10 is cleaner theoretically but
+3. Accept v9 as the working answer. The user-visible effect of v9
+   was robot drives full roundtrip. v10 is cleaner theoretically but
    worse practically. Pin v9's setup as the hybrid-VIO+Nav2 baseline
    and move on to exp 50 (obstacles).
 

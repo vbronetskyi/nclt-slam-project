@@ -1,13 +1,13 @@
 #!/bin/bash
-# Our full T&R pipeline, but ORB-SLAM3 in pure RGB-D mode (no IMU).
+# Our full T&R pipeline, but ORB-SLAM3 in pure RGB-D mode (no IMU)
 # Route-parametric: takes ROUTE env var (e.g. 04_nw_se, 09_se_ne, road, ...).
 #
-# Same as per-route run_repeat.sh, ONLY differences:
+# Same as per-route run_repeat.sh, ONLY differences:   
 #   - SLAM binary   : ./Examples/RGB-D/rgbd_live   (was rgbd_inertial_live)
 #   - SLAM config   : $E76/config/rgbd_th160.yaml  (no IMU noise / Tbc blocks)
 #   - --synthetic-imu CLI flag dropped from Isaac launch (IMU not consumed)
 # Everything else (matcher, tf_relay_v55, Nav2 planner_only, pure_pursuit,
-# send_goals_hybrid with detour ring, turnaround_supervisor) is identical.
+# send_goals_hybrid with detour ring, turnaround_supervisor) is identical
 set -eu
 
 ROUTE=${ROUTE:?set ROUTE (e.g. 09_se_ne)}
@@ -227,7 +227,7 @@ echo "PIDs: Isaac=$ISAAC VIO=$VIO TF=$TF Matcher=$MATCHER Nav2=$NAV2 PP=$PP Sup=
 echo "OUT: $OUT"
 
 # WAIT_LOOP_FOR_RESULT (with watchdog early-abort)
-# 7200 s wall = 2 h, comfortably above our custom's longest run (68 min on 07).
+# 7200 s wall = 2 h, comfortably above our custom's longest run (68 min on 07)
 ROUTE_TIMEOUT_S=${ROUTE_TIMEOUT_S:-7200}
 START_TS=$(date +%s)
 cleanup_all() {

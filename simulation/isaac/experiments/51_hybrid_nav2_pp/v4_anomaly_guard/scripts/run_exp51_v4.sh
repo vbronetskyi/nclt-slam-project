@@ -1,7 +1,7 @@
 #!/bin/bash
-# Exp 51 v4: v3 (IMU standstill fix + loopClosing:0) + SlamAnomalyGuard in tf_relay.
+# Exp 51 v4: v3 (IMU standstill fix + loopClosing:0) + SlamAnomalyGuard in tf_relay
 # Detects >2 m/s apparent SLAM speed (BA-induced map shift), freezes SLAM for 5s,
-# encoder carries position during freeze.
+# encoder carries position during freeze
 set -eu
 
 EXP=/workspace/simulation/isaac/experiments/51_hybrid_nav2_pp

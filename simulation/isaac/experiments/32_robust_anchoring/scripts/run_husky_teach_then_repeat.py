@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Teach-and-repeat in a single Isaac Sim session.
+"""Teach-and-repeat in a single Isaac Sim session
 Phase 1 (teach): drive via GT waypoints, record anchors in-memory.
 Phase 2 (repeat): teleport to start, drive via visual anchor matching.
 
@@ -30,9 +29,7 @@ parser.add_argument("--duration", type=float, default=800.0,
 parser.add_argument("--lookahead", type=float, default=8.0)
 args, _ = parser.parse_known_args()
 
-# =====================================================================
-# Isaac Sim setup (identical to run_husky_teach_repeat.py)
-# =====================================================================
+#Isaac Sim setup (identical to run_husky_teach_repeat.py)
 from isaacsim import SimulationApp
 app = SimulationApp({
     "headless": True,
@@ -117,7 +114,7 @@ while True:
     idx += 1
 
 # 3. Cover: keep shrubs (first 357 prims), remove rest (ferns/leaves/grass)
-#    Shrubs are short and don't fully block camera. Ferns are tall render-only.
+#Shrubs are short and don't fully block camera. Ferns are tall render-only.   
 _shrub_count = 357  # from gazebo_models shrub count
 idx = _shrub_count  # skip shrubs, deactivate ferns+leaves+grass
 while True:
@@ -389,7 +386,7 @@ class DepthAvoidance:
             return 1.0, 0.0, False
         d = {n: self.sector_dist(depth, n) for n in self.sectors}
 
-        # Never fully block - always creep forward (min 0.15 m/s via speed scale)
+        #Never fully block - always creep forward (min 0.15 m/s via speed scale)
         if d["center"] < self.CRITICAL_DIST:
             speed = 0.15 / 0.8  # will be multiplied by MAX_LINEAR_VEL
         elif d["center"] < self.SLOWDOWN_DIST:
@@ -416,9 +413,7 @@ class DepthAvoidance:
         return speed, ang, False
 
 
-# =====================================================================
-# PHASE 1: TEACH
-# =====================================================================
+#PHASE 1: TEACH
 print(f"\n{'='*60}")
 print(f"PHASE 1: TEACH - driving {len(teach_waypoints)} waypoints")
 print(f"{'='*60}\n")
@@ -525,9 +520,7 @@ with open(f"{_rm}/anchors.json", "w") as _af:
     json.dump(anchors, _af, indent=2)
 print(f"  Saved {len(anchors)} anchors to {_rm}/anchors.json")
 
-# =====================================================================
 # TELEPORT BACK TO START
-# =====================================================================
 print("\nTeleporting to start...")
 stop_wheels()
 for _ in range(60):
@@ -566,9 +559,7 @@ if teleport_err > 5.0:
 # Initialize encoder prev from actual GT position after teleport
 enc_prev_x, enc_prev_y, enc_prev_yaw = p[0], p[1], p[3]
 
-# =====================================================================
 # PHASE 2: REPEAT - odometry-primary + visual correction
-# =====================================================================
 print(f"\n{'='*60}")
 print(f"PHASE 2: REPEAT - {len(anchors)} anchors, odometry-primary")
 print(f"{'='*60}\n")
@@ -623,7 +614,7 @@ follower.initialize_from_anchor(REPEAT_START_ANCHOR)
 odom_s = anchors[REPEAT_START_ANCHOR]["s"]
 odom_anchor_idx = REPEAT_START_ANCHOR
 
-VISUAL_EVERY = 30  # every 30 frames = ~2Hz; visual is soft correction only
+VISUAL_EVERY = 30  # every 30 frames = +-2Hz; visual is soft correction only
 frame_count = 0
 prev_lin = 0.0
 repeat_start = sim_time
@@ -834,7 +825,7 @@ try:
         send_wheels(cmd_lin, cmd_ang)
         prev_lin = cmd_lin
 
-        # 7. Log every second
+        #7. Log every second
         if frame_count % 60 == 0:
             log_f.write(
                 f"{sim_time:.2f},{rx:.4f},{ry:.4f},{ryaw:.4f},"

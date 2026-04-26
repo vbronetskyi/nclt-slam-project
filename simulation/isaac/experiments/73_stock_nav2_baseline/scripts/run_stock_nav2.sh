@@ -4,12 +4,12 @@
 # Pipeline: same Isaac + VIO + matcher + turnaround_supervisor as our
 # per-route run_repeat.sh; BUT replaces
 #   pure_pursuit_path_follower.py + send_goals_hybrid.py (custom)
-# with
+#with
 #   Nav2 controller_server (RPP) + bt_navigator (stock BT XML)
 #                                  + behavior_server (recoveries)
-#                                  + nav_through_poses_client.py (WP feeder).
+#                                  + nav_thorugh_poses_client.py (WP feeder).
 #
-# Route: 09_se_ne (short, ~145 m roundtrip - quickest baseline).
+# Route: 09_se_ne (short, +-145 m roundtrip - quickest baseline)
 set -eu
 
 ROUTE=09_se_ne

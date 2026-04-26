@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Teach-and-repeat in a single Isaac Sim session.
+"""Teach-and-repeat in a single Isaac Sim session
 Phase 1 (teach): drive via GT waypoints, record anchors in-memory.
 Phase 2 (repeat): teleport to start, drive via visual anchor matching.
 
@@ -36,9 +35,7 @@ parser.add_argument("--use-grid", action="store_true",
                     help="use LocalObstacleGrid for accumulated detection")
 args, _ = parser.parse_known_args()
 
-# =====================================================================
-# Isaac Sim setup (identical to run_husky_teach_repeat.py)
-# =====================================================================
+#Isaac Sim setup (identical to run_husky_teach_repeat.py)
 from isaacsim import SimulationApp
 app = SimulationApp({
     "headless": True,
@@ -378,7 +375,7 @@ class DepthAvoidance:
                 ang += sign * self.AVOIDANCE_STRENGTH * urgency
 
         if d["center"] < self.OBSTACLE_DIST:
-            # Bias toward route direction when center blocked
+            # Bias toward route direction when center blocked   
             if abs(route_ang) > 0.05:
                 ang += math.copysign(self.AVOIDANCE_STRENGTH * 0.8, route_ang)
             elif d["left"] + d["far_left"] > d["right"] + d["far_right"]:
@@ -414,9 +411,7 @@ if args.skip_teach:
     print(f"  {len(anchors)} anchors, {len(anchor_descs)} desc, {len(anchor_depth_profiles)} dp")
     s_accum = anchors[-1]["s"] if anchors else 0
 
-# =====================================================================
 # PHASE 1: TEACH (skip if --skip-teach)
-# =====================================================================
 if not args.skip_teach:
     print(f"\n{'='*60}")
     print(f"PHASE 1: TEACH - driving {len(teach_waypoints)} waypoints")
@@ -482,7 +477,7 @@ while sim_time < args.duration / 2 and wp_idx < len(teach_waypoints):
         lin_v, ang_v = 1.0, max(-0.6, min(0.6, herr*1.2))
     send_wheels(lin_v, ang_v)
 
-    # Track distance
+    # Track distance   
     if prev_gx is not None:
         s_accum += math.hypot(rx - prev_gx, ry - prev_gy)
     prev_gx, prev_gy = rx, ry
@@ -540,9 +535,7 @@ while sim_time < args.duration / 2 and wp_idx < len(teach_waypoints):
         json.dump(anchors, _af, indent=2)
     print(f"  Saved {len(anchors)} anchors to {_rm}/anchors.json")
 
-# =====================================================================
 # TELEPORT BACK TO START
-# =====================================================================
 print("\nTeleporting to start...")
 stop_wheels()
 for _ in range(60):
@@ -581,9 +574,7 @@ if teleport_err > 5.0:
 # Initialize encoder prev from actual GT position after teleport
 enc_prev_x, enc_prev_y, enc_prev_yaw = p[0], p[1], p[3]
 
-# =====================================================================
 # PHASE 2: REPEAT - odometry-primary + visual correction
-# =====================================================================
 print(f"\n{'='*60}")
 print(f"PHASE 2: REPEAT - {len(anchors)} anchors, odometry-primary")
 print(f"{'='*60}\n")
@@ -638,7 +629,7 @@ follower.initialize_from_anchor(REPEAT_START_ANCHOR)
 odom_s = anchors[REPEAT_START_ANCHOR]["s"]
 odom_anchor_idx = REPEAT_START_ANCHOR
 
-VISUAL_EVERY = 30  # every 30 frames = ~2Hz; visual is soft correction only
+VISUAL_EVERY = 30  # every 30 frames = +-2Hz; visual is soft correction only
 frame_count = 0
 prev_lin = 0.0
 repeat_start = sim_time
@@ -657,7 +648,7 @@ odom_x = p[0]
 odom_y = p[1]
 gyro_yaw = p[3]
 
-# Previous GT for encoder simulation (pose diff)
+#Previous GT for encoder simulation (pose diff)
 enc_prev_x = enc_prev_y = enc_prev_yaw = None
 ENCODER_NOISE = 0.005  # 0.5% - matches Husky A200 (78000 ticks/m)
 enc_rng = np.random.RandomState(123)
@@ -779,7 +770,7 @@ try:
                 gyro_yaw = odom_yaw
                 prev_confirmed = robust_loc.confirmed_anchor_id
 
-            # Low-confidence safe mode - only reduce speed slightly,
+            #Low-confidence safe mode - only reduce speed slightly,
             # not halve it (vis is unreliable cross-session anyway)
             if vis_conf < 0.4:
                 gap_nav.MAX_LINEAR = 0.55
@@ -790,7 +781,7 @@ try:
                 gap_nav.SLOW_SAFE_LINEAR = 0.25
                 follower.lookahead_dist = 8.0
 
-        # 3. Set follower from encoder odom (for lookahead target)
+        #3. Set follower from encoder odom (for lookahead target)
         follower.current_anchor_idx = odom_anchor_idx
         follower.odom_x = odom_x
         follower.odom_y = odom_y
@@ -802,7 +793,7 @@ try:
         # Find nearest anchor to GT position for correct lookahead
         _gt_anchor = min(range(len(anchors)),
                          key=lambda i: math.hypot(anchors[i]["x"]-rx, anchors[i]["y"]-ry))
-        _gt_la = min(_gt_anchor + 4, len(anchors) - 1)  # lookahead ~8m
+        _gt_la = min(_gt_anchor + 4, len(anchors) - 1)  # lookahead +-8m
         _gt_tx, _gt_ty = anchors[_gt_la]["x"], anchors[_gt_la]["y"]
         desired_heading = math.atan2(_gt_ty - ry, _gt_tx - rx)
         heading_err = desired_heading - ryaw

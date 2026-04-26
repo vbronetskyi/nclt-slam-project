@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-two-phase waypoint sender for Nav2 - always forward, never back.
+"""two-phase waypoint sender for Nav2 - always forward, never back
 
 Adaptive speed based on drift from mapped trajectory.
 Waypoint skipping when robot passes waypoint along forward axis.
@@ -32,7 +31,7 @@ SPEED_FULL = 0.8
 SPEED_SLOW = 0.4
 SPEED_CRAWL = 0.2
 
-# waypoint skipping: skip if robot passed waypoint along X
+# waypoint skipping: skip if robot passed waypoint along X   
 WAYPOINT_SKIP_MARGIN = 3.0  # m past waypoint X -> skip it
 
 CHECK_INTERVAL = 2.0   # seconds

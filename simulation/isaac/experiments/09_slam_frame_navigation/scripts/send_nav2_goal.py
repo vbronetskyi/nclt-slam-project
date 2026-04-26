@@ -1,13 +1,5 @@
 #!/usr/bin/env python3
-"""
-Two-phase waypoint sender for Nav2.
-
-Supports two modes:
-  --slam-frame: load SLAM-frame waypoints from /tmp/slam_waypoints.json
-  default: load world-frame waypoints from /tmp/slam_routes.json
-
-Adaptive speed based on drift from mapped trajectory.
-Waypoint skipping when robot passes waypoint along forward axis.
+"""Two-phase waypoint sender for Nav2
 
 usage:
   source /opt/ros/jazzy/setup.bash

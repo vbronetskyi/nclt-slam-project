@@ -1,5 +1,4 @@
-"""
-spawn/remove dynamic obstacles for navigation testing.
+"""spawn/remove dynamic obstacles for navigation testing
 obstacles placed ON route trajectory with space for bypass.
 
 usage:
@@ -19,7 +18,7 @@ OBSTACLES = {
             [(-50, -5.0), (-50, -4.0), (-50, -3.0)],
             # x=15: 3 cones block center/south, wide gap north (y > -1)
             [(15, -4.0), (15, -3.0), (15, -2.0)],
-            # x=45: 3 cones block center, gap south (y < -2)
+            #x=45: 3 cones block center, gap south (y < -2)
             [(45, -1.0), (45, 0.0), (45, 1.0)],
         ],
         "tent": (-20, 0.2),

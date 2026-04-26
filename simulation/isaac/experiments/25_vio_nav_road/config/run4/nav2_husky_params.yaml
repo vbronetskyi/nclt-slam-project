@@ -1,6 +1,6 @@
 # nav2 params for husky a200 in isaac sim
 # localization: ORB-SLAM3 (publishes map->odom tf via slam_tf_publisher.py)
-# global planner: NavFn on static SLAM map (trees/buildings only)
+# global planner: NavFn on static SLAM map (trees/buildings only)   
 # controller: MPPI with 4.8s horizon (96 steps) for obstacle group bypass
 # obstacle detection: depth -> pointcloud -> local costmap ONLY (not global)
 # two-phase: outbound with obstacles, return without
@@ -115,7 +115,7 @@ global_costmap:
       track_unknown_space: false
       # static SLAM map + depth obstacle layer (height/range filtered)
       # max_obstacle_height=1.2 passes cones (1m) but cuts tree trunks (5m+) and canopy (3m+)
-      # obstacle_max_range=2.0 sees only what's directly ahead, not trees 3-5m to the side
+      # obstacle_max_range=2.0 sees only what's directly ahead, not trees 3-5m to the side   
       # raytrace_max_range=2.5 clears costmap after passing an obstacle
       plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
       static_layer:

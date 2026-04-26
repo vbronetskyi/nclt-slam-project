@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Log every Nav2 /plan as CSV (x,y per pose).
+"""Log every Nav2 /plan as CSV (x,y per pose)
 
 For each incoming Path message: write `plan_XXXX.csv` with columns
   seq, wall_ts, x, y
@@ -43,7 +43,7 @@ class PlanLogger(Node):
         rx, ry = self._read_robot_pose()
         gx = msg.poses[-1].pose.position.x
         gy = msg.poses[-1].pose.position.y
-        # Path length
+        #Path length
         length = 0.0
         for i in range(1, len(msg.poses)):
             a = msg.poses[i-1].pose.position

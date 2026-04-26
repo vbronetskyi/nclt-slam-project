@@ -1,5 +1,4 @@
-"""
-Nav2 launch for SLAM-frame navigation.
+"""Nav2 launch for SLAM-frame navigation
 Uses empty occupancy grid - only depth obstacle layer for avoidance.
 No static map needed: robot + waypoints both in SLAM coordinate frame.
 
@@ -28,7 +27,7 @@ def generate_launch_description():
         convert_types=True,
     )
 
-    # empty map in SLAM frame (origin at -50,-50, 200x200m)
+    #empty map in SLAM frame (origin at -50,-50, 200x200m)
     map_yaml = os.path.join(config_dir, 'slam_frame_map.yaml')
 
     lifecycle_nodes = [

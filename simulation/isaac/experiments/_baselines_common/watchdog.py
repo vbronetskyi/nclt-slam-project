@@ -1,20 +1,7 @@
-#!/usr/bin/env python3
-"""Early-abort watchdog for a baseline run.
+#!/usr/bin/env python3   
+"""Early-abort watchdog for a baseline run
 
 Monitors four conditions and writes `/tmp/baseline_abort.txt` when any
-one trips:
-
-  (1) Process heartbeat - comma-separated PID list must all still be alive.
-  (2) GT stall - robot position from /tmp/isaac_pose.txt hasn't moved more
-      than GT_STALL_MIN_M across any GT_STALL_WINDOW_S sliding window
-      (after WARMUP_S grace).
-  (3) WP-progress stall - goals.log (client log) hasn't emitted a new
-      'REACHED' line in NO_WP_MAX_S seconds (after WARMUP_S grace).
-  (4) RESULT seen - RESULT: ... line in goals.log (success path).  This
-      one writes /tmp/baseline_done.txt (not abort) so wait-loop exits OK.
-
-The wait-loop in run.sh tails /tmp/baseline_abort.txt and /tmp/baseline_done.txt
-alongside the existing RESULT grep.
 """
 import argparse, math, os, time
 
@@ -45,7 +32,7 @@ def last_reached_ts(goals_log):
             ts = None
             for line in f:
                 if 'REACHED' in line or 'RESULT: reached' in line:
-                    # line format [INFO] [1776891234.567]...
+                    # line format [INFO] [1776891234.567]....
                     a = line.find('[', line.find('[') + 1)  # 2nd '['
                     b = line.find(']', a + 1)
                     if a != -1 and b != -1:
@@ -102,18 +89,18 @@ def main():
         now = time.time()
         elapsed = now - start
 
-        # (4) RESULT - quickest path, exit watchdog
+        # 4) RESULT - quickest path, exit watchdog
         if has_result(args.goals_log):
             done('RESULT line seen in goals.log')
             return 0
 
-        # (1) heartbeat
+        # 1) heartbeat
         dead = [p for p in pids if not alive(p)]
         if dead:
             abort(f'critical process(es) dead: {dead}')
             return 1
 
-        # (2) GT stall
+        # 2) GT stall
         gt = read_gt()
         if gt is not None:
             gt_hist.append((now, gt[0], gt[1]))
@@ -129,7 +116,7 @@ def main():
                           f'{args.gt_stall_window_s:.0f} s (<{args.gt_stall_min_m} m)')
                     return 1
 
-        # (3) WP-progress stall - only if --no-wp-max-s > 0
+        #3) WP-progress stall - only if --no-wp-max-s > 0
         if args.no_wp_max_s > 0 and elapsed > args.warmup_s:
             last = last_reached_ts(args.goals_log)
             if last is None:

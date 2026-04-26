@@ -16,7 +16,7 @@ new_south = '''    "south": {
         "cones": [
             # Obstacle A (x=-75, on route @ y~-24.6): 3-cone wall y=-24..-26
             [(-75, -24.0), (-75, -25.0), (-75, -26.0)],
-            # Obstacle B (x=-18, on route @ y~-24.0): 2-cone wall y=-24..-25
+            #Obstacle B (x=-18, on route @ y~-24.0): 2-cone wall y=-24..-25
             [(-18, -24.0), (-18, -25.0)],
             # Obstacle C (x=+5, on route @ y~-17.8): 4-cone wall y=-17..-20
             [(5, -17.0), (5, -18.0), (5, -19.0), (5, -20.0)],
@@ -34,7 +34,7 @@ with open(SRC, 'w') as f:
     f.write(new_code)
 print("Patched south obstacles in spawn_obstacles.py (exp 52)")
 
-# Verify
+#Verify
 import sys
 sys.path.insert(0, '/workspace/simulation/isaac/scripts')
 if 'spawn_obstacles' in sys.modules:

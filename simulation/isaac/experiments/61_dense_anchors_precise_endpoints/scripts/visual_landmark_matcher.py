@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Exp 55 repeat-time visual landmark matcher.
+"""Exp 55 repeat-time visual landmark matcher
 
 Loads south_landmarks.pkl (captured in teach run), subscribes to the live
-camera topics and VIO pose, and at ~1-2 Hz:
+camera topics and VIO pose, and at +-1-2 Hz:
 
   1. Find candidate teach landmarks within CANDIDATE_RADIUS m of current
      VIO position (in the teach-map world frame - if VIO has drifted, this
@@ -19,12 +19,10 @@ camera topics and VIO pose, and at ~1-2 Hz:
   6. Publish `/anchor_correction` (PoseWithCovarianceStamped).  Covariance
      diagonal from inlier count.
 
-Inputs:
   /camera/color/image_raw, /camera/depth/image_rect_raw
   /tmp/isaac_pose.txt  (current VIO/encoder-blended pose from tf_relay)
   south_landmarks.pkl
 
-Outputs:
   /anchor_correction  geometry_msgs/PoseWithCovarianceStamped
   anchor_matches.csv  log of every attempt
 """
@@ -65,7 +63,7 @@ def _img_msg_to_depth_mm(msg):
         return mm.astype(np.uint16)
     raise ValueError(f'unexpected depth encoding {msg.encoding}')
 
-# Defaults matching the recorder
+#Defaults matching the recorder
 FX, FY = 320.0, 320.0
 CX, CY = 320.0, 240.0
 K = np.array([[FX, 0, CX], [0, FY, CY], [0, 0, 1]], dtype=np.float32)
@@ -88,9 +86,9 @@ TICK_HZ = 2.0
 
 # v58 continuous landmark accumulation: if we've had no anchor for
 # ACCUM_SILENCE_S and the nearest existing landmark is > ACCUM_MIN_DIST_M
-# away, record the current frame's ORB features as a new landmark
+#away, record the current frame's ORB features as a new landmark
 # (camera pose from the current VIO pose).  These grow the landmark set
-# organically within and across repeat runs.
+# organically within and across repeat runs
 ACCUM_ENABLE = True
 ACCUM_SILENCE_S = 5.0          # v61r3: back to exp 58 conservative (5s/5m)
 ACCUM_MIN_DIST_M = 5.0         # v61r3: back to exp 58 conservative (5s/5m)
@@ -329,7 +327,7 @@ class VisualLandmarkMatcher(Node):
             # PnP RANSAC: recovers transform from teach-camera frame to
             # current-camera frame's viewpoint.  solvePnPRansac returns
             # rvec/tvec that maps obj_pts -> img_pts.  i.e. this is the pose
-            # of the TEACH camera frame expressed in the CURRENT camera
+            #of the TEACH camera frame expressed in the CURRENT camera
             # frame.  We invert to get current-camera ↔ teach-camera.
             ok, rvec, tvec, inliers = cv2.solvePnPRansac(
                 obj_pts, img_pts, K, DIST,
@@ -338,7 +336,7 @@ class VisualLandmarkMatcher(Node):
                 flags=cv2.SOLVEPNP_ITERATIVE)
             if not ok or inliers is None or len(inliers) < MIN_INLIERS:
                 continue
-            # Reprojection error on inliers
+            #Reprojection error on inliers
             proj, _ = cv2.projectPoints(obj_pts[inliers[:, 0]], rvec, tvec, K, DIST)
             err = float(np.linalg.norm(
                 proj.reshape(-1, 2) - img_pts[inliers[:, 0]], axis=1).mean())
@@ -458,7 +456,7 @@ class VisualLandmarkMatcher(Node):
         y_cam = (vv - cy_) * d_c / fy
         z_cam = d_c
         kpts_3d_cam = np.stack([x_cam, y_cam, z_cam], axis=-1).astype(np.float32)
-        # Camera pose in world: from base via static offset
+        #Camera pose in world: from base via static offset
         R_wb = quat_to_rot(*base_pose[3:7])
         cam_xyz = np.array([base_pose[0], base_pose[1], base_pose[2]]) + \
                   R_wb @ self.base_to_cam_t

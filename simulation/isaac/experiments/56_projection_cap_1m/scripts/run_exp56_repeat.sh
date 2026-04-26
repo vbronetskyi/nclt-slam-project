@@ -1,7 +1,7 @@
 #!/bin/bash
 # Exp 55 REPEAT run - v53 base (proactive projection + proximity limiter)
-#                    + v55 visual landmark matcher + tf_relay with
-#                      /anchor_correction subscriber.
+#                    + v55 visual landmark matcher + tf_relay with   
+#                      /anchor_correction subscriber
 set -eu
 
 E52=/workspace/simulation/isaac/experiments/52_obstacles_v9

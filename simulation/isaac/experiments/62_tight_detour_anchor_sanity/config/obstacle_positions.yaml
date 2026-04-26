@@ -2,7 +2,7 @@
 #
 # Exp 50 placed cone walls ACROSS the south route (perpendicular to travel),
 # proven to force meaningful replanning. Each wall is a 3-5 cone line
-# blocking a ~2-5 m band across the robot path.
+# blocking a +-2-5 m band across the robot path
 #
 # Route at each obstacle (from exp 50 analysis):
 #   Group A: x=-75 -> route y ~ -24.6  -> wall blocks y=-24..-26 (3 cones)

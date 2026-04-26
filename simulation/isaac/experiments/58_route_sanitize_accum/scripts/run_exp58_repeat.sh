@@ -1,7 +1,7 @@
 #!/bin/bash
 # Exp 55 REPEAT run - v53 base (proactive projection + proximity limiter)
 #                    + v55 visual landmark matcher + tf_relay with
-#                      /anchor_correction subscriber.
+#                      /anchor_correction subscriber
 set -eu
 
 E52=/workspace/simulation/isaac/experiments/52_obstacles_v9
@@ -39,7 +39,7 @@ python3 $E52/scripts/patch_obstacles_exp52.py
 
 # v58: offline WP sanitization - shift WPs away from cones/tent/inflation
 # before goal sender consumes them.  This is the definitive fix for tent
-# and cone-wall collisions: no plan can ever terminate inside an obstacle.
+# and cone-wall collisions: no plan can ever terminate inside an obstacle
 python3 $E58/scripts/sanitize_route.py \
     --trajectory /workspace/simulation/isaac/experiments/48_vio_roundtrip__/logs/exp48_vio_traj.csv \
     --teach-map $TEACH_MAP \

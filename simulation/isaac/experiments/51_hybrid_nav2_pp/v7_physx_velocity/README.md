@@ -1,12 +1,9 @@
 # Exp 51 v7_physx_velocity - synth IMU from PhysX velocity API
 
-*[thesis root](../../../../../README.md) > [simulation](../../../../README.md) > isaac > experiments > 51_hybrid_nav2_pp > v7_physx_velocity*
-
-
 ## Hypothesis
 
 v5 diagnostic showed synth IMU ax std 3.5 m/s² (measured) vs yaml 0.02 spec
-- 175× too noisy because of position-double-differentiation. v6 worked
+- 175* too noisy because of position-double-differentiation. v6 worked
 around this by bumping yaml `NoiseAcc: 1.5` so ORB-SLAM3 weights IMU
 appropriately. A cleaner fix: use Isaac's rigid-body velocity API
 (`_husky_rigid.get_linear_velocity()`) and single-differentiate to get
@@ -27,7 +24,7 @@ Both `get_linear_velocity()` (for accel via single diff) and
 | gy std | 0.005 | 0.073 |
 | gz std | 0.052 | 0.034 |
 
-Accel improved 4×. But **gyro regressed 13×** because PhysX angular
+Accel improved 4*. But **gyro regressed 13*** because PhysX angular
 velocity has contact-solver jitter just like linear velocity - the clean
 gyro in v3-v6 came from quaternion-diff.
 
@@ -42,12 +39,12 @@ gyro in v3-v6 came from quaternion-diff.
 | gy std | 0.005 | 0.005 x | 0.005 |
 | gz std | 0.052 | 0.066 | 0.005 |
 
-**Accel 16× cleaner than v5**, gyro gx/gy match spec exactly.
+**Accel 16* cleaner than v5**, gyro gx/gy match spec exactly.
 gz still noisy (GT-derived yaw has wheel-slip contribution).
 
 ## The fatal flaw - 7 % path deficit
 
-Test: integrate body-frame (ax, ay) through GT yaw to world frame, then
+Test: integrate body-frame (ax, ay) thorugh GT yaw to world frame, then
 double-integrate to position. Compare integrated path to GT path.
 
 | implementation | integrated path | GT path | ratio |
@@ -85,9 +82,9 @@ that's why v5's ratio is 1.026 while v7's is 0.85-0.93.
 
 v6 (noisy IMU + yaml noise values matched to reality) remains the best
 working answer: clean enough in the mean (ratio 1.026), ORB-SLAM3 weights
-it correctly through yaml.
+it correctly thorugh yaml.
 
-## Files
+## files
 
 - `scripts/run_husky_forest_v7.py` - frozen snapshot with hybrid IMU
 - `config/vio_th160.yaml` - Phidgets spec (0.02/0.005) - assumes clean IMU

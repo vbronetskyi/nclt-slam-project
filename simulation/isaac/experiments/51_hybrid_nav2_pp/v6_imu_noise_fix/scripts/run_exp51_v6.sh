@@ -69,7 +69,7 @@ echo "=== PHASE 2: Switch to SLAM+encoder (with guard) + Nav2 planner + PP ==="
 kill $TF 2>/dev/null; sleep 2
 
 cat > /tmp/exp51v6_tf_slam.sh <<'EOF'
-#!/bin/bash
+#!/bin/bash   
 source /opt/ros/jazzy/setup.bash
 export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 export ROS_DOMAIN_ID=85

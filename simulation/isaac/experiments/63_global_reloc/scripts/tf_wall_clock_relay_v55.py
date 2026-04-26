@@ -1,8 +1,6 @@
-#!/usr/bin/env python3
-"""
-TF + Odom relay for Nav2 <- Isaac Sim.
+#!/usr/bin/env python3   
+"""TF + Odom relay for Nav2 <- Isaac Sim
 
-Modes:
   --use-gt         GT localization (perfect pose from sim)
   --encoder-imu    Encoder + IMU localization (realistic sensors)
   --slam-frame     SLAM pose in SLAM coordinate frame
@@ -69,7 +67,7 @@ class TFRelay(Node):
         self.last_qw = 1.0
         self.slam_origin = None
 
-        # static TF: base_link -> camera_link, base_link -> imu_link
+        #static TF: base_link -> camera_link, base_link -> imu_link
         self.static_br = StaticTransformBroadcaster(self)
         cam_tf = TransformStamped()
         cam_tf.header.stamp = wall_stamp()
@@ -141,7 +139,7 @@ class TFRelay(Node):
         # Override gyro parameters for encoder+IMU mode
         if encoder_imu:
             global GYRO_DEADZONE, GYRO_LPF_ALPHA
-            GYRO_DEADZONE = 0.01  # much lower - real IMU reads ~0.03 rad/s during turns
+            GYRO_DEADZONE = 0.01  # much lower - real IMU reads +-0.03 rad/s during turns
             GYRO_LPF_ALPHA = 0.15  # smoother filtering
 
         # SLAM+encoder fusion state (Level 3)
@@ -159,8 +157,8 @@ class TFRelay(Node):
         self.using_slam = False  # current source flag for logging
         self.T_nav_slam = None   # SE(3) alignment transform: SLAM->nav
 
-        # v55 visual-anchor correction subscriber
-        # Matcher publishes /anchor_correction when teach-map features match.
+        #v55 visual-anchor correction subscriber
+        # Matcher publishes /anchor_correction when teach-map features match
         from geometry_msgs.msg import PoseWithCovarianceStamped
         self.anchor_last = None         # (ts, x, y, z, qx, qy, qz, qw, std)
         self.anchor_strong_streak = 0   # consecutive strong matches (hysteresis)
@@ -173,7 +171,7 @@ class TFRelay(Node):
         # v10: averaging window for stable alignment (instead of single sample)
         self._align_buf = []            # [(sx,sy,sz,sqx,sqy,sqz,sqw, gt_x, gt_y, gt_yaw)]
         self._align_gt_pos0 = None      # first GT pos seen while buffering
-        self.ALIGN_WINDOW_SAMPLES = 50          # ~2.5s at 20Hz
+        self.ALIGN_WINDOW_SAMPLES = 50          # +-2.5s at 20Hz
         self.ALIGN_MAX_GT_DISP_M = 0.15         # must stay within this window to trust
         self.ALIGN_MAX_YAW_STD_DEG = 0.5        # reject alignment if jittery
 
@@ -294,7 +292,7 @@ class TFRelay(Node):
                 self.slam_last_timestamp = ts
                 self.slam_last_update = pytime.time()
 
-            # Parse frames/lost from second line
+            #Parse frames/lost from second line
             if len(lines) >= 2:
                 m_f = re.search(r'frames=(\d+)', lines[1])
                 m_l = re.search(r'lost=(\d+)', lines[1])
@@ -318,8 +316,8 @@ class TFRelay(Node):
         T_slam[:3, 3] = [sx, sy, sz]
 
         if self.T_nav_slam is None:
-            # v10: buffer samples before aligning. Reject if robot moved more
-            # than ALIGN_MAX_GT_DISP_M during the window, or yaw std > threshold.
+            #v10: buffer samples before aligning. Reject if robot moved more
+            #than ALIGN_MAX_GT_DISP_M during the window, or yaw std > threshold.
             # SLAM camera uses OpenCV convention: x=right, y=down, z=forward
             # Nav frame uses FLU convention: x=forward, y=left, z=up
             T_FLU_from_cam = np.array([
@@ -334,7 +332,7 @@ class TFRelay(Node):
             gt_x, gt_y = self.last_x, self.last_y
 
             # Track GT motion during the window - if robot drove too far,
-            # restart the buffer (can't trust alignment on moving baseline).
+            # restart the buffer (can't trust alignment on moving baseline)
             if self._align_gt_pos0 is None:
                 self._align_gt_pos0 = (gt_x, gt_y)
             disp = math.hypot(gt_x - self._align_gt_pos0[0], gt_y - self._align_gt_pos0[1])
@@ -356,7 +354,7 @@ class TFRelay(Node):
 
             if len(self._align_buf) < self.ALIGN_WINDOW_SAMPLES:
                 # Still buffering - return the naive single-sample alignment
-                # for this tick so TF keeps flowing.
+                # for this tick so TF keeps flowing
                 R_nav = ScipyRotation.from_euler('z', gt_yaw).as_matrix()
                 T_nav_origin = np.eye(4)
                 T_nav_origin[:3, :3] = R_nav
@@ -404,7 +402,7 @@ class TFRelay(Node):
                 T_nav = T_nav_slam_tick @ T_slam
                 return float(T_nav[0, 3]), float(T_nav[1, 3]), gt_yaw
 
-            # Commit the averaged alignment
+            #Commit the averaged alignment
             R_nav = ScipyRotation.from_euler('z', avg_gt_yaw).as_matrix()
             T_nav_origin = np.eye(4)
             T_nav_origin[:3, :3] = R_nav
@@ -415,7 +413,7 @@ class TFRelay(Node):
                 f'[ALIGN v10] averaged over {len(buf)} samples, GT disp {disp*100:.1f}cm, '
                 f'yaw std {yaw_std_deg:.3f}° - committed at spawn=({avg_gt_x:.2f},{avg_gt_y:.2f}) '
                 f'yaw={math.degrees(avg_gt_yaw):.2f}°')
-            # Fall through to transform-to-nav with the new alignment
+            # Fall thorugh to transform-to-nav with the new alignment
             T_nav = self.T_nav_slam @ T_slam
             return float(T_nav[0, 3]), float(T_nav[1, 3]), float(np.arctan2(T_nav[1, 0], T_nav[0, 0]))
 
@@ -449,7 +447,7 @@ class TFRelay(Node):
                 f'SLAM+ENCODER init: ({x:.1f}, {y:.1f}), yaw={gt_yaw:.3f}')
             return
 
-        # Update encoder+compass odometry (always, as fallback)
+        #Update encoder+compass odometry (always, as fallback)
         COMPASS_NOISE = 0.05
         noisy_yaw = gt_yaw + np.random.normal(0, COMPASS_NOISE)
         dx = x - self.prev_gt_x
@@ -483,7 +481,7 @@ class TFRelay(Node):
                     self._slam_frozen_count = 0
             self._prev_slam_pos = (sx, sz)
 
-            # If SLAM frozen for 60+ ticks (~12s), treat as lost
+            # If SLAM frozen for 60+ ticks (+-12s), treat as lost
             # (Nav2 can rotate-in-place long periods - don't fallback prematurely)
             if self._slam_frozen_count > 60:
                 slam_ok = False
@@ -498,7 +496,7 @@ class TFRelay(Node):
             #   no_anchor  -> 95% SLAM + 5% encoder (baseline, same as v53)
             #   ok         -> 20% anchor + 75% SLAM + 5% encoder
             #   strong     -> 40% anchor + 55% SLAM + 5% encoder
-            # The anchor is a /anchor_correction message from the visual
+            #The anchor is a /anchor_correction message from the visual
             # landmark matcher.  Fresh (< ANCHOR_STALE_S) + streak-≥ of
             # strong matches switches from baseline to anchored.
             regime = 'no_anchor'
@@ -511,7 +509,7 @@ class TFRelay(Node):
                 # v62 A3 anchor sanity: reject the anchor if it suggests only
                 # a tiny correction while SLAM and encoder disagree by a lot
                 # - that pattern indicates the matcher latched onto a wrong
-                # teach landmark (already-drifted self-confirmation).
+                # teach landmark (already-drifted self-confirmation)
                 anchor_shift = math.hypot(self.anchor_last[1] - slam_nx,
                                           self.anchor_last[2] - slam_ny)
                 slam_enc_disagree = math.hypot(slam_nx - self.enc_x,
@@ -520,7 +518,7 @@ class TFRelay(Node):
                                  anchor_shift < 0.5 and
                                  std < 0.15)
                 if anchor_insane:
-                    # Skip this anchor: keep no_anchor regime, log once.
+                    # Skip this anchor: keep no_anchor regime, log once
                     if not getattr(self, '_sanity_logged_ts', None) or \
                        pytime.time() - self._sanity_logged_ts > 5.0:
                         self.get_logger().warn(
@@ -532,9 +530,9 @@ class TFRelay(Node):
                     anchor_x_use = self.anchor_last[1]
                     anchor_y_use = self.anchor_last[2]
                     # v63 HARD JUMP: if anchor says we're > 3 m from current
-                    # fused pose AND its std is very low, trust it outright.
+                    # fused pose AND its std is very low, trust it outright
                     # This is the kidnapped-robot recovery case - relocation
-                    # matcher found a confident match far from VIO belief.
+                    # matcher found a confident match far from VIO belief
                     if std <= 0.08 and anchor_shift > 3.0:
                         regime = 'jump'
                     elif (std <= self.ANCHOR_STRONG_STD
@@ -543,7 +541,7 @@ class TFRelay(Node):
                     else:
                         regime = 'ok'
             if regime == 'jump':
-                # Hard reset fused pose to anchor; encoder bias also cleared.
+                # Hard reset fused pose to anchor; encoder bias also cleared
                 nav_x = anchor_x_use
                 nav_y = anchor_y_use
                 self.enc_x = anchor_x_use
@@ -564,7 +562,7 @@ class TFRelay(Node):
                 # v55 adaptive fallback (from exp 54): when matcher is
                 # silent (no_anchor) AND SLAM disagrees heavily with
                 # encoder, SLAM is probably drifting - shift weight to
-                # encoder instead of blindly blending 95/5.
+                # encoder instead of blindly blending 95/5
                 slam_enc_d = math.hypot(slam_nx - self.enc_x,
                                          slam_ny - self.enc_y)
                 anchor_age = (pytime.time() - self.anchor_last[0]) if self.anchor_last else 999
@@ -597,9 +595,9 @@ class TFRelay(Node):
             nav_yaw = self.enc_yaw
             self.using_slam = False
 
-        # v63r2: publish SLAM-vs-encoder disagreement as file-based signal.
+        # v63r2: publish SLAM-vs-encoder disagreement as file-based signal
         # The visual matcher uses this to gate global relocalisation so
-        # reloc only fires when there's actually a drift disagreement.
+        # reloc only fires when there's actually a drift disagreement
         if slam_ok:
             slam_enc_d_est = math.hypot(slam_nx - self.enc_x,
                                         slam_ny - self.enc_y)
@@ -611,7 +609,7 @@ class TFRelay(Node):
         except Exception:
             pass
 
-        # Log every ~5s
+        # Log every +-5s
         self.log_counter += 1
         if self.log_counter % 100 == 0:
             err = math.hypot(nav_x - x, nav_y - y)
@@ -674,8 +672,8 @@ class TFRelay(Node):
                 f'ENCODER+IMU init: ({x:.1f}, {y:.1f}), yaw={gt_yaw:.3f}')
             return
 
-        # Heading: compass+gyro fusion = GT yaw + noise (~3° std)
-        COMPASS_NOISE = 0.05  # ~3 degrees std
+        # Heading: compass+gyro fusion = GT yaw + noise (+-3° std)
+        COMPASS_NOISE = 0.05  # +-3 degrees std
         noisy_yaw = gt_yaw + np.random.normal(0, COMPASS_NOISE)
 
         # Encoder: compute displacement from GT pose diff (= wheel encoder equivalent)
@@ -696,7 +694,7 @@ class TFRelay(Node):
         self.prev_gt_x = x
         self.prev_gt_y = y
 
-        # Log every ~5s (100 ticks at 20Hz)
+        # Log every +-5s (100 ticks at 20Hz)
         self.log_counter += 1
         if self.log_counter % 100 == 0:
             err = math.hypot(self.enc_x - x, self.enc_y - y)
@@ -749,7 +747,7 @@ class TFRelay(Node):
         except (FileNotFoundError, ValueError, IndexError):
             return
 
-        # SLAM camera frame -> 2D nav frame
+        #SLAM camera frame -> 2D nav frame
         # nav_x = slam_z (forward), nav_y = -slam_x (left)
         slam_yaw_raw = math.atan2(2 * (sqw * sqz + sqx * sqy),
                                    1 - 2 * (sqy * sqy + sqz * sqz))
@@ -805,7 +803,7 @@ class TFRelay(Node):
         self.prev_slam_ny = nav_y
         self.prev_slam_nyaw = nav_yaw
 
-        # log every ~5s
+        # log every +-5s
         self.log_counter += 1
         if self.log_counter % 100 == 0:
             gt_yaw = math.atan2(2 * self.last_qw * self.last_qz,

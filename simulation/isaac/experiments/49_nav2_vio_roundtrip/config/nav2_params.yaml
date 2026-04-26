@@ -193,7 +193,7 @@ planner_server:
     GridBased:
       # v18: SmacPlanner2D considers robot footprint when planning,
       # avoids narrow halo gaps that NavFn would pick (1-cell gaps too
-      # tight for 0.7m robot through inflated zones)
+      # tight for 0.7m robot thorugh inflated zones)
       plugin: "nav2_smac_planner::SmacPlanner2D"
       tolerance: 2.0
       downsample_costmap: false
@@ -241,7 +241,7 @@ velocity_smoother:
     smoothing_frequency: 20.0
     scale_velocities: False
     feedback: "OPEN_LOOP"
-    max_velocity: [0.5, 0.0, 0.6]                        # v17: cmd 0.5 -> ~1.7 m/s actual MAX. controller usually outputs 0.4 (~1.4 actual)
+    max_velocity: [0.5, 0.0, 0.6]                        # v17: cmd 0.5 -> +-1.7 m/s actual MAX. controller usually outputs 0.4 (+-1.4 actual)
     min_velocity: [-0.2, 0.0, -0.6]
     max_accel: [1.5, 0.0, 2.0]                           # back to faster accel
     max_decel: [-2.0, 0.0, -2.0]

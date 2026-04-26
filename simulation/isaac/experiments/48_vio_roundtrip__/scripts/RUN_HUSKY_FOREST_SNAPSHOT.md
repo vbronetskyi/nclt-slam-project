@@ -15,13 +15,13 @@
 # rgbd_inertial_live reads this file for IMU preintegration
 
 # === 3. Pure pursuit with lookahead ===
-# Pick WP ~2m ahead on path (skip dense 0.5m WPs for smooth driving):
+# Pick WP +-2m ahead on path (skip dense 0.5m WPs for smooth driving):
 #   LOOKAHEAD = 2.0
 #   while dist(robot, wp[idx]) < LOOKAHEAD: idx++
 # Arrival threshold: 1.0m
 
 # === 4. Pure pursuit speed tuning ===
-#   max_speed = 0.25  # cmd (× 3.4 Husky scaling = 0.76 m/s actual)
+#   max_speed = 0.25  # cmd (* 3.4 Husky scaling = 0.76 m/s actual)
 #   if |err| > 0.7:  lin=0.12, ang=err*1.5 (sharp turn)
 #   elif |err| > 0.2: lin=0.20, ang=err*1.2 (medium)
 #   else: lin=max_speed, ang=err*1.0 (cruise)
@@ -36,6 +36,6 @@
 # Critical: obstacle data includes USD scene rocks/RockCol (not just gazebo_models)
 
 # === Key Isaac settings (at top of script) ===
-# settings.set("/app/runLoops/main/rateLimitFrequency", 200)  # 200Hz physics for IMU
-# SCENE_USD = "/opt/husky_forest_scene.usd"
-# HUSKY_USD = "/workspace/simulation/isaac/assets/husky_d435i/husky_d435i.usda"
+# settings.set(/app/runLoops/main/rateLimitFrequency, 200)  # 200Hz physics for IMU
+# SCENE_USD = /opt/husky_forest_scene.usd
+# HUSKY_USD = /workspace/simulation/isaac/assets/husky_d435i/husky_d435i.usda

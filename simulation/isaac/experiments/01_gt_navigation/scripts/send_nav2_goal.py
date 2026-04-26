@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-two-phase waypoint sender for Nav2 - always forward, never back.
+"""two-phase waypoint sender for Nav2 - always forward, never back
 
 Adaptive speed based on drift from mapped trajectory.
 Waypoint skipping when robot passes waypoint along forward axis.
@@ -25,14 +24,14 @@ from tf2_ros import Buffer, TransformListener
 PHASE_FILE = "/tmp/nav2_phase.json"
 
 # drift-based speed (always forward, never stop)
-DRIFT_LOW = 2.0        # m - full speed
+DRIFT_LOW = 2.0       # m - full speed
 DRIFT_MED = 4.0        # m - slow
-DRIFT_HIGH = 7.0       # m - crawl but still forward
+DRIFT_HIGH = 7.0     # m - crawl but still forward
 SPEED_FULL = 0.8
 SPEED_SLOW = 0.4
 SPEED_CRAWL = 0.2
 
-# waypoint skipping: skip if robot passed waypoint along X
+#waypoint skipping: skip if robot passed waypoint along X
 WAYPOINT_SKIP_MARGIN = 3.0  # m past waypoint X -> skip it
 
 CHECK_INTERVAL = 2.0   # seconds
@@ -137,7 +136,7 @@ class Nav2TwoPhase(Node):
         self.client.wait_for_server()
         self.get_logger().info('=== PHASE 1: OUTBOUND (obstacles present) ===')
 
-        # drift + skip monitor
+        #drift + skip monitor
         self.monitor_timer = self.create_timer(CHECK_INTERVAL, self.monitor_tick)
         self.send_next_goal()
 
@@ -159,7 +158,7 @@ class Nav2TwoPhase(Node):
             wx, _ = self.outbound_wps[self.current_idx]
             if rx > wx + WAYPOINT_SKIP_MARGIN:
                 old_idx = self.current_idx
-                # skip all waypoints behind robot
+                #skip all waypoints behind robot
                 while (self.current_idx < len(self.outbound_wps) and
                        rx > self.outbound_wps[self.current_idx][0] + WAYPOINT_SKIP_MARGIN):
                     self.current_idx += 1

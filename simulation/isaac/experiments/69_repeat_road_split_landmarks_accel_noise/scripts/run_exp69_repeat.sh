@@ -1,6 +1,6 @@
 #!/bin/bash
 # Exp 67 REPEAT run on road route -
-# exp 59 pipeline + exp 66 teach artifacts + accel-noise IMU.
+# exp 59 pipeline + exp 66 teach artifacts + accel-noise IMU
 #
 # Consumes:
 #   /workspace/.../66_teach_road_with_accel_noise/teach/road/
@@ -29,7 +29,7 @@ TRAJ=$TEACH/vio_pose_dense.csv
 [ -f "$LANDMARKS" ]  || { echo "ERROR: missing $LANDMARKS"; exit 1; }
 [ -f "$TRAJ" ]       || { echo "ERROR: missing $TRAJ"; exit 1; }
 
-# Exp 69: split teach landmarks into outbound/return by turnaround x-peak.
+# Exp 69: split teach landmarks into outbound/return by turnaround x-peak
 # Matcher starts with outbound set; swap to return set when supervisor fires.
 SPLIT_DIR=$E69/teach_split
 LANDMARKS_OUT=$SPLIT_DIR/landmarks_outbound.pkl
@@ -64,8 +64,8 @@ export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 export ROS_DOMAIN_ID=$DOMAIN
 export PYTHONPATH=/workspace/simulation/isaac/scripts:${PYTHONPATH:-}
 
-# Exp 68: --obstacles enabled; spawn_obstacles['road'] puts 17 cones + 1 tent on route.
-# turnaround_supervisor removes them at x≥70 past-margin 2 m (return trip is clean).
+#Exp 68: --obstacles enabled; spawn_obstacles['road'] puts 17 cones + 1 tent on route.
+# turnaround_supervisor removes them at x≥70 past-margin 2 m (return trip is clean)
 setsid /opt/isaac-sim-6.0.0/python.sh $E69/scripts/run_husky_forest.py \
     --synthetic-imu --route road --obstacles --duration 1500 \
     </dev/null > $OUT/isaac.log 2>&1 &

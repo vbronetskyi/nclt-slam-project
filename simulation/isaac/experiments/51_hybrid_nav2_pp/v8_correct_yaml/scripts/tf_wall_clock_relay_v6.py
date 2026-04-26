@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
-"""
-TF + Odom relay for Nav2 <- Isaac Sim.
+"""TF + Odom relay for Nav2 <- Isaac Sim
 
-Modes:
   --use-gt         GT localization (perfect pose from sim)
   --encoder-imu    Encoder + IMU localization (realistic sensors)
   --slam-frame     SLAM pose in SLAM coordinate frame
@@ -87,7 +85,7 @@ class TFRelay(Node):
         imu_tf.transform.rotation.w = 1.0
         self.static_br.sendTransform([cam_tf, imu_tf])
 
-        # depth -> pointcloud
+        # depth -> pointcloud   
         self.fx = self.fy = 320.0
         self.cx, self.cy = 320.0, 240.0
         self.pc_pub = self.create_publisher(PointCloud2, '/depth_points', 10)
@@ -100,7 +98,7 @@ class TFRelay(Node):
         self.imu_timer = self.create_timer(1.0 / 200.0, self.imu_tick)
         self.last_imu_data = None
 
-        # wheel odometry from cmd_vel
+        #wheel odometry from cmd_vel
         self.odom_x = 0.0
         self.odom_y = 0.0
         self.odom_yaw = 0.0
@@ -121,7 +119,7 @@ class TFRelay(Node):
         self.filter_initialized = False
         self.log_counter = 0
 
-        # IMU gyro yaw
+        #IMU gyro yaw   
         self.imu_yaw = 0.0
         self.imu_yaw_initialized = False
         self.prev_imu_time = pytime.time()
@@ -141,7 +139,7 @@ class TFRelay(Node):
         # Override gyro parameters for encoder+IMU mode
         if encoder_imu:
             global GYRO_DEADZONE, GYRO_LPF_ALPHA
-            GYRO_DEADZONE = 0.01  # much lower - real IMU reads ~0.03 rad/s during turns
+            GYRO_DEADZONE = 0.01  # much lower - real IMU reads +-0.03 rad/s during turns
             GYRO_LPF_ALPHA = 0.15  # smoother filtering
 
         # SLAM+encoder fusion state (Level 3)
@@ -371,7 +369,7 @@ class TFRelay(Node):
                     self._slam_frozen_count = 0
             self._prev_slam_pos = (sx, sz)
 
-            # If SLAM frozen for 60+ ticks (~12s), treat as lost
+            # If SLAM frozen for 60+ ticks (+-12s), treat as lost
             # (Nav2 can rotate-in-place long periods - don't fallback prematurely)
             if self._slam_frozen_count > 60:
                 slam_ok = False
@@ -382,7 +380,7 @@ class TFRelay(Node):
             # Trust SLAM over encoder - VIO is calibrated, encoder drifts easily
 
         if slam_ok:
-            # Trust SLAM heavily: 95% SLAM + 5% encoder (was 70/30)
+            #Trust SLAM heavily: 95% SLAM + 5% encoder (was 70/30)
             SLAM_ALPHA = 0.95
             nav_x = SLAM_ALPHA * slam_nx + (1 - SLAM_ALPHA) * self.enc_x
             nav_y = SLAM_ALPHA * slam_ny + (1 - SLAM_ALPHA) * self.enc_y
@@ -396,7 +394,7 @@ class TFRelay(Node):
             nav_yaw = self.enc_yaw
             self.using_slam = False
 
-        # Log every ~5s
+        # Log every +-5s
         self.log_counter += 1
         if self.log_counter % 100 == 0:
             err = math.hypot(nav_x - x, nav_y - y)
@@ -455,11 +453,11 @@ class TFRelay(Node):
                 f'ENCODER+IMU init: ({x:.1f}, {y:.1f}), yaw={gt_yaw:.3f}')
             return
 
-        # Heading: compass+gyro fusion = GT yaw + noise (~3° std)
-        COMPASS_NOISE = 0.05  # ~3 degrees std
+        # Heading: compass+gyro fusion = GT yaw + noise (+-3° std)
+        COMPASS_NOISE = 0.05  # +-3 degrees std
         noisy_yaw = gt_yaw + np.random.normal(0, COMPASS_NOISE)
 
-        # Encoder: compute displacement from GT pose diff (= wheel encoder equivalent)
+        #Encoder: compute displacement from GT pose diff (= wheel encoder equivalent)
         dx = x - self.prev_gt_x
         dy = y - self.prev_gt_y
         displacement = math.hypot(dx, dy)
@@ -477,7 +475,7 @@ class TFRelay(Node):
         self.prev_gt_x = x
         self.prev_gt_y = y
 
-        # Log every ~5s (100 ticks at 20Hz)
+        # Log every +-5s (100 ticks at 20Hz)
         self.log_counter += 1
         if self.log_counter % 100 == 0:
             err = math.hypot(self.enc_x - x, self.enc_y - y)
@@ -586,7 +584,7 @@ class TFRelay(Node):
         self.prev_slam_ny = nav_y
         self.prev_slam_nyaw = nav_yaw
 
-        # log every ~5s
+        # log every +-5s
         self.log_counter += 1
         if self.log_counter % 100 == 0:
             gt_yaw = math.atan2(2 * self.last_qw * self.last_qz,

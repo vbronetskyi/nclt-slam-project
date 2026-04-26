@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Traversability filter for depth images.
+"""Traversability filter for depth images
 Distinguishes solid obstacles (tree trunks, rocks) from traversable
 vegetation (leaves, grass, ferns) based on depth variance and coverage.
 

@@ -45,7 +45,7 @@ VIO=$!; disown $VIO; echo "VIO: $VIO"
 # "known-good" run.  It records what would be VIO during repeat.  We
 # still use GT for tf here to give the depth mapper clean poses.
 cat > /tmp/exp55t_tf.sh <<'EOF'
-#!/bin/bash
+#!/bin/bash   
 source /opt/ros/jazzy/setup.bash
 export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 export ROS_DOMAIN_ID=85
@@ -93,7 +93,7 @@ nohup bash /tmp/exp55t_lm.sh > $OUT/landmark_recorder.log 2>&1 &
 LM=$!; disown $LM; echo "LandmarkRecorder: $LM"
 
 echo ""
-echo "Teach running. Isaac open-loop drives the route. Let run to completion (~15 min)."
+echo "Teach running. Isaac open-loop drives the route. Let run to completion (+-15 min)."
 echo "Pids: Isaac=$ISAAC VIO=$VIO TF=$TF Depth=$DEPTH LM=$LM"
 echo "Monitor:"
 echo "  tail -f $OUT/landmark_recorder.log"

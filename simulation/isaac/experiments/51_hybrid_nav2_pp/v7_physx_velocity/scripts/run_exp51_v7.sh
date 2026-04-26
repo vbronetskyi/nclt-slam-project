@@ -1,5 +1,5 @@
 #!/bin/bash
-# Exp 51 v7: synthetic IMU via PhysX velocity API (single diff, clean noise).
+# Exp 51 v7: synthetic IMU via PhysX velocity API (single diff, clean noise)
 # Yaml back to Phidgets spec (NoiseAcc 0.02, NoiseGyro 0.005).
 set -eu
 

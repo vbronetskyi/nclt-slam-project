@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Count obstacle collisions from Isaac nav2 log.
+"""Count obstacle collisions from Isaac nav2 log
 
 Parses lines like:  t=50s phase=outbound pos=(-90.6,-5.1) cmd=...
 and checks if robot ever came within COLLISION_RADIUS of any obstacle.
@@ -24,7 +24,7 @@ OBSTACLES = {
 }
 
 OBSTACLES_NOW = OBSTACLES[ROUTE]
-COLLISION_R = 0.9   # robot (~0.5m) + cone (~0.2m) + slack
+COLLISION_R = 0.9   # robot (+-0.5m) + cone (+-0.2m) + slack
 TENT_R = 1.5        # tent is bigger
 
 pat = re.compile(r"t=(\d+)s.*pos=\(([-\d.]+),\s*([-\d.]+)\)")

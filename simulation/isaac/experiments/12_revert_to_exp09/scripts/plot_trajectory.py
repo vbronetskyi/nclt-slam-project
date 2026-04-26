@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-General trajectory plotting script for navigation experiments.
+"""General trajectory plotting script for navigation experiments
 
 Plots robot GT trajectory on the road map with waypoints, obstacles,
 and key metrics (distance, time, drift).
@@ -23,7 +22,7 @@ import matplotlib.patches as mpatches
 import numpy as np
 
 
-# road reference
+# road reference   
 ROAD_WPS = [
     (-100,-7),(-95,-6),(-90,-4.5),(-85,-2.8),(-80,-1.5),(-75,-0.8),(-70,-0.5),
     (-65,-1),(-60,-2.2),(-55,-3.8),(-50,-5),(-45,-5.5),(-40,-5.2),(-35,-4),
@@ -147,12 +146,12 @@ def plot_trajectories(trajs, labels, title, output_path, show_obstacles=True):
     ax_err = axes[1]
     ax_metrics = axes[2]
 
-    # --- TOP: map view ---
+    # TOP: map view
     # road reference
     ax_map.plot(ROAD_X, ROAD_Y, color=ROAD_COLOR, linewidth=8, alpha=0.3, zorder=1, label='road center')
     ax_map.plot(ROAD_X, ROAD_Y, color=ROAD_COLOR, linewidth=1, linestyle='--', alpha=0.5, zorder=2)
 
-    # obstacles
+    #obstacles
     if show_obstacles:
         for i, group in enumerate(CONE_GROUPS):
             for j, (cx, cy) in enumerate(group):
@@ -168,7 +167,7 @@ def plot_trajectories(trajs, labels, title, output_path, show_obstacles=True):
         ax_map.text(TENT_POS[0], TENT_POS[1], 'tent', ha='center', va='center',
                    fontsize=7, color='white', fontweight='bold', zorder=6)
 
-    # start / destination markers
+    # start / destination markers   
     ax_map.plot(*SPAWN, 's', color='#4CAF50', markersize=12, zorder=10, label='start')
     ax_map.plot(*DEST, '*', color='#F44336', markersize=14, zorder=10, label='destination')
 
@@ -215,7 +214,7 @@ def plot_trajectories(trajs, labels, title, output_path, show_obstacles=True):
     ax_map.set_xlim(-105, 85)
     ax_map.set_ylim(-15, 15)
 
-    # --- MIDDLE: lateral error vs X ---
+    #MIDDLE: lateral error vs X
     for i, (traj, label) in enumerate(zip(trajs, labels)):
         color = TRAJ_COLORS[i % len(TRAJ_COLORS)]
         x, y = traj['x'], traj['y']
@@ -256,7 +255,7 @@ def plot_trajectories(trajs, labels, title, output_path, show_obstacles=True):
     ax_err.legend(loc='upper left', fontsize=8, framealpha=0.9)
     ax_err.grid(True, alpha=0.3)
 
-    # --- BOTTOM: metrics table ---
+    # BOTTOM: metrics table
     ax_metrics.axis('off')
     if metrics_list:
         col_labels = ['Metric'] + labels

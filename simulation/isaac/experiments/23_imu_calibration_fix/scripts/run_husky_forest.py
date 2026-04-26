@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Husky A200 in forest scene with PhysX articulation drive and ROS2.
+"""Husky A200 in forest scene with PhysX articulation drive and ROS2
 Records RGB-D + IMU data for ORB-SLAM3 evaluation.
 
 publishes: /camera/color/image_raw, /camera/depth/image_rect_raw, /imu/data, /odom, /tf
@@ -50,7 +49,7 @@ settings.set("/rtx/post/dof/enabled", False)
 settings.set("/rtx/post/bloom/enabled", False)
 settings.set("/rtx/post/lensFlares/enabled", False)
 settings.set("/rtx/directLighting/sampledLighting/enabled", False)
-# reflections off, indirect diffuse on (light through canopy)
+# reflections off, indirect diffuse on (light thorugh canopy)
 settings.set("/rtx/reflections/enabled", False)
 settings.set("/rtx/indirectDiffuse/enabled", True)
 # fabric off, PhysX needs direct USD sync for articulation control
@@ -96,7 +95,7 @@ if _phys_scene.IsValid():
     PhysxSchema.PhysxSceneAPI(_phys_scene).CreateSolverTypeAttr().Set("TGS")
     print("  physics: 200Hz, TGS solver")
 
-# root_joint removed from USD (physics.usda) to enable floating base
+#root_joint removed from USD (physics.usda) to enable floating base
 _root_joint = stage.GetPrimAtPath("/World/Husky/Physics/root_joint")
 if _root_joint.IsValid():
     print("  WARNING: root_joint still exists, base may be fixed")
@@ -161,7 +160,7 @@ def _make_cam_matrix(x, y, z, yaw, pitch=0):
     cy, sy = math.cos(yaw), math.sin(yaw)
     cp, sp = math.cos(pitch), math.sin(pitch)
     # Base rotation (yaw only): row0=(sy,-cy,0) row1=(0,0,1) row2=(-cy,-sy,0)
-    # Add pitch: rotate around camera's local X axis (row0)
+    #Add pitch: rotate around camera's local X axis (row0)
     # row1 rotated by pitch: row1*cos(p) + row2*sin(p)
     # row2 rotated by pitch: -row1*sin(p) + row2*cos(p)
     r0x, r0y, r0z = sy, -cy, 0
@@ -177,7 +176,7 @@ def _make_cam_matrix(x, y, z, yaw, pitch=0):
 _cam_transform_op.Set(_make_cam_matrix(-95 + CAM_FWD, -6, 0.2 + CAM_UP, 0))
 print(f"  camera: {CAM_RGB}")
 
-# verify prim paths
+#verify prim paths
 for name, path in [("base_link", BASE_LINK), ("camera", CAM_RGB), ("imu", IMU_PATH)]:
     print(f"  {name}: {stage.GetPrimAtPath(path).IsValid()} ({path})")
 
@@ -314,7 +313,7 @@ def _get_husky_pose():
 p0 = _get_husky_pose()[0]
 print(f"  position: ({p0[0]:.1f}, {p0[1]:.1f}, {p0[2]:.2f})")
 
-# collision list (matches thinning from convert_gazebo_to_isaac.py)
+#collision list (matches thinning from convert_gazebo_to_isaac.py)
 _obstacles = []
 with open("/tmp/gazebo_models.json") as _f:
     _models = json.load(_f)
@@ -385,7 +384,7 @@ for m in _models:
     elif m["type"] == "barrel":
         _obstacles.append((m["x"], m["y"], 0.5))
     elif m["type"] in ("fallen_oak", "fallen_pine"):
-        # fallen tree scaled 1.5-2x in scene, trunk ~12-16m long
+        # fallen tree scaled 1.5-2x in scene, trunk +-12-16m long
         yaw = m.get("yaw", 0)
         for d in [-7, -5, -3, -1, 0, 1, 3, 5, 7]:
             _obstacles.append((m["x"] + d * math.cos(yaw), m["y"] + d * math.sin(yaw), 0.6))
@@ -462,7 +461,7 @@ def find_road_path(robot_x, robot_y, goal_x, goal_y):
     else:
         return [ROAD_WPS[i] for i in range(ri, gi - 1, -1)]
 
-# routes from A* pathfinding (start -> houses -> return)
+# routes from A* pathfinding (start -> houses -> return)   
 _ROUTES_FILE = "/tmp/slam_routes.json"
 try:
     with open(_ROUTES_FILE) as _rf:
@@ -540,13 +539,13 @@ _rec_img_count = 0
 print(f"  SLAM recording to {_rec_dir}")
 
 try:
-    # NOTE: zigzag init phase removed (exp 21 finding):
+    # zigzag init phase removed (exp 21 finding):
     # - DriveAPI commands didn't actually move the robot (forest uses ArticulationAPI)
     # - Result: 12s of "fake" zigzag where IMU recorded ±2 m/s² wheel vibrations
     #   while GT showed robot static. ORB-SLAM3 built initial map from these
     #   stationary keyframes -> bad triangulation -> +0.13m to +6m extra ATE.
-    # - Init phase only helps VIO (which doesn't work on forest anyway).
-    # Recording starts driving the route immediately.
+    # - Init phase only helps VIO (which doesn't work on forest anyway)
+    # Recording starts driving the route immediately
 
     while sim_time < args.duration:
         app.update()
@@ -561,7 +560,7 @@ try:
             print(f"\n  ROUTE COMPLETE! Recorded {_rec_img_count} frames.")
             break  # stop simulation when route is done
 
-        # read goal from file (written by web UI) - only when no auto-route
+        # read goal from file (written by web UI) - only when no auto-route   
         if _auto_route is None:
             try:
                 with open("/tmp/isaac_goal.txt", "r") as f:
@@ -569,7 +568,7 @@ try:
                 if goal_txt == "stop":
                     goal_x, goal_y = None, None
                 elif goal_txt == "reverse":
-                    # drive backwards for 2s via Articulation API
+                    #drive backwards for 2s via Articulation API
                     goal_x, goal_y = None, None
                     rev_vel = np.zeros((1, _art_num_dof))
                     for idx in _wheel_dof_idx["left"] + _wheel_dof_idx["right"]:
@@ -588,7 +587,7 @@ try:
                         os.remove("/tmp/isaac_goal.txt")
                     except:
                         pass
-                    print("  REVERSED ~2s")
+                    print("  REVERSED +-2s")
                 elif goal_txt == "reset":
                     goal_x, goal_y = None, None
                     # teleport robot back to spawn (set root xform + stop wheels)
@@ -680,7 +679,7 @@ try:
         pitch = math.atan2(z_front - z_back, 2 * fwd_d)
         _cam_transform_op.Set(_make_cam_matrix(cam_x, cam_y, cam_z, current_yaw, pitch))
 
-        # save camera at ~10Hz
+        # save camera at +-10Hz
         frame_n = int(sim_time * 60)
         if frame_n % 6 == 0:
             d_fwd = ann_fwd.get_data() if 'ann_fwd' in dir() else None
@@ -741,7 +740,7 @@ try:
                 lin_v = math.hypot(vx, vy)
                 _odom_file.write(f"{ts:.4f},{rx:.6f},{ry:.6f},{rz:.6f},{qx:.6f},{qy:.6f},{qz:.6f},{qw:.6f},{lin_v:.6f},{vyaw:.6f}\n")
 
-                # IMU from PhysX sensor - convert URF->FLU, write ONE unique reading
+                #IMU from PhysX sensor - convert URF->FLU, write ONE unique reading
                 # (NOT 3 duplicates - that broke ORB-SLAM3 preintegration)
                 _imu_reading = _imu_interface.get_sensor_reading(IMU_SENSOR_PATH, read_gravity=True)
                 if _imu_reading.is_valid:

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Hybrid goal sender (v53) with proactive WP projection.
+"""Hybrid goal sender (v53) with proactive WP projection
 
 For every /global_costmap/costmap update:
   - Re-checks all *future* waypoints (current..end) against the costmap.
@@ -64,7 +64,7 @@ class HybridGoalSender(Node):
         # v59 known obstacles (from patch_obstacles_exp52 for south route).
         # Costmap updates have latency (robot must approach to depth-range
         # before obstacle is marked).  We also hard-check against these
-        # known positions so the lookahead fires BEFORE robot gets near.
+        # known positions so the lookahead fires BEFORE robot gets near
         self.KNOWN_CONES = [
             (-75.0, -24.0), (-75.0, -25.0), (-75.0, -26.0),
             (-18.0, -24.0), (-18.0, -25.0),
@@ -76,10 +76,10 @@ class HybridGoalSender(Node):
             'half_y': 1.0,
         }
         # Minimum allowed clearance from any known obstacle - WP body-edge
-        # must be ≥ this many metres from obstacle edge.
+        # must be ≥ this many metres from obstacle edge
         # v60: tightened from 0.9 -> 0.6 m. Robot half-width 0.5 m + 0.1 m
         # spec margin = WP center ≥ 0.6 m from obstacle edge (with ideal
-        # localisation - real clearance depends on current SLAM drift).
+        # localisation - real clearance depends on current SLAM drift)
         self.KNOWN_CLEARANCE_M = 0.6
 
         # v59-fix: use map->base_link tf (SLAM pose, consistent with
@@ -125,7 +125,7 @@ class HybridGoalSender(Node):
         first so pp_follower drops its last goal; then drives /cmd_vel
         directly to land physically within `tol` of the teach GT point.
         """
-        # Silence pure_pursuit - exp 61 finisher fought pp for /cmd_vel.
+        # Silence pure_pursuit - exp 61 finisher fought pp for /cmd_vel
         empty = Path()
         empty.header.frame_id = 'map'
         empty.header.stamp = self.get_clock().now().to_msg()
@@ -316,7 +316,7 @@ class HybridGoalSender(Node):
         self.costmap_info = msg.info
         self.costmap = np.array(msg.data, dtype=np.int8).reshape(
             msg.info.height, msg.info.width)
-        # Re-project all WPs from current index forward
+        #Re-project all WPs from current index forward
         n_changed = 0
         n_skipped_now = 0
         for i in range(self.current_idx, self.n_wps):
@@ -389,7 +389,7 @@ class HybridGoalSender(Node):
             # v59 continuous lookahead: only abort if VERY close to
             # unsafe target (d<3m) AND known obstacle proximity.  Costmap
             # cost alone can spike from teach-map tree inflation - don't
-            # abort on that.
+            # abort on that
             if d < 3.0:
                 too_close, _ = self._wp_too_close_to_known(px, py)
                 if too_close:
@@ -421,7 +421,7 @@ class HybridGoalSender(Node):
         return False
 
     def run(self):
-        # Wait for map->base_link tf (listener needs a few spin cycles).
+        #Wait for map->base_link tf (listener needs a few spin cycles)
         for _ in range(40):
             rclpy.spin_once(self, timeout_sec=0.25)
             rx0, ry0 = self._read_robot_pose()
@@ -458,7 +458,7 @@ class HybridGoalSender(Node):
             #     costmap latency, fires regardless of depth visibility;
             # (b) if costmap is available, also check cell cost.
             # v62: critical endpoints are never diverted to DETOUR - they
-            # run Nav2-follow straight through and then the precise finisher
+            # run Nav2-follow straight thorugh and then the precise finisher
             # lands the physical robot within 0.5 m of the teach GT point.
             unsafe_reason = None
             too_close, what = self._wp_too_close_to_known(x, y)
@@ -510,7 +510,7 @@ class HybridGoalSender(Node):
             if reached_ok:
                 self.reached += 1
                 continue
-            # WP failed - try detour fallback
+            #WP failed - try detour fallback
             dx, dy = self._find_detour(x, y)
             if dx is not None:
                 self.get_logger().warn(
@@ -523,7 +523,7 @@ class HybridGoalSender(Node):
 
         total = time.time() - self.start_time
         # v60: stop the robot - empty /plan so pp_follower drops its target,
-        # plus a direct zero /cmd_vel so the wheels halt immediately.
+        #plus a direct zero /cmd_vel so the wheels halt immediately
         empty = Path()
         empty.header.frame_id = 'map'
         empty.header.stamp = self.get_clock().now().to_msg()

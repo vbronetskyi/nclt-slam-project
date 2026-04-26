@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Exp 41: GT localization trajectory plot."""
+"""Exp 41: GT localization trajectory plot
+"""
 import sys
 sys.path.insert(0, '/workspace/simulation/isaac/scripts')
 from plot_trajectory_map import plot_trajectory_map

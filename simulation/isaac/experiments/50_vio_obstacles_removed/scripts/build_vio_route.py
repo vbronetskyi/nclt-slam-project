@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build route from exp 48 VIO trajectory (teach-and-repeat base).
+"""Build route from exp 48 VIO trajectory (teach-and-repeat base)
 
 Loads VIO trajectory (aligned to world frame) from exp 48 CSV,
 subsamples to 0.5m spacing to get a route that matches what VIO
@@ -24,7 +24,7 @@ print(f"VIO trajectory: {len(pts)} poses")
 print(f"  First: ({pts[0][0]:.2f}, {pts[0][1]:.2f}) t={pts[0][2]:.1f}s")
 print(f"  Last:  ({pts[-1][0]:.2f}, {pts[-1][1]:.2f}) t={pts[-1][2]:.1f}s")
 
-# Subsample to ~0.5m spacing (keep chronological order for roundtrip)
+# Subsample to +-0.5m spacing (keep chronological order for roundtrip)
 route = [pts[0][:2]]
 for p in pts[1:]:
     if math.hypot(p[0]-route[-1][0], p[1]-route[-1][1]) >= 0.5:
@@ -42,7 +42,7 @@ print(f"Turnaround at WP {max_x_idx}: ({route[max_x_idx][0]:.2f}, {route[max_x_i
 gaps = [math.hypot(route[i+1][0]-route[i][0], route[i+1][1]-route[i][1]) for i in range(len(route)-1)]
 print(f"Spacing: mean={sum(gaps)/len(gaps):.2f}m, max={max(gaps):.2f}m")
 
-# Save
+#Save
 os.makedirs(os.path.dirname(ROUTE_OUT), exist_ok=True)
 json.dump(route, open(ROUTE_OUT, 'w'))
 

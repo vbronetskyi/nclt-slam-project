@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Simple A* local planner on the ego-centric obstacle grid.
+"""Simple A* local planner on the ego-centric obstacle grid
 Plans a short path (5-10m) from robot to lookahead anchor.
 
 Grid from LocalObstacleGrid: 100x100, 0.2m resolution, robot at center.
@@ -24,7 +23,7 @@ class GridPlanner:
         self.OBSTACLE_COST_SCALE = 50.0
         self.OBSTACLE_HITS_THRESHOLD = 2.0
         self.INFLATION_RADIUS_CELLS = 4  # 0.8m (robot half-width + margin)
-        self.ROBOT_RADIUS_CELLS = 2      # 0.4m ~ half robot width
+        self.ROBOT_RADIUS_CELLS = 2      # 0.4m +- half robot width
 
         # 8-connected neighbors: (dx, dy, move_cost)
         self.NEIGHBORS = [
@@ -73,11 +72,9 @@ class GridPlanner:
         """
         Plan path from robot (grid center) to target point.
 
-        Args:
             obstacle_grid: 2D array from LocalObstacleGrid.grid
             target_dx, target_dy: target relative to robot (meters, world frame)
 
-        Returns:
             next_dx, next_dy: direction to move (waypoint on path, meters)
             path_found: bool
             path_length: float (meters)

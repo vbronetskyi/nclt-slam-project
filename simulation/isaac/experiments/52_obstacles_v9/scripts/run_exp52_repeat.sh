@@ -2,12 +2,12 @@
 # Exp 52 REPEAT run: v9 hybrid + teach-built map + live depth obstacle_layer.
 # Robot drives same south route autonomously, this time with 3 cone walls
 # added to Isaac scene. Cones are NOT in any config Nav2 reads - they must
-# be discovered by the depth camera feeding obstacle_layer at runtime.
+# be discovered by the depth camera feeding obstacle_layer at runtime
 #
 # Records to $E52/results/repeat_run/:
 #   - costmap snapshots (pgm+yaml every 5s via costmap_snapshotter)
 #   - ros2 bag of /plan, /cmd_vel, /tf, /slam_pose, sampled /depth_points
-#   - tf_slam log, goals log, pp_follower log, etc.
+#   - tf_slam log, goals log, pp_follower log, etc
 set -eu
 
 E52=/workspace/simulation/isaac/experiments/52_obstacles_v9
@@ -172,7 +172,7 @@ nohup bash /tmp/exp52r_sup.sh > $OUT/supervisor.log 2>&1 &
 SUP=$!; disown $SUP
 echo "Supervisor: $SUP"
 
-# Costmap snapshotter - pgm+yaml every 5s
+# Costmap snapshotter - pgm+yaml every 5s   
 cat > /tmp/exp52r_cms.sh <<EOF
 #!/bin/bash
 source /opt/ros/jazzy/setup.bash

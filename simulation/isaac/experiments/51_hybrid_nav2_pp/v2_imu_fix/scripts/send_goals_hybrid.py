@@ -1,11 +1,5 @@
 #!/usr/bin/env python3
-"""Hybrid goal sender: request Nav2 plan for each WP, publish on /plan.
-
-For each waypoint:
-  1. Request plan from planner_server via ComputePathToPose action
-  2. Publish resulting path on /plan (pure pursuit subscribes)
-  3. Wait until robot within tolerance of goal
-  4. Replan periodically in case robot drifted (depth costmap updates)
+"""Hybrid goal sender: request Nav2 plan for each WP, publish on /plan
 """
 import argparse
 import csv
@@ -115,7 +109,7 @@ class HybridGoalSender(Node):
         return False
 
     def run(self):
-        # Auto-start: closest WP in outbound half
+        #Auto-start: closest WP in outbound half
         rx0, ry0 = _read_robot_pose()
         turn_idx = max(range(len(self.waypoints)), key=lambda i: self.waypoints[i][0])
         if rx0 is not None:

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Teach-and-repeat in a single Isaac Sim session.
+"""Teach-and-repeat in a single Isaac Sim session
 Phase 1 (teach): drive via GT waypoints, record anchors in-memory.
 Phase 2 (repeat): teleport to start, drive via visual anchor matching.
 
@@ -34,9 +33,7 @@ parser.add_argument("--obstacles", action="store_true",
                     help="spawn cones+tent obstacles on route")
 args, _ = parser.parse_known_args()
 
-# =====================================================================
 # Isaac Sim setup (identical to run_husky_teach_repeat.py)
-# =====================================================================
 from isaacsim import SimulationApp
 app = SimulationApp({
     "headless": True,
@@ -412,9 +409,7 @@ if args.skip_teach:
     print(f"  {len(anchors)} anchors, {len(anchor_descs)} desc, {len(anchor_depth_profiles)} dp")
     s_accum = anchors[-1]["s"] if anchors else 0
 
-# =====================================================================
 # PHASE 1: TEACH (skip if --skip-teach)
-# =====================================================================
 if not args.skip_teach:
     print(f"\n{'='*60}")
     print(f"PHASE 1: TEACH - driving {len(teach_waypoints)} waypoints")
@@ -434,7 +429,7 @@ wp_idx = 0
 teach_start = sim_time
 
 if args.skip_teach:
-    # Load existing anchors from route_memory instead of driving teach
+    #Load existing anchors from route_memory instead of driving teach
     if args.direction == "outbound":
         max_x_idx = max(range(len(file_anchors)), key=lambda i: file_anchors[i]["x"])
         anchors = file_anchors[: max_x_idx + 1]
@@ -485,7 +480,7 @@ while sim_time < args.duration / 2 and wp_idx < len(teach_waypoints):
         s_accum += math.hypot(rx - prev_gx, ry - prev_gy)
     prev_gx, prev_gy = rx, ry
 
-    # Record anchor every 2m
+    # Record anchor every 2m   
     if last_ax is None or math.hypot(rx - last_ax, ry - last_ay) >= 2.0:
         rgb = get_rgb()
         if rgb is not None:
@@ -538,9 +533,7 @@ while sim_time < args.duration / 2 and wp_idx < len(teach_waypoints):
         json.dump(anchors, _af, indent=2)
     print(f"  Saved {len(anchors)} anchors to {_rm}/anchors.json")
 
-# =====================================================================
 # TELEPORT BACK TO START
-# =====================================================================
 print("\nTeleporting to start...")
 stop_wheels()
 for _ in range(60):
@@ -579,9 +572,7 @@ if teleport_err > 5.0:
 # Initialize encoder prev from actual GT position after teleport
 enc_prev_x, enc_prev_y, enc_prev_yaw = p[0], p[1], p[3]
 
-# =====================================================================
 # PHASE 2: REPEAT - odometry-primary + visual correction
-# =====================================================================
 print(f"\n{'='*60}")
 print(f"PHASE 2: REPEAT - {len(anchors)} anchors, odometry-primary")
 print(f"{'='*60}\n")
@@ -636,7 +627,7 @@ follower.initialize_from_anchor(REPEAT_START_ANCHOR)
 odom_s = anchors[REPEAT_START_ANCHOR]["s"]
 odom_anchor_idx = REPEAT_START_ANCHOR
 
-VISUAL_EVERY = 30  # every 30 frames = ~2Hz; visual is soft correction only
+VISUAL_EVERY = 30  # every 30 frames = +-2Hz; visual is soft correction only
 frame_count = 0
 prev_lin = 0.0
 repeat_start = sim_time
@@ -648,13 +639,13 @@ log_f = open(log_path, "w")
 log_f.write("time,gt_x,gt_y,gt_yaw,odom_x,odom_y,odom_yaw,anchor_id,"
             "odom_s,vis_conf,cmd_lin,cmd_ang\n")
 
-# Encoder-based odometry state (initialized after teleport from GT)
+#Encoder-based odometry state (initialized after teleport from GT)
 odom_yaw = p[3]  # from teleport GT
 odom_x = p[0]
 odom_y = p[1]
 gyro_yaw = p[3]
 
-# Previous GT for encoder simulation (pose diff)
+#Previous GT for encoder simulation (pose diff)
 enc_prev_x = enc_prev_y = enc_prev_yaw = None
 ENCODER_NOISE = 0.005  # 0.5% - matches Husky A200 (78000 ticks/m)
 enc_rng = np.random.RandomState(123)
@@ -690,7 +681,7 @@ try:
         sim_time += dt
         frame_count += 1
 
-        # Update camera (GT needed for rendering + encoder simulation)
+        #Update camera (GT needed for rendering + encoder simulation)
         rx, ry, rz, ryaw = update_camera()
 
         # 1. Encoder odometry: PhysX pose diff (simulates wheel encoders)
@@ -706,7 +697,7 @@ try:
             enc_ang *= (1.0 + enc_rng.normal(0, ENCODER_NOISE * 2))
 
             # FIX 1: Route progress only from forward motion, not turns
-            # Skip distance when mostly turning (angular > 0.3 rad/frame, linear < 5mm)
+            #Skip distance when mostly turning (angular > 0.3 rad/frame, linear < 5mm)
             if enc_lin > 0.005 and abs(enc_ang) < 0.05:
                 odom_s += enc_lin
             elif enc_lin > 0.01:
@@ -768,7 +759,7 @@ try:
                 gyro_yaw = odom_yaw
                 prev_confirmed = robust_loc.confirmed_anchor_id
 
-            # Low-confidence safe mode - only reduce speed slightly,
+            #Low-confidence safe mode - only reduce speed slightly,
             # not halve it (vis is unreliable cross-session anyway)
             if vis_conf < 0.4:
                 gap_nav.MAX_LINEAR = 0.55
@@ -791,14 +782,14 @@ try:
         # Find nearest anchor to GT position for correct lookahead
         _gt_anchor = min(range(len(anchors)),
                          key=lambda i: math.hypot(anchors[i]["x"]-rx, anchors[i]["y"]-ry))
-        _gt_la = min(_gt_anchor + 4, len(anchors) - 1)  # lookahead ~8m
+        _gt_la = min(_gt_anchor + 4, len(anchors) - 1)  # lookahead +-8m
         _gt_tx, _gt_ty = anchors[_gt_la]["x"], anchors[_gt_la]["y"]
         desired_heading = math.atan2(_gt_ty - ry, _gt_tx - rx)
         heading_err = desired_heading - ryaw
         heading_err = math.atan2(math.sin(heading_err), math.cos(heading_err))
         _turning_to_route = False
 
-        # 5. GAP NAVIGATOR - primary cmd_vel (skip 1s for depth settle)
+        #5. GAP NAVIGATOR - primary cmd_vel (skip 1s for depth settle)
         if frame_count > 60 and frame_count % DEPTH_EVERY == 0:
             depth_raw = get_depth()
             if depth_raw is not None:
@@ -810,7 +801,7 @@ try:
                 last_nav_debug["trav"] = trav_filter.stats(depth_raw, depth_img)
 
         if frame_count <= 60:
-            # First 1s: stop, let depth settle
+            #First 1s: stop, let depth settle
             cmd_lin = 0.0
             cmd_ang = 0.0
         elif _turning_to_route:

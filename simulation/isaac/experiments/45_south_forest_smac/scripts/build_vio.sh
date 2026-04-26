@@ -1,5 +1,5 @@
 #!/bin/bash
-# Exp 45: Build VIO atlas (RGB-D-Inertial) from latest GT-fixed recording.
+# Exp 45: Build VIO atlas (RGB-D-Inertial) from latest GT-fixed recording.   
 set -euo pipefail
 
 BAGS=/root/bags/husky_real
@@ -11,7 +11,7 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/isaac-sim-6.0.0/exts/isaacsim.ros2.
 export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 
 REC=$(ls -td $BAGS/isaac_slam_* | head -1)
-TUM=$BAGS/tum_south_exp45_vio                      # separate TUM with aggressive trim for VIO
+TUM=$BAGS/tum_south_exp45_vio                      # seperate TUM with aggressive trim for VIO
 CFG=$EXP/config/vio_th${TH}.yaml
 LOG=/tmp/vio_exp45_th${TH}.log
 mkdir -p $EXP/config

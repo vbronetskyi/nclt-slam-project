@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Exp 49: Send Nav2 goals for full roundtrip (outbound + turnaround + return).
+"""Exp 49: Send Nav2 goals for full roundtrip (outbound + turnaround + return)
 
-Reads dense 797-WP roundtrip route, subsamples to ~4m spacing for Nav2 goals.
+Reads dense 797-WP roundtrip route, subsamples to +-4m spacing for Nav2 goals.
 Unlike send_trajectory_goals.py which only does outbound, this follows the
 complete path (including turnaround loop) and returns to spawn.
 """
@@ -94,7 +94,7 @@ class RoundtripFollower(Node):
         return False
 
     def run(self):
-        # Skip to closest WP in outbound half (handles warmup drift on outbound)
+        #Skip to closest WP in outbound half (handles warmup drift on outbound)
         # Route is symmetric: outbound 0-45, return 46-90. Robot after warmup
         # is still on outbound, so restrict search to outbound half only.
         rx0, ry0 = self._get_robot_xy()

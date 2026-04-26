@@ -1,6 +1,6 @@
 # nav2 params for husky a200 in isaac sim
 # localization: ORB-SLAM3 (publishes map->odom tf via slam_tf_publisher.py)
-# global planner: NavFn on static SLAM map (trees/buildings only)
+# global planner: NavFn on static SLAM map (trees/buildings only)   
 # controller: MPPI with 4.8s horizon (96 steps) for obstacle group bypass
 # obstacle detection: depth -> pointcloud -> local costmap ONLY (not global)
 # two-phase: outbound with obstacles, return without

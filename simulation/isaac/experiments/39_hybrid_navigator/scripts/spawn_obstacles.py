@@ -1,5 +1,4 @@
-"""
-spawn/remove dynamic obstacles for navigation testing.
+"""spawn/remove dynamic obstacles for navigation testing
 obstacles placed ON route trajectory with space for bypass.
 
 usage:
@@ -9,7 +8,7 @@ usage:
 import math
 from pxr import UsdGeom, UsdPhysics, Gf, Sdf
 
-# per-route obstacle definitions
+# per-route obstacle definitions   
 # each group: cones on trajectory, one side open for bypass
 
 OBSTACLES = {
@@ -108,7 +107,7 @@ def _make_tent(stage, path, x, y):
     UsdGeom.Gprim(body).CreateDisplayColorAttr([(0.2, 0.5, 0.2)])  # dark green
     UsdPhysics.CollisionAPI.Apply(stage.GetPrimAtPath(body_path))
 
-    # tent roof (flattened cube on top)
+    #tent roof (flattened cube on top)
     roof_path = f"{path}/roof"
     roof = UsdGeom.Cube.Define(stage, roof_path)
     roof.CreateSizeAttr(1.0)

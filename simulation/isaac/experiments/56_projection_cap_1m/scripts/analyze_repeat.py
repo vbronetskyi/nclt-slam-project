@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Analyze exp 55 repeat run 3: trajectory_map + err-vs-dist + regime timeline."""
+"""Analyze exp 55 repeat run 3: trajectory_map + err-vs-dist + regime timeline
+"""
 import os
 import sys
 import csv

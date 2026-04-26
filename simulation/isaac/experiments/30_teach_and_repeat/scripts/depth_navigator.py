@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Depth-primary navigation with route guidance.
+"""Depth-primary navigation with route guidance
 Like VFH (Vector Field Histogram) with route preference.
 
 1. Depth image -> free/blocked sectors
@@ -15,7 +14,7 @@ import numpy as np
 class DepthNavigator:
     def __init__(self):
         self.NUM_SECTORS = 15
-        self.CAMERA_FOV = 1.2  # ~69° D435
+        self.CAMERA_FOV = 1.2  # +-69° D435
         self.MIN_DIST = 0.3
         self.MAX_RANGE = 5.0
         self.OBSTACLE_THRESHOLD = 2.0

@@ -1,12 +1,5 @@
 #!/usr/bin/env python3
-"""
-Two-phase waypoint sender for Nav2.
-
-Supports two modes:
-  --slam-frame: load SLAM-frame waypoints from /tmp/slam_waypoints.json
-  default: load world-frame waypoints from /tmp/slam_routes.json
-
-Aggressive waypoint skipping: forward pass, timeout, retry limit.
+"""Two-phase waypoint sender for Nav2
 
 usage:
   source /opt/ros/jazzy/setup.bash
@@ -26,7 +19,7 @@ from tf2_ros import Buffer, TransformListener
 
 PHASE_FILE = "/tmp/nav2_phase.json"
 
-# drift-based speed
+#drift-based speed
 DRIFT_LOW = 2.0
 DRIFT_MED = 4.0
 DRIFT_HIGH = 7.0
@@ -183,7 +176,7 @@ class Nav2TwoPhase(Node):
         if self.current_idx >= len(self.current_poses):
             return
 
-        # --- Forward skip: robot passed waypoint along X axis ---
+        #Forward skip: robot passed waypoint along X axis
         if self.phase == "outbound" and self.current_idx < len(self.outbound_wps):
             wx = self.outbound_wps[self.current_idx][0]
             if rx > wx + SKIP_FORWARD_MARGIN:
@@ -198,7 +191,7 @@ class Nav2TwoPhase(Node):
                     self._cancel_and_send_next()
                     return
 
-        # --- Timeout skip: stuck too long on one waypoint ---
+        # Timeout skip: stuck too long on one waypoint
         elapsed = time.time() - self.wp_start_time
         if elapsed > SKIP_TIMEOUT:
             self.get_logger().warn(

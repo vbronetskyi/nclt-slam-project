@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Exp 55 repeat-time visual landmark matcher.
+"""Exp 55 repeat-time visual landmark matcher
 
 Loads south_landmarks.pkl (captured in teach run), subscribes to the live
-camera topics and VIO pose, and at ~1-2 Hz:
+camera topics and VIO pose, and at +-1-2 Hz:
 
   1. Find candidate teach landmarks within CANDIDATE_RADIUS m of current
      VIO position (in the teach-map world frame - if VIO has drifted, this
@@ -19,12 +19,10 @@ camera topics and VIO pose, and at ~1-2 Hz:
   6. Publish `/anchor_correction` (PoseWithCovarianceStamped).  Covariance
      diagonal from inlier count.
 
-Inputs:
   /camera/color/image_raw, /camera/depth/image_rect_raw
   /tmp/isaac_pose.txt  (current VIO/encoder-blended pose from tf_relay)
   south_landmarks.pkl
 
-Outputs:
   /anchor_correction  geometry_msgs/PoseWithCovarianceStamped
   anchor_matches.csv  log of every attempt
 """
@@ -90,7 +88,7 @@ TICK_HZ = 2.0
 # ACCUM_SILENCE_S and the nearest existing landmark is > ACCUM_MIN_DIST_M
 # away, record the current frame's ORB features as a new landmark
 # (camera pose from the current VIO pose).  These grow the landmark set
-# organically within and across repeat runs.
+# organically within and across repeat runs
 ACCUM_ENABLE = True
 ACCUM_SILENCE_S = 5.0          # seconds of no anchor before considering accumulation
 ACCUM_MIN_DIST_M = 5.0         # min distance to nearest existing landmark
@@ -180,7 +178,7 @@ class VisualLandmarkMatcher(Node):
         self.n_initial_landmarks = len(self.landmarks)
         self.n_accumulated = 0
         self.last_anchor_ts = 0.0
-        # SIGTERM handler - persist accumulated landmarks
+        # SIGTERM handler - persist accumulated landmarks   
         import signal as _sig
         def _sigterm(*a):
             if ACCUM_SAVE_PKL and self.n_accumulated > 0:
@@ -197,7 +195,7 @@ class VisualLandmarkMatcher(Node):
             f'(continuous accumulation: enable={ACCUM_ENABLE})')
 
         self.orb = cv2.ORB_create(nfeatures=500)
-        # crossCheck=True: mutual nearest neighbour filter; gives cleaner
+        #crossCheck=True: mutual nearest neighbour filter; gives cleaner
         # matches than Lowe ratio when one set is much smaller (31 teach vs
         # 500 current).  Tested on self-match (lm 10): 26 clean matches.
         self.matcher = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
@@ -313,8 +311,8 @@ class VisualLandmarkMatcher(Node):
             if desc_t is None or len(desc_t) < MIN_MATCHES:
                 continue
             # Cross-check match: teach->current (smaller set first gives
-            # better precision with crossCheck=True).  queryIdx=teach,
-            # trainIdx=current.
+            #better precision with crossCheck=True).  queryIdx=teach,
+            # trainIdx=current
             try:
                 good = self.matcher.match(desc_t, desc_curr)
             except cv2.error:
@@ -350,7 +348,7 @@ class VisualLandmarkMatcher(Node):
             # Invert: current-cam pose in teach-cam frame
             R_teach_cur = R_cur_teach.T
             t_teach_cur = -R_teach_cur @ t_cur_teach
-            # Compose with teach-camera world pose to get current-cam world pose
+            #Compose with teach-camera world pose to get current-cam world pose
             teach_pose = lm['pose']
             R_world_teach = quat_to_rot(
                 teach_pose[3], teach_pose[4], teach_pose[5], teach_pose[6])
@@ -458,7 +456,7 @@ class VisualLandmarkMatcher(Node):
         y_cam = (vv - cy_) * d_c / fy
         z_cam = d_c
         kpts_3d_cam = np.stack([x_cam, y_cam, z_cam], axis=-1).astype(np.float32)
-        # Camera pose in world: from base via static offset
+        #Camera pose in world: from base via static offset
         R_wb = quat_to_rot(*base_pose[3:7])
         cam_xyz = np.array([base_pose[0], base_pose[1], base_pose[2]]) + \
                   R_wb @ self.base_to_cam_t

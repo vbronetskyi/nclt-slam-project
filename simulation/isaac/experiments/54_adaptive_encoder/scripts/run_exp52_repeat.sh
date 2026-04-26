@@ -1,13 +1,13 @@
 #!/bin/bash
-# Exp 52 REPEAT run: v9 hybrid + teach-built map + live depth obstacle_layer.
+# Exp 52 REPEAT run: v9 hybrid + teach-built map + live depth obstacle_layer
 # Robot drives same south route autonomously, this time with 3 cone walls
 # added to Isaac scene. Cones are NOT in any config Nav2 reads - they must
-# be discovered by the depth camera feeding obstacle_layer at runtime.
+# be discovered by the depth camera feeding obstacle_layer at runtime
 #
 # Records to $E52/results/repeat_run/:
 #   - costmap snapshots (pgm+yaml every 5s via costmap_snapshotter)
 #   - ros2 bag of /plan, /cmd_vel, /tf, /slam_pose, sampled /depth_points
-#   - tf_slam log, goals log, pp_follower log, etc.
+#   - tf_slam log, goals log, pp_follower log, etc
 set -eu
 
 E52=/workspace/simulation/isaac/experiments/52_obstacles_v9
@@ -51,7 +51,7 @@ open(p, 'w').write(new_txt)
 print(f'Patched Nav2 launch: map_yaml -> {"$TEACH_MAP"}')
 PY
 
-# Ensure cones are in Isaac scene spawn - they were patched already
+#Ensure cones are in Isaac scene spawn - they were patched already
 python3 $E52/scripts/patch_obstacles_exp52.py
 
 cp $E52/config/south_roundtrip_route.json /workspace/simulation/isaac/route_memory/south/anchors.json
@@ -158,9 +158,9 @@ nohup bash /tmp/exp52r_pp.sh > $OUT/pp_follower.log 2>&1 &
 PP=$!; disown $PP
 echo "PP: $PP"
 
-# Turnaround supervisor - physically removes cones from Isaac on turnaround
+#Turnaround supervisor - physically removes cones from Isaac on turnaround
 cat > /tmp/exp52r_sup.sh <<EOF
-#!/bin/bash
+#!/bin/bash   
 source /opt/ros/jazzy/setup.bash
 export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 export ROS_DOMAIN_ID=85

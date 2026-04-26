@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Hybrid navigator: fast gap nav on open road, A* planner near obstacles.
+"""Hybrid navigator: fast gap nav on open road, A* planner near obstacles
 
 CRUISE mode: gap navigator (0.55 m/s, reactive)
 PLAN mode: A* on obstacle grid (0.3-0.5 m/s, routes around obstacles)
@@ -24,7 +23,7 @@ class HybridNavigator:
         self.mode = "CRUISE"
 
         # Mode transition - tuned for DECAY_RATE=0.997, OBSTACLE_HITS=8.0
-        # Roadside steady-state: ~50-70 cells. Cones add ~20-40 more.
+        # Roadside steady-state: +-50-70 cells. Cones add +-20-40 more.
         self.PLAN_TRIGGER_CELLS = 100
         self.CRUISE_RESTORE_CELLS = 60
         self.CENTER_OBSTACLE_DIST = 2.5  # only very close center obstacles

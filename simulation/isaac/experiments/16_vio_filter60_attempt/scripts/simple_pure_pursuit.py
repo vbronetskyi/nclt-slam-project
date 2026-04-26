@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Simple pure pursuit publisher for mapping runs (no Nav2).
+"""Simple pure pursuit publisher for mapping runs (no Nav2)
 
 Reads robot pose from /tmp/isaac_pose.txt and publishes /cmd_vel
 to follow road waypoints. Used for SLAM mapping runs.

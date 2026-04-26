@@ -16,9 +16,9 @@ Camera.bf: 40.0
 ThDepth: 160.0
 DepthMapFactor: 1000.0
 
-# Exp 51 v3: disable loop closing for teach-and-repeat single-pass navigation.
+# Exp 51 v3: disable loop closing for teach-and-repeat single-pass navigation
 # Forest features caused 24+ BAD LOOP candidates in v2; one false-accepted loop
-# at ~150m jumped the map 30m and crashed localization. Single-pass routes
+# at +-150m jumped the map 30m and crashed localization. Single-pass routes
 # don't benefit from loop closure. Read by System.cc:101-106.
 loopClosing: 0
 

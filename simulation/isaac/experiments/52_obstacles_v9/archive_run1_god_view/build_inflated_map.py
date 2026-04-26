@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bake exp 52 obstacles into the static Nav2 occupancy map.
+"""Bake exp 52 obstacles into the static Nav2 occupancy map
 
 Reads the v9 blank_south_map.pgm + obstacle_positions.yaml, stamps each
 cone cluster as occupied with an inflation disk, writes
@@ -98,8 +98,8 @@ for ob in obs["obstacles"]:
         stamped += stamp_disk(wx, wy, inflation_r_m)
 
 # Stamp scene objects so Nav2 knows where REAL forest is (trees, houses, shrubs).
-# Without this, drift -> robot off route -> Nav2 plans direct line through forest
-# -> robot hits unmapped tree -> endless spin loop (exp 52 run 1 failure mode).
+# Without this, drift -> robot off route -> Nav2 plans direct line thorugh forest
+# -> robot hits unmapped tree -> endless spin loop (exp 52 run 1 failure mode)
 import json, os
 scene_json = "/tmp/gazebo_models.json"
 if os.path.exists(scene_json):
@@ -132,7 +132,7 @@ else:
 print(f"stamped {stamped} cells total (cones + forest)")
 
 # ALSO build a return-leg map: forest without the cone walls (supervisor
-# swaps to this on turnaround so planner isn't blind to forest either).
+# swaps to this on turnaround so planner isn't blind to forest either)
 import copy
 img_return = np.array(img, copy=True)
 # Clear cone cells by restamping them as free
@@ -146,9 +146,9 @@ for ob in obs["obstacles"]:
                     rr, cc = r + dr, c + dc
                     if 0 <= rr < H and 0 <= cc < W:
                         img_return[rr, cc] = 254  # free
-# Re-stamp nearby scene objects so we don't accidentally carve holes in a tree
-# that happens to be inside the cleared cone inflation disk.
-# Simplest: re-run scene stamping on the return image as well.
+#Re-stamp nearby scene objects so we don't accidentally carve holes in a tree
+#that happens to be inside the cleared cone inflation disk
+# Simplest: re-run scene stamping on the return image as well
 def stamp_disk_on(dst, wx, wy, radius_m):
     r_px = int(math.ceil(radius_m / res))
     c, r = world_to_pix(wx, wy)
@@ -201,7 +201,7 @@ with open(out_pgm, "wb") as f:
     f.write(f"{maxv}\n".encode())
     f.write(img.tobytes())
 
-# Write yaml pointing at new pgm
+#Write yaml pointing at new pgm
 out_yaml_content = {
     "image": out_pgm,
     "resolution": res,

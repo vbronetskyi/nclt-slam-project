@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Teach-and-repeat in a single Isaac Sim session.
+"""Teach-and-repeat in a single Isaac Sim session
 Phase 1 (teach): drive via GT waypoints, record anchors in-memory.
 Phase 2 (repeat): teleport to start, drive via visual anchor matching.
 
@@ -30,9 +29,7 @@ parser.add_argument("--duration", type=float, default=800.0,
 parser.add_argument("--lookahead", type=float, default=8.0)
 args, _ = parser.parse_known_args()
 
-# =====================================================================
 # Isaac Sim setup (identical to run_husky_teach_repeat.py)
-# =====================================================================
 from isaacsim import SimulationApp
 app = SimulationApp({
     "headless": True,
@@ -197,7 +194,7 @@ def _get_husky_pose():
     yaw = math.atan2(rot[0][1], rot[0][0])
     return float(pos[0]), float(pos[1]), float(pos[2]), yaw
 
-# Load waypoints for teach phase
+#Load waypoints for teach phase
 ROUTE_MEMORY = f"/workspace/simulation/isaac/route_memory/{args.route}"
 with open(f"{ROUTE_MEMORY}/anchors.json") as f:
     file_anchors = json.load(f)
@@ -347,7 +344,7 @@ class DepthAvoidance:
             return 1.0, 0.0, False
         d = {n: self.sector_dist(depth, n) for n in self.sectors}
 
-        # Never fully block - always creep forward (min 0.15 m/s via speed scale)
+        #Never fully block - always creep forward (min 0.15 m/s via speed scale)
         if d["center"] < self.CRITICAL_DIST:
             speed = 0.15 / 0.8  # will be multiplied by MAX_LINEAR_VEL
         elif d["center"] < self.SLOWDOWN_DIST:
@@ -374,9 +371,7 @@ class DepthAvoidance:
         return speed, ang, False
 
 
-# =====================================================================
 # PHASE 1: TEACH
-# =====================================================================
 print(f"\n{'='*60}")
 print(f"PHASE 1: TEACH - driving {len(teach_waypoints)} waypoints")
 print(f"{'='*60}\n")
@@ -456,7 +451,7 @@ while sim_time < args.duration / 2 and wp_idx < len(teach_waypoints):
                 np.save(f"{_rm}/rgb/{aid:04d}_desc.npy", desc)
                 kp_coords = np.array([(k.pt[0],k.pt[1],k.size,k.angle) for k in kps], dtype=np.float32)
                 np.save(f"{_rm}/rgb/{aid:04d}_kp.npy", kp_coords)
-            # Save depth profile for robust matching
+            #Save depth profile for robust matching
             depth_img = get_depth()
             if depth_img is not None:
                 h, w = depth_img.shape[:2]
@@ -483,9 +478,7 @@ with open(f"{_rm}/anchors.json", "w") as _af:
     json.dump(anchors, _af, indent=2)
 print(f"  Saved {len(anchors)} anchors to {_rm}/anchors.json")
 
-# =====================================================================
 # TELEPORT BACK TO START
-# =====================================================================
 print("\nTeleporting to start...")
 stop_wheels()
 for _ in range(60):
@@ -524,16 +517,14 @@ if teleport_err > 5.0:
 # Initialize encoder prev from actual GT position after teleport
 enc_prev_x, enc_prev_y, enc_prev_yaw = p[0], p[1], p[3]
 
-# =====================================================================
 # PHASE 2: REPEAT - odometry-primary + visual correction
-# =====================================================================
 print(f"\n{'='*60}")
 print(f"PHASE 2: REPEAT - {len(anchors)} anchors, odometry-primary")
 print(f"{'='*60}\n")
 
 from route_follower import RouteFollower
 
-# Odometry-primary state
+# Odometry-primary state   
 odom_s = 0.0
 odom_anchor_idx = 0
 vis_conf = 0.0
@@ -581,7 +572,7 @@ follower.initialize_from_anchor(REPEAT_START_ANCHOR)
 odom_s = anchors[REPEAT_START_ANCHOR]["s"]
 odom_anchor_idx = REPEAT_START_ANCHOR
 
-VISUAL_EVERY = 30  # every 30 frames = ~2Hz; visual is soft correction only
+VISUAL_EVERY = 30  # every 30 frames = +-2Hz; visual is soft correction only
 frame_count = 0
 prev_lin = 0.0
 repeat_start = sim_time
@@ -637,7 +628,7 @@ try:
         # Update camera (GT needed for rendering + encoder simulation)
         rx, ry, rz, ryaw = update_camera()
 
-        # 1. Encoder odometry: PhysX pose diff (simulates wheel encoders)
+        #1. Encoder odometry: PhysX pose diff (simulates wheel encoders)
         if enc_prev_x is not None:
             enc_dx = rx - enc_prev_x
             enc_dy = ry - enc_prev_y
@@ -654,11 +645,11 @@ try:
             if enc_lin > 0.005 and abs(enc_ang) < 0.05:
                 odom_s += enc_lin
             elif enc_lin > 0.01:
-                # Moving but also turning - count partial
+                #Moving but also turning - count partial
                 odom_s += enc_lin * 0.5
             odom_anchor_idx = find_anchor_by_s(odom_s)
 
-            # IMU gyro heading
+            #IMU gyro heading
             imu_reading = _imu_interface.get_sensor_reading(
                 IMU_SENSOR_PATH, read_gravity=True)
             if imu_reading.is_valid:
@@ -754,7 +745,7 @@ try:
             cmd_lin = last_nav_lin
             cmd_ang = last_nav_ang
 
-        # 6. Stuck detection: encoder not moving
+        #6. Stuck detection: encoder not moving
         if sim_time - stuck_check_time > 3.0:
             if stuck_enc_integral < 0.3:
                 stuck_frames += 60

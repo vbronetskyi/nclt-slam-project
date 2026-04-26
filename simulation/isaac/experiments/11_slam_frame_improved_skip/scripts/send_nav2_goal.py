@@ -1,12 +1,5 @@
 #!/usr/bin/env python3
-"""
-Two-phase waypoint sender for Nav2 with SLAM frame support.
-
-Aggressive but safe waypoint skipping:
-  - Forward skip: robot passed waypoint along X
-  - Timeout skip: stuck too long (outbound only)
-  - Failure skip: Nav2 can't reach after N retries
-  - Max consecutive skip limit prevents cascade
+"""Two-phase waypoint sender for Nav2 with SLAM frame support
 
 usage:
   python3 send_nav2_goal.py --route road [--slam-frame]
@@ -174,7 +167,7 @@ class Nav2TwoPhase(Node):
         if self.current_idx >= len(self.current_poses):
             return
 
-        # --- Forward skip (outbound only): robot passed waypoint along X ---
+        # Forward skip (outbound only): robot passed waypoint along X
         if self.phase == "outbound" and self.current_idx < len(self.outbound_wps):
             wx = self.outbound_wps[self.current_idx][0]
             if rx > wx + SKIP_FORWARD_MARGIN:
@@ -193,7 +186,7 @@ class Nav2TwoPhase(Node):
                         self._cancel_and_send_next()
                         return
 
-        # --- Timeout skip (outbound only): stuck too long ---
+        # Timeout skip (outbound only): stuck too long   
         if self.phase == "outbound":
             elapsed = time.time() - self.wp_start_time
             if elapsed > SKIP_TIMEOUT:
@@ -239,7 +232,7 @@ class Nav2TwoPhase(Node):
                 write_phase("done")
             return
 
-        # Skip waypoints too far from robot (Nav2 can't plan to them)
+        #Skip waypoints too far from robot (Nav2 can't plan to them)   
         rx, ry = self.get_robot_pose()
         if rx is not None:
             MAX_GOAL_DIST = 15.0  # don't send goals further than this
@@ -320,7 +313,7 @@ class Nav2TwoPhase(Node):
                 dist = math.hypot(rx - wp.pose.position.x, ry - wp.pose.position.y)
                 if dist > 10.0:
                     # Not actually near the goal - Nav2 false positive
-                    # Don't skip - retry same goal (robot needs to drive there)
+                    #Don't skip - retry same goal (robot needs to drive there)
                     self._retries += 1
                     if self._retries >= MAX_NAV2_RETRIES:
                         self.get_logger().warn(

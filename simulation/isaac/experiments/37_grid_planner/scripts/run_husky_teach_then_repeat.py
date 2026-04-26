@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Teach-and-repeat in a single Isaac Sim session.
+"""Teach-and-repeat in a single Isaac Sim session
 Phase 1 (teach): drive via GT waypoints, record anchors in-memory.
 Phase 2 (repeat): teleport to start, drive via visual anchor matching.
 
@@ -40,9 +39,7 @@ args, _ = parser.parse_known_args()
 if args.use_planner:
     args.use_grid = True  # planner needs the grid
 
-# =====================================================================
 # Isaac Sim setup (identical to run_husky_teach_repeat.py)
-# =====================================================================
 from isaacsim import SimulationApp
 app = SimulationApp({
     "headless": True,
@@ -94,8 +91,8 @@ for _ in range(30):
     app.update()
 stage = omni.usd.get_context().get_stage()
 
-# Scene already pre-built by convert_gazebo_to_isaac.py with:
-# - Trees thinned 33%, no ferns, reduced cover, debris instead of fallen
+#Scene already pre-built by convert_gazebo_to_isaac.py with:   
+#- Trees thinned 33%, no ferns, reduced cover, debris instead of fallen
 # - No runtime deactivation needed (was causing 6+ min delays)
 print("scene pre-built (no runtime thinning needed)")
 
@@ -227,7 +224,7 @@ else:
     max_x_idx = max(range(len(file_anchors)), key=lambda i: file_anchors[i]["x"])
     teach_waypoints = [(a["x"], a["y"]) for a in file_anchors[max_x_idx:]]
 
-# Terrain height
+#Terrain height
 _RWPS = [
     (-100,-7),(-95,-6),(-90,-4.5),(-85,-2.8),(-80,-1.5),(-75,-0.8),(-70,-0.5),
     (-65,-1),(-60,-2.2),(-55,-3.8),(-50,-5),(-45,-5.5),(-40,-5.2),(-35,-4),
@@ -418,9 +415,7 @@ if args.skip_teach:
     print(f"  {len(anchors)} anchors, {len(anchor_descs)} desc, {len(anchor_depth_profiles)} dp")
     s_accum = anchors[-1]["s"] if anchors else 0
 
-# =====================================================================
 # PHASE 1: TEACH (skip if --skip-teach)
-# =====================================================================
 if not args.skip_teach:
     print(f"\n{'='*60}")
     print(f"PHASE 1: TEACH - driving {len(teach_waypoints)} waypoints")
@@ -507,7 +502,7 @@ while sim_time < args.duration / 2 and wp_idx < len(teach_waypoints):
             })
             if desc is not None:
                 anchor_descs[aid] = desc
-            # Save to disk for inspection
+            #Save to disk for inspection
             _rm = f"/workspace/simulation/isaac/route_memory/{args.route}"
             os.makedirs(f"{_rm}/rgb", exist_ok=True)
             os.makedirs(f"{_rm}/depth", exist_ok=True)
@@ -517,7 +512,7 @@ while sim_time < args.duration / 2 and wp_idx < len(teach_waypoints):
                 np.save(f"{_rm}/rgb/{aid:04d}_desc.npy", desc)
                 kp_coords = np.array([(k.pt[0],k.pt[1],k.size,k.angle) for k in kps], dtype=np.float32)
                 np.save(f"{_rm}/rgb/{aid:04d}_kp.npy", kp_coords)
-            # Save depth profile for robust matching
+            #Save depth profile for robust matching
             depth_img = get_depth()
             if depth_img is not None:
                 h, w = depth_img.shape[:2]
@@ -538,15 +533,13 @@ while sim_time < args.duration / 2 and wp_idx < len(teach_waypoints):
     teach_dur = sim_time - teach_start
     print(f"\nTeach complete: {len(anchors)} anchors, {s_accum:.0f}m, {teach_dur:.0f}s")
 
-    # Save anchors.json to disk
+    #Save anchors.json to disk
     _rm = f"/workspace/simulation/isaac/route_memory/{args.route}"
     with open(f"{_rm}/anchors.json", "w") as _af:
         json.dump(anchors, _af, indent=2)
     print(f"  Saved {len(anchors)} anchors to {_rm}/anchors.json")
 
-# =====================================================================
 # TELEPORT BACK TO START
-# =====================================================================
 print("\nTeleporting to start...")
 stop_wheels()
 for _ in range(60):
@@ -558,7 +551,7 @@ sx, sy = anchors[REPEAT_START_ANCHOR]["x"], anchors[REPEAT_START_ANCHOR]["y"]
 syaw = anchors[REPEAT_START_ANCHOR]["yaw"]
 sz = _terrain_height(sx, sy) + 0.5
 
-# Stop physics, move robot, restart - PhysX ignores xform during play
+#Stop physics, move robot, restart - PhysX ignores xform during play
 timeline.stop()
 for _ in range(30):
     app.update()
@@ -585,9 +578,7 @@ if teleport_err > 5.0:
 # Initialize encoder prev from actual GT position after teleport
 enc_prev_x, enc_prev_y, enc_prev_yaw = p[0], p[1], p[3]
 
-# =====================================================================
 # PHASE 2: REPEAT - odometry-primary + visual correction
-# =====================================================================
 print(f"\n{'='*60}")
 print(f"PHASE 2: REPEAT - {len(anchors)} anchors, odometry-primary")
 print(f"{'='*60}\n")
@@ -610,7 +601,7 @@ def find_anchor_by_s(s_val):
             best_i = i
     return best_i
 
-# Robust anchor localizer - in-memory (no file I/O)
+#Robust anchor localizer - in-memory (no file I/O)
 from robust_anchor_localizer import RobustAnchorLocalizer
 robust_loc = RobustAnchorLocalizer.__new__(RobustAnchorLocalizer)
 robust_loc.anchor_dir = "in-memory"
@@ -642,7 +633,7 @@ follower.initialize_from_anchor(REPEAT_START_ANCHOR)
 odom_s = anchors[REPEAT_START_ANCHOR]["s"]
 odom_anchor_idx = REPEAT_START_ANCHOR
 
-VISUAL_EVERY = 30  # every 30 frames = ~2Hz; visual is soft correction only
+VISUAL_EVERY = 30  # every 30 frames = +-2Hz; visual is soft correction only
 frame_count = 0
 prev_lin = 0.0
 repeat_start = sim_time
@@ -679,7 +670,7 @@ last_nav_ang = 0.0
 last_nav_mode = "ROUTE_TRACKING"
 last_nav_debug = {}
 
-# Obstacle grid (accumulated detection)
+#Obstacle grid (accumulated detection)
 obstacle_grid = None
 GRID_SECTORS = 80
 if args.use_grid:
@@ -737,7 +728,7 @@ try:
                 odom_s += enc_lin * 0.5
             odom_anchor_idx = find_anchor_by_s(odom_s)
 
-            # IMU gyro heading
+            #IMU gyro heading
             imu_reading = _imu_interface.get_sensor_reading(
                 IMU_SENSOR_PATH, read_gravity=True)
             if imu_reading.is_valid:
@@ -779,7 +770,7 @@ try:
                     odom_s += max(-3.0, min(3.0, corr))
                 odom_anchor_idx = find_anchor_by_s(odom_s)
 
-            # Position correction ONLY when confirmed changes + high confidence
+            #Position correction ONLY when confirmed changes + high confidence
             if robust_loc.confirmed_anchor_id != prev_confirmed and vis_conf > 0.6:
                 ca = anchors[robust_loc.confirmed_anchor_id]
                 alpha = min(vis_conf * 0.25, 0.2)
@@ -814,7 +805,7 @@ try:
         # Find nearest anchor to GT position for correct lookahead
         _gt_anchor = min(range(len(anchors)),
                          key=lambda i: math.hypot(anchors[i]["x"]-rx, anchors[i]["y"]-ry))
-        _gt_la = min(_gt_anchor + 4, len(anchors) - 1)  # lookahead ~8m
+        _gt_la = min(_gt_anchor + 4, len(anchors) - 1)  # lookahead +-8m
         _gt_tx, _gt_ty = anchors[_gt_la]["x"], anchors[_gt_la]["y"]
         desired_heading = math.atan2(_gt_ty - ry, _gt_tx - rx)
         heading_err = desired_heading - ryaw
@@ -951,7 +942,7 @@ try:
         send_wheels(cmd_lin, cmd_ang)
         prev_lin = cmd_lin
 
-        # 7. Log every second
+        #7. Log every second
         if frame_count % 60 == 0:
             log_f.write(
                 f"{sim_time:.2f},{rx:.4f},{ry:.4f},{ryaw:.4f},"

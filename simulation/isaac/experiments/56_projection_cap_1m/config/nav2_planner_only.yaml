@@ -3,7 +3,7 @@ map_server:
     # Use a BLANK static map - the robot does not know obstacle positions
     # in advance. Static map only provides the route-area world frame.
     # Obstacles are sensed via the depth camera, fed into obstacle_layer
-    # below as /depth_points, and show up in global_costmap at runtime.
+    # below as /depth_points, and show up in global_costmap at runtime
     yaml_filename: "/workspace/simulation/isaac/experiments/56_projection_cap_1m/teach/south_teach_map.yaml"
 
 planner_server:
@@ -23,7 +23,7 @@ global_costmap:
       publish_frequency: 1.0
       global_frame: map
       robot_base_frame: base_link
-      # Husky A200 real footprint ~1.0m × 0.67m; use 0.5m radius circular
+      # Husky A200 real footprint +-1.0m × 0.67m; use 0.5m radius circular
       # approximation with safety. Previous 0.35 was too tight.
       robot_radius: 0.5
       resolution: 0.2
@@ -46,7 +46,7 @@ global_costmap:
           max_obstacle_height: 0.8
           # Extend range so cones appear in the costmap earlier -
           # previous 3 m was too close (robot would enter commit zone
-          # before planner could route around).
+          # before planner could route around)
           obstacle_max_range: 5.0
           raytrace_max_range: 7.0
           inf_is_valid: false

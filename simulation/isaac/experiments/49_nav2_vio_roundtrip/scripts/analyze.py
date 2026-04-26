@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Exp 49 analysis: compute ATE for VIO trajectory with Umeyama alignment.
+"""Exp 49 analysis: compute ATE for VIO trajectory with Umeyama alignment
 
 Writes GT and VIO CSVs for plot_trajectory_map (body-frame, matched by timestamp).
 """

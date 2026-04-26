@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Simple pure pursuit publisher for mapping runs (no Nav2).
+"""Simple pure pursuit publisher for mapping runs (no Nav2)
 
 Reads robot pose from /tmp/isaac_pose.txt and publishes /cmd_vel
 to follow road waypoints. Used for SLAM mapping runs.
@@ -37,7 +36,7 @@ class PurePursuit(Node):
         self.timer = self.create_timer(0.05, self.tick)
         self.idx = 0
         self.done = False
-        # IMU initialization phase: stationary 2s, then zigzag 10s
+        #IMU initialization phase: stationary 2s, then zigzag 10s
         # excites accelerometer + gyro for proper VIO scale recovery
         self.start_time = time.time()
         self.init_done = False

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Exp 55 repeat-time visual landmark matcher.
+"""Exp 55 repeat-time visual landmark matcher
 
 Loads south_landmarks.pkl (captured in teach run), subscribes to the live
-camera topics and VIO pose, and at ~1-2 Hz:
+camera topics and VIO pose, and at +-1-2 Hz:
 
   1. Find candidate teach landmarks within CANDIDATE_RADIUS m of current
      VIO position (in the teach-map world frame - if VIO has drifted, this
@@ -19,12 +19,10 @@ camera topics and VIO pose, and at ~1-2 Hz:
   6. Publish `/anchor_correction` (PoseWithCovarianceStamped).  Covariance
      diagonal from inlier count.
 
-Inputs:
   /camera/color/image_raw, /camera/depth/image_rect_raw
   /tmp/isaac_pose.txt  (current VIO/encoder-blended pose from tf_relay)
   south_landmarks.pkl
 
-Outputs:
   /anchor_correction  geometry_msgs/PoseWithCovarianceStamped
   anchor_matches.csv  log of every attempt
 """
@@ -75,12 +73,12 @@ CANDIDATE_RADIUS_M = 8.0
 MAX_CANDIDATES = 5
 HEADING_TOL_DEG = 90.0   # reject candidates whose teach heading differs by > this
 
-# v63 GLOBAL RELOCALISATION fallback for kidnapped-robot recovery.
+#v63 GLOBAL RELOCALISATION fallback for kidnapped-robot recovery.
 # r1 had a bug: silence alone isn't drift. The matcher could be quiet
 # because it's just between landmarks on a perfectly-tracked run, and
 # the global search would then jump to a false-match (run 1 all 5
 # jumps made drift worse). r2 adds a drift signal: only relocate when
-# tf_relay reports SLAM-vs-encoder disagreement > RELOC_DRIFT_M.
+#tf_relay reports SLAM-vs-encoder disagreement > RELOC_DRIFT_M   
 RELOC_AGE_S = 20.0              # matcher silent at least this long
 RELOC_DRIFT_M = 3.0             # AND SLAM-vs-encoder disagree at least this much
 RELOC_MAX_CANDIDATES = 25       # top-N by descriptor match count
@@ -102,7 +100,7 @@ TICK_HZ = 2.0
 # ACCUM_SILENCE_S and the nearest existing landmark is > ACCUM_MIN_DIST_M
 # away, record the current frame's ORB features as a new landmark
 # (camera pose from the current VIO pose).  These grow the landmark set
-# organically within and across repeat runs.
+# organically within and across repeat runs
 ACCUM_ENABLE = True
 ACCUM_SILENCE_S = 5.0          # seconds of no anchor before considering accumulation
 ACCUM_MIN_DIST_M = 5.0         # min distance to nearest existing landmark
@@ -316,7 +314,7 @@ class VisualLandmarkMatcher(Node):
         # v63 GLOBAL RELOCALISATION: if no local candidates AND matcher
         # has been silent for RELOC_AGE_S AND tf_relay reports drift >
         # RELOC_DRIFT_M (slam-vs-encoder disagreement), search the whole
-        # teach map by descriptor similarity (kidnapped-robot recovery).
+        # teach map by descriptor similiarity (kidnapped-robot recovery)
         relocating = False
         drift_est = 0.0
         try:
@@ -358,14 +356,14 @@ class VisualLandmarkMatcher(Node):
                 continue
             # Cross-check match: teach->current (smaller set first gives
             # better precision with crossCheck=True).  queryIdx=teach,
-            # trainIdx=current.
+            # trainIdx=current
             try:
                 good = self.matcher.match(desc_t, desc_curr)
             except cv2.error:
                 continue
             if len(good) < MIN_MATCHES:
                 continue
-            # 3D teach points ↔ 2D current points
+            #3D teach points ↔ 2D current points
             obj_pts = np.array([lm['keypoints_3d_cam'][m.queryIdx] for m in good],
                                dtype=np.float32)
             img_pts = np.array([pts_curr_2d[m.trainIdx] for m in good],
@@ -419,7 +417,7 @@ class VisualLandmarkMatcher(Node):
 
         n_inliers, reproj_err, anchor_pose, lm_idx = best
         # Consistency check - skipped in relocation mode (that's the whole
-        # point: the match is SUPPOSED to disagree with drifted VIO).
+        # point: the match is SUPPOSED to disagree with drifted VIO)
         dx = anchor_pose[0] - vio_xy[0]
         dy = anchor_pose[1] - vio_xy[1]
         consistency_d = math.hypot(dx, dy)
@@ -480,7 +478,7 @@ class VisualLandmarkMatcher(Node):
             return
         if ts - self.last_anchor_ts < ACCUM_SILENCE_S:
             return
-        # Nearest existing landmark
+        #Nearest existing landmark
         vio_xy = (base_pose[0], base_pose[1])
         d = np.linalg.norm(self.xy - np.array(vio_xy), axis=1)
         if d.min() < ACCUM_MIN_DIST_M:

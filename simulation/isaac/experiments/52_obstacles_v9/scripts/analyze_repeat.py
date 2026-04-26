@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Analyze repeat run: extract traj CSV from tf_slam.log, plot with canonical script."""
+"""Analyze repeat run: extract traj CSV from tf_slam.log, plot with canonical script
+"""
 import os
 import re
 import sys

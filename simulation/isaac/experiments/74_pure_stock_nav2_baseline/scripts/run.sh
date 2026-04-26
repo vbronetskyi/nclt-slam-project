@@ -1,8 +1,8 @@
 #!/bin/bash
-# Pure stock Nav2 baseline on an arbitrary route (takes ROUTE env var).
+# Pure stock Nav2 baseline on an arbitrary route (takes ROUTE env var)
 #
 # Shared infrastructure with per-route run_repeat.sh:
-#   - Isaac Sim (run_husky_forest.py --route X --obstacles)   - same
+#- Isaac Sim (run_husky_forest.py --route X --obstacles)   - same
 #   - ORB-SLAM3 RGB-D-Inertial VIO                            - same
 #   - tf_wall_clock_relay.py --use-gt   (Phase 1 warmup)      - same
 #   - tf_wall_clock_relay_v55.py --slam-encoder               - same (stays no_anchor)
@@ -15,7 +15,7 @@
 #   WP feeder         : $E74/scripts/waypoint_follower_client.py
 #                       (FollowWaypoints action, stop_on_failure: false)
 #
-# Removed from ours:
+#Removed from ours:
 #   visual_landmark_matcher  - pure VIO+encoder drift (no anchor correction)
 #   send_goals_hybrid        - replaced by stock waypoint_follower + client
 #   pure_pursuit_path_follower - replaced by stock controller_server
@@ -26,7 +26,7 @@ E74=/workspace/simulation/isaac/experiments/74_pure_stock_nav2_baseline
 BASELINE_COMMON=/workspace/simulation/isaac/experiments/_baselines_common
 ROUTE_REPEAT_DIR=/workspace/simulation/isaac/routes/$ROUTE/repeat
 # Per-route repeat dir hosts scripts (tf_relay_v55, turnaround_supervisor,
-# run_husky_forest, etc.) and the vio config.  We re-use them unchanged.
+#run_husky_forest, etc.) and the vio config.  We re-use them unchanged.
 SCRIPTS=/workspace/simulation/isaac/scripts
 SLAM=/workspace/third_party/ORB_SLAM3
 DOMAIN=${ROS_DOMAIN_ID:-87}
@@ -193,7 +193,7 @@ echo "PIDs: Isaac=$ISAAC VIO=$VIO TF=$TF Nav2=$NAV2 Sup=$SUP Client=$CLIENT"
 echo "OUT: $OUT"
 
 # WAIT_LOOP_FOR_RESULT (with watchdog early-abort)
-# 7200 s wall = 2 h, comfortably above our custom's longest run (68 min on 07).
+#7200 s wall = 2 h, comfortably above our custom's longest run (68 min on 07)
 ROUTE_TIMEOUT_S=${ROUTE_TIMEOUT_S:-7200}
 START_TS=$(date +%s)
 cleanup_all() {

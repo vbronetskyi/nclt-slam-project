@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Hybrid goal sender (v53) with proactive WP projection.
+"""Hybrid goal sender (v53) with proactive WP projection
 
 For every /global_costmap/costmap update:
   - Re-checks all *future* waypoints (current..end) against the costmap.
@@ -50,7 +50,7 @@ class HybridGoalSender(Node):
         self.n_projections = 0
         self.n_skips_by_proj = 0
 
-        # Projection parameters
+        #Projection parameters
         self.PROJ_COST_THRESH = 30
         self.PROJ_MAX_SEARCH_M = 3.0
         self.PROJ_MAX_SHIFT_M = 1.0
@@ -61,10 +61,10 @@ class HybridGoalSender(Node):
         self.DETOUR_MAX_COST = 30              # detour candidate cell must have cost < this
         self.LOOKAHEAD_N = 3
 
-        # v59 known obstacles (from patch_obstacles_exp52 for south route).
+        # v59 known obstacles (from patch_obstacles_exp52 for south route)
         # Costmap updates have latency (robot must approach to depth-range
         # before obstacle is marked).  We also hard-check against these
-        # known positions so the lookahead fires BEFORE robot gets near.
+        # known positions so the lookahead fires BEFORE robot gets near
         self.KNOWN_CONES = [
             (-75.0, -24.0), (-75.0, -25.0), (-75.0, -26.0),
             (-18.0, -24.0), (-18.0, -25.0),
@@ -76,7 +76,7 @@ class HybridGoalSender(Node):
             'half_y': 1.0,
         }
         # Minimum allowed clearance from any known obstacle - WP center
-        # must be ≥ this many metres from obstacle edge.
+        # must be ≥ this many metres from obstacle edge
         # robot_radius 0.7 + 0.2 margin = 0.9 m from obstacle edge
         self.KNOWN_CLEARANCE_M = 0.9
 
@@ -87,7 +87,7 @@ class HybridGoalSender(Node):
         self.tf_listener = tf2_ros.TransformListener(self.tf_buf, self)
 
         self.plan_pub = self.create_publisher(Path, '/plan', 10)
-        # v64: /cmd_vel publisher for STOP + precise END finisher.
+        #v64: /cmd_vel publisher for STOP + precise END finisher
         self.cmd_pub = self.create_publisher(Twist, '/cmd_vel', 10)
         self.plan_client = ActionClient(self, ComputePathToPose, '/compute_path_to_pose')
 
@@ -207,7 +207,7 @@ class HybridGoalSender(Node):
         Costmap-independent: catches collisions even before depth sees
         the obstacle.
         """
-        # Cones - radius 0.3 m
+        #Cones - radius 0.3 m
         for cx, cy in self.KNOWN_CONES:
             if math.hypot(x - cx, y - cy) < 0.3 + self.KNOWN_CLEARANCE_M:
                 return True, ('cone', cx, cy)
@@ -361,7 +361,7 @@ class HybridGoalSender(Node):
         n_plan_fails = 0
         MAX_PLAN_FAILS = 5         # skip WP after consecutive plan failures
         while time.time() - t0 < self.GOAL_TIMEOUT:
-            # User projected position (may have moved since last tick)
+            #User projected position (may have moved since last tick)
             px, py = self.projected_wps[i]
             if self.skip_flags[i]:
                 self.get_logger().warn(
@@ -378,8 +378,8 @@ class HybridGoalSender(Node):
                 return True
             # v59 continuous lookahead: only abort if VERY close to
             # unsafe target (d<3m) AND known obstacle proximity.  Costmap
-            # cost alone can spike from teach-map tree inflation - don't
-            # abort on that.
+            #cost alone can spike from teach-map tree inflation - don't
+            # abort on that
             if d < 3.0:
                 too_close, _ = self._wp_too_close_to_known(px, py)
                 if too_close:
@@ -411,7 +411,7 @@ class HybridGoalSender(Node):
         return False
 
     def run(self):
-        # Wait for map->base_link tf (listener needs a few spin cycles).
+        # Wait for map->base_link tf (listener needs a few spin cycles)
         for _ in range(40):
             rclpy.spin_once(self, timeout_sec=0.25)
             rx0, ry0 = self._read_robot_pose()
@@ -440,7 +440,7 @@ class HybridGoalSender(Node):
             # v59 LOOK-AHEAD + KNOWN-OBSTACLE CHECK:
             # (a) hardcoded check against known cone/tent positions - no
             #     costmap latency, fires regardless of depth visibility;
-            # (b) if costmap is available, also check cell cost.
+            # (b) if costmap is available, also check cell cost
             unsafe_reason = None
             too_close, what = self._wp_too_close_to_known(x, y)
             if too_close:

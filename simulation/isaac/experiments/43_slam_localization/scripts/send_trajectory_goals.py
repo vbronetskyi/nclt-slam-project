@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Follow recorded teach-run trajectory via Nav2 sequential goals.
+"""Follow recorded teach-run trajectory via Nav2 sequential goals
 On failure: backup, clear costmap, skip to next waypoint.
 """
 import argparse
@@ -74,7 +73,7 @@ class TrajectoryFollower(Node):
             if rx is not None:
                 dx = wp["x"] - rx
                 dist = math.hypot(wp["x"] - rx, wp["y"] - ry)
-                # For outbound (positive x), WP behind = dx < -2
+                #For outbound (positive x), WP behind = dx < -2
                 # For return (negative x), WP behind = dx > 2
                 behind = dx < -2.0 if self.direction == "outbound" else dx > 2.0
                 if behind:

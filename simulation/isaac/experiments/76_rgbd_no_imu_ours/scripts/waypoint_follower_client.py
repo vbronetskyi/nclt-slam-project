@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Stock-Nav2 baseline client v2 - via FollowWaypoints action.
+"""Stock-Nav2 baseline client v2 - via FollowWaypoints action
 
 The canonical Nav2 way to "visit a list of waypoints with skip-on-failure"
 is the WaypointFollower action (stop_on_failure: false). Each WP is
@@ -32,7 +32,7 @@ def subsample(traj_path, spacing):
 
 
 def robot_pose_from_tmp():
-    # NOTE: keep in sync with run_repeat.sh spawn-x/y
+    # keep in sync with run_repeat.sh spawn-x/y
     try:
         with open('/tmp/isaac_pose.txt') as f:
             t = f.readline().strip().split()
@@ -69,7 +69,7 @@ class WaypointClient(Node):
     # before sending, peek global costmap at every WP.  If cell cost ≥
     # LETHAL_INFLATED, try nearest free cell within PROJ_RADIUS_M; if
     # nothing found, drop that WP altogether (so robot doesn't stall
-    # at an unreachable goal in forest inflation).
+    # at an unreachable goal in forest inflation)
     LETHAL_INFLATED = 70
     PROJ_RADIUS_M = 2.0
 
@@ -179,7 +179,6 @@ class WaypointClient(Node):
         if handle is None or not handle.accepted:
             self.get_logger().error('goal rejected')
             return 1
-        # print(f"DEBUG anchor_state={state}")
         self.get_logger().info('goal accepted, awaiting result...')
         res_fut = handle.get_result_async()
         rclpy.spin_until_future_complete(self, res_fut)
@@ -192,7 +191,6 @@ class WaypointClient(Node):
         n_total = len(self.wps)
         n_skipped = len(missed)
         n_reached = n_total - n_skipped
-        # print(f"DEBUG anchor_state={state}")
         self.get_logger().info(
             f'RESULT: reached {n_reached}/{n_total} '
             f'skipped {n_skipped} duration {dur}s '

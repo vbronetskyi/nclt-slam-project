@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Simple pure pursuit publisher for mapping runs (no Nav2).
+"""Simple pure pursuit publisher for mapping runs (no Nav2)
 
 Reads robot pose from /tmp/isaac_pose.txt and publishes /cmd_vel
 to follow road waypoints. Used for SLAM mapping runs.
@@ -67,7 +66,7 @@ class PurePursuit(Node):
         elapsed = time.time() - self.start_time
         if not self.init_done:
             if elapsed < 2.0:
-                # Stationary
+                #Stationary
                 tw = Twist()
                 self.pub.publish(tw)
                 return

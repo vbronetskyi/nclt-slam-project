@@ -10,7 +10,7 @@ SRC = "/workspace/simulation/isaac/scripts/spawn_obstacles.py"
 with open(SRC) as f:
     code = f.read()
 
-# Exp 52 south obstacles - reuse exp 50's validated ON-route cone walls
+#Exp 52 south obstacles - reuse exp 50's validated ON-route cone walls
 # that sit perpendicular to the robot path, each forcing a real replan.
 new_south = '''    "south": {
         "cones": [
@@ -26,7 +26,7 @@ new_south = '''    "south": {
         "tent": (-45.0, -38.0),
     },'''
 
-# Replace south section
+#Replace south section
 pattern = r'    "south": \{\s*\n(.*?\n    \},\n)'
 new_code = re.sub(pattern, new_south + '\n', code, count=1, flags=re.DOTALL)
 

@@ -1,6 +1,7 @@
-#!/usr/bin/env python3
-"""Analyze live VIO accuracy during Nav2 navigation.
-Compares VIO SLAM trajectory with GT, computes ATE at matched timestamps."""
+#!/usr/bin/env python3   
+"""Analyze live VIO accuracy during Nav2 navigation
+Compares VIO SLAM trajectory with GT, computes ATE at matched timestamps.
+"""
 import numpy as np
 import math, sys, os
 
@@ -45,7 +46,7 @@ for row in vio:
     if abs(gt_times[idx] - ts) < 0.15:
         gt_t = gt_times[idx]
         gx, gy, gz, gyaw = gt_data[gt_t]
-        # GT camera position (same as TUM building in run_vio.sh)
+        # GT camera position (same as TUM building in run_vio.sh)   
         cx = gx + 0.5 * math.cos(gyaw)
         cy = gy + 0.5 * math.sin(gyaw)
         cz = gz + 0.48
@@ -77,7 +78,7 @@ t = mu_g - c * R @ mu_v
 aligned = c * (matched_vio @ R.T) + t
 errors = np.sqrt(np.sum((aligned - matched_gt) ** 2, axis=1))
 
-# Path lengths
+#Path lengths
 vio_dist = np.sum(np.sqrt(np.sum(np.diff(matched_vio, axis=0)**2, axis=1)))
 gt_dist = np.sum(np.sqrt(np.sum(np.diff(matched_gt, axis=0)**2, axis=1)))
 
@@ -104,7 +105,7 @@ for i in range(n_segs):
     x_range = f"x=[{seg_gt[0,0]:.0f}..{seg_gt[-1,0]:.0f}]"
     print(f"  {pct}: ATE={np.sqrt(np.mean(seg_err**2)):.3f}m max={seg_err.max():.3f}m {x_range}")
 
-# Track failures (lost count from SLAM log)
+#Track failures (lost count from SLAM log)
 print(f"\nConclusion:")
 if np.sqrt(np.mean(errors**2)) < 1.0:
     print(f"  VIO ATE {np.sqrt(np.mean(errors**2)):.2f}m - VIABLE for Nav2 (xy_goal_tolerance=1.5m)")

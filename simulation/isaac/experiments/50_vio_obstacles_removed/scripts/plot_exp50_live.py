@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Plot exp 50 (live, current progress) - shows obstacles + GT so far."""
+"""Plot exp 50 (live, current progress) - shows obstacles + GT so far
+"""
 import sys
 sys.path.insert(0, '/workspace/simulation/isaac/scripts')
 from plot_trajectory_map import plot_trajectory_map

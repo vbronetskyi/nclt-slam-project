@@ -1,16 +1,10 @@
 #!/usr/bin/env python3
-"""Hybrid goal sender: request Nav2 plan for each WP, publish on /plan.
+"""Hybrid goal sender: request Nav2 plan for each WP, publish on /plan
 
 v10: home-zone goal collapsing. Once the robot is within HOMEZONE_RADIUS of
 the final WP, collapse all remaining waypoints into a single final goal
 with enlarged tolerance - avoids the end-zone cascade seen in v9 where
 tight-cluster WPs kept retriggering spin.
-
-For each waypoint:
-  1. Request plan from planner_server via ComputePathToPose action
-  2. Publish resulting path on /plan (pure pursuit subscribes)
-  3. Wait until robot within tolerance of goal
-  4. Replan periodically in case robot drifted (depth costmap updates)
 """
 import argparse
 import csv
@@ -138,9 +132,9 @@ class HybridGoalSender(Node):
 
         final_wp = self.waypoints[-1]
         homezone_collapsed = False
-        # Require robot to leave home-zone BEFORE we arm the collapse logic.
-        # South route is a loop - robot spawns within ~4m of the final WP,
-        # so we must wait until it departs on the outbound leg.
+        # Require robot to leave home-zone BEFORE we arm the collapse logic
+        # South route is a loop - robot spawns within +-4m of the final WP,
+        # so we must wait until it departs on the outbound leg
         left_homezone = False
         LEAVE_MARGIN = 1.5 * self.HOMEZONE_RADIUS  # hysteresis
 
@@ -160,8 +154,8 @@ class HybridGoalSender(Node):
             # v10 home-zone collapse: once within HOMEZONE_RADIUS of the final
             # WP (and only after the robot has actually left it once on the
             # outbound leg), skip to the final WP with enlarged tolerance -
-            # avoids the end-zone cascade where tight-cluster WPs keep
-            # retriggering spin.
+            #avoids the end-zone cascade where tight-cluster WPs keep
+            # retriggering spin
             if (left_homezone and not homezone_collapsed and rx is not None and
                     math.hypot(final_wp[0]-rx, final_wp[1]-ry) < self.HOMEZONE_RADIUS):
                 skipped_to = len(self.waypoints) - 1

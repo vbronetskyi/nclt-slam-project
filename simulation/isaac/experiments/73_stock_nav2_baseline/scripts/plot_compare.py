@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
-"""Canonical-style comparison plots for exp 73 vs our custom T&R on 09_se_ne.
+"""Canonical-style comparison plots for exp 73 vs our custom T&R on 09_se_ne
 
-Outputs:
   compare_routes.png              GT trajectories (our custom, stock Nav2) on scene map
   compare_localisation_ours.png   VIO raw + anchor-corrected + GT - our run
   compare_localisation_stock.png  VIO raw + anchor-corrected + GT - stock Nav2 run
@@ -19,8 +18,8 @@ OUT_DIR = Path('/workspace/simulation/isaac/experiments/73_stock_nav2_baseline/r
 SCRATCH = OUT_DIR / 'plot_scratch'
 SCRATCH.mkdir(parents=True, exist_ok=True)
 
-# Wider frame: shows scene context (trees to the west) and stock-Nav2
-# overshoot (~61, 49) with margin above.
+#Wider frame: shows scene context (trees to the west) and stock-Nav2   
+# overshoot (+-61, 49) with margin above
 XLIM, YLIM = (30, 100), (-55, 60)
 
 
@@ -50,7 +49,7 @@ def main():
     our_gt = OUR / 'traj_gt.csv'
     stk_gt = STOCK / 'traj_gt.csv'
 
-    # compare_routes.png
+    #compare_routes.png
     plot_trajectory_map(
         trajectories=[
             {'csv': str(our_gt),  'label': 'Our custom T&R  (36/36 reached, 689 s)',
@@ -76,7 +75,7 @@ def main():
         figsize=(16, 10),
     )
 
-    # Split anchor CSVs for the localisation plots.
+    #Split anchor CSVs for the localisation plots
     our_vio = SCRATCH / 'our_vio.csv'
     our_anc = SCRATCH / 'our_anchor.csv'
     stk_vio = SCRATCH / 'stock_vio.csv'

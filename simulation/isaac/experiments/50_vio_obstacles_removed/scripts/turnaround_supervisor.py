@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Exp 50 supervisor: watch robot GT position, remove obstacles at turnaround.
+"""Exp 50 supervisor: watch robot GT position, remove obstacles at turnaround
 
 When robot's x coord exceeds threshold (approaching turnaround at x=70),
 writes /tmp/isaac_remove_obstacles.txt. Isaac Sim picks up this signal

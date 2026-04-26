@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-"""
-Build a tree-safe south reference trajectory.
+"""Build a tree-safe south reference trajectory
 
 Strategy: take the real exp20_south GT (423 s out-and-back), downsample to
-~0.2 m spacing, then push waypoints radially away from any tree that would
++-0.2 m spacing, then push waypoints radially away from any tree that would
 leave the robot with < SAFE_CLEAR metres of clearance. Finally re-smooth
 with a small moving average and rewrite slam_routes['south'].
 
@@ -20,7 +19,7 @@ SAFE_CLEAR = 1.0  # metres of extra buffer beyond husky+trunk
 RESAMPLE = 0.2    # metres between base-path points
 SMOOTH_WIN = 15   # moving-average window (points)
 
-# --- Deterministic forest (seed=42, must match build_forest_scene.py) ---
+# Deterministic forest (seed=42, must match build_forest_scene.py)
 rng = np.random.RandomState(42)
 trees = []
 for _ in range(40):
@@ -46,7 +45,7 @@ for i in range(20):
     r = rng.uniform(0.2, 0.8)
     rocks.append((x, y, r))
 
-# --- Load raw GT and downsample by arc length ---
+# Load raw GT and downsample by arc length
 raw = []
 for line in open("/root/bags/husky_real/exp20_south/groundtruth_tum.txt"):
     p = line.split()
@@ -61,7 +60,7 @@ for p in raw[1:]:
 base = np.array(base, dtype=float)
 print(f"base path: {len(base)} points (resampled @ {RESAMPLE}m)")
 
-# --- Radial push away from any violating obstacle ---
+# Radial push away from any violating obstacle
 obstacles = [(x, y, r) for x, y, r in trees] + [(x, y, r) for x, y, r in rocks]
 
 def push(path, iters=6):
@@ -88,7 +87,7 @@ def push(path, iters=6):
 
 pushed = push(base)
 
-# --- Moving-average smoothing ---
+# Moving-average smoothing
 def ma(a, w):
     if w < 2: return a
     k = np.ones(w) / w
@@ -105,7 +104,7 @@ smoothed = ma(pushed, SMOOTH_WIN)
 smoothed = push(smoothed, iters=3)
 smoothed = ma(smoothed, 5)
 
-# --- Resample to uniform 0.5 m spacing for waypoint file ---
+# Resample to uniform 0.5 m spacing for waypoint file
 wp = [smoothed[0]]
 acc = 0.0
 for i in range(1, len(smoothed)):
@@ -114,7 +113,7 @@ for i in range(1, len(smoothed)):
         wp.append(smoothed[i])
 wp = np.array(wp)
 
-# --- Verify clearance ---
+# Verify clearance
 def min_clear(path):
     cs = []
     for ox, oy, r in obstacles:
@@ -128,7 +127,7 @@ for name, p in [("raw GT", raw), ("smoothed (was)", np.array(
     cs = min_clear(p)
     print(f"{name:20s} n={len(p):5d}  min_clear={cs.min():+.2f}m  <0.5m: {(cs<0.5).sum()}  <0: {(cs<0).sum()}")
 
-# --- Write out as slam_routes['south'] ---
+#Write out as slam_routes['south']
 routes = json.load(open("/tmp/slam_routes.json"))
 routes["south_original"] = routes["south"]
 routes["south"] = [[round(float(x), 3), round(float(y), 3)] for x, y in wp]
@@ -144,7 +143,7 @@ with open("/workspace/simulation/isaac/experiments/29_route_anchor_navigation/"
         "trees": trees, "rocks": rocks,
     }}, f, indent=2)
 
-# --- Plot ---
+# Plot
 import matplotlib.pyplot as plt
 fig, ax = plt.subplots(figsize=(18, 8))
 for tx, ty, tr in trees:

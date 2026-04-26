@@ -1,5 +1,5 @@
 #!/bin/bash
-# Run ORB-SLAM3 RGB-D only (no IMU) on exp 48 recording for comparison.
+# Run ORB-SLAM3 RGB-D only (no IMU) on exp 48 recording for comparison
 set -euo pipefail
 
 REC=${1:-/root/bags/husky_real/isaac_slam_1776423021}

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Phase 2 visualization: localized anchor positions on scene map + error plot.
+"""Phase 2 visualization: localized anchor positions on scene map + error plot
 
 usage:
   cd /workspace/simulation/isaac
@@ -84,7 +83,7 @@ def main():
     pts_ret = run_sampled(loc_ret, cam_files[turn_frame:])
     print(f"  outbound: {len(pts_out)} samples, return: {len(pts_ret)} samples")
 
-    # --- Plot ---
+    # Plot
     fig, axes = plt.subplots(2, 1, figsize=(20, 16),
                              gridspec_kw={"height_ratios": [1, 1]})
     fig.suptitle("Exp 30: Anchor Localization - South Route",

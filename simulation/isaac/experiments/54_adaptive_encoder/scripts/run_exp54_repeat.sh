@@ -1,7 +1,7 @@
 #!/bin/bash
 # Exp 54 - v53 base + (1) real Husky speed 1 m/s cruise / 0.5 near / 0.2 lethal
 #                  (2) adaptive SLAM+ENCODER blend (trust shifts to encoder when
-#                      SLAM diverges from encoder-derived dead reckoning).
+#                      SLAM diverges from encoder-derived dead reckoning)
 set -eu
 
 E52=/workspace/simulation/isaac/experiments/52_obstacles_v9

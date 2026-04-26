@@ -1,4 +1,5 @@
-"""Nav2 launch exp 49 continuation: DWB controller + NavFn planner."""
+"""Nav2 launch exp 49 continuation: DWB controller + NavFn planner
+"""
 import os
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument

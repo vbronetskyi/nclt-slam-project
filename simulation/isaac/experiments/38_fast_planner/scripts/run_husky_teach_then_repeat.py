@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Teach-and-repeat in a single Isaac Sim session.
+"""Teach-and-repeat in a single Isaac Sim session
 Phase 1 (teach): drive via GT waypoints, record anchors in-memory.
 Phase 2 (repeat): teleport to start, drive via visual anchor matching.
 
@@ -40,9 +39,7 @@ args, _ = parser.parse_known_args()
 if args.use_planner:
     args.use_grid = True  # planner needs the grid
 
-# =====================================================================
 # Isaac Sim setup (identical to run_husky_teach_repeat.py)
-# =====================================================================
 from isaacsim import SimulationApp
 app = SimulationApp({
     "headless": True,
@@ -216,7 +213,7 @@ def _get_husky_pose():
     yaw = math.atan2(rot[0][1], rot[0][0])
     return float(pos[0]), float(pos[1]), float(pos[2]), yaw
 
-# Load waypoints for teach phase
+# Load waypoints for teach phase   
 ROUTE_MEMORY = f"/workspace/simulation/isaac/route_memory/{args.route}"
 with open(f"{ROUTE_MEMORY}/anchors.json") as f:
     file_anchors = json.load(f)
@@ -418,9 +415,7 @@ if args.skip_teach:
     print(f"  {len(anchors)} anchors, {len(anchor_descs)} desc, {len(anchor_depth_profiles)} dp")
     s_accum = anchors[-1]["s"] if anchors else 0
 
-# =====================================================================
 # PHASE 1: TEACH (skip if --skip-teach)
-# =====================================================================
 if not args.skip_teach:
     print(f"\n{'='*60}")
     print(f"PHASE 1: TEACH - driving {len(teach_waypoints)} waypoints")
@@ -544,9 +539,7 @@ while sim_time < args.duration / 2 and wp_idx < len(teach_waypoints):
         json.dump(anchors, _af, indent=2)
     print(f"  Saved {len(anchors)} anchors to {_rm}/anchors.json")
 
-# =====================================================================
 # TELEPORT BACK TO START
-# =====================================================================
 print("\nTeleporting to start...")
 stop_wheels()
 for _ in range(60):
@@ -585,9 +578,7 @@ if teleport_err > 5.0:
 # Initialize encoder prev from actual GT position after teleport
 enc_prev_x, enc_prev_y, enc_prev_yaw = p[0], p[1], p[3]
 
-# =====================================================================
-# PHASE 2: REPEAT - odometry-primary + visual correction
-# =====================================================================
+#PHASE 2: REPEAT - odometry-primary + visual correction
 print(f"\n{'='*60}")
 print(f"PHASE 2: REPEAT - {len(anchors)} anchors, odometry-primary")
 print(f"{'='*60}\n")
@@ -642,7 +633,7 @@ follower.initialize_from_anchor(REPEAT_START_ANCHOR)
 odom_s = anchors[REPEAT_START_ANCHOR]["s"]
 odom_anchor_idx = REPEAT_START_ANCHOR
 
-VISUAL_EVERY = 30  # every 30 frames = ~2Hz; visual is soft correction only
+VISUAL_EVERY = 30  # every 30 frames = +-2Hz; visual is soft correction only
 frame_count = 0
 prev_lin = 0.0
 repeat_start = sim_time
@@ -668,7 +659,7 @@ enc_prev_x = enc_prev_y = enc_prev_yaw = None
 ENCODER_NOISE = 0.005  # 0.5% - matches Husky A200 (78000 ticks/m)
 enc_rng = np.random.RandomState(123)
 
-# Gap navigator
+#Gap navigator
 from gap_navigator import GapNavigator
 from traversability_filter import TraversabilityFilter
 gap_nav = GapNavigator(robot_width=0.67, safety_margin=0.3)
@@ -724,7 +715,7 @@ try:
             enc_ang = ryaw - enc_prev_yaw
             enc_ang = math.atan2(math.sin(enc_ang), math.cos(enc_ang))
 
-            # Add encoder noise (0.5%)
+            #Add encoder noise (0.5%)
             enc_lin *= (1.0 + enc_rng.normal(0, ENCODER_NOISE))
             enc_ang *= (1.0 + enc_rng.normal(0, ENCODER_NOISE * 2))
 
@@ -765,7 +756,7 @@ try:
 
         enc_prev_x, enc_prev_y, enc_prev_yaw = rx, ry, ryaw
 
-        # 2. Robust visual matching (sequence + depth + conservative)
+        #2. Robust visual matching (sequence + depth + conservative)
         if frame_count % VISUAL_EVERY == 0:
             rgb = get_rgb()
             depth_for_match = get_depth()
@@ -814,14 +805,14 @@ try:
         # Find nearest anchor to GT position for correct lookahead
         _gt_anchor = min(range(len(anchors)),
                          key=lambda i: math.hypot(anchors[i]["x"]-rx, anchors[i]["y"]-ry))
-        _gt_la = min(_gt_anchor + 4, len(anchors) - 1)  # lookahead ~8m
+        _gt_la = min(_gt_anchor + 4, len(anchors) - 1)  # lookahead +-8m
         _gt_tx, _gt_ty = anchors[_gt_la]["x"], anchors[_gt_la]["y"]
         desired_heading = math.atan2(_gt_ty - ry, _gt_tx - rx)
         heading_err = desired_heading - ryaw
         heading_err = math.atan2(math.sin(heading_err), math.cos(heading_err))
         _turning_to_route = False
 
-        # 5. GAP NAVIGATOR - primary cmd_vel (skip 1s for depth settle)
+        #5. GAP NAVIGATOR - primary cmd_vel (skip 1s for depth settle)
         if frame_count > 60 and frame_count % DEPTH_EVERY == 0:
             depth_raw = get_depth()
             if depth_raw is not None:
@@ -829,7 +820,7 @@ try:
                 depth_img = trav_filter.filter(depth_raw)
 
                 if obstacle_grid is not None:
-                    # Grid mode: accumulate depth into grid
+                    #Grid mode: accumulate depth into grid
                     obstacle_grid.update(rx, ry, ryaw, depth_img)
                     gs = obstacle_grid.get_stats()
 

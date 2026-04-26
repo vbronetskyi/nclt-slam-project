@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-VIO SLAM grid search: ThDepth × IMU noise × ORB params.
+"""VIO SLAM grid search: ThDepth × IMU noise × ORB params
 Runs ORB-SLAM3 RGB-D Inertial with different configs and compares results.
 
 Recording: /root/bags/husky_real/isaac_slam_1776061151 (200Hz IMU, south route)

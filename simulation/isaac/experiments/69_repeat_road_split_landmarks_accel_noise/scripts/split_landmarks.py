@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Split teach landmarks.pkl into outbound + return subsets by x-turnaround.
+"""Split teach landmarks.pkl into outbound + return subsets by x-turnaround
 
 Exp 66 road teach captured a roundtrip. landmarks.pkl stores 51 anchors
 with camera pose [x, y, z, qx, qy, qz, qw]. The turnaround is detected as

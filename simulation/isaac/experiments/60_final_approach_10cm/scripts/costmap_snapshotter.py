@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Record timestamped snapshots of Nav2 global_costmap during repeat run.
+"""Record timestamped snapshots of Nav2 global_costmap during repeat run
 
 Subscribes to /global_costmap/costmap (nav_msgs/OccupancyGrid). Every
 SNAPSHOT_PERIOD_S seconds saves the current costmap as a numbered PGM

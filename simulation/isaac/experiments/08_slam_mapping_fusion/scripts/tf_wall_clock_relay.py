@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
-"""
-TF + Odom relay for Nav2 <- Isaac Sim.
+"""TF + Odom relay for Nav2 <- Isaac Sim
 
 Full sensor fusion: SLAM position + wheel odometry + IMU gyro compass.
 
 Reads robot GT pose from /tmp/isaac_pose.txt (written by run_husky_nav2.py).
-Publishes:
   - /tf: map->odom, odom->world, world->base_link (all wall clock timestamps)
   - /odom: nav_msgs/Odometry with wall clock
 
@@ -149,7 +147,7 @@ class TFRelay(Node):
         self.odom_yaw += ang_v * dt
 
     def tick(self):
-        # read pose from file
+        #read pose from file
         try:
             with open(self.pose_file, 'r') as f:
                 parts = f.readline().strip().split()
@@ -318,7 +316,7 @@ class TFRelay(Node):
                 self.get_logger().info(
                     f'SLAM origin: ({sx:.3f},{sy:.3f},{sz:.3f}) yaw={slam_yaw:.3f}')
 
-            # SLAM camera frame -> world
+            # SLAM camera frame -> world   
             s0x, s0y, s0z, s0yaw = self.slam_origin
             dz_s = sz - s0z  # forward
             dx_s = sx - s0x  # right
@@ -344,7 +342,7 @@ class TFRelay(Node):
                 self.get_logger().info(
                     f'FUSION init: slam=({slam_wx:.1f},{slam_wy:.1f}) yaw={slam_wyaw:.3f}')
 
-            # --- Odometry delta ---
+            # Odometry delta
             odom_dx = self.odom_x - self.prev_odom_x
             odom_dy = self.odom_y - self.prev_odom_y
 
@@ -352,12 +350,12 @@ class TFRelay(Node):
             predicted_x = self.fused_x + odom_dx
             predicted_y = self.fused_y + odom_dy
 
-            # --- SLAM jump detection ---
+            #SLAM jump detection
             slam_jump = math.hypot(slam_wx - self.prev_slam_wx,
                                    slam_wy - self.prev_slam_wy)
             slam_yaw_jump = abs(normalize_angle(slam_wyaw - self.prev_slam_wyaw))
 
-            # --- Position fusion: SLAM + odometry ---
+            #Position fusion: SLAM + odometry
             if slam_jump < JUMP_THRESHOLD:
                 self.fused_x = SLAM_POS_ALPHA * slam_wx + ODOM_POS_ALPHA * predicted_x
                 self.fused_y = SLAM_POS_ALPHA * slam_wy + ODOM_POS_ALPHA * predicted_y
@@ -367,7 +365,7 @@ class TFRelay(Node):
                 self.fused_y = predicted_y
                 self.get_logger().warn(f'SLAM jump {slam_jump:.1f}m rejected, using odom')
 
-            # --- Yaw fusion: IMU gyro compass + SLAM correction ---
+            # Yaw fusion: IMU gyro compass + SLAM correction
             if slam_yaw_jump < YAW_JUMP_THRESHOLD:
                 # IMU as base, SLAM slowly corrects
                 yaw_error = normalize_angle(slam_wyaw - self.imu_yaw)
@@ -385,7 +383,7 @@ class TFRelay(Node):
             self.prev_slam_wy = slam_wy
             self.prev_slam_wyaw = slam_wyaw
 
-            # --- Log every ~5s (100 ticks at 20Hz) ---
+            # Log every +-5s (100 ticks at 20Hz)
             self.log_counter += 1
             if self.log_counter % 100 == 0:
                 self.get_logger().info(
@@ -395,7 +393,7 @@ class TFRelay(Node):
                     f'fused=({self.fused_x:.1f},{self.fused_y:.1f},{self.fused_yaw:.2f}) '
                     f'gt=({self.last_x:.1f},{self.last_y:.1f})')
 
-            # --- map->odom transform ---
+            # map->odom transform
             gt_yaw = math.atan2(2 * self.last_qw * self.last_qz,
                                 1 - 2 * self.last_qz ** 2)
 

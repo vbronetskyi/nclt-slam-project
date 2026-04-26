@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
-"""
-TF + Odom relay for Nav2 <- Isaac Sim.
+"""TF + Odom relay for Nav2 <- Isaac Sim
 
-Modes:
   --use-gt         GT localization (perfect pose from sim)
   --encoder-imu    Encoder + IMU localization (realistic sensors)
   --slam-frame     SLAM pose in SLAM coordinate frame
@@ -38,8 +36,8 @@ JUMP_THRESHOLD = 0.5
 YAW_JUMP_THRESHOLD = 0.3
 
 # scale correction parameters
-# VIO develops scale drift during Nav2 stop-and-go motion (~6% per unit dist).
-# Fuse encoder-distance-scaled VIO deltas to correct.
+#VIO develops scale drift during Nav2 stop-and-go motion (+-6% per unit dist)
+# Fuse encoder-distance-scaled VIO deltas to correct
 SCALE_WINDOW_S = 60.0       # rolling window for scale estimate
 SCALE_ALPHA = 0.05          # smoothing for scale updates
 SCALE_MIN_VIO_DIST = 2.0    # minimum VIO distance for a scale update
@@ -147,7 +145,7 @@ class TFRelay(Node):
         imu_tf.transform.rotation.w = 1.0
         self.static_br.sendTransform([cam_tf, imu_tf])
 
-        # depth -> pointcloud
+        #depth -> pointcloud
         self.fx = self.fy = 320.0
         self.cx, self.cy = 320.0, 240.0
         self.pc_pub = self.create_publisher(PointCloud2, '/depth_points', 10)
@@ -201,7 +199,7 @@ class TFRelay(Node):
         # Override gyro parameters for encoder+IMU mode
         if encoder_imu:
             global GYRO_DEADZONE, GYRO_LPF_ALPHA
-            GYRO_DEADZONE = 0.01  # much lower - real IMU reads ~0.03 rad/s during turns
+            GYRO_DEADZONE = 0.01  # much lower - real IMU reads +-0.03 rad/s during turns
             GYRO_LPF_ALPHA = 0.15  # smoother filtering
 
         # SLAM+encoder fusion state (Level 3)
@@ -219,7 +217,7 @@ class TFRelay(Node):
         self.using_slam = False  # current source flag for logging
         self.T_nav_slam = None   # SE(3) alignment transform: SLAM->nav
 
-        # Scale correction state (SLAM+encoder mode only)
+        #Scale correction state (SLAM+encoder mode only)
         self.scale_corrector = ScaleCorrector()
         # Corrected SLAM position (accumulates scale-adjusted deltas)
         self.slam_corr_x = None
@@ -350,7 +348,7 @@ class TFRelay(Node):
             # SLAM camera uses OpenCV convention: x=right, y=down, z=forward
             # Nav frame uses FLU convention: x=forward, y=left, z=up
             # T_FLU_from_cam maps camera axes -> FLU body axes:
-            #   flu_x (forward) = +cam_z
+            #flu_x (forward) = +cam_z
             #   flu_y (left)    = -cam_x
             #   flu_z (up)      = -cam_y
             T_FLU_from_cam = np.array([
@@ -360,7 +358,7 @@ class TFRelay(Node):
                 [0,  0, 0, 1],
             ], dtype=float)
 
-            # Nav spawn pose in world frame
+            #Nav spawn pose in world frame
             gt_yaw = math.atan2(2.0 * (self.last_qw * self.last_qz),
                                  1.0 - 2.0 * self.last_qz ** 2)
             R_nav = ScipyRotation.from_euler('z', gt_yaw).as_matrix()
@@ -379,7 +377,7 @@ class TFRelay(Node):
         # Transform to nav frame
         T_nav = self.T_nav_slam @ T_slam
 
-        # Project to 2D ground plane
+        #Project to 2D ground plane
         nav_x = float(T_nav[0, 3])
         nav_y = float(T_nav[1, 3])
         nav_yaw = float(np.arctan2(T_nav[1, 0], T_nav[0, 0]))
@@ -440,7 +438,7 @@ class TFRelay(Node):
                     self._slam_frozen_count = 0
             self._prev_slam_pos = (sx, sz)
 
-            # If SLAM frozen for 60+ ticks (~12s), treat as lost
+            # If SLAM frozen for 60+ ticks (+-12s), treat as lost
             # (Nav2 can rotate-in-place long periods - don't fallback prematurely)
             if self._slam_frozen_count > 60:
                 slam_ok = False
@@ -448,8 +446,8 @@ class TFRelay(Node):
         if slam_ok:
             slam_nx, slam_ny, slam_nyaw = self._slam_se3_to_nav(
                 sx, sy, sz, sqx, sqy, sqz, sqw)
-            # Scale-correct SLAM position by accumulating scaled deltas.
-            # VIO direction is accurate but distance drifts; encoder gives true dist.
+            # Scale-correct SLAM position by accumulating scaled deltas
+            # VIO direction is accurate but distance drifts; encoder gives true dist
             t_now = pytime.time()
             self.scale_corrector.update_vio(t_now, slam_nx, slam_ny)
             self.scale_corrector.update_encoder(t_now, self.enc_x, self.enc_y)
@@ -482,7 +480,7 @@ class TFRelay(Node):
             nav_yaw = self.enc_yaw
             self.using_slam = False
 
-        # Log every ~5s
+        # Log every +-5s
         self.log_counter += 1
         if self.log_counter % 100 == 0:
             err = math.hypot(nav_x - x, nav_y - y)
@@ -541,8 +539,8 @@ class TFRelay(Node):
                 f'ENCODER+IMU init: ({x:.1f}, {y:.1f}), yaw={gt_yaw:.3f}')
             return
 
-        # Heading: compass+gyro fusion = GT yaw + noise (~3° std)
-        COMPASS_NOISE = 0.05  # ~3 degrees std
+        #Heading: compass+gyro fusion = GT yaw + noise (+-3° std)
+        COMPASS_NOISE = 0.05  # +-3 degrees std
         noisy_yaw = gt_yaw + np.random.normal(0, COMPASS_NOISE)
 
         # Encoder: compute displacement from GT pose diff (= wheel encoder equivalent)
@@ -551,7 +549,7 @@ class TFRelay(Node):
         displacement = math.hypot(dx, dy)
 
         if displacement > 0.001:
-            # Add encoder noise (0.5% of distance)
+            #Add encoder noise (0.5% of distance)
             noisy_disp = displacement * (1.0 + np.random.normal(0, self.ENCODER_NOISE))
             self.enc_total_dist += displacement
 
@@ -563,7 +561,7 @@ class TFRelay(Node):
         self.prev_gt_x = x
         self.prev_gt_y = y
 
-        # Log every ~5s (100 ticks at 20Hz)
+        # Log every +-5s (100 ticks at 20Hz)
         self.log_counter += 1
         if self.log_counter % 100 == 0:
             err = math.hypot(self.enc_x - x, self.enc_y - y)
@@ -659,7 +657,7 @@ class TFRelay(Node):
             self.fused_y = predicted_y
             self.get_logger().warn(f'SLAM jump {slam_jump:.1f}m rejected')
 
-        # yaw fusion: IMU gyro + SLAM correction
+        #yaw fusion: IMU gyro + SLAM correction
         if slam_yaw_jump < YAW_JUMP_THRESHOLD:
             yaw_error = normalize_angle(nav_yaw - self.imu_yaw)
             self.imu_yaw += SLAM_YAW_ALPHA * yaw_error
@@ -672,7 +670,7 @@ class TFRelay(Node):
         self.prev_slam_ny = nav_y
         self.prev_slam_nyaw = nav_yaw
 
-        # log every ~5s
+        # log every +-5s
         self.log_counter += 1
         if self.log_counter % 100 == 0:
             gt_yaw = math.atan2(2 * self.last_qw * self.last_qz,

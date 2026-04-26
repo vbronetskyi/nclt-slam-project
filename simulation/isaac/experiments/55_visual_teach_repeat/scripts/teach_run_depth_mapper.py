@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-"""Depth-based 2D occupancy mapper for teach-phase of exp 52.
+#!/usr/bin/env python3   
+"""Depth-based 2D occupancy mapper for teach-phase of exp 52
 
 Subscribes to /depth_points (PointCloud2 in camera_link frame, already
 published by tf_wall_clock_relay from the Isaac depth image) and to the
@@ -33,7 +33,7 @@ from rclpy.node import Node
 from sensor_msgs.msg import PointCloud2
 
 
-# --- log-odds occupancy ---
+# log-odds occupancy
 L_FREE = -0.4
 L_OCC = +1.4
 L_MIN = -5.0
@@ -54,7 +54,7 @@ def _parse_pc2(msg: PointCloud2):
     if 'x' not in offsets:
         return np.zeros((0, 3), dtype=np.float32)
     raw = np.frombuffer(msg.data, dtype=np.uint8)
-    # Stride is point_step; extract x, y, z floats
+    #Stride is point_step; extract x, y, z floats   
     n = msg.width * msg.height
     # Reshape into (n, point_step) then slice
     stride = msg.point_step
@@ -115,7 +115,7 @@ class TeachDepthMapper(Node):
         signal.signal(signal.SIGUSR1, self._save_partial)
         self.log_timer = self.create_timer(10.0, self.log_progress)
         # Periodic save every 60 s so intermediate state can be inspected
-        # without killing the process.
+        # without killing the process
         self.periodic_save_timer = self.create_timer(60.0, self._save_partial)
 
     def log_progress(self):
@@ -150,7 +150,7 @@ class TeachDepthMapper(Node):
         pts_h = np.column_stack([pts_cam, np.ones(n)])
         pts_map = (T @ pts_h.T).T[:, :3]
 
-        # Height filter (exclude ground ~z<0.2 and canopy ~z>2.0)
+        # Height filter (exclude ground +-z<0.2 and canopy +-z>2.0)
         z = pts_map[:, 2]
         mask = (z > 0.2) & (z < 2.0)
         pts_map = pts_map[mask]
@@ -215,12 +215,12 @@ class TeachDepthMapper(Node):
         self.save()
 
     def save(self):
-        # Threshold log-odds grid into pgm
+        #Threshold log-odds grid into pgm
         # 0 = occupied, 254 = free, 205 = unknown
         img = np.full_like(self.grid, 205, dtype=np.uint8)  # unknown
         img[self.grid > OCC_L_TH] = 0       # occupied
         img[self.grid < FREE_L_TH] = 254    # free
-        # Flip vertically because pgm row 0 is top
+        #Flip vertically because pgm row 0 is top
         img = np.flipud(img)
 
         pgm_path = self.out_prefix + '.pgm'

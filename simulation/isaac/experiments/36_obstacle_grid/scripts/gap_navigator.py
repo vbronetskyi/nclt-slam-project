@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Feasible-gap navigation constrained by route heading.
+"""Feasible-gap navigation constrained by route heading
 
 Finds real passable gaps between obstacles considering Husky width,
 then picks the best gap aligned with the route direction.
@@ -118,10 +117,10 @@ class GapNavigator:
         cl = float(np.min(valid)) if len(valid) > 3 else self.MAX_RANGE
         md = float(np.median(valid)) if len(valid) > 3 else self.MAX_RANGE
 
-        # Physical width at gap depth (for scoring, not filtering).
+        # Physical width at gap depth (for scoring, not filtering)
         # Filtering was tested but rejects bypass gaps that are narrowed by
         # roadside vegetation in real depth images. Keep all gaps, let scoring
-        # prefer wider ones.
+        # prefer wider ones
         pw = 2.0 * md * math.tan(aw / 2.0)
 
         return {
@@ -248,13 +247,13 @@ class GapNavigator:
         debug["sel_width"] = selected["angular_width"]
 
         # Early avoidance: something in center at 2-4m range
-        # Start gentle lateral shift BEFORE it triggers GAP_MODE
+        # Start gentle lateral shift BEFORE it triggers GAP_MODE   
         w = self.DEPTH_WIDTH
         early_ratio, early_min = self._check_early_center_obstacle(profile)
 
-        # Early avoidance is checked but only triggers when GAP_MODE would
-        # soon activate - don't interfere with normal ROUTE_TRACKING.
-        # The data is logged for analysis but no special command is issued.
+        #Early avoidance is checked but only triggers when GAP_MODE would
+        # soon activate - don't interfere with normal ROUTE_TRACKING
+        #The data is logged for analysis but no special command is issued
 
         if self.mode == "ROUTE_TRACKING":
             ang = np.clip(desired_heading_error * 1.5,
@@ -285,7 +284,7 @@ class GapNavigator:
 
         # Build free mask and inflate
         free_mask = obstacle_profile > self.OBSTACLE_THRESHOLD
-        # Inflation: scale kernel to profile resolution
+        #Inflation: scale kernel to profile resolution
         rad_per_sector = self.CAMERA_FOV / n
         m_per_sector = self.OBSTACLE_THRESHOLD * math.tan(rad_per_sector)
         half_s = max(int(self.REQUIRED_WIDTH / 2 / max(m_per_sector, 0.01)), 1)
@@ -299,7 +298,7 @@ class GapNavigator:
             -self.CAMERA_FOV / 2, self.CAMERA_FOV / 2, n
         )
 
-        # Find gaps
+        # Find gaps   
         gaps = []
         in_gap = False
         start = 0

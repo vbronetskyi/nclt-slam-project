@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Exp 55 repeat-time visual landmark matcher.
+"""Exp 55 repeat-time visual landmark matcher
 
 Loads south_landmarks.pkl (captured in teach run), subscribes to the live
-camera topics and VIO pose, and at ~1-2 Hz:
+camera topics and VIO pose, and at +-1-2 Hz:
 
   1. Find candidate teach landmarks within CANDIDATE_RADIUS m of current
      VIO position (in the teach-map world frame - if VIO has drifted, this
@@ -19,12 +19,10 @@ camera topics and VIO pose, and at ~1-2 Hz:
   6. Publish `/anchor_correction` (PoseWithCovarianceStamped).  Covariance
      diagonal from inlier count.
 
-Inputs:
   /camera/color/image_raw, /camera/depth/image_rect_raw
   /tmp/isaac_pose.txt  (current VIO/encoder-blended pose from tf_relay)
   south_landmarks.pkl
 
-Outputs:
   /anchor_correction  geometry_msgs/PoseWithCovarianceStamped
   anchor_matches.csv  log of every attempt
 """
@@ -90,7 +88,7 @@ TICK_HZ = 2.0
 # ACCUM_SILENCE_S and the nearest existing landmark is > ACCUM_MIN_DIST_M
 # away, record the current frame's ORB features as a new landmark
 # (camera pose from the current VIO pose).  These grow the landmark set
-# organically within and across repeat runs.
+# organically within and across repeat runs
 ACCUM_ENABLE = True
 ACCUM_SILENCE_S = 5.0          # seconds of no anchor before considering accumulation
 ACCUM_MIN_DIST_M = 5.0         # min distance to nearest existing landmark
@@ -199,7 +197,7 @@ class VisualLandmarkMatcher(Node):
         self.orb = cv2.ORB_create(nfeatures=500)
         # crossCheck=True: mutual nearest neighbour filter; gives cleaner
         # matches than Lowe ratio when one set is much smaller (31 teach vs
-        # 500 current).  Tested on self-match (lm 10): 26 clean matches.
+        #500 current).  Tested on self-match (lm 10): 26 clean matches.
         self.matcher = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
 
         self.last_rgb = None
@@ -238,7 +236,7 @@ class VisualLandmarkMatcher(Node):
 
     def _current_heading_rad(self, base_pose):
         qx, qy, qz, qw = base_pose[3:7]
-        # yaw from base_link quaternion in world
+        # yaw from base_link quaternion in world   
         R = quat_to_rot(qx, qy, qz, qw)
         fwd = R @ np.array([1.0, 0.0, 0.0])
         return math.atan2(fwd[1], fwd[0])
@@ -292,7 +290,7 @@ class VisualLandmarkMatcher(Node):
         cand_idx = [i for i in idx_sorted[:MAX_CANDIDATES * 3]
                     if d[i] < CANDIDATE_RADIUS_M and hdg_err[i] < hdg_tol]
         cand_idx = cand_idx[:MAX_CANDIDATES]
-        # v56: ground-filter disabled after run 1 showed anchor rate dropped
+        #v56: ground-filter disabled after run 1 showed anchor rate dropped   
         # 13% -> 5% and false-positive matches increased.  Keep full-frame ORB.
         gray = cv2.cvtColor(self.last_rgb, cv2.COLOR_BGR2GRAY)
         kpts_curr, desc_curr = self.orb.detectAndCompute(gray, None)
@@ -314,7 +312,7 @@ class VisualLandmarkMatcher(Node):
                 continue
             # Cross-check match: teach->current (smaller set first gives
             # better precision with crossCheck=True).  queryIdx=teach,
-            # trainIdx=current.
+            # trainIdx=current
             try:
                 good = self.matcher.match(desc_t, desc_curr)
             except cv2.error:

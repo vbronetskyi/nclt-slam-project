@@ -1,14 +1,14 @@
 #!/bin/bash
-# Exp 47: Nav2 navigation with VIO SLAM localization on south forest route.
+# Exp 47: Nav2 navigation with VIO SLAM localization on south forest route
 #
 # Architecture:
 #   Isaac Sim (nav2-bridge + synthetic-imu) -> camera + IMU + GT pose
-#   ORB-SLAM3 VIO (rgbd_inertial_live) -> /tmp/slam_pose.txt
+#   ORB-SLAM3 VIO (rgbd_inertial_live) -> /tmp/slam_pose.txt   
 #   tf_wall_clock_relay --slam-encoder -> TF for Nav2
-#   Nav2 (SmacPlanner2D + MPPI + velocity_smoother) -> cmd_vel
+#Nav2 (SmacPlanner2D + MPPI + velocity_smoother) -> cmd_vel   
 #   send_trajectory_goals.py -> sequential WP following
 #
-# Speed: cmd 0.25 -> ~0.85 m/s actual (Husky 3.4× scaling)
+# Speed: cmd 0.25 -> +-0.85 m/s actual (Husky 3.4× scaling)
 # VIO validated at 0.76 m/s with ATE 0.103m in forest (exp 46)
 set -euo pipefail
 

@@ -2,7 +2,7 @@
 # Exp 52 REPEAT run: v9 hybrid + teach-built map + live depth obstacle_layer.
 # Robot drives same south route autonomously, this time with 3 cone walls
 # added to Isaac scene. Cones are NOT in any config Nav2 reads - they must
-# be discovered by the depth camera feeding obstacle_layer at runtime.
+# be discovered by the depth camera feeding obstacle_layer at runtime
 #
 # Records to $E52/results/repeat_run/:
 #   - costmap snapshots (pgm+yaml every 5s via costmap_snapshotter)
@@ -25,7 +25,7 @@ if [ ! -f "$TEACH_MAP" ]; then
     exit 1
 fi
 
-# Patch Nav2 yaml to point static_layer at teach map (instead of blank)
+# Patch Nav2 yaml to point static_layer at teach map (instead of blank)   
 python3 - <<PY
 import yaml, os
 p = '$E52/config/nav2_planner_only.yaml'

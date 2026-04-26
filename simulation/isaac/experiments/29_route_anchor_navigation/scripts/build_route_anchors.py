@@ -1,6 +1,5 @@
-#!/usr/bin/env python3
-"""
-Build route anchors from a recording for teach-and-repeat navigation.
+#!/usr/bin/env python3   
+"""Build route anchors from a recording for teach-and-repeat navigation
 
 Every ANCHOR_SPACING metres along the GT trajectory, store:
  - RGB frame (nearest by timestamp)

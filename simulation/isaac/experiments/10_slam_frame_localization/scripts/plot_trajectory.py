@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-General trajectory plotting script for navigation experiments.
+"""General trajectory plotting script for navigation experiments
 
 Plots robot GT trajectory on the road map with waypoints, obstacles,
 and key metrics (distance, time, drift).
@@ -147,8 +146,8 @@ def plot_trajectories(trajs, labels, title, output_path, show_obstacles=True):
     ax_err = axes[1]
     ax_metrics = axes[2]
 
-    # --- TOP: map view ---
-    # road reference
+    # TOP: map view
+    #road reference
     ax_map.plot(ROAD_X, ROAD_Y, color=ROAD_COLOR, linewidth=8, alpha=0.3, zorder=1, label='road center')
     ax_map.plot(ROAD_X, ROAD_Y, color=ROAD_COLOR, linewidth=1, linestyle='--', alpha=0.5, zorder=2)
 
@@ -215,7 +214,7 @@ def plot_trajectories(trajs, labels, title, output_path, show_obstacles=True):
     ax_map.set_xlim(-105, 85)
     ax_map.set_ylim(-15, 15)
 
-    # --- MIDDLE: lateral error vs X ---
+    # MIDDLE: lateral error vs X
     for i, (traj, label) in enumerate(zip(trajs, labels)):
         color = TRAJ_COLORS[i % len(TRAJ_COLORS)]
         x, y = traj['x'], traj['y']
@@ -256,7 +255,7 @@ def plot_trajectories(trajs, labels, title, output_path, show_obstacles=True):
     ax_err.legend(loc='upper left', fontsize=8, framealpha=0.9)
     ax_err.grid(True, alpha=0.3)
 
-    # --- BOTTOM: metrics table ---
+    # BOTTOM: metrics table
     ax_metrics.axis('off')
     if metrics_list:
         col_labels = ['Metric'] + labels

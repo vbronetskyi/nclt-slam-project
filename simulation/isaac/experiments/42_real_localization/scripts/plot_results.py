@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Generate exp 42 comparison plots."""
+"""Generate exp 42 comparison plots
+"""
 import csv
 import re
 import matplotlib
@@ -9,7 +10,7 @@ import numpy as np
 
 OUT = "/workspace/simulation/isaac/experiments/42_real_localization/results"
 
-# --- Parse drift log ---
+# Parse drift log
 def parse_drift_log(path):
     dist, err, yaw_err = [], [], []
     with open(path) as f:
@@ -21,7 +22,7 @@ def parse_drift_log(path):
                 dist.append(int(m.group(3)))
     return np.array(dist), np.array(err), np.array(yaw_err)
 
-# --- Parse trajectory CSV ---
+#Parse trajectory CSV
 def parse_traj(path):
     x, y = [], []
     with open(path) as f:
@@ -96,7 +97,7 @@ try:
 except:
     pass
 
-# Obstacle positions
+# Obstacle positions   
 obstacles = [
     (-50, -8.0, -50, -2.5, 'Barrier 1'),
     (15, -1.0, 15, 4.0, 'Barrier 2'),

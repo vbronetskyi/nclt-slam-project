@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
-"""
-Teach-and-repeat navigation for Husky in Isaac Sim.
+"""Teach-and-repeat navigation for Husky in Isaac Sim
 Phase 3: route following without Nav2.
-
-Pipeline:
-  Isaac camera -> anchor_localizer -> route_follower -> wheel velocities
 
 usage:
   export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/isaac-sim-6.0.0/exts/isaacsim.ros2.core/jazzy/lib
@@ -28,9 +24,7 @@ parser.add_argument("--duration", type=float, default=600.0)
 parser.add_argument("--lookahead", type=float, default=8.0)
 args, _ = parser.parse_known_args()
 
-# =====================================================================
 # Isaac Sim setup (from run_husky_forest.py)
-# =====================================================================
 from isaacsim import SimulationApp
 app = SimulationApp({
     "headless": True,
@@ -163,7 +157,7 @@ spawn_x = nav_anchors[0]["x"]
 spawn_y = nav_anchors[0]["y"]
 spawn_yaw = nav_anchors[0]["yaw"]
 
-# Terrain height (from run_husky_forest.py)
+#Terrain height (from run_husky_forest.py)
 _RWPS = [
     (-100, -7), (-95, -6), (-90, -4.5), (-85, -2.8), (-80, -1.5),
     (-75, -0.8), (-70, -0.5), (-65, -1), (-60, -2.2), (-55, -3.8),
@@ -233,9 +227,7 @@ print("  camera ready")
 p0 = _get_husky_pose()
 print(f"  robot at ({p0[0]:.1f}, {p0[1]:.1f}, {p0[2]:.2f}) yaw={math.degrees(p0[3]):.0f}")
 
-# =====================================================================
 # Teach-and-repeat pipeline
-# =====================================================================
 from anchor_localizer import AnchorLocalizer
 from route_follower import RouteFollower
 
@@ -245,7 +237,7 @@ follower.initialize_from_anchor(0)
 
 WHEEL_R = 0.165
 TRACK = 0.555
-LOCALIZE_EVERY = 6  # every 6 physics frames = ~10Hz camera / 6 = ~1.7 Hz matching
+LOCALIZE_EVERY = 6  # every 6 physics frames = +-10Hz camera / 6 = +-1.7 Hz matching
 
 sim_time = 5.0
 dt = 1.0 / 60.0
@@ -275,7 +267,7 @@ try:
         # 1. Odometry dead-reckoning
         follower.update_odometry(prev_lin, prev_ang, dt)
 
-        # 2. Get camera frame + localize (every N frames)
+        #2. Get camera frame + localize (every N frames)
         anchor_id = localizer.current_anchor_id
         confidence = localizer.confidence
         if frame_count % LOCALIZE_EVERY == 0:
@@ -296,7 +288,7 @@ try:
         # 4. Send to wheels (differential drive)
         v_left = (cmd_lin - cmd_ang * TRACK / 2) / WHEEL_R
         v_right = (cmd_lin + cmd_ang * TRACK / 2) / WHEEL_R
-        # rad/s to deg/s for USD DriveAPI
+        # rad/s to deg/s for USD DriveAPI   
         for i, vel in enumerate([v_left, v_right, v_left, v_right]):
             _wheel_vel_attrs[i].Set(math.degrees(vel))
 

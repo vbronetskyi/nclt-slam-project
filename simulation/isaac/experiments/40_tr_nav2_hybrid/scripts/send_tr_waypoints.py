@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Send teach-repeat waypoints to Nav2 as navigation goals.
+"""Send teach-repeat waypoints to Nav2 as navigation goals
 
 Reads world-frame waypoints from JSON, sends them one by one to Nav2.
 Nav2 handles obstacle avoidance via depth costmap.

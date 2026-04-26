@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Exp 52 turnaround supervisor - removes obstacles at turnaround in real time.
+"""Exp 52 turnaround supervisor - removes obstacles at turnaround in real time
 
 Polls /tmp/isaac_pose.txt. When robot has reached the max_x of the route
 (turnaround zone) and is starting to move back (x decreasing), writes

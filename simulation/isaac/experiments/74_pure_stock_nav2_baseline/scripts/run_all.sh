@@ -1,5 +1,5 @@
 #!/bin/bash
-# Orchestrator for exp 74 (pure stock Nav2 baseline) across all 9 routes.
+# Orchestrator for exp 74 (pure stock Nav2 baseline) across all 9 routes   
 #
 # Usage:
 #   bash scripts/run_all.sh                   # all 9 routes
@@ -13,7 +13,7 @@ EXP_DIR=/workspace/simulation/isaac/experiments/74_pure_stock_nav2_baseline
 RUN_SH=$EXP_DIR/scripts/run.sh
 [ -x "$RUN_SH" ] || { echo "ERROR: $RUN_SH not executable"; exit 2; }
 
-# shellcheck disable=SC1091
+# shellcheck disable=SC1091   
 source /workspace/simulation/isaac/experiments/_baselines_common/route_params.sh
 if [ "$#" -gt 0 ]; then
     ROUTES=( "$@" )
@@ -67,12 +67,12 @@ on_interrupt() {
 }
 trap on_interrupt INT TERM
 
-echo "================================================================"
+echo ""
 echo "RUN_ALL_BASELINE (exp 74 pure stock Nav2)   started $(date +'%F %T')"
 echo "routes: ${ROUTES[*]}"
 echo "timeout:  short (08,09) ${TIMEOUT_SHORT_S}s   long ${TIMEOUT_LONG_S}s   cooldown: ${COOLDOWN_S}s"
 echo "summary: $SUMMARY_FILE"
-echo "================================================================"
+echo ""
 
 for R in "${ROUTES[@]}"; do
     if [ -z "${RP_ISAAC_ROUTE[$R]:-}" ]; then
@@ -85,9 +85,9 @@ for R in "${ROUTES[@]}"; do
     LOG=$OUT/_orchestrator.log
 
     echo ""
-    echo "================================================================"
+    echo ""
     echo "=== EXP 74 / $R  start $(date +'%T') ==="
-    echo "================================================================"
+    echo ""
     kill_all_sim
     sleep "$COOLDOWN_S"
 
@@ -121,7 +121,7 @@ done
 
 kill_all_sim
 echo ""
-echo "================================================================"
+echo ""
 echo "EXP 74 ALL RUNS DONE   $(date +'%F %T')"
-echo "================================================================"
+echo ""
 cat "$SUMMARY_FILE"

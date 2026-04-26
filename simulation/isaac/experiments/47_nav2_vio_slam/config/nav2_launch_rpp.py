@@ -1,4 +1,5 @@
-"""Nav2 launch for exp 47: RPP controller, no velocity_smoother, no obstacle layer."""
+"""Nav2 launch for exp 47: RPP controller, no velocity_smoother, no obstacle layer
+"""
 import os
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument

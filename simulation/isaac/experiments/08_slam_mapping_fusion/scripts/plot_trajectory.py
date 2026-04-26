@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-General trajectory plotting script for navigation experiments.
+"""General trajectory plotting script for navigation experiments
 
 Plots robot GT trajectory on the road map with waypoints, obstacles,
 and key metrics (distance, time, drift).
@@ -95,7 +94,7 @@ def compute_metrics(traj):
     dists = np.sqrt(dx**2 + dy**2)
     total_dist = np.sum(dists)
 
-    # max distance from start
+    # max distance from start   
     dist_from_start = np.sqrt((x - SPAWN[0])**2 + (y - SPAWN[1])**2)
     max_from_start = np.max(dist_from_start)
 
@@ -113,7 +112,7 @@ def compute_metrics(traj):
     moving = traj['cmd_lin'] > 0.05
     avg_speed = np.mean(traj['cmd_lin'][moving]) if np.any(moving) else 0
 
-    # lateral drift from road center
+    #lateral drift from road center
     road_y_interp = np.interp(x, ROAD_X, ROAD_Y)
     lateral_err = y - road_y_interp
     max_lateral = np.max(np.abs(lateral_err))
@@ -145,12 +144,12 @@ def plot_trajectories(trajs, labels, title, output_path, show_obstacles=True):
     ax_map = axes[0]
     ax_metrics = axes[1]
 
-    # --- TOP: map view ---
+    # TOP: map view
     # road reference
     ax_map.plot(ROAD_X, ROAD_Y, color=ROAD_COLOR, linewidth=8, alpha=0.3, zorder=1, label='road center')
     ax_map.plot(ROAD_X, ROAD_Y, color=ROAD_COLOR, linewidth=1, linestyle='--', alpha=0.5, zorder=2)
 
-    # obstacles
+    #obstacles
     if show_obstacles:
         for i, group in enumerate(CONE_GROUPS):
             for j, (cx, cy) in enumerate(group):
@@ -170,7 +169,7 @@ def plot_trajectories(trajs, labels, title, output_path, show_obstacles=True):
     ax_map.plot(*SPAWN, 's', color='#4CAF50', markersize=12, zorder=10, label='start')
     ax_map.plot(*DEST, '*', color='#F44336', markersize=14, zorder=10, label='destination')
 
-    # trajectories
+    #trajectories
     metrics_list = []
     for i, (traj, label) in enumerate(zip(trajs, labels)):
         color = TRAJ_COLORS[i % len(TRAJ_COLORS)]
@@ -207,7 +206,7 @@ def plot_trajectories(trajs, labels, title, output_path, show_obstacles=True):
     ax_map.set_xlim(-105, 85)
     ax_map.set_ylim(-15, 15)
 
-    # --- BOTTOM: metrics table ---
+    # BOTTOM: metrics table
     ax_metrics.axis('off')
     if metrics_list:
         col_labels = ['Metric'] + labels

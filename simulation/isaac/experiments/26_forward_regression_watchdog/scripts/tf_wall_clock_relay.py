@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-TF + Odom relay for Nav2 <- Isaac Sim.
+"""TF + Odom relay for Nav2 <- Isaac Sim
 
 SLAM FRAME MODE: publishes SLAM pose directly as map->base_link.
 No world frame conversion - Nav2 works entirely in SLAM coordinate frame.
@@ -108,7 +107,7 @@ class TFRelay(Node):
         self.create_subscription(Twist, '/cmd_vel', self.cmd_vel_cb, 10)
         self.odom_timer = self.create_timer(0.05, self.odom_integrate_tick)
 
-        # fusion state
+        #fusion state
         self.fused_x = 0.0
         self.fused_y = 0.0
         self.fused_yaw = 0.0
@@ -121,7 +120,7 @@ class TFRelay(Node):
         self.log_counter = 0
 
         # SLAM frame mode: track an offset that gets recomputed when atlas
-        # resets, so waypoints in the original SLAM frame remain valid.
+        # resets, so waypoints in the original SLAM frame remain valid
         self.slam_offset_x = 0.0
         self.slam_offset_y = 0.0
         self.slam_offset_yaw = 0.0
@@ -231,7 +230,7 @@ class TFRelay(Node):
         raw_nav_y = -sx
         raw_nav_yaw = -slam_yaw_raw
 
-        # Apply persistent offset (0 initially, grows after atlas resets)
+        # Apply persistent offset (0 initially, grows after atlas resets)   
         nav_x = raw_nav_x + self.slam_offset_x
         nav_y = raw_nav_y + self.slam_offset_y
         nav_yaw = normalize_angle(raw_nav_yaw + self.slam_offset_yaw)
@@ -257,7 +256,7 @@ class TFRelay(Node):
         predicted_x = self.fused_x + odom_dx
         predicted_y = self.fused_y + odom_dy
 
-        # SLAM jump detection
+        # SLAM jump detection   
         slam_jump = math.hypot(nav_x - self.prev_slam_nx,
                                nav_y - self.prev_slam_ny)
         slam_yaw_jump = abs(normalize_angle(nav_yaw - self.prev_slam_nyaw))
@@ -270,7 +269,7 @@ class TFRelay(Node):
             #   new_offset = fused_prev - raw_nav_new
             new_offset_x = self.fused_x - raw_nav_x
             new_offset_y = self.fused_y - raw_nav_y
-            # Yaw offset: keep previous fused yaw
+            #Yaw offset: keep previous fused yaw
             new_offset_yaw = normalize_angle(self.fused_yaw - raw_nav_yaw)
             self.slam_reset_count += 1
             self.get_logger().warn(
@@ -296,7 +295,7 @@ class TFRelay(Node):
         # position fusion
         if in_cooldown:
             # Hold fused pose nearly stationary - robot should also be stopped
-            # by Nav2 during this brief window
+            #by Nav2 during this brief window
             self.fused_x = predicted_x
             self.fused_y = predicted_y
         elif slam_jump < JUMP_THRESHOLD:
@@ -320,7 +319,7 @@ class TFRelay(Node):
         self.prev_slam_ny = nav_y
         self.prev_slam_nyaw = nav_yaw
 
-        # log every ~5s
+        # log every +-5s
         self.log_counter += 1
         if self.log_counter % 100 == 0:
             gt_yaw = math.atan2(2 * self.last_qw * self.last_qz,

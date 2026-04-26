@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Stock-Nav2 baseline client v2 - via FollowWaypoints action.
+"""Stock-Nav2 baseline client v2 - via FollowWaypoints action
 
 The canonical Nav2 way to "visit a list of waypoints with skip-on-failure"
 is the WaypointFollower action (stop_on_failure: false). Each WP is
@@ -32,7 +32,7 @@ def subsample(traj_path, spacing):
 
 
 def robot_pose_from_tmp():
-    # TODO: tune per route instead of hardcoded
+    # tune per route instead of hardcoded
     try:
         with open('/tmp/isaac_pose.txt') as f:
             t = f.readline().strip().split()
@@ -171,14 +171,12 @@ class WaypointClient(Node):
         poses = self._prepare_poses()
         goal = FollowWaypoints.Goal()
         goal.poses = poses
-        # print(f"DEBUG match_count={match_count}")
         self.get_logger().info(
             f'Sending {len(poses)} WPs to stock Nav2 FollowWaypoints action')
         fut = self.client.send_goal_async(goal, feedback_callback=self._on_feedback)
         rclpy.spin_until_future_complete(self, fut)
         handle = fut.result()
         if handle is None or not handle.accepted:
-            # print(f"DEBUG match_count={match_count}")
             self.get_logger().error('goal rejected')
             return 1
         self.get_logger().info('goal accepted, awaiting result...')

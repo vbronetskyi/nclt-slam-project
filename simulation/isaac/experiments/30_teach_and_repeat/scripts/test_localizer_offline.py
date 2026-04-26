@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Phase 2 offline test: run anchor localizer on exp20_south recording
+"""Phase 2 offline test: run anchor localizer on exp20_south recording
 and measure monotonicity, confidence, speed, localization error.
 
 usage:
@@ -115,7 +114,7 @@ def main():
     loc_ret = AnchorLocalizer(ANCHOR_DIR, direction="return")
     res_ret = run_phase(loc_ret, cam_files[turn_frame:], cam_ts, gt, "return")
 
-    # --- Plot ---
+    # Plot
     fig, axes = plt.subplots(3, 2, figsize=(18, 14), sharex="col")
     fig.suptitle("Phase 2: Anchor Localizer Offline Test", fontsize=14, fontweight="bold")
 

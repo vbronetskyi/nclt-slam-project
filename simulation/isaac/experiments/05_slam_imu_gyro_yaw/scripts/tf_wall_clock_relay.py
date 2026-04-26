@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
-"""
-TF + Odom relay for Nav2 <- Isaac Sim.
+"""TF + Odom relay for Nav2 <- Isaac Sim
 
 Reads robot GT pose from /tmp/isaac_pose.txt (written by run_husky_nav2.py).
-Publishes:
   - /tf: map->odom, odom->world, world->base_link (all wall clock timestamps)
   - /odom: nav_msgs/Odometry with wall clock
 
-This completely bypasses Isaac Sim's ROS2 bridge TF/Odom publishing,
+This bypasses Isaac Sim's ROS2 bridge TF/Odom publishing,
 which forces sim_time timestamps and breaks Nav2 TF lookups.
 
 GT mode: map->odom = spawn offset (-95,-6). Robot moves relative to odom.
@@ -33,7 +31,7 @@ from tf2_ros import TransformBroadcaster, StaticTransformBroadcaster
 POSE_FILE = "/tmp/isaac_pose.txt"
 SPAWN_X, SPAWN_Y = -95.0, -6.0
 
-# complementary filter params
+#complementary filter params
 JUMP_THRESHOLD = 2.0     # meters per tick - allow SLAM relocalization jumps
 SLAM_YAW_ALPHA = 0.15   # SLAM corrects gyro drift (faster than before)
 GYRO_DEADZONE = 0.08     # rad/s - below this = PhysX noise, ignore
@@ -63,7 +61,7 @@ class TFRelay(Node):
         self.last_mo_x = 0.0
         self.last_mo_y = 0.0
         self.last_mo_yaw = 0.0
-        # static TF: base_link -> camera_link (D435i: 0.5m forward, 0.48m up)
+        # static TF: base_link -> camera_link (D435i: 0.5m forward, 0.48m up)   
         self.static_br = StaticTransformBroadcaster(self)
         cam_tf = TransformStamped()
         cam_tf.header.stamp = wall_stamp()
@@ -93,7 +91,7 @@ class TFRelay(Node):
         self.create_subscription(Image, '/camera/depth/image_rect_raw', self.depth_cb, 10)
         self.create_subscription(CameraInfo, '/camera/depth/camera_info', self.caminfo_cb, 10)
 
-        # IMU relay: read from file (written by Isaac at ~30Hz), publish at 200Hz
+        # IMU relay: read from file (written by Isaac at +-30Hz), publish at 200Hz
         self.imu_pub = self.create_publisher(Imu, '/imu/data_wall', 50)
         self.imu_file = '/tmp/isaac_imu.txt'
         self.imu_timer = self.create_timer(1.0 / 200.0, self.imu_tick)  # 200Hz
@@ -151,9 +149,9 @@ class TFRelay(Node):
         t2.child_frame_id = 'world'
         t2.transform.rotation.w = 1.0
 
-        # 3. map -> odom
+        #3. map -> odom
         if self.use_gt:
-            # GT: map = world, odom = world -> map->odom = identity
+            #GT: map = world, odom = world -> map->odom = identity
             t3 = TransformStamped()
             t3.header.stamp = now
             t3.header.frame_id = 'map'
@@ -320,7 +318,7 @@ class TFRelay(Node):
                 self.get_logger().info(
                     f'Init: slam=({slam_wx:.1f},{slam_wy:.1f}) yaw={slam_wyaw:.3f}')
 
-            # --- position: SLAM directly, with jump filter ---
+            #position: SLAM directly, with jump filter
             slam_jump = math.hypot(slam_wx - self.prev_slam_wx,
                                    slam_wy - self.prev_slam_wy)
             if slam_jump < JUMP_THRESHOLD:
@@ -334,13 +332,13 @@ class TFRelay(Node):
             self.prev_slam_wx = fused_x
             self.prev_slam_wy = fused_y
 
-            # --- yaw: IMU gyro (integrated at 200Hz in imu_tick) + slow SLAM correction ---
+            # yaw: IMU gyro (integrated at 200Hz in imu_tick) + slow SLAM correction
             yaw_error = math.atan2(math.sin(slam_wyaw - self.imu_yaw),
                                    math.cos(slam_wyaw - self.imu_yaw))
             self.imu_yaw += SLAM_YAW_ALPHA * yaw_error
             fused_yaw = self.imu_yaw
 
-            # --- log every 5s ---
+            # log every 5s
             self.log_counter += 1
             if self.log_counter % 100 == 0:
                 self.get_logger().info(
@@ -349,7 +347,7 @@ class TFRelay(Node):
                     f'gyro={self.last_imu_yaw_rate:.4f} '
                     f'gt=({self.last_x:.1f},{self.last_y:.1f})')
 
-            # --- map->odom ---
+            # map->odom
             gt_yaw = math.atan2(2 * self.last_qw * self.last_qz,
                                 1 - 2 * self.last_qz ** 2)
 

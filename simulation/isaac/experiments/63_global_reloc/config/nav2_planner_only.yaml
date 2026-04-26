@@ -27,7 +27,7 @@ global_costmap:
       robot_base_frame: base_link
       # v60: robot_radius 0.7 -> 0.6 m = actual half-width (0.5) + 0.1 m
       # safety margin (10 cm spec). Nav2 treats cells within 0.6 m of an
-      # occupied cell as inscribed (cost 99) - planner avoids them.
+      # occupied cell as inscribed (cost 99) - planner avoids them
       robot_radius: 0.6
       resolution: 0.2
       track_unknown_space: false
@@ -48,7 +48,7 @@ global_costmap:
           min_obstacle_height: 0.2
           max_obstacle_height: 0.8
           # v59: 5 -> 8 m so obstacles enter costmap earlier and the
-          # look-ahead skip fires before robot gets near.
+          # look-ahead skip fires before robot gets near
           obstacle_max_range: 8.0
           raytrace_max_range: 10.0
           inf_is_valid: false
@@ -57,7 +57,7 @@ global_costmap:
         # v60: 1.5 -> 1.0 m.  Planner stays ≥ 1.0 m from obstacle centre.
         # Combined with robot_radius 0.6 m ⇒ path centre ≥ 1.0 m from
         # obstacle, robot edge ≥ 0.4 m from obstacle centre ⇒ ≥ 0.1 m
-        # clear space beyond the robot body (10 cm spec).
+        # clear space beyond the robot body (10 cm spec)
         inflation_radius: 1.0
         cost_scaling_factor: 3.0
       always_send_full_costmap: true

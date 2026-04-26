@@ -31,22 +31,22 @@ Viewer.ViewpointY: -0.7
 Viewer.ViewpointZ: -1.8
 Viewer.ViewpointF: 500
 
-#--------------------------------------------------------------------------------------------
+
 # IMU Parameters (Isaac Sim PhysX IMU on Husky A200)
-#--------------------------------------------------------------------------------------------
+
 # Measured with filter_size=60 in exp 15:
 #   stationary: acc_std=0.0001, gyro_std=0.0001
 #   moving 0.5 m/s: acc_std=0.050, gyro_std=0.022
-# Matches real Phidgets Spatial 1042 (~2x acc, ~4x gyro of real device)
+# Matches real Phidgets Spatial 1042 (+-2x acc, +-4x gyro of real device)
 IMU.NoiseGyro: 2.2e-2        # rad/s (measured moving gyro_std)
 IMU.NoiseAcc: 5.0e-2         # m/s² (measured moving acc_std)
 IMU.GyroWalk: 1.0e-3         # bias instability
 IMU.AccWalk: 5.0e-3          # acc bias walk (lower than before since IMU is cleaner)
 IMU.Frequency: 200           # Hz
 
-#--------------------------------------------------------------------------------------------
+
 # IMU-Camera Extrinsic: Tbc (body/IMU sensor frame -> camera frame)
-#--------------------------------------------------------------------------------------------
+
 # IMU frame URF (from world transform diagnostics):
 #   IMU X -> world Z (up) - gravity +9.81 on X axis
 #   IMU Y -> world -Y (right)

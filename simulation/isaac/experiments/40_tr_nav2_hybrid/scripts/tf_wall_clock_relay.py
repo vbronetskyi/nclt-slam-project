@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-TF + Odom relay for Nav2 <- Isaac Sim.
+"""TF + Odom relay for Nav2 <- Isaac Sim
 
 SLAM FRAME MODE: publishes SLAM pose directly as map->base_link.
 No world frame conversion - Nav2 works entirely in SLAM coordinate frame.
@@ -90,7 +89,7 @@ class TFRelay(Node):
         self.create_subscription(Image, '/camera/depth/image_rect_raw', self.depth_cb, 10)
         self.create_subscription(CameraInfo, '/camera/depth/camera_info', self.caminfo_cb, 10)
 
-        # IMU relay at 200Hz
+        #IMU relay at 200Hz
         self.imu_pub = self.create_publisher(Imu, '/imu/data_wall', 50)
         self.imu_file = '/tmp/isaac_imu.txt'
         self.imu_timer = self.create_timer(1.0 / 200.0, self.imu_tick)
@@ -240,7 +239,7 @@ class TFRelay(Node):
                                nav_y - self.prev_slam_ny)
         slam_yaw_jump = abs(normalize_angle(nav_yaw - self.prev_slam_nyaw))
 
-        # position fusion
+        #position fusion
         if slam_jump < JUMP_THRESHOLD:
             self.fused_x = SLAM_POS_ALPHA * nav_x + ODOM_POS_ALPHA * predicted_x
             self.fused_y = SLAM_POS_ALPHA * nav_y + ODOM_POS_ALPHA * predicted_y
@@ -262,7 +261,7 @@ class TFRelay(Node):
         self.prev_slam_ny = nav_y
         self.prev_slam_nyaw = nav_yaw
 
-        # log every ~5s
+        # log every +-5s
         self.log_counter += 1
         if self.log_counter % 100 == 0:
             gt_yaw = math.atan2(2 * self.last_qw * self.last_qz,

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Teach-and-repeat in a single Isaac Sim session.
+"""Teach-and-repeat in a single Isaac Sim session
 Phase 1 (teach): drive via GT waypoints, record anchors in-memory.
 Phase 2 (repeat): teleport to start, drive via visual anchor matching.
 
@@ -30,9 +29,7 @@ parser.add_argument("--duration", type=float, default=800.0,
 parser.add_argument("--lookahead", type=float, default=8.0)
 args, _ = parser.parse_known_args()
 
-# =====================================================================
-# Isaac Sim setup (identical to run_husky_teach_repeat.py)
-# =====================================================================
+# Isaac Sim setup (identical to run_husky_teach_repeat.py)   
 from isaacsim import SimulationApp
 app = SimulationApp({
     "headless": True,
@@ -181,7 +178,7 @@ else:
     max_x_idx = max(range(len(file_anchors)), key=lambda i: file_anchors[i]["x"])
     teach_waypoints = [(a["x"], a["y"]) for a in file_anchors[max_x_idx:]]
 
-# Terrain height
+#Terrain height
 _RWPS = [
     (-100,-7),(-95,-6),(-90,-4.5),(-85,-2.8),(-80,-1.5),(-75,-0.8),(-70,-0.5),
     (-65,-1),(-60,-2.2),(-55,-3.8),(-50,-5),(-45,-5.5),(-40,-5.2),(-35,-4),
@@ -347,9 +344,7 @@ class DepthAvoidance:
         return speed, ang, False
 
 
-# =====================================================================
 # PHASE 1: TEACH
-# =====================================================================
 print(f"\n{'='*60}")
 print(f"PHASE 1: TEACH - driving {len(teach_waypoints)} waypoints")
 print(f"{'='*60}\n")
@@ -425,9 +420,7 @@ while sim_time < args.duration / 2 and wp_idx < len(teach_waypoints):
 teach_dur = sim_time - teach_start
 print(f"\nTeach complete: {len(anchors)} anchors, {s_accum:.0f}m, {teach_dur:.0f}s")
 
-# =====================================================================
 # TELEPORT BACK TO START
-# =====================================================================
 print("\nTeleporting to start...")
 stop_wheels()
 for _ in range(60):
@@ -461,9 +454,7 @@ print(f"  robot at ({p[0]:.1f}, {p[1]:.1f}) - target ({sx:.1f}, {sy:.1f}) err={t
 if teleport_err > 5.0:
     print(f"  WARNING: teleport error {teleport_err:.1f}m > 5m!")
 
-# =====================================================================
 # PHASE 2: REPEAT - odometry-primary + visual correction
-# =====================================================================
 print(f"\n{'='*60}")
 print(f"PHASE 2: REPEAT - {len(anchors)} anchors, odometry-primary")
 print(f"{'='*60}\n")
@@ -524,7 +515,7 @@ def visual_correction(rgb_frame):
 follower = RouteFollower(anchors, lookahead_distance=args.lookahead)
 follower.initialize_from_anchor(0)
 
-VISUAL_EVERY = 30  # every 30 frames = ~2Hz; visual is soft correction only
+VISUAL_EVERY = 30  # every 30 frames = +-2Hz; visual is soft correction only
 frame_count = 0
 prev_lin = 0.0
 repeat_start = sim_time
@@ -585,7 +576,7 @@ try:
             enc_ang = ryaw - enc_prev_yaw
             enc_ang = math.atan2(math.sin(enc_ang), math.cos(enc_ang))
 
-            # Add encoder noise (0.5%)
+            #Add encoder noise (0.5%)
             enc_lin *= (1.0 + enc_rng.normal(0, ENCODER_NOISE))
             enc_ang *= (1.0 + enc_rng.normal(0, ENCODER_NOISE * 2))
 
@@ -594,7 +585,7 @@ try:
             if enc_lin > 0.005 and abs(enc_ang) < 0.05:
                 odom_s += enc_lin
             elif enc_lin > 0.01:
-                # Moving but also turning - count partial
+                #Moving but also turning - count partial
                 odom_s += enc_lin * 0.5
             odom_anchor_idx = find_anchor_by_s(odom_s)
 
@@ -633,7 +624,7 @@ try:
                 visual_correction(rgb)
                 odom_anchor_idx = find_anchor_by_s(odom_s)
 
-            # Anchor position correction ONLY if visual confidence > 0.6
+            #Anchor position correction ONLY if visual confidence > 0.6
             if vis_conf > 0.6:
                 ca = anchors[odom_anchor_idx]
                 alpha = min(vis_conf * 0.3, 0.25)

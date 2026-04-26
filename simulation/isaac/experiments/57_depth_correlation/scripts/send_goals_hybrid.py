@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Hybrid goal sender (v53) with proactive WP projection.
+"""Hybrid goal sender (v53) with proactive WP projection
 
 For every /global_costmap/costmap update:
   - Re-checks all *future* waypoints (current..end) against the costmap.
@@ -63,7 +63,7 @@ class HybridGoalSender(Node):
         self.PROJ_MAX_SEARCH_M = 3.0
         # v56-B: cap projection shift.  If BFS would push the WP > this far
         # from the teach path, leave WP unchanged and let the planner try;
-        # robot stays closer to teach path ⇒ matcher sees familiar views.
+        #robot stays closer to teach path ⇒ matcher sees familiar views.
         self.PROJ_MAX_SHIFT_M = 1.0
 
         self.plan_pub = self.create_publisher(Path, '/plan', 10)
@@ -159,7 +159,7 @@ class HybridGoalSender(Node):
                 if not self.skip_flags[i]:
                     n_skipped_now += 1
                 self.skip_flags[i] = True
-                # keep projected = original (will be skipped anyway)
+                # keep projected = original (will be skipped anyway)   
                 self.projected_wps[i] = (ox, oy)
             else:
                 self.skip_flags[i] = False

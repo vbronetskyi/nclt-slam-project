@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Generate exp 43 SLAM+encoder plots."""
+"""Generate exp 43 SLAM+encoder plots
+"""
 import csv
 import json
 import math
@@ -119,7 +120,7 @@ print(f"  saved {OUT}/exp43_drift_obs.png")
 # Plot 3: Trajectory comparison - reference + 3 methods with obstacles
 fig, ax = plt.subplots(1, 1, figsize=(20, 7))
 
-# Scene map background - real scene objects from Isaac Sim
+#Scene map background - real scene objects from Isaac Sim
 ax.set_facecolor('#6b8e4e')  # grass green
 
 # Road corridor (sandy/dirt)
@@ -132,7 +133,7 @@ RWPS = [(-100,-7),(-95,-6),(-90,-4.5),(-85,-2.8),(-80,-1.5),(-75,-0.8),(-70,-0.5
 rx_arr = np.array([p[0] for p in RWPS])
 ry_arr = np.array([p[1] for p in RWPS])
 road_y = np.interp(road_xs, rx_arr, ry_arr)
-# Actual drivable road ~4m wide (±2m from centerline, matches terrain function)
+# Actual drivable road +-4m wide (±2m from centerline, matches terrain function)
 ax.fill_between(road_xs, road_y - 2.0, road_y + 2.0,
                 color='#c9a66b', alpha=0.9, zorder=1)
 ax.fill_between(road_xs, road_y - 1.2, road_y + 1.2,
@@ -144,7 +145,7 @@ try:
     with open('/tmp/gazebo_models.json') as f:
         _scene = json.load(f)
 
-    # Trees: pine/oak canopy radius ~1.5m, trunk inside
+    # Trees: pine/oak canopy radius +-1.5m, trunk inside
     for m in _scene:
         if m['type'] in ('pine', 'oak'):
             # Canopy
@@ -155,7 +156,7 @@ try:
             ax.add_patch(Circle((m['x'], m['y']), 0.3,
                                 facecolor='#5a3a1a', alpha=0.9, zorder=2.1))
 
-    # Shrubs: ~0.4m radius
+    # Shrubs: +-0.4m radius
     for m in _scene:
         if m['type'] == 'shrub':
             ax.add_patch(Circle((m['x'], m['y']), 0.4,
@@ -169,7 +170,7 @@ try:
                                 facecolor='#6b6b6b', edgecolor='#3a3a3a',
                                 linewidth=0.4, alpha=0.8, zorder=2))
 
-    # Houses: ~6m x 6m square
+    # Houses: +-6m x 6m square
     for m in _scene:
         if m['type'] == 'house':
             ax.add_patch(Rectangle((m['x'] - 3, m['y'] - 3), 6, 6,
@@ -216,7 +217,7 @@ try:
 except Exception as e:
     print(f"  exp 43 traj failed: {e}")
 
-# Obstacles (cones 0.3m radius at 0.5m spacing, tent ~2x1.8m)
+# Obstacles (cones 0.3m radius at 0.5m spacing, tent +-2x1.8m)
 # Barrier walls
 barriers = [
     (-50, -8.0, -2.5, 'Barrier 1'),
@@ -314,7 +315,7 @@ for i, (label, log_file) in enumerate([
     total = len(src)
 
     ax = axes[i]
-    # Timeline: 1 = SLAM, 0 = ENC
+    #Timeline: 1 = SLAM, 0 = ENC
     timeline = (src == 'SLAM').astype(int)
     ax.fill_between(d, 0, timeline, color='blue', alpha=0.6, label='SLAM tracking')
     ax.fill_between(d, timeline, 1, color='orange', alpha=0.4, label='Encoder fallback')
@@ -363,9 +364,7 @@ print(f"  saved {OUT}/exp43_completion_comparison.png")
 print("\nAll plots generated.")
 
 
-# =========================================================================
 # NEW UNIFIED-STYLE PLOTS (v2) - legend bottom-left, metrics bottom-right
-# =========================================================================
 
 # Color palette (consistent across all plots)
 COL_GT = '#2ca02c'         # green
@@ -389,7 +388,7 @@ def _add_legend_metrics(fig, ax, metrics_lines, legend_ncol=2,
                        edgecolor='gray', alpha=0.95))
 
 
-# --- v2 Plot 1: drift no obstacles ---
+# v2 Plot 1: drift no obstacles
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 7), sharex=True)
 d, e, ee, ye, src = parse_drift_log(f"{LOG}/exp43_v4_tf.log")
 slam_mask = (src == 'SLAM')
@@ -439,7 +438,7 @@ plt.close()
 print(f"  saved {OUT}/exp43_drift_no_obs_v2.png")
 
 
-# --- v2 Plot 2: drift with obstacles ---
+# v2 Plot 2: drift with obstacles
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 7), sharex=True)
 d, e, ee, ye, src = parse_drift_log(f"{LOG}/exp43_final_tf.log")
 slam_mask = (src == 'SLAM')
@@ -490,7 +489,7 @@ plt.close()
 print(f"  saved {OUT}/exp43_drift_obs_v2.png")
 
 
-# --- v2 Plot 4: source timeline ---
+# v2 Plot 4: source timeline
 fig, axes = plt.subplots(2, 1, figsize=(14, 6), sharex=True)
 stats = []
 for i, (label, log_file) in enumerate([
@@ -539,7 +538,7 @@ plt.close()
 print(f"  saved {OUT}/exp43_source_timeline_v2.png")
 
 
-# --- v2 Plot 5: completion comparison ---
+# v2 Plot 5: completion comparison
 fig, ax = plt.subplots(1, 1, figsize=(12, 6))
 
 experiments = ['GT\n(exp 41)', 'Encoder+Compass\n(exp 42)', 'SLAM+Encoder\n(exp 43)']

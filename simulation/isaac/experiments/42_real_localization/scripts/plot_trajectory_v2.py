@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Exp 42: Encoder+Compass localization trajectory plots (with and without obstacles)."""
+"""Exp 42: Encoder+Compass localization trajectory plots (with and without obstacles)
+"""
 import sys
 sys.path.insert(0, '/workspace/simulation/isaac/scripts')
 from plot_trajectory_map import plot_trajectory_map
@@ -20,8 +21,8 @@ plot_trajectory_map(
         "Result:       43/43 waypoints (100%)",
         "Skipped:      0",
         "Duration:     396s",
-        "Pos drift:    max 0.8m / mean ~0.4m",
-        "Heading err:  max 3.5° / mean ~1.5°",
+        "Pos drift:    max 0.8m / mean +-0.4m",
+        "Heading err:  max 3.5° / mean +-1.5°",
     ],
     with_obstacles=False,
     with_waypoints=True,

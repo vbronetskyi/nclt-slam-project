@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-General trajectory plotting script for navigation experiments.
+"""General trajectory plotting script for navigation experiments
 
 Plots robot GT trajectory on the road map with waypoints, obstacles,
 and key metrics (distance, time, drift).
@@ -23,7 +22,7 @@ import matplotlib.patches as mpatches
 import numpy as np
 
 
-# road reference
+#road reference
 ROAD_WPS = [
     (-100,-7),(-95,-6),(-90,-4.5),(-85,-2.8),(-80,-1.5),(-75,-0.8),(-70,-0.5),
     (-65,-1),(-60,-2.2),(-55,-3.8),(-50,-5),(-45,-5.5),(-40,-5.2),(-35,-4),
@@ -95,7 +94,7 @@ def compute_metrics(traj):
     dists = np.sqrt(dx**2 + dy**2)
     total_dist = np.sum(dists)
 
-    # max distance from start
+    #max distance from start
     dist_from_start = np.sqrt((x - SPAWN[0])**2 + (y - SPAWN[1])**2)
     max_from_start = np.max(dist_from_start)
 
@@ -109,7 +108,7 @@ def compute_metrics(traj):
     # duration
     duration = t[-1] - t[0]
 
-    # average speed (when moving)
+    # average speed (when moving)   
     moving = traj['cmd_lin'] > 0.05
     avg_speed = np.mean(traj['cmd_lin'][moving]) if np.any(moving) else 0
 
@@ -157,9 +156,7 @@ def plot_trajectories(trajs, labels, title, output_path, show_obstacles=True):
     ax_map = axes[1]
     ax_metrics = axes[2]
 
-    # ============================================================
     # TOP: Y vs X with road curve overlay
-    # ============================================================
     road_x_dense = np.linspace(-100, 75, 200)
     road_y_dense = np.interp(road_x_dense, ROAD_X, ROAD_Y)
     ax_road.fill_between(road_x_dense, road_y_dense - 2, road_y_dense + 2,
@@ -217,9 +214,7 @@ def plot_trajectories(trajs, labels, title, output_path, show_obstacles=True):
     ax_road.grid(True, alpha=0.3)
     ax_road.set_aspect('equal')
 
-    # ============================================================
     # MIDDLE: web map with trees as background + trajectory overlay
-    # ============================================================
     if os.path.exists(WEB_MAP_PATH):
         from matplotlib.image import imread
         bg = imread(WEB_MAP_PATH)
@@ -284,7 +279,7 @@ def plot_trajectories(trajs, labels, title, output_path, show_obstacles=True):
     ax_map.legend(loc='upper left', fontsize=8, framealpha=0.9)
     ax_map.set_aspect('equal')
 
-    # --- BOTTOM: metrics table ---
+    # BOTTOM: metrics table
     ax_metrics.axis('off')
     if metrics_list:
         col_labels = ['Metric'] + labels
@@ -367,7 +362,7 @@ def main():
         print('error: no valid trajectories')
         sys.exit(1)
 
-    # labels
+    #labels
     if args.labels:
         labels = args.labels.split(',')
     else:

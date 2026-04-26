@@ -12,7 +12,7 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     config = "/workspace/simulation/isaac/experiments/74_pure_stock_nav2_baseline/config/nav2_stock_params.yaml"
-    map_yaml = "/root/isaac_tr_datasets/08_nw_sw/teach/teach_outputs/teach_map.yaml"
+    map_yaml = "/root/isaac_tr_datasets/12_ne_mid/teach/teach_outputs/teach_map.yaml"
     bt_dir = "/opt/ros/jazzy/share/nav2_bt_navigator/behavior_trees"
 
     lifecycle_nodes = [

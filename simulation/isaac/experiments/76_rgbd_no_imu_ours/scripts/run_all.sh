@@ -1,5 +1,5 @@
 #!/bin/bash
-# Orchestrator for exp 76 (our pipeline with RGB-D only SLAM) across all 9 routes.
+# Orchestrator for exp 76 (our pipeline with RGB-D only SLAM) across all 9 routes
 #
 # Usage:
 #   bash scripts/run_all.sh                   # all 9 routes
@@ -67,12 +67,12 @@ on_interrupt() {
 }
 trap on_interrupt INT TERM
 
-echo "================================================================"
+echo ""
 echo "RUN_ALL_BASELINE (exp 76 RGB-D no IMU)   started $(date +'%F %T')"
 echo "routes: ${ROUTES[*]}"
 echo "timeout:  short (08,09) ${TIMEOUT_SHORT_S}s   long ${TIMEOUT_LONG_S}s   cooldown: ${COOLDOWN_S}s"
 echo "summary: $SUMMARY_FILE"
-echo "================================================================"
+echo ""
 
 for R in "${ROUTES[@]}"; do
     if [ -z "${RP_ISAAC_ROUTE[$R]:-}" ]; then
@@ -85,9 +85,9 @@ for R in "${ROUTES[@]}"; do
     LOG=$OUT/_orchestrator.log
 
     echo ""
-    echo "================================================================"
+    echo ""
     echo "=== EXP 76 / $R  start $(date +'%T') ==="
-    echo "================================================================"
+    echo ""
     kill_all_sim
     sleep "$COOLDOWN_S"
 
@@ -120,7 +120,7 @@ done
 
 kill_all_sim
 echo ""
-echo "================================================================"
+echo ""
 echo "EXP 76 ALL RUNS DONE   $(date +'%F %T')"
-echo "================================================================"
+echo ""
 cat "$SUMMARY_FILE"

@@ -1,4 +1,4 @@
-"""Nav2 launch: planner_server ONLY (no controller, no BT, no recoveries).
+"""Nav2 launch: planner_server ONLY (no controller, no BT, no recoveries)
 
 Pure pursuit follower takes path from /plan topic and publishes /cmd_vel directly.
 """

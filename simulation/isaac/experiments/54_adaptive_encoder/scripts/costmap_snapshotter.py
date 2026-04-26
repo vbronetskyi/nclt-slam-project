@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Record timestamped snapshots of Nav2 global_costmap during repeat run.
+"""Record timestamped snapshots of Nav2 global_costmap during repeat run
 
 Subscribes to /global_costmap/costmap (nav_msgs/OccupancyGrid). Every
 SNAPSHOT_PERIOD_S seconds saves the current costmap as a numbered PGM
@@ -75,8 +75,8 @@ class CostmapSnapshotter(Node):
         rx, ry = self._read_robot_pose()
 
         base = os.path.join(self.out_dir, f"costmap_{self.snapshot_id:04d}")
-        # Numeric save: .npy raw occupancy (int8, -1/0/1-100), loadable via
-        # np.load() directly. One numeric file, no image conversions.
+        # Numeric save: .npy raw occupancy (int8, -1/0/1-100), loadable via   
+        # np.load() directly. One numeric file, no image conversions.   
         np.save(base + '.npy', data)
 
         # JSON metadata per snapshot

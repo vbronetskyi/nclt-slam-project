@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-IMU noise test for Husky in Isaac Sim.
+"""IMU noise test for Husky in Isaac Sim
 
 Measures PhysX IMU noise stationary and during motion.
 Optionally applies compliant contacts to wheel materials.
@@ -79,7 +78,7 @@ _wfp.CreateStaticFrictionAttr(1.0)
 _wfp.CreateDynamicFrictionAttr(0.8)
 _wfp.CreateRestitutionAttr(0.0)
 
-# Apply compliant contacts to wheel material if requested
+# Apply compliant contacts to wheel material if requested   
 if args.compliant:
     print(f"\n=== APPLYING COMPLIANT CONTACTS ===")
     print(f"  stiffness={args.stiffness}, damping={args.damping}")
@@ -99,7 +98,7 @@ for prim in stage.Traverse():
 
 for col in wheel_cols:
     if col.IsValid():
-        # The collision is "guide" purpose - change to default so PhysX uses it
+        #The collision is "guide" purpose - change to default so PhysX uses it
         UsdGeom.Imageable(col).GetPurposeAttr().Set("default")
         UsdShade.MaterialBindingAPI.Apply(col).Bind(_wf, materialPurpose="physics")
         print(f"  bound material to {col.GetPath()}")
@@ -129,7 +128,7 @@ for wn in ["front_left_wheel", "front_right_wheel", "rear_left_wheel", "rear_rig
         drive.GetMaxForceAttr().Set(500.0)
         _wheel_vel_attrs.append(drive.GetTargetVelocityAttr())
 
-# IMU sensor
+#IMU sensor
 IMU_SENSOR_PATH = IMU_LINK + "/imu_sensor"
 omni.kit.commands.execute(
     "IsaacSensorCreateImuSensor",
@@ -258,7 +257,7 @@ def measure(label, n=400, drive_speed=0.0):
         app.update()
         sim_t += physics_dt
         if args.synthetic:
-            # Velocity from PhysX rigid body (avoids position differentiation)
+            #Velocity from PhysX rigid body (avoids position differentiation)
             vel_w, ang_w = get_rigid_body_velocities()
             xf = UsdGeom.XformCache()
             tf = xf.GetLocalToWorldTransform(_base_prim_for_pose)

@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Exp 43: SLAM+Encoder trajectory plots + combined comparison."""
+"""Exp 43: SLAM+Encoder trajectory plots + combined comparison
+"""
 import sys
 sys.path.insert(0, '/workspace/simulation/isaac/scripts')
 from plot_trajectory_map import plot_trajectory_map
 
-# SLAM only, with obstacles
+#SLAM only, with obstacles
 plot_trajectory_map(
     trajectories=[
         {'csv': '/workspace/simulation/isaac/experiments/43_slam_localization/logs/exp43_final_traj.csv',

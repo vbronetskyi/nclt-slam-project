@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Husky A200 in forest scene with PhysX articulation drive and ROS2.
+"""Husky A200 in forest scene with PhysX articulation drive and ROS2
 Records RGB-D + IMU data for ORB-SLAM3 evaluation.
 
 publishes: /camera/color/image_raw, /camera/depth/image_rect_raw, /imu/data, /odom, /tf
@@ -44,13 +43,13 @@ from pxr import UsdGeom, UsdLux, UsdPhysics, PhysxSchema, Gf, Sdf, PhysicsSchema
 settings = carb.settings.get_settings()
 settings.set("/rtx/raytracing/backfaceCulling", False)
 settings.set("/rtx/directLighting/backfaceCulling", False)
-# post-processing off (not needed for SLAM)
+# post-processing off (not needed for SLAM)   
 settings.set("/rtx/post/motionblur/enabled", False)
 settings.set("/rtx/post/dof/enabled", False)
 settings.set("/rtx/post/bloom/enabled", False)
 settings.set("/rtx/post/lensFlares/enabled", False)
 settings.set("/rtx/directLighting/sampledLighting/enabled", False)
-# reflections off, indirect diffuse on (light through canopy)
+# reflections off, indirect diffuse on (light thorugh canopy)
 settings.set("/rtx/reflections/enabled", False)
 settings.set("/rtx/indirectDiffuse/enabled", True)
 # fabric off, PhysX needs direct USD sync for articulation control
@@ -61,7 +60,7 @@ HUSKY_USD = "/workspace/simulation/isaac/assets/husky_d435i/husky_d435i.usda"
 SCENE_USD = "/opt/husky_forest_scene.usd"
 RENDERS = "/workspace/simulation/isaac/assets/renders/maps"
 
-# enable ros2
+# enable ros2   
 manager = omni.kit.app.get_app().get_extension_manager()
 for ext in ["isaacsim.ros2.core", "isaacsim.ros2.nodes",
             "isaacsim.sensors.physics.nodes", "isaacsim.ros2.bridge"]:
@@ -166,7 +165,7 @@ def _make_cam_matrix(x, y, z, yaw, pitch=0):
 _cam_transform_op.Set(_make_cam_matrix(-95 + CAM_FWD, -6, 0.2 + CAM_UP, 0))
 print(f"  camera: {CAM_RGB}")
 
-# verify prim paths
+#verify prim paths
 for name, path in [("base_link", BASE_LINK), ("camera", CAM_RGB), ("imu", IMU_PATH)]:
     print(f"  {name}: {stage.GetPrimAtPath(path).IsValid()} ({path})")
 
@@ -342,13 +341,13 @@ def _terrain_height(x, y):
         h -= 0.06 * (1.0 - road_dist / 2.0)
     return max(h, -0.5)
 
-# spawn above terrain, PhysX will settle the robot during warmup
+#spawn above terrain, PhysX will settle the robot during warmup
 _spawn_z = _terrain_height(-95, -6) + 0.5
 _husky_translate_op.Set(Gf.Vec3d(-95, -6, _spawn_z))
 _cam_transform_op.Set(_make_cam_matrix(-95 + CAM_FWD, -6, _spawn_z + CAM_UP, 0))
 print(f"  spawn z={_spawn_z:.2f}")
 
-# replicate thinning: remove 5 near each west corner, skip every 3rd
+#replicate thinning: remove 5 near each west corner, skip every 3rd
 _all_trees = [m for m in _models if m["type"] in ("pine", "oak")]
 _west_sw = sorted(_all_trees, key=lambda m: math.hypot(m["x"]+120, m["y"]+80))
 _west_nw = sorted(_all_trees, key=lambda m: math.hypot(m["x"]+120, m["y"]-80))
@@ -374,7 +373,7 @@ for m in _models:
     elif m["type"] == "barrel":
         _obstacles.append((m["x"], m["y"], 0.5))
     elif m["type"] in ("fallen_oak", "fallen_pine"):
-        # fallen tree scaled 1.5-2x in scene, trunk ~12-16m long
+        # fallen tree scaled 1.5-2x in scene, trunk +-12-16m long
         yaw = m.get("yaw", 0)
         for d in [-7, -5, -3, -1, 0, 1, 3, 5, 7]:
             _obstacles.append((m["x"] + d * math.cos(yaw), m["y"] + d * math.sin(yaw), 0.6))
@@ -422,7 +421,7 @@ p1 = _get_husky_pose()[0]
 print(f"\nrobot: ({p1[0]:.1f}, {p1[1]:.1f}, {p1[2]:.2f})")
 print(f"running for {args.duration}s... (ctrl+c to stop)\n")
 
-# road waypoints for path following (match convert_gazebo_to_isaac.py)
+#road waypoints for path following (match convert_gazebo_to_isaac.py)
 ROAD_WPS = [
     (-100, -7.0), (-95, -6.0), (-90, -4.5), (-85, -2.8), (-80, -1.5),
     (-75, -0.8), (-70, -0.5), (-65, -1.0), (-60, -2.2), (-55, -3.8),
@@ -471,7 +470,7 @@ path_idx = 0
 _auto_route = None
 _auto_idx = 1  # start from waypoint 1 (waypoint 0 is spawn)
 
-# Warmup waypoints - first 12 road S-curve waypoints (proven to work on exp18)
+#Warmup waypoints - first 12 road S-curve waypoints (proven to work on exp18)
 # Smooth S-curve from spawn east, gives VIO IMU init time on natural road motion
 WARMUP_WAYPOINTS = [
     (-90, -4.5), (-85, -2.8), (-80, -1.5), (-75, -0.8),
@@ -510,7 +509,7 @@ wheel_r = 0.165   # husky wheel radius
 track = 0.555     # husky track width
 goal_x, goal_y = None, None
 
-# recording setup
+#recording setup
 import time as _time
 _rec_dir = f"/root/bags/husky_real/isaac_slam_{int(_time.time())}"
 os.makedirs(f"{_rec_dir}/camera_rgb", exist_ok=True)
@@ -529,20 +528,20 @@ _rec_img_count = 0
 print(f"  SLAM recording to {_rec_dir}")
 
 try:
-    # NOTE: zigzag init phase removed (exp 21 finding):
+    # zigzag init phase removed (exp 21 finding):
     # - DriveAPI commands didn't actually move the robot (forest uses ArticulationAPI)
-    # - Result: 12s of "fake" zigzag where IMU recorded ±2 m/s² wheel vibrations
+    #- Result: 12s of "fake" zigzag where IMU recorded ±2 m/s² wheel vibrations
     #   while GT showed robot static. ORB-SLAM3 built initial map from these
     #   stationary keyframes -> bad triangulation -> +0.13m to +6m extra ATE.
-    # - Init phase only helps VIO (which doesn't work on forest anyway).
-    # Recording starts driving the route immediately.
+    # - Init phase only helps VIO (which doesn't work on forest anyway)
+    # Recording starts driving the route immediately
 
     while sim_time < args.duration:
         app.update()
         rclpy.spin_once(node, timeout_sec=0.001)
         sim_time += 1.0 / 60.0
 
-        # auto-route: advance to next waypoint when arrived
+        #auto-route: advance to next waypoint when arrived
         if _auto_route is not None and goal_x is None and _auto_idx < len(_auto_route):
             goal_x, goal_y = _auto_route[_auto_idx]
             print(f"  ROUTE [{_auto_idx}/{len(_auto_route)-1}]: ({goal_x:.1f}, {goal_y:.1f})")
@@ -577,7 +576,7 @@ try:
                         os.remove("/tmp/isaac_goal.txt")
                     except:
                         pass
-                    print("  REVERSED ~2s")
+                    print("  REVERSED +-2s")
                 elif goal_txt == "reset":
                     goal_x, goal_y = None, None
                     # teleport robot back to spawn (set root xform + stop wheels)
@@ -669,7 +668,7 @@ try:
         pitch = math.atan2(z_front - z_back, 2 * fwd_d)
         _cam_transform_op.Set(_make_cam_matrix(cam_x, cam_y, cam_z, current_yaw, pitch))
 
-        # save camera at ~10Hz
+        #save camera at +-10Hz
         frame_n = int(sim_time * 60)
         if frame_n % 6 == 0:
             d_fwd = ann_fwd.get_data() if 'ann_fwd' in dir() else None

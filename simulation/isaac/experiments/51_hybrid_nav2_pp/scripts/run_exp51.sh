@@ -1,5 +1,5 @@
 #!/bin/bash
-# Exp 51: Hybrid Nav2 planner + pure pursuit follower (smooth VIO-safe control).
+# Exp 51: Hybrid Nav2 planner + pure pursuit follower (smooth VIO-safe control)   
 set -euo pipefail
 
 EXP=/workspace/simulation/isaac/experiments/51_hybrid_nav2_pp
@@ -126,7 +126,7 @@ for i in $(seq 1 60); do
 done
 echo "Nav2 planner active"
 
-# PHASE 3: Send goals
+#PHASE 3: Send goals
 echo "=== PHASE 3: Send goals ==="
 sleep 3
 cat > /tmp/exp51_goals.sh <<EOF

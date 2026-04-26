@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Simple pure pursuit publisher for mapping runs (no Nav2).
+"""Simple pure pursuit publisher for mapping runs (no Nav2)
 
 Reads robot pose from /tmp/isaac_pose.txt and publishes /cmd_vel
 to follow road waypoints. Used for SLAM mapping runs.
@@ -80,7 +79,7 @@ class PurePursuit(Node):
             return
 
         wx, wy = ROAD[self.idx]
-        # angle to target in world frame
+        #angle to target in world frame
         target_yaw = math.atan2(wy - ry, wx - rx)
         # diff
         dyaw = target_yaw - ryaw

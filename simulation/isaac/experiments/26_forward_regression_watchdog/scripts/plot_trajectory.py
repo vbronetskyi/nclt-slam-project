@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-General trajectory plotting script for navigation experiments.
+"""General trajectory plotting script for navigation experiments
 
 Plots robot GT trajectory on the road map with waypoints, obstacles,
 and key metrics (distance, time, drift).
@@ -34,7 +33,7 @@ ROAD_WPS = [
 ROAD_X = [p[0] for p in ROAD_WPS]
 ROAD_Y = [p[1] for p in ROAD_WPS]
 
-# obstacles
+#obstacles
 CONE_GROUPS = [
     [(-52, -5.5), (-50, -4.5), (-48, -5.0)],  # group 1
     [(13, -2.5), (15, -1.5), (17, -2.0)],       # group 2
@@ -157,9 +156,7 @@ def plot_trajectories(trajs, labels, title, output_path, show_obstacles=True):
     ax_map = axes[1]
     ax_metrics = axes[2]
 
-    # ============================================================
     # TOP: Y vs X with road curve overlay
-    # ============================================================
     road_x_dense = np.linspace(-100, 75, 200)
     road_y_dense = np.interp(road_x_dense, ROAD_X, ROAD_Y)
     ax_road.fill_between(road_x_dense, road_y_dense - 2, road_y_dense + 2,
@@ -217,9 +214,7 @@ def plot_trajectories(trajs, labels, title, output_path, show_obstacles=True):
     ax_road.grid(True, alpha=0.3)
     ax_road.set_aspect('equal')
 
-    # ============================================================
     # MIDDLE: web map with trees as background + trajectory overlay
-    # ============================================================
     if os.path.exists(WEB_MAP_PATH):
         from matplotlib.image import imread
         bg = imread(WEB_MAP_PATH)
@@ -228,7 +223,7 @@ def plot_trajectories(trajs, labels, title, output_path, show_obstacles=True):
     else:
         ax_map.set_facecolor('#1a2a1a')
 
-    # obstacles overlay on web map
+    # obstacles overlay on web map   
     if show_obstacles:
         for group in CONE_GROUPS:
             for cx, cy in group:
@@ -284,7 +279,7 @@ def plot_trajectories(trajs, labels, title, output_path, show_obstacles=True):
     ax_map.legend(loc='upper left', fontsize=8, framealpha=0.9)
     ax_map.set_aspect('equal')
 
-    # --- BOTTOM: metrics table ---
+    # BOTTOM: metrics table
     ax_metrics.axis('off')
     if metrics_list:
         col_labels = ['Metric'] + labels

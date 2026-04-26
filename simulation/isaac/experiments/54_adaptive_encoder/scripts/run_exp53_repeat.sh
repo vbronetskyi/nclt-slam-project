@@ -4,7 +4,7 @@
 #     costmap cost ahead of robot)
 #   - Goal sender with proactive WP projection (BFS each future WP out
 #     of inflated zones as soon as obstacle_layer sees them)
-# Obstacle layout taken from exp 52 run 4 (3/2/4 cones + tent on route).
+# Obstacle layout taken from exp 52 run 4 (3/2/4 cones + tent on route)
 set -eu
 
 E52=/workspace/simulation/isaac/experiments/52_obstacles_v9
@@ -23,7 +23,7 @@ if [ ! -f "$TEACH_MAP" ]; then
     exit 1
 fi
 
-# Patch Nav2 yaml to point static_layer at teach map
+#Patch Nav2 yaml to point static_layer at teach map
 python3 - <<PY
 p = '$E53/config/nav2_planner_only.yaml'
 txt = open(p).read()

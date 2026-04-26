@@ -1,6 +1,6 @@
 #!/bin/bash
-# Exp 49 continuation: Nav2 DWB + VIO localization, VIO trajectory route.
-# Baseline without obstacles - verify Nav2 actually drives robot (not pure pursuit).
+# Exp 49 continuation: Nav2 DWB + VIO localization, VIO trajectory route
+# Baseline without obstacles - verify Nav2 actually drives robot (not pure pursuit)
 set -euo pipefail
 
 EXP=/workspace/simulation/isaac/experiments/49_nav2_vio_roundtrip

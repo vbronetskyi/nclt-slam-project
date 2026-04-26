@@ -54,7 +54,7 @@ def plot_route(route):
     e76_gt_n = traj_len(e76 / 'traj_gt.csv')
 
     trajs = []
-    # Teach GT reference (thin dashed black) - shows where the teach was driven.
+    # Teach GT reference (thin dashed black) - shows where the teach was driven   
     if teach.is_file():
         trajs.append({'csv': str(teach),
                       'label': 'teach GT (reference)',
@@ -77,7 +77,7 @@ def plot_route(route):
     xlim, ylim = (-115, 90), (-55, 55)
 
     # Save into route's own results dir (so route README can link it
-    # directly) + a mirror in _baselines_common/plots/ for aggregate view.
+    # directly) + a mirror in _baselines_common/plots/ for aggregate view
     out = Path(f'/root/isaac_tr_datasets/{route}/repeat/results/repeat_run/baseline_compare.png')
     out.parent.mkdir(parents=True, exist_ok=True)
     mirror = Path(f'/workspace/simulation/isaac/experiments/_baselines_common/plots/compare_{route}.png')

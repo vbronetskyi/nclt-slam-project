@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Hybrid goal sender (v53) with proactive WP projection.
+"""Hybrid goal sender (v53) with proactive WP projection
 
 For every /global_costmap/costmap update:
   - Re-checks all *future* waypoints (current..end) against the costmap.
@@ -61,7 +61,7 @@ class HybridGoalSender(Node):
         self.DETOUR_MAX_COST = 30              # detour candidate cell must have cost < this
         self.LOOKAHEAD_N = 3
 
-        # v59 known obstacles (from patch_obstacles_exp52 for south route).
+        # v59 known obstacles (from patch_obstacles_exp52 for south route)
         # Costmap updates have latency (robot must approach to depth-range
         # before obstacle is marked).  We also hard-check against these
         # known positions so the lookahead fires BEFORE robot gets near.
@@ -359,7 +359,7 @@ class HybridGoalSender(Node):
         return False
 
     def run(self):
-        # Wait for map->base_link tf (listener needs a few spin cycles).
+        # Wait for map->base_link tf (listener needs a few spin cycles)
         for _ in range(40):
             rclpy.spin_once(self, timeout_sec=0.25)
             rx0, ry0 = self._read_robot_pose()
@@ -385,7 +385,7 @@ class HybridGoalSender(Node):
                 self.skipped += 1
                 continue
 
-            # v59 LOOK-AHEAD + KNOWN-OBSTACLE CHECK:
+            #v59 LOOK-AHEAD + KNOWN-OBSTACLE CHECK:
             # (a) hardcoded check against known cone/tent positions - no
             #     costmap latency, fires regardless of depth visibility;
             # (b) if costmap is available, also check cell cost.
@@ -426,7 +426,7 @@ class HybridGoalSender(Node):
             if self.follow_waypoint(i, x, y):
                 self.reached += 1
                 continue
-            # WP failed - try detour fallback
+            #WP failed - try detour fallback
             dx, dy = self._find_detour(x, y)
             if dx is not None:
                 self.get_logger().warn(

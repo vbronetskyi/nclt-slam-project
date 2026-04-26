@@ -3,7 +3,7 @@ map_server:
     # Use a BLANK static map - the robot does not know obstacle positions
     # in advance. Static map only provides the route-area world frame.
     # Obstacles are sensed via the depth camera, fed into obstacle_layer
-    # below as /depth_points, and show up in global_costmap at runtime.
+    # below as /depth_points, and show up in global_costmap at runtime
     yaml_filename: "/workspace/simulation/isaac/experiments/61_dense_anchors_precise_endpoints/teach/south_teach_map.yaml"
 
 planner_server:
@@ -48,7 +48,7 @@ global_costmap:
           min_obstacle_height: 0.2
           max_obstacle_height: 0.8
           # v59: 5 -> 8 m so obstacles enter costmap earlier and the
-          # look-ahead skip fires before robot gets near.
+          # look-ahead skip fires before robot gets near
           obstacle_max_range: 8.0
           raytrace_max_range: 10.0
           inf_is_valid: false

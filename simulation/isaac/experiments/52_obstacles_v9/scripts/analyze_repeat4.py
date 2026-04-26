@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Analyze repeat run 4: extract traj CSV from tf_slam.log, plot with canonical script."""
+"""Analyze repeat run 4: extract traj CSV from tf_slam.log, plot with canonical script
+"""
 import os, re, sys, csv
 import numpy as np
 
@@ -46,7 +47,7 @@ def main():
     reached = text.count('REACHED'); timeouts = text.count('TIMEOUT')
     failed = text.count('plan failed')
 
-    # Find SLAM-break timestamp (err > 20m for first time)
+    #Find SLAM-break timestamp (err > 20m for first time)
     break_idx = next((i for i, r in enumerate(rows) if r['err'] > 20), None)
     break_info = ''
     if break_idx is not None:

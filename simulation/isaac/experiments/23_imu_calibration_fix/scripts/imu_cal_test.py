@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-IMU calibration test: dump raw sensor readings at 4 motion states.
+"""IMU calibration test: dump raw sensor readings at 4 motion states
 
 Determines the actual IMU sensor frame mapping (which axis is up/forward/lateral)
 by observing where gravity, yaw rate, and forward acceleration appear in raw output.
@@ -186,7 +185,7 @@ acc_f, gyro_f, _ = measure(
     "FORWARD DRIVE (+x in world)", n=200,
     drive_left=v_fwd, drive_right=v_fwd, settle=50)  # short settle to catch acceleration
 
-# analysis
+#analysis
 print("\n\n========== AXIS MAPPING ANALYSIS ==========")
 
 # Gravity: which axis has +9.81 stationary?

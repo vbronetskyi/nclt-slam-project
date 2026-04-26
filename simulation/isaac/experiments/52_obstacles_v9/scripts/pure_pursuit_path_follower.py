@@ -1,18 +1,7 @@
 #!/usr/bin/env python3
-"""Pure pursuit follower with spin-in-place cascade protection (v9).
+"""Pure pursuit follower with spin-in-place cascade protection (v9)
 
 Subscribes to Nav2 /plan, publishes /cmd_vel. Pure pursuit control law
-with a new safety layer:
-
-- Monitors "spinning" state: high |w|, low |v|, low progress over time.
-- If spinning for > SPIN_LIMIT_S without translating meaningfully,
-  stop emitting rotate commands for a cooldown period. Without the
-  feedback from the rotate, localization gets a chance to stabilise.
-
-Rationale: in exp 51 v8, VIO err past 150 m grew > Nav2 goal-tolerance;
-Nav2 kept replanning; new path's lookahead point ended up "behind" robot;
-PP read that as 180° heading err -> saturated w=0.8 rad/s. Robot spun in
-place, adding VIO uncertainty, cascading to failure.
 """
 import argparse
 import math
@@ -37,7 +26,7 @@ class PurePursuitFollower(Node):
         self.MAX_ANG = 0.8
         self.GOAL_TOL = goal_tol
 
-        # v9 anti-spin parameters
+        #v9 anti-spin parameters
         self.SPIN_W_THRESH = 0.5        # |w| above this counts as "spinning"
         self.SPIN_V_THRESH = 0.05       # |v| below this counts as "in place"
         self.SPIN_LIMIT_S = 5.0         # after this long -> declare spin-in-place
@@ -133,8 +122,8 @@ class PurePursuitFollower(Node):
         cmd.linear.x = self.MAX_VEL * max(0.3, 1.0 - abs(err) / 1.57)
         cmd.angular.z = max(-self.MAX_ANG, min(self.MAX_ANG, self.GAIN_ANG * err))
 
-        # v9 anti-spin layer
-        # Detect "actively spinning" state: high w, low v from our own cmd
+        # v9 anti-spin layer   
+        #Detect "actively spinning" state: high w, low v from our own cmd
         is_spinning = (abs(cmd.angular.z) >= self.SPIN_W_THRESH
                        and abs(cmd.linear.x) <= self.SPIN_V_THRESH * 2)
         if is_spinning:
@@ -143,7 +132,7 @@ class PurePursuitFollower(Node):
             self.spin_accum_t = max(0.0, self.spin_accum_t - 0.2)
 
         if t_now < self.cooldown_until:
-            # Inside cooldown - suppress rotation, just creep forward slowly.
+            # Inside cooldown - suppress rotation, just creep forward slowly
             cmd.angular.z = 0.0
             cmd.linear.x = 0.15
         elif self.spin_accum_t >= self.SPIN_LIMIT_S:

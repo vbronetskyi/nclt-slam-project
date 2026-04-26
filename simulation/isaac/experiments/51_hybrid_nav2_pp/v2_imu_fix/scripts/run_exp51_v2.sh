@@ -1,7 +1,7 @@
 #!/bin/bash
-# Exp 51 v2 (IMU fix): Hybrid Nav2 planner + PP follower.
+#Exp 51 v2 (IMU fix): Hybrid Nav2 planner + PP follower.
 # Synthetic IMU now detects GT standstill (<2mm/100ms) and outputs pure
-# gravity + Phidgets noise, bypassing PhysX jitter amplification.
+# gravity + Phidgets noise, bypassing PhysX jitter amplification
 set -eu
 
 EXP=/workspace/simulation/isaac/experiments/51_hybrid_nav2_pp
@@ -47,7 +47,7 @@ VIO=$!; disown $VIO
 echo "VIO: $VIO"
 
 cat > /tmp/exp51v2imu_tf_gt.sh <<'EOF'
-#!/bin/bash
+#!/bin/bash   
 source /opt/ros/jazzy/setup.bash
 export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 export ROS_DOMAIN_ID=85

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Plot exp 48 - VIO live accuracy on full roundtrip."""
+"""Plot exp 48 - VIO live accuracy on full roundtrip
+"""
 import sys
 sys.path.insert(0, '/workspace/simulation/isaac/scripts')
 from plot_trajectory_map import plot_trajectory_map

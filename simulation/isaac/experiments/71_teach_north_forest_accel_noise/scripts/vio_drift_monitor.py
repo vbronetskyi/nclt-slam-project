@@ -1,7 +1,7 @@
-#!/usr/bin/env python3
-"""Dense VIO+GT recorder with drift gate.
+#!/usr/bin/env python3   
+"""Dense VIO+GT recorder with drift gate
 
-- Reads /tmp/slam_pose.txt (ORB-SLAM3 current pose) at ~10 Hz.
+- Reads /tmp/slam_pose.txt (ORB-SLAM3 current pose) at +-10 Hz.
 - Reads /tmp/isaac_pose.txt (Isaac GT) at the same rate.
 - Writes both to a dense CSV every tick.
 - Every CHECK_INTERVAL_S computes best-fit rotation+translation
@@ -109,8 +109,8 @@ while True:
         if len(rows) < 50:
             continue
         arr = np.array([[r[2], r[3], r[4], r[9], r[10]] for r in rows])
-        # Gate on GT travel: drift is only meaningful once the robot has
-        # physically moved enough that Procrustes can resolve orientation.
+        #Gate on GT travel: drift is only meaningful once the robot has
+        # physically moved enough that Procrustes can resolve orientation
         gt_path = float(np.sum(np.hypot(np.diff(arr[:, 3]),
                                         np.diff(arr[:, 4]))))
         if gt_path < 5.0:

@@ -1,5 +1,4 @@
-"""
-spawn/remove dynamic obstacles for navigation testing.
+"""spawn/remove dynamic obstacles for navigation testing
 obstacles placed ON route trajectory with space for bypass.
 
 usage:

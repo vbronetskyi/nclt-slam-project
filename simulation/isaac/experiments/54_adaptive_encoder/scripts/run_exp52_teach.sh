@@ -1,7 +1,7 @@
 #!/bin/bash
 # Exp 52 TEACH run: drive south route once without obstacles, using pure
 # pursuit from the existing anchors file. VIO localizes, depth camera feeds
-# teach_run_depth_mapper.py which builds a 2D occupancy grid from only
+#teach_run_depth_mapper.py which builds a 2D occupancy grid from only
 # what the depth camera observes. Output:
 #   teach/south_teach_map.yaml + .pgm
 #   teach/teach_trajectory.csv (from tf_slam log)
@@ -34,7 +34,7 @@ echo "=== TEACH PHASE 1: Isaac (no obstacles) + VIO warmup ==="
 source /tmp/ros_env.sh 2>/dev/null || true
 export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 export ROS_DOMAIN_ID=$DOMAIN
-# NOTE: no --obstacles flag - teach run sees the ORIGINAL environment
+#no --obstacles flag - teach run sees the ORIGINAL environment
 # (forest + houses + rocks only). Cones appear only in repeat run.
 setsid /opt/isaac-sim-6.0.0/python.sh $SCRIPTS/run_husky_forest.py \
     --synthetic-imu --route south --duration 1500 \
@@ -114,9 +114,9 @@ nohup bash /tmp/exp52t_mapper.sh > $TEACH/teach_depth_mapper.log 2>&1 &
 MAPPER=$!; disown $MAPPER
 echo "DepthMapper: $MAPPER"
 
-# Isaac's internal pure pursuit is already driving (we never disabled it).
+# Isaac's internal pure pursuit is already driving (we never disabled it)   
 # No Nav2, no goal sender - teach phase uses the existing anchor-based
-# controller to drive the south route end-to-end.
+# controller to drive the south route end-to-end
 
 echo ""
 echo "PIDs: Isaac=$ISAAC VIO=$VIO TF=$TF Mapper=$MAPPER"

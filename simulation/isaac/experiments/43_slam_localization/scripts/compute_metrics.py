@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Compute fair comparison metrics for exp 41/42/43."""
+"""Compute fair comparison metrics for exp 41/42/43
+"""
 import csv
 import re
 import math

@@ -1,6 +1,6 @@
 #!/bin/bash
-# Exp 47: Run VIO offline on full outbound recording.
-# Uses the same pipeline as exp 46 but on the live recording.
+# Exp 47: Run VIO offline on full outbound recording
+# Uses the same pipeline as exp 46 but on the live recording
 set -euo pipefail
 
 REC=${1:-/root/bags/husky_real/isaac_slam_1776371616}

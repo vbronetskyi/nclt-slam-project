@@ -1,10 +1,10 @@
 #!/bin/bash
-# Exp 48: VIO live roundtrip - pure pursuit + ORB-SLAM3 VIO tracking.
+#Exp 48: VIO live roundtrip - pure pursuit + ORB-SLAM3 VIO tracking
 #
 # Pipeline:
 #   1. Install dense roundtrip route (USD-obstacle-aware, 0.5m WPs)
 #   2. Isaac Sim + pure pursuit + synthetic IMU (records camera/depth/IMU/GT)
-#   3. ORB-SLAM3 rgbd_inertial_live in parallel
+#3. ORB-SLAM3 rgbd_inertial_live in parallel
 #   4. Stop VIO when route done
 #   5. Analyze with Umeyama alignment
 #
@@ -66,5 +66,5 @@ echo "Monitor progress with:"
 echo "  tail -f $EXP/logs/isaac_final.log"
 echo "  cat /tmp/slam_pose.txt"
 
-# 5. Wait for completion (outer script needs to signal)
+#5. Wait for completion (outer script needs to signal)
 # User stops with: touch /tmp/slam_stop; pkill -9 run_husky_forest

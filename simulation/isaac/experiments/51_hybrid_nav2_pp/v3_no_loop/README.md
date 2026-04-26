@@ -1,9 +1,6 @@
 # Exp 51 v3_no_loop - disable ORB-SLAM3 loop closing
 
-*[thesis root](../../../../../README.md) > [simulation](../../../../README.md) > isaac > experiments > 51_hybrid_nav2_pp > v3_no_loop*
-
-
-Eliminate the bad-loop-closure failure seen at ~150 m in v2_imu_fix. Teach-and-repeat
+Eliminate the bad-loop-closure failure seen at +-150 m in v2_imu_fix. Teach-and-repeat
 is a single pass; loop closure provides no benefit and proposes wrong matches in
 visually repetitive forest.
 
@@ -40,7 +37,7 @@ pure pursuit follower hybrid architecture.
 At frame 2000->2100 (t = 205–215 s), raw VIO position jumped **−20.5, −33.5 m**
 (39 m magnitude) in a single 10-second window. Encoder drift at the same time was
 0.02 m. No `BAD LOOP`, no `VIBA 3+`, no visible reset in the log. GT shows the robot
-was driving gently (22, −4.6) -> (32, −8.3) - ~11 m of smooth motion, gradual yaw,
+was driving gently (22, −4.6) -> (32, −8.3) - +-11 m of smooth motion, gradual yaw,
 no stops.
 
 So the v3 patch removed the loop-closure failure mode (confirmed: 0 BAD LOOP), but
@@ -53,22 +50,22 @@ position jump); cause differs.
 
 Good news:
 - Fix A (IMU standstill) is validated again - first 100 m still achieves <1.5 m err.
-- Loop-closure patch works and is verifiable (0 BAD LOOP accross the run).
+- Loop-closure patch works and is verifiable (0 BAD LOOP accross the run)
 - Hybrid Nav2 planner + pure pursuit follower architecture works - 33 waypoints
   followed smoothly before the VIO jump.
 
-**Bad news:**
+Bad news:
 - Single-pass teach-and-repeat in dense forest hits another ORB-SLAM3 failure
   around the turnaround / 150 m mark, independent of loop closing.
 
 ## proposed next steps
 
-1. **Diagnose the remaining silent jump.** Instrument ORB-SLAM3 to log every
+1. Diagnose the remaining silent jump. Instrument ORB-SLAM3 to log every
    map-merging attempt, KF culling event, and BA re-optimisation with the pose
    delta it applied. The current binary is silent about these.
 2. **Consider disabling map merging too** - `Atlas::CreateNewMap` / `MergeMaps`
    paths. Same rationale as loop closing: single pass doesn't benefit.
-3. **Fallback: trust encoder past 100 m.** Encoder err stayed at 0.65 m through
+3. Fallback: trust encoder past 100 m. Encoder err stayed at 0.65 m thorugh
    the whole 174 m run. If VIO can't be stabilised for long routes, SLAM_ALPHA
    in tf_wall_clock_relay could decay with distance (e.g. 0.95 -> 0.3 after 100 m),
    letting encoder carry the run while VIO corrects locally. This is effectively
@@ -82,5 +79,5 @@ Good news:
 - `config/` - nav2, map, route copies
 - `logs/` - isaac, vio, tf_slam, nav2, goals, pp_follower
 - `results/err_series.csv` - dist / slam_err / enc_err per tf-relay sample
-- Source patch: `third_party/ORB_SLAM3/src/LoopClosing.cc` lines ~94–113 - see
+- Source patch: `third_party/ORB_SLAM3/src/LoopClosing.cc` lines +-94–113 - see
   git diff; not copied here because the binary change is the reproducibility artefact.

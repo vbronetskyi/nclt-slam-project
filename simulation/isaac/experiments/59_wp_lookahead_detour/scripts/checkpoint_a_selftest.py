@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
-"""Checkpoint A: run the matcher offline against the teach recording.
+"""Checkpoint A: run the matcher offline against the teach recording
 
 Purpose: catch matcher bugs before any repeat run.  Expectation: matching
 teach-run frames against teach-run landmarks should give near-identity
 anchor poses (< 0.3 m offset from teach VIO) for ≥ 90% of sampled ticks.
 
-Inputs:
   --landmarks   path to south_landmarks.pkl
   --bag-dir     teach recording dir (contains camera_rgb/, camera_depth/)
   --teach-traj  teach trajectory CSV with (ts, gt_x, gt_y, ...) - we read
@@ -15,7 +14,6 @@ Inputs:
                 ground truth for this self-test.
   --out-dir     directory for summary + per-tick CSV
 
-Outputs:
   checkpoint_a_summary.txt
   checkpoint_a_matches.csv
 """
@@ -150,7 +148,7 @@ def main():
         attempts = 0
         for li in range(0, len(lms), args.sample_every):
             lm = lms[li]
-            # For each teach landmark, the RGB frame with ts closest to lm['ts'] is
+            #For each teach landmark, the RGB frame with ts closest to lm['ts'] is
             # our test image.  Pairing: filenames are sim_time floats.
             ts = lm['ts']
             # Find nearest rgb file

@@ -3,7 +3,7 @@
 #
 # Outbound: робот зустрічає 3 групи конусів + намет, Nav2 планує обхід
 # Turnaround: supervisor автоматично прибирає всі обстаки через signal file
-# Return: робот їде по чистому маршруту назад до спавну
+# Return: робот їде по чистому маршруту назад до спавну   
 #
 # Phases:
 #   1. Patch spawn_obstacles.py для south route (on-route positions)
@@ -12,7 +12,7 @@
 #   4. Switch TF to SLAM+encoder, start Nav2
 #   5. Launch supervisor (watches GT.x > 65)
 #   6. Send roundtrip goals
-#   7. At turnaround: supervisor triggers obstacle removal
+#7. At turnaround: supervisor triggers obstacle removal
 #   8. Return path without obstacles
 set -euo pipefail
 
@@ -24,7 +24,7 @@ DOMAIN=${ROS_DOMAIN_ID:-75}
 # Phase 1: patch south obstacles (on-route positions)
 python3 $EXP/scripts/patch_obstacles.py
 
-# Install route
+# Install route   
 cp $EXP/config/south_roundtrip_route.json /workspace/simulation/isaac/route_memory/south/anchors.json
 python3 -c "
 import json
@@ -86,7 +86,7 @@ python3 $SCRIPTS/tf_wall_clock_relay.py --slam-encoder > $EXP/logs/tf_slam.log 2
 TF_PID=$!
 sleep 5
 
-# Disable pure pursuit - Nav2 takes over via /cmd_vel
+#Disable pure pursuit - Nav2 takes over via /cmd_vel
 touch /tmp/isaac_clear_route.txt
 echo "  Pure pursuit disabled via signal"
 sleep 2

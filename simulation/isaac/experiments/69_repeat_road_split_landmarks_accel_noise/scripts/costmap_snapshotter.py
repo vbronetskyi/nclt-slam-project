@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Record timestamped snapshots of Nav2 global_costmap during repeat run.
+"""Record timestamped snapshots of Nav2 global_costmap during repeat run
 
 Subscribes to /global_costmap/costmap (nav_msgs/OccupancyGrid). Every
 SNAPSHOT_PERIOD_S seconds saves the current costmap as a numbered PGM
@@ -48,7 +48,7 @@ class CostmapSnapshotter(Node):
         self.last_costmap = msg
 
     def _read_robot_pose(self):
-        # Use same source as rest of pipeline
+        #Use same source as rest of pipeline
         try:
             with open('/tmp/isaac_pose.txt') as f:
                 parts = f.readline().split()

@@ -1,16 +1,11 @@
-#!/usr/bin/env python3
-"""Offline scale-correction verification on exp 51 recorded data.
+#!/usr/bin/env python3   
+"""Offline scale-correction verification on exp 51 recorded data
 
 Replays raw VIO + GT (as encoder proxy, ratio 0.9999 per exp 42).
 Applies rolling-window scale correction, reports corrected ATE.
 
-Inputs:
   vio_final_camera.txt   timestamp tx ty tz qx qy qz qw  (SLAM camera frame)
   groundtruth.csv        timestamp,x,y,z,yaw           (world frame)
-
-Output:
-  scale_correction_result.png  scale & error time series
-  scale_correction_result.csv  per-frame (t, gt_x, gt_y, vio_x, vio_y, corr_x, corr_y, scale)
 """
 import math
 import os
@@ -168,7 +163,7 @@ def main():
 
     # Apply scale correction using GT as encoder proxy (0.9999 ratio, exp 42)
     # Strategy: scale each frame-to-frame VIO delta, accumulate corrected path
-    # Rationale: scaling absolute displacement from origin amplifies noise when
+    # Rationale: scaling absolute displacement from origin amplifies noise when   
     # scale changes; scaling deltas only affects instantaneous motion
     corrector = ScaleCorrector(window_seconds=60.0, alpha=0.05,
                                min_vio_dist=2.0, scale_min=0.3, scale_max=3.0)
@@ -190,7 +185,7 @@ def main():
             corr_x[i] = corr_x[i - 1] + dx * s
             corr_y[i] = corr_y[i - 1] + dy * s
 
-    # Metrics: direct (aligned to GT origin, not Umeyama)
+    #Metrics: direct (aligned to GT origin, not Umeyama)
     gt_xy = gt_matched[:, 1:3]
     nav_xy = np.column_stack([nav_x, nav_y])
     corr_xy = np.column_stack([corr_x, corr_y])

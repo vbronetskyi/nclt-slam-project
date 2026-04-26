@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
-"""
-TF + Odom relay for Nav2 <- Isaac Sim.
+"""TF + Odom relay for Nav2 <- Isaac Sim
 
-Modes:
   --use-gt         GT localization (perfect pose from sim)
   --encoder-imu    Encoder + IMU localization (realistic sensors)
   --slam-frame     SLAM pose in SLAM coordinate frame
@@ -38,15 +36,15 @@ JUMP_THRESHOLD = 0.5
 YAW_JUMP_THRESHOLD = 0.3
 
 # rolling scale correction (exp 51 v5)
-# VIO has gradual scale drift (v1 Umeyama analysis: scale 0.72 = VIO measures
+# VIO has gradual scale drift (v1 Umeyama analysis: scale 0.72 = VIO measures   
 # 72% of real distance; later runs show ratio drifting with travel). Encoder
 # gives accurate distance (0.9999 × GT in sim); VIO gives accurate direction
 # and relative pose. Combine: rolling window of VIO vs encoder distance ->
 # scale factor, apply to VIO displacement from alignment origin.
 #
-# Why a previous attempt (v2_scale_correction) was noisy: phantom IMU motion
-# during stops inflated vio_dist. v2_imu_fix removed that, so the ratio
-# should now be clean.
+# Why a previous attempt (v2_scale_correction) was noisy: phantom IMU motion   
+#during stops inflated vio_dist. v2_imu_fix removed that, so the ratio
+# should now be clean
 SCALE_WINDOW_S = 20.0        # rolling window
 SCALE_ALPHA = 0.05           # slow adaptation (drift is gradual)
 SCALE_MIN = 0.5
@@ -223,7 +221,7 @@ class TFRelay(Node):
         # Override gyro parameters for encoder+IMU mode
         if encoder_imu:
             global GYRO_DEADZONE, GYRO_LPF_ALPHA
-            GYRO_DEADZONE = 0.01  # much lower - real IMU reads ~0.03 rad/s during turns
+            GYRO_DEADZONE = 0.01  # much lower - real IMU reads +-0.03 rad/s during turns
             GYRO_LPF_ALPHA = 0.15  # smoother filtering
 
         # SLAM+encoder fusion state (Level 3)
@@ -361,12 +359,12 @@ class TFRelay(Node):
 
         if self.T_nav_slam is None:
             # First valid SLAM pose: compute alignment
-            # SLAM camera uses OpenCV convention: x=right, y=down, z=forward
+            #SLAM camera uses OpenCV convention: x=right, y=down, z=forward
             # Nav frame uses FLU convention: x=forward, y=left, z=up
             # T_FLU_from_cam maps camera axes -> FLU body axes:
             #   flu_x (forward) = +cam_z
             #   flu_y (left)    = -cam_x
-            #   flu_z (up)      = -cam_y
+            #flu_z (up)      = -cam_y
             T_FLU_from_cam = np.array([
                 [0,  0, 1, 0],
                 [-1, 0, 0, 0],
@@ -454,7 +452,7 @@ class TFRelay(Node):
                     self._slam_frozen_count = 0
             self._prev_slam_pos = (sx, sz)
 
-            # If SLAM frozen for 60+ ticks (~12s), treat as lost
+            # If SLAM frozen for 60+ ticks (+-12s), treat as lost
             # (Nav2 can rotate-in-place long periods - don't fallback prematurely)
             if self._slam_frozen_count > 60:
                 slam_ok = False
@@ -486,7 +484,7 @@ class TFRelay(Node):
             nav_yaw = self.enc_yaw
             self.using_slam = False
 
-        # Log every ~5s
+        # Log every +-5s
         self.log_counter += 1
         if self.log_counter % 100 == 0:
             err = math.hypot(nav_x - x, nav_y - y)
@@ -545,11 +543,11 @@ class TFRelay(Node):
                 f'ENCODER+IMU init: ({x:.1f}, {y:.1f}), yaw={gt_yaw:.3f}')
             return
 
-        # Heading: compass+gyro fusion = GT yaw + noise (~3° std)
-        COMPASS_NOISE = 0.05  # ~3 degrees std
+        # Heading: compass+gyro fusion = GT yaw + noise (+-3° std)
+        COMPASS_NOISE = 0.05  # +-3 degrees std
         noisy_yaw = gt_yaw + np.random.normal(0, COMPASS_NOISE)
 
-        # Encoder: compute displacement from GT pose diff (= wheel encoder equivalent)
+        #Encoder: compute displacement from GT pose diff (= wheel encoder equivalent)
         dx = x - self.prev_gt_x
         dy = y - self.prev_gt_y
         displacement = math.hypot(dx, dy)
@@ -567,7 +565,7 @@ class TFRelay(Node):
         self.prev_gt_x = x
         self.prev_gt_y = y
 
-        # Log every ~5s (100 ticks at 20Hz)
+        # Log every +-5s (100 ticks at 20Hz)
         self.log_counter += 1
         if self.log_counter % 100 == 0:
             err = math.hypot(self.enc_x - x, self.enc_y - y)
@@ -643,7 +641,7 @@ class TFRelay(Node):
             self.get_logger().info(
                 f'SLAM-FRAME init: nav=({nav_x:.1f},{nav_y:.1f}) yaw={nav_yaw:.3f}')
 
-        # odometry delta
+        #odometry delta
         odom_dx = self.odom_x - self.prev_odom_x
         odom_dy = self.odom_y - self.prev_odom_y
         predicted_x = self.fused_x + odom_dx
@@ -676,7 +674,7 @@ class TFRelay(Node):
         self.prev_slam_ny = nav_y
         self.prev_slam_nyaw = nav_yaw
 
-        # log every ~5s
+        # log every +-5s
         self.log_counter += 1
         if self.log_counter % 100 == 0:
             gt_yaw = math.atan2(2 * self.last_qw * self.last_qz,
@@ -688,7 +686,7 @@ class TFRelay(Node):
                 f'fused=({self.fused_x:.1f},{self.fused_y:.1f},{self.fused_yaw:.2f}) '
                 f'gt=({self.last_x:.1f},{self.last_y:.1f})')
 
-        # publish TF: map -> odom = identity, odom -> base_link = fused pose
+        #publish TF: map -> odom = identity, odom -> base_link = fused pose
         fqz = math.sin(self.fused_yaw / 2)
         fqw = math.cos(self.fused_yaw / 2)
 
@@ -723,7 +721,7 @@ class TFRelay(Node):
 
     def _tick_slam_world(self, now, x, y, z, qx, qy, qz, qw):
         """Old SLAM mode: convert SLAM pose to world frame."""
-        # world -> base_link (GT)
+        #world -> base_link (GT)
         t1 = TransformStamped()
         t1.header.stamp = now
         t1.header.frame_id = 'world'

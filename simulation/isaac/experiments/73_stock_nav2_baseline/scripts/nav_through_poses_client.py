@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Stock-Nav2 baseline client.
+"""Stock-Nav2 baseline client
 
 Reads the teach trajectory CSV (same 4 m subsampling our send_goals_hybrid
 does) and sends the full WP list to /navigate_through_poses as a single

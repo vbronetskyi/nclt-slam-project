@@ -1,6 +1,5 @@
-#!/usr/bin/env python3
-"""
-IMU calibration test: dump raw sensor readings at 4 motion states.
+#!/usr/bin/env python3   
+"""IMU calibration test: dump raw sensor readings at 4 motion states
 
 Determines the actual IMU sensor frame mapping (which axis is up/forward/lateral)
 by observing where gravity, yaw rate, and forward acceleration appear in raw output.
@@ -58,7 +57,7 @@ if _phys.IsValid():
     PhysxSchema.PhysxSceneAPI(_phys).GetTimeStepsPerSecondAttr().Set(200)
     PhysxSchema.PhysxSceneAPI(_phys).CreateSolverTypeAttr().Set("TGS")
 
-# spawn position
+# spawn position   
 husky_xf = UsdGeom.Xformable(stage.GetPrimAtPath("/World/Husky"))
 husky_xf.ClearXformOpOrder()
 _translate = husky_xf.AddTranslateOp()
@@ -170,7 +169,7 @@ acc_yr, gyro_yr, _ = measure(
     "YAW RIGHT (CW, -yaw in world)", n=200,
     drive_left=v_yaw, drive_right=-v_yaw, settle=80)
 
-# Reset to spawn (stop wheels and re-spawn)
+#Reset to spawn (stop wheels and re-spawn)
 for wa in _wheel_vel_attrs:
     wa.Set(0)
 for _ in range(100):

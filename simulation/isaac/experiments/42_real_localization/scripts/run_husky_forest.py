@@ -1,6 +1,5 @@
-#!/usr/bin/env python3
-"""
-Husky A200 in forest scene with PhysX articulation drive and ROS2.
+#!/usr/bin/env python3   
+"""Husky A200 in forest scene with PhysX articulation drive and ROS2
 Records RGB-D + IMU data for ORB-SLAM3 evaluation.
 
 publishes: /camera/color/image_raw, /camera/depth/image_rect_raw, /imu/data, /odom, /tf
@@ -60,7 +59,7 @@ settings.set("/rtx/post/dof/enabled", False)
 settings.set("/rtx/post/bloom/enabled", False)
 settings.set("/rtx/post/lensFlares/enabled", False)
 settings.set("/rtx/directLighting/sampledLighting/enabled", False)
-# reflections off, indirect diffuse on (light through canopy)
+# reflections off, indirect diffuse on (light thorugh canopy)
 settings.set("/rtx/reflections/enabled", False)
 settings.set("/rtx/indirectDiffuse/enabled", True)
 # fabric off, PhysX needs direct USD sync for articulation control
@@ -111,7 +110,7 @@ IMU_PATH = "/World/Husky/Geometry/base_link/imu_link"
 WHEELS = ["front_left_wheel_joint", "front_right_wheel_joint",
           "rear_left_wheel_joint", "rear_right_wheel_joint"]
 
-# 200Hz physics with TGS solver (reduces contact oscillations for cleaner IMU)
+# 200Hz physics with TGS solver (reduces contact oscillations for cleaner IMU)   
 _phys_scene = stage.GetPrimAtPath("/World/PhysicsScene")
 if _phys_scene.IsValid():
     PhysxSchema.PhysxSceneAPI(_phys_scene).GetTimeStepsPerSecondAttr().Set(200)
@@ -153,7 +152,7 @@ _imu_ok, _imu_prim = omni.kit.commands.execute(
 )
 print(f"  IMU sensor: {IMU_SENSOR_PATH}")
 
-# wheel friction material
+#wheel friction material
 from pxr import UsdShade
 _wf_mat = UsdShade.Material.Define(stage, "/World/WheelFriction")
 _wf_phys = UsdPhysics.MaterialAPI.Apply(_wf_mat.GetPrim())
@@ -214,7 +213,7 @@ _husky_translate_op.Set(Gf.Vec3d(_spawn_x, _spawn_y, 0.2))  # updated after terr
 _husky_rotate_op.Set(Gf.Vec3f(0, 0, _spawn_yaw_deg))
 print(f"  spawn: ({_spawn_x}, {_spawn_y}, yaw={args.spawn_yaw:.2f}rad)")
 
-# ros2 graph
+#ros2 graph
 print("\ncreating ros2 graph...")
 keys = og.Controller.Keys
 og.Controller.edit(
@@ -301,7 +300,7 @@ print("warming up...")
 for _ in range(300):
     app.update()
 
-# camera render product for recording + web UI
+#camera render product for recording + web UI
 import omni.replicator.core as rep
 rp_fwd = rep.create.render_product(CAM_RGB, (640, 480))
 ann_fwd = rep.AnnotatorRegistry.get_annotator("rgb")
@@ -318,11 +317,11 @@ from isaacsim.sensors.physics import _sensor as _imu_mod
 _imu_interface = _imu_mod.acquire_imu_sensor_interface()
 
 # no articulation -- base_link is a regular rigid body now
-# wheels controlled via USD DriveAPI, pose via XformCache
+#wheels controlled via USD DriveAPI, pose via XformCache
 _base_link_prim = stage.GetPrimAtPath(BASE_LINK)
 print(f"  base_link: {_base_link_prim.IsValid()}")
 
-# _wheel_vel_attrs already set up earlier (DriveAPI target velocity)
+#_wheel_vel_attrs already set up earlier (DriveAPI target velocity)
 
 def _get_husky_pose():
     """robot pose from PhysX via XformCache (no articulation)"""
@@ -366,7 +365,7 @@ def _terrain_height(x, y):
     h += 0.35 * math.sin(x * 0.035 + 2.1) * math.sin(y * 0.03 + 0.7)
     h += 0.18 * math.sin(x * 0.07 + 3.3) * math.cos(y * 0.065 + 2.5)
     h += 0.12 * math.cos(x * 0.11 + 1.0) * math.sin(y * 0.09 + 4.0)
-    # small bumps (forest floor)
+    #small bumps (forest floor)
     h += 0.06 * math.sin(x * 0.5 + 0.7) * math.cos(y * 0.43 + 2.1)
     h += 0.04 * math.cos(x * 0.7 + 3.5) * math.sin(y * 0.6 + 0.4)
     h += 0.03 * math.sin(x * 1.0 + 1.2) * math.cos(y * 0.83 + 3.8)
@@ -410,7 +409,7 @@ for m in _models:
     elif m["type"] == "barrel":
         _obstacles.append((m["x"], m["y"], 0.5))
     elif m["type"] in ("fallen_oak", "fallen_pine"):
-        # fallen tree scaled 1.5-2x in scene, trunk ~12-16m long
+        # fallen tree scaled 1.5-2x in scene, trunk +-12-16m long
         yaw = m.get("yaw", 0)
         for d in [-7, -5, -3, -1, 0, 1, 3, 5, 7]:
             _obstacles.append((m["x"] + d * math.cos(yaw), m["y"] + d * math.sin(yaw), 0.6))
@@ -427,13 +426,13 @@ from geometry_msgs.msg import Twist
 rclpy.init()
 node = rclpy.create_node("husky_sim")
 
-# cmd_vel subscriber
+#cmd_vel subscriber
 latest_cmd = [Twist()]
 def cmd_cb(msg):
     latest_cmd[0] = msg
 node.create_subscription(Twist, "/cmd_vel", cmd_cb, 10)
 
-# topic counter
+#topic counter
 topic_counts = {}
 def make_cb(t):
     def cb(msg):
@@ -537,7 +536,7 @@ elif args.route == "warmup":
 
 # Prepend VIO warmup to forest routes if --vio-warmup flag is set
 if args.vio_warmup and _auto_route is not None and args.route in ("north", "south", "road"):
-    # Warmup ends at the last WARMUP_WAYPOINTS point.
+    #Warmup ends at the last WARMUP_WAYPOINTS point
     # Skip initial route waypoints that are behind or at the warmup-end X,
     # so robot continues forward smoothly instead of doubling back to spawn.
     import math as _math
@@ -582,12 +581,12 @@ _rec_img_count = 0
 print(f"  SLAM recording to {_rec_dir}")
 
 try:
-    # NOTE: zigzag init phase removed (exp 21 finding):
+    # zigzag init phase removed (exp 21 finding):
     # - DriveAPI commands didn't actually move the robot (forest uses ArticulationAPI)
-    # - Result: 12s of "fake" zigzag where IMU recorded ±2 m/s² wheel vibrations
+    #- Result: 12s of "fake" zigzag where IMU recorded ±2 m/s² wheel vibrations
     #   while GT showed robot static. ORB-SLAM3 built initial map from these
     #   stationary keyframes -> bad triangulation -> +0.13m to +6m extra ATE.
-    # - Init phase only helps VIO (which doesn't work on forest anyway).
+    # - Init phase only helps VIO (which doesn't work on forest anyway)
     # Recording starts driving the route immediately.
 
     # With render at 200fps, each app.update() = 1 physics step = 1/200s
@@ -673,7 +672,7 @@ try:
                         os.remove("/tmp/isaac_goal.txt")
                     except:
                         pass
-                    print("  REVERSED ~3s")
+                    print("  REVERSED +-3s")
                 elif goal_txt == "reset":
                     goal_x, goal_y = None, None
                     # teleport robot back to spawn (set root xform + stop wheels)
@@ -764,7 +763,7 @@ try:
             _get_husky_pose._traj_f.write("t,x,y,yaw\n")
         _get_husky_pose._traj_f.write(f"{sim_time:.2f},{rx:.4f},{ry:.4f},{current_yaw:.4f}\n")
         _get_husky_pose._traj_f.flush()
-        # sync camera with robot
+        #sync camera with robot
         cam_x = rx + CAM_FWD * math.cos(current_yaw)
         cam_y = ry + CAM_FWD * math.sin(current_yaw)
         cam_z = rz + CAM_UP

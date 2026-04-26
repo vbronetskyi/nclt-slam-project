@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Hybrid goal sender (v53) with proactive WP projection.
+"""Hybrid goal sender (v53) with proactive WP projection
 
 For every /global_costmap/costmap update:
   - Re-checks all *future* waypoints (current..end) against the costmap.
@@ -64,7 +64,7 @@ class HybridGoalSender(Node):
         # v59 known obstacles (from patch_obstacles_exp52 for south route).
         # Costmap updates have latency (robot must approach to depth-range
         # before obstacle is marked).  We also hard-check against these
-        # known positions so the lookahead fires BEFORE robot gets near.
+        # known positions so the lookahead fires BEFORE robot gets near
         self.KNOWN_CONES = [
             (-75.0, -24.0), (-75.0, -25.0), (-75.0, -26.0),
             (-18.0, -24.0), (-18.0, -25.0),
@@ -76,7 +76,7 @@ class HybridGoalSender(Node):
             'half_y': 1.0,
         }
         # Minimum allowed clearance from any known obstacle - WP body-edge
-        # must be ≥ this many metres from obstacle edge.
+        # must be ≥ this many metres from obstacle edge
         # v60: tightened from 0.9 -> 0.6 m. Robot half-width 0.5 m + 0.1 m
         # spec margin = WP center ≥ 0.6 m from obstacle edge (with ideal
         # localisation - real clearance depends on current SLAM drift).
@@ -241,7 +241,7 @@ class HybridGoalSender(Node):
             if self._cost_at(r, c) < self.PROJ_COST_THRESH:
                 nx, ny = self._xy_from_cell(r, c)
                 # v56-B: if projection shift exceeds cap, leave WP as-is so
-                # robot attempts original path (keeps closer to teach trajectory)
+                #robot attempts original path (keeps closer to teach trajectory)
                 shift = math.hypot(nx - x, ny - y)
                 if shift > self.PROJ_MAX_SHIFT_M:
                     return x, y, True   # "found but keep original"
@@ -313,7 +313,7 @@ class HybridGoalSender(Node):
         n_plan_fails = 0
         MAX_PLAN_FAILS = 5         # skip WP after consecutive plan failures
         while time.time() - t0 < self.GOAL_TIMEOUT:
-            # User projected position (may have moved since last tick)
+            #User projected position (may have moved since last tick)
             px, py = self.projected_wps[i]
             if self.skip_flags[i]:
                 self.get_logger().warn(
@@ -328,10 +328,10 @@ class HybridGoalSender(Node):
             if d < self.TOLERANCE:
                 self.get_logger().info(f"  WP {i} REACHED (d={d:.1f}m)")
                 return True
-            # v59 continuous lookahead: only abort if VERY close to
+            #v59 continuous lookahead: only abort if VERY close to
             # unsafe target (d<3m) AND known obstacle proximity.  Costmap
             # cost alone can spike from teach-map tree inflation - don't
-            # abort on that.
+            # abort on that
             if d < 3.0:
                 too_close, _ = self._wp_too_close_to_known(px, py)
                 if too_close:
@@ -382,7 +382,7 @@ class HybridGoalSender(Node):
     def _precise_approach(self, tx, ty, label, budget=60.0, tol=0.5):
         """GT-based dead-reckoning finisher for critical endpoints.
 
-        Used after Nav2 gets the robot within ~1.5 m of the target. Drives
+        Used after Nav2 gets the robot within +-1.5 m of the target. Drives
         encoder-only to land physically within `tol` of the teach GT point.
         Returns True on success.
         """
@@ -419,7 +419,7 @@ class HybridGoalSender(Node):
         return False
 
     def run(self):
-        # Wait for map->base_link tf (listener needs a few spin cycles).
+        # Wait for map->base_link tf (listener needs a few spin cycles)
         for _ in range(40):
             rclpy.spin_once(self, timeout_sec=0.25)
             rx0, ry0 = self._read_robot_pose()
@@ -428,7 +428,7 @@ class HybridGoalSender(Node):
         turn_idx = max(range(self.n_wps), key=lambda i: self.original_wps[i][0])
         self._turn_idx = turn_idx
         # Teach GT coordinates for precise finisher: the turnaround point
-        # (max x in teach) and the return-end (last teach point).
+        # (max x in teach) and the return-end (last teach point)
         self._precise_targets = {
             turn_idx: ('TURNAROUND', self.original_wps[turn_idx]),
             self.n_wps - 1: ('END', self.original_wps[self.n_wps - 1]),
@@ -454,12 +454,12 @@ class HybridGoalSender(Node):
                 continue
 
             # v59 LOOK-AHEAD + KNOWN-OBSTACLE CHECK (reverted from r2 SKIP):
-            # WP in known obstacle or high-cost cell -> DETOUR around.
+            # WP in known obstacle or high-cost cell -> DETOUR around
             # r2's SKIP-and-let-Nav2-route policy caused plan failures on
             # the next WP (Nav2 couldn't find paths around from drifted
-            # poses) and cost more drift than the original tent overlap.
+            #poses) and cost more drift than the original tent overlap
             # Critical endpoints (turnaround + end) never use DETOUR -
-            # they go straight through Nav2 follow to the precise finisher.
+            # they go straight thorugh Nav2 follow to the precise finisher
             unsafe_reason = None
             too_close, what = self._wp_too_close_to_known(x, y)
             if too_close:
@@ -495,7 +495,7 @@ class HybridGoalSender(Node):
             self.get_logger().info(
                 f"WP {i}/{self.n_wps - 1}: ({x:.1f},{y:.1f}) {tag}")
             reached_ok = self.follow_waypoint(i, x, y)
-            # Precise finisher for critical endpoints (turnaround + end).
+            # Precise finisher for critical endpoints (turnaround + end)
             # These points are non-skippable and require GT body-edge within
             # 0.5 m of the teach GT coordinate.
             if i in self._precise_targets:
@@ -505,7 +505,7 @@ class HybridGoalSender(Node):
                     self.reached += 1
                 else:
                     # One retry budget - relax the clearance check so we can
-                    # always loop back through even if drift grew.
+                    # always loop back thorugh even if drift grew
                     self.get_logger().warn(
                         f'  CRITICAL {label}: retrying precise approach')
                     ok2 = self._precise_approach(tx, ty, label, budget=45.0)

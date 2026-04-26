@@ -193,7 +193,7 @@ planner_server:
     GridBased:
       # v18: SmacPlanner2D considers robot footprint when planning,
       # avoids narrow halo gaps that NavFn would pick (1-cell gaps too
-      # tight for 0.7m robot through inflated zones)
+      # tight for 0.7m robot thorugh inflated zones)
       plugin: "nav2_smac_planner::SmacPlanner2D"
       tolerance: 2.0
       downsample_costmap: false

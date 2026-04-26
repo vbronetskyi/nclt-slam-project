@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fix south route anchors to maintain >= CLEARANCE m from any obstacle.
+"""Fix south route anchors to maintain >= CLEARANCE m from any obstacle
 
 Loads gazebo_models.json (same collision data as run_husky_forest.py),
 iterates WPs, nudges each WP perpendicular to nearest obstacle until
@@ -72,7 +72,7 @@ def nudge_away(p, obs, clearance=CLEARANCE, robot_r=ROBOT_RADIUS, max_iter=30):
         if v is None:
             return cur
         idx, dist, gap = v
-        # unit vector from obstacle to point
+        # unit vector from obstacle to point   
         vec = cur - obs[idx, :2]
         n = np.linalg.norm(vec)
         if n < 1e-6:
@@ -108,7 +108,7 @@ def main():
     south = np.array(routes["south"])
     print(f"Original south route: {len(south)} WPs")
 
-    # stats
+    # stats   
     vio = 0
     gaps_orig = []
     for p in south:
@@ -120,7 +120,7 @@ def main():
     if gaps_orig:
         print(f"  worst gap: {min(gaps_orig):+.2f}m  mean: {np.mean(gaps_orig):+.2f}m")
 
-    # fix
+    #fix
     fixed = []
     skipped = 0
     for i, p in enumerate(south):

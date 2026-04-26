@@ -31,9 +31,9 @@ Viewer.ViewpointY: -0.7
 Viewer.ViewpointZ: -1.8
 Viewer.ViewpointF: 500
 
-#--------------------------------------------------------------------------------------------
+
 # IMU Parameters - measured with Isaac Sim PhysX filter=60 (exp 15)
-#--------------------------------------------------------------------------------------------
+
 # Stationary: acc_std=0.0001, gyro_std=0.0001
 # Moving 0.5 m/s: acc_std=0.050, gyro_std=0.022
 # Effective rate: 6 readings per camera frame at 10fps = 60 Hz
@@ -43,11 +43,11 @@ IMU.GyroWalk: 1.0e-3
 IMU.AccWalk: 5.0e-3
 IMU.Frequency: 60
 
-#--------------------------------------------------------------------------------------------
+
 # Tbc - IMU and Camera both in FLU after Python URF->FLU conversion
 # IMU at base_link+(0.2, 0, 0.38), Camera at base_link+(0.5, 0, 0.48)
 # Translation = camera - IMU = (0.3, 0, 0.1)
-#--------------------------------------------------------------------------------------------
+
 Tbc: !!opencv-matrix
    rows: 4
    cols: 4

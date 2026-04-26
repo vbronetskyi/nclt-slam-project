@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Offline WP sanitization: shift or skip waypoints inside obstacle zones.
+"""Offline WP sanitization: shift or skip waypoints inside obstacle zones
 
 Reads the original trajectory CSV + teach occupancy map + known
 obstacle positions (cones, tent), then for each waypoint:

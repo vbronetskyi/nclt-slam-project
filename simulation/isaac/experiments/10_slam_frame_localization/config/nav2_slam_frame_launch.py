@@ -1,5 +1,4 @@
-"""
-Nav2 launch for SLAM-frame navigation.
+"""Nav2 launch for SLAM-frame navigation
 Uses empty occupancy grid - only depth obstacle layer for avoidance.
 No static map needed: robot + waypoints both in SLAM coordinate frame.
 

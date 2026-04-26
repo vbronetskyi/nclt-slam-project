@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Exp 55 teach-time visual landmark recorder.
+"""Exp 55 teach-time visual landmark recorder
 
-Every ~2 m of VIO displacement, this node captures the current RGB frame,
+Every +-2 m of VIO displacement, this node captures the current RGB frame,
 extracts ORB features, back-projects the keypoints into 3D via the depth
 image, and stores a landmark record. At shutdown the full landmark list
 is pickled to south_landmarks.pkl.
@@ -14,21 +14,6 @@ Inputs (all read from ROS topics - NO GT access):
                                  unmodified tf_relay in GT mode; in the
                                  architecture diagram this corresponds to
                                  the VIO-derived teach pose.
-
-Output:
-  experiments/55_visual_teach_repeat/teach/south_landmarks.pkl
-  experiments/55_visual_teach_repeat/teach/landmarks_debug.png
-
-Each landmark record is a dict:
-  pose:          (x, y, z, qx, qy, qz, qw)   teach camera pose (world frame)
-  descriptors:   (N, 32) uint8              ORB descriptors for accepted kpts
-  keypoints_2d:  (N, 2)  float32            pixel coords (x, y)
-  keypoints_3d_cam: (N, 3) float32          back-projected into camera frame
-  ts:            float                      wall_ts of frame
-  n_features:    int                        = N
-
-The teach pose stored is the **camera** pose, computed by applying the
-static base_link->camera offset to the current robot pose file.
 """
 import argparse
 import math
@@ -74,7 +59,7 @@ def _img_msg_to_depth_mm(msg):
     raise ValueError(f'unexpected depth encoding {msg.encoding}')
 
 
-# Camera intrinsics - from exp 53 vio_th160.yaml (same Isaac setup)
+#Camera intrinsics - from exp 53 vio_th160.yaml (same Isaac setup)
 FX, FY = 320.0, 320.0
 CX, CY = 320.0, 240.0
 W, H = 640, 480
@@ -82,10 +67,10 @@ DEPTH_MIN_M = 0.5
 DEPTH_MAX_M = 15.0           # forest trees up to 15 m
 DEPTH_VAR_MAX_M = 0.30       # tolerate more variance; std computed on non-zero only
 
-# Static offset: base_link -> camera_color_optical_frame.
+# Static offset: base_link -> camera_color_optical_frame
 # Isaac Sim husky_d435i: camera 0.35 m fwd, 0.18 m up from base_link,
-# camera optical frame is RDF (x right, y down, z fwd).  base_link FLU.
-# base->cam (FLU -> RDF at camera origin):
+#camera optical frame is RDF (x right, y down, z fwd).  base_link FLU.   
+#base->cam (FLU -> RDF at camera origin):
 #   cam_x = -base_y
 #   cam_y = -base_z
 #   cam_z =  base_x
@@ -152,7 +137,7 @@ def base_to_cam_world(base_x, base_y, base_z, base_qx, base_qy, base_qz, base_qw
     Returns camera world pose as (x, y, z, qx, qy, qz, qw).
     """
     R_world_base = quat_to_rot(base_qx, base_qy, base_qz, base_qw)
-    # Camera position in world
+    #Camera position in world
     cam_pos_world = np.array([base_x, base_y, base_z]) + \
                     R_world_base @ BASE_TO_CAM_TRANSLATION
     # Camera orientation in world = world_base * base_cam
@@ -265,7 +250,7 @@ class VisualLandmarkRecorder(Node):
         kpts_xy_kept = kpts_xy[valid]
         desc_kept = desc[valid]
 
-        # Depth at each kept kpt (mm -> m)
+        #Depth at each kept kpt (mm -> m)
         d_c = self.last_depth[vv, uu].astype(np.float32) / 1000.0
         # Local 3x3 patch std to reject depth discontinuity (edges), computed
         # over non-zero pixels only so nan/inf holes don't inflate std.
@@ -291,7 +276,7 @@ class VisualLandmarkRecorder(Node):
         desc_final = desc_kept[ok]
         d_c = d_c[ok]
 
-        # Back-project to 3D in camera frame (optical: X right, Y down, Z fwd)
+        #Back-project to 3D in camera frame (optical: X right, Y down, Z fwd)
         x_cam = (uu - CX) * d_c / FX
         y_cam = (vv - CY) * d_c / FY
         z_cam = d_c

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Isaac Sim bridge for Nav2 navigation.
+"""Isaac Sim bridge for Nav2 navigation
 Publishes GT TF + depth pointcloud, reads cmd_vel from Nav2.
 
 Usage:
@@ -63,7 +62,7 @@ BASE_LINK = "/World/Husky/Geometry/base_link"
 CAM_FWD = 0.5
 CAM_UP = 0.48
 
-# Load route start position
+# Load route start position   
 ROUTE_MEMORY = f"/workspace/simulation/isaac/route_memory/{args.route}"
 with open(f"{ROUTE_MEMORY}/anchors.json") as f:
     all_anchors = json.load(f)
@@ -144,7 +143,7 @@ def _get_husky_pose():
     yaw = math.atan2(fwd[1], fwd[0])
     return float(t[0]), float(t[1]), float(t[2]), float(yaw)
 
-# Setup camera
+#Setup camera
 from isaacsim.sensors.camera import Camera
 cam = Camera(prim_path="/World/HuskyCamera",
              resolution=(640, 480), frequency=10)
@@ -152,7 +151,7 @@ cam.initialize()
 cam.set_focal_length(1.88)
 cam.set_clipping_range(0.1, 100.0)
 
-# Start simulation
+#Start simulation
 timeline = omni.timeline.get_timeline_interface()
 timeline.play()
 for _ in range(120):
@@ -223,14 +222,14 @@ try:
         if ops:
             ops[0].Set(Gf.Vec3d(cam_x, cam_y, cam_z))
             if len(ops) > 1:
-                # Rotation as quaternion (yaw only)
+                # Rotation as quaternion (yaw only)   
                 half = ryaw / 2.0
                 ops[1].Set(Gf.Quatd(math.cos(half), 0, 0, math.sin(half)))
 
         # Apply Nav2 cmd_vel
         send_wheels(latest_cmd[0], latest_cmd[1])
 
-        # Publish TF every 3 frames (~20Hz)
+        # Publish TF every 3 frames (+-20Hz)
         if frame_count % 3 == 0:
             rclpy.spin_once(node, timeout_sec=0)
 
@@ -266,7 +265,7 @@ try:
             tf_cam.transform.rotation.w = 1.0
             tf_broadcaster.sendTransform(tf_cam)
 
-        # Publish depth pointcloud every 6 frames (~10Hz)
+        # Publish depth pointcloud every 6 frames (+-10Hz)
         if frame_count % 6 == 0:
             depth = cam.get_depth()
             if depth is not None and depth.size > 0:
@@ -280,7 +279,7 @@ try:
                         # -> base_link frame: X forward, Y left, Z up
                         cx = (u - CX) / FX * d
                         cy = (v - CY) / FY * d
-                        # Transform camera -> base_link
+                        #Transform camera -> base_link
                         px = d          # forward
                         py = -cx        # left
                         pz = -cy + CAM_UP  # up

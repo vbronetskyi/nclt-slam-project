@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Teach-and-repeat in a single Isaac Sim session.
+"""Teach-and-repeat in a single Isaac Sim session
 Phase 1 (teach): drive via GT waypoints, record anchors in-memory.
 Phase 2 (repeat): teleport to start, drive via visual anchor matching.
 
@@ -44,9 +43,7 @@ if args.use_planner:
 if args.use_hybrid:
     args.use_grid = False  # hybrid manages its own grid
 
-# =====================================================================
 # Isaac Sim setup (identical to run_husky_teach_repeat.py)
-# =====================================================================
 from isaacsim import SimulationApp
 app = SimulationApp({
     "headless": True,
@@ -98,7 +95,7 @@ for _ in range(30):
     app.update()
 stage = omni.usd.get_context().get_stage()
 
-# Scene already pre-built by convert_gazebo_to_isaac.py with:
+# Scene already pre-built by convert_gazebo_to_isaac.py with:   
 # - Trees thinned 33%, no ferns, reduced cover, debris instead of fallen
 # - No runtime deactivation needed (was causing 6+ min delays)
 print("scene pre-built (no runtime thinning needed)")
@@ -370,7 +367,7 @@ class DepthAvoidance:
             return 1.0, 0.0, False
         d = {n: self.sector_dist(depth, n) for n in self.sectors}
 
-        # Never fully block - always creep forward (min 0.15 m/s via speed scale)
+        #Never fully block - always creep forward (min 0.15 m/s via speed scale)
         if d["center"] < self.CRITICAL_DIST:
             speed = 0.15 / 0.8  # will be multiplied by MAX_LINEAR_VEL
         elif d["center"] < self.SLOWDOWN_DIST:
@@ -422,9 +419,7 @@ if args.skip_teach:
     print(f"  {len(anchors)} anchors, {len(anchor_descs)} desc, {len(anchor_depth_profiles)} dp")
     s_accum = anchors[-1]["s"] if anchors else 0
 
-# =====================================================================
-# PHASE 1: TEACH (skip if --skip-teach)
-# =====================================================================
+# PHASE 1: TEACH (skip if --skip-teach)   
 if not args.skip_teach:
     print(f"\n{'='*60}")
     print(f"PHASE 1: TEACH - driving {len(teach_waypoints)} waypoints")
@@ -548,9 +543,7 @@ while sim_time < args.duration / 2 and wp_idx < len(teach_waypoints):
         json.dump(anchors, _af, indent=2)
     print(f"  Saved {len(anchors)} anchors to {_rm}/anchors.json")
 
-# =====================================================================
 # TELEPORT BACK TO START
-# =====================================================================
 print("\nTeleporting to start...")
 stop_wheels()
 for _ in range(60):
@@ -586,12 +579,10 @@ print(f"  robot at ({p[0]:.1f}, {p[1]:.1f}) - target ({sx:.1f}, {sy:.1f}) err={t
 if teleport_err > 5.0:
     print(f"  WARNING: teleport error {teleport_err:.1f}m > 5m!")
 
-# Initialize encoder prev from actual GT position after teleport
+#Initialize encoder prev from actual GT position after teleport
 enc_prev_x, enc_prev_y, enc_prev_yaw = p[0], p[1], p[3]
 
-# =====================================================================
 # PHASE 2: REPEAT - odometry-primary + visual correction
-# =====================================================================
 print(f"\n{'='*60}")
 print(f"PHASE 2: REPEAT - {len(anchors)} anchors, odometry-primary")
 print(f"{'='*60}\n")
@@ -646,7 +637,7 @@ follower.initialize_from_anchor(REPEAT_START_ANCHOR)
 odom_s = anchors[REPEAT_START_ANCHOR]["s"]
 odom_anchor_idx = REPEAT_START_ANCHOR
 
-VISUAL_EVERY = 30  # every 30 frames = ~2Hz; visual is soft correction only
+VISUAL_EVERY = 30  # every 30 frames = +-2Hz; visual is soft correction only
 frame_count = 0
 prev_lin = 0.0
 repeat_start = sim_time
@@ -724,7 +715,7 @@ try:
         sim_time += dt
         frame_count += 1
 
-        # Update camera (GT needed for rendering + encoder simulation)
+        #Update camera (GT needed for rendering + encoder simulation)
         rx, ry, rz, ryaw = update_camera()
 
         # 1. Encoder odometry: PhysX pose diff (simulates wheel encoders)
@@ -739,7 +730,7 @@ try:
             enc_lin *= (1.0 + enc_rng.normal(0, ENCODER_NOISE))
             enc_ang *= (1.0 + enc_rng.normal(0, ENCODER_NOISE * 2))
 
-            # FIX 1: Route progress only from forward motion, not turns
+            #FIX 1: Route progress only from forward motion, not turns
             # Skip distance when mostly turning (angular > 0.3 rad/frame, linear < 5mm)
             if enc_lin > 0.005 and abs(enc_ang) < 0.05:
                 odom_s += enc_lin
@@ -776,14 +767,14 @@ try:
 
         enc_prev_x, enc_prev_y, enc_prev_yaw = rx, ry, ryaw
 
-        # 2. Robust visual matching (sequence + depth + conservative)
+        #2. Robust visual matching (sequence + depth + conservative)
         if frame_count % VISUAL_EVERY == 0:
             rgb = get_rgb()
             depth_for_match = get_depth()
             if rgb is not None:
                 loc_id, vis_conf, _ = robust_loc.localize(rgb, depth_for_match)
 
-                # Soft odom_s correction from confirmed anchor
+                #Soft odom_s correction from confirmed anchor
                 if vis_conf > 0.3:
                     vis_s = anchors[robust_loc.confirmed_anchor_id]["s"]
                     corr = (vis_s - odom_s) * 0.2
@@ -825,7 +816,7 @@ try:
         # Find nearest anchor to GT position for correct lookahead
         _gt_anchor = min(range(len(anchors)),
                          key=lambda i: math.hypot(anchors[i]["x"]-rx, anchors[i]["y"]-ry))
-        _gt_la = min(_gt_anchor + 4, len(anchors) - 1)  # lookahead ~8m
+        _gt_la = min(_gt_anchor + 4, len(anchors) - 1)  # lookahead +-8m
         _gt_tx, _gt_ty = anchors[_gt_la]["x"], anchors[_gt_la]["y"]
         desired_heading = math.atan2(_gt_ty - ry, _gt_tx - rx)
         heading_err = desired_heading - ryaw

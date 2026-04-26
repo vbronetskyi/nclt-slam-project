@@ -1,18 +1,7 @@
 #!/usr/bin/env python3
-"""Pure pursuit follower with spin-in-place cascade protection (v9).
+"""Pure pursuit follower with spin-in-place cascade protection (v9)
 
 Subscribes to Nav2 /plan, publishes /cmd_vel. Pure pursuit control law
-with a new safety layer:
-
-- Monitors "spinning" state: high |w|, low |v|, low progress over time.
-- If spinning for > SPIN_LIMIT_S without translating meaningfully,
-  stop emitting rotate commands for a cooldown period. Without the
-  feedback from the rotate, localization gets a chance to stabilise.
-
-Rationale: in exp 51 v8, VIO err past 150 m grew > Nav2 goal-tolerance;
-Nav2 kept replanning; new path's lookahead point ended up "behind" robot;
-PP read that as 180° heading err -> saturated w=0.8 rad/s. Robot spun in
-place, adding VIO uncertainty, cascading to failure.
 """
 import argparse
 import math
@@ -143,7 +132,7 @@ class PurePursuitFollower(Node):
             self.spin_accum_t = max(0.0, self.spin_accum_t - 0.2)
 
         if t_now < self.cooldown_until:
-            # Inside cooldown - suppress rotation, just creep forward slowly.
+            # Inside cooldown - suppress rotation, just creep forward slowly
             cmd.angular.z = 0.0
             cmd.linear.x = 0.15
         elif self.spin_accum_t >= self.SPIN_LIMIT_S:

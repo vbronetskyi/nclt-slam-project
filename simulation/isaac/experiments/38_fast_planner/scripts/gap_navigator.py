@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Feasible-gap navigation constrained by route heading.
+"""Feasible-gap navigation constrained by route heading
 
 Finds real passable gaps between obstacles considering Husky width,
 then picks the best gap aligned with the route direction.
@@ -118,10 +117,10 @@ class GapNavigator:
         cl = float(np.min(valid)) if len(valid) > 3 else self.MAX_RANGE
         md = float(np.median(valid)) if len(valid) > 3 else self.MAX_RANGE
 
-        # Physical width at gap depth (for scoring, not filtering).
+        #Physical width at gap depth (for scoring, not filtering).
         # Filtering was tested but rejects bypass gaps that are narrowed by
         # roadside vegetation in real depth images. Keep all gaps, let scoring
-        # prefer wider ones.
+        # prefer wider ones
         pw = 2.0 * md * math.tan(aw / 2.0)
 
         return {
@@ -203,7 +202,7 @@ class GapNavigator:
         """Check for obstacles in narrow center strip (10% of image) at 2-4m
         range. Only triggers for obstacles directly ahead, not roadside."""
         w = self.DEPTH_WIDTH
-        # Very narrow center: cols 288-352 (10% of 640) - only direct path
+        #Very narrow center: cols 288-352 (10% of 640) - only direct path
         c10 = w // 20  # 32 pixels each side
         center = profile[w // 2 - c10: w // 2 + c10]
         # Count pixels in the early detection range
@@ -247,14 +246,14 @@ class GapNavigator:
         debug["sel_score"] = selected["total_score"]
         debug["sel_width"] = selected["angular_width"]
 
-        # Early avoidance: something in center at 2-4m range
+        #Early avoidance: something in center at 2-4m range
         # Start gentle lateral shift BEFORE it triggers GAP_MODE
         w = self.DEPTH_WIDTH
         early_ratio, early_min = self._check_early_center_obstacle(profile)
 
-        # Early avoidance is checked but only triggers when GAP_MODE would
-        # soon activate - don't interfere with normal ROUTE_TRACKING.
-        # The data is logged for analysis but no special command is issued.
+        #Early avoidance is checked but only triggers when GAP_MODE would
+        # soon activate - don't interfere with normal ROUTE_TRACKING
+        #The data is logged for analysis but no special command is issued
 
         if self.mode == "ROUTE_TRACKING":
             ang = np.clip(desired_heading_error * 1.5,

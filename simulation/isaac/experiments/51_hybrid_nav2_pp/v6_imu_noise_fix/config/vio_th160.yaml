@@ -18,18 +18,18 @@ DepthMapFactor: 1000.0
 
 # Exp 51 v3: disable loop closing for teach-and-repeat single-pass navigation.
 # Forest features caused 24+ BAD LOOP candidates in v2; one false-accepted loop
-# at ~150m jumped the map 30m and crashed localization. Single-pass routes
+# at +-150m jumped the map 30m and crashed localization. Single-pass routes
 # don't benefit from loop closure. Read by System.cc:101-106.
 loopClosing: 0
 
-# Exp 51 v6: IMU noise model matched to measured synth-IMU std.
+# Exp 51 v6: IMU noise model matched to measured synth-IMU std
 # v5 diagnostic found yaml's 0.02/0.005 is 50-176x too optimistic:
 # measured ax std = 3.52, ay/az = 1.1, gz = 0.139, gx/gy = 0.005.
 # Old 0.02/0.005 caused ORB-SLAM3 BA to over-trust IMU -> integrate
 # high-frequency noise as signal -> scale drift. Corrected values let
-# BA weight IMU proportionally to its actual uncertainty.
+# BA weight IMU proportionally to its actual uncertainty
 IMU.NoiseGyro: 5.0e-2     # was 5.0e-3 (gz noise 0.14; gx/gy 0.005 - conservative middle)
-IMU.NoiseAcc: 1.5         # was 2.0e-2 (ax noise 3.5, ay/az 1.1; RMS ~1.5)
+IMU.NoiseAcc: 1.5         # was 2.0e-2 (ax noise 3.5, ay/az 1.1; RMS +-1.5)
 IMU.GyroWalk: 1.0e-3
 IMU.AccWalk: 5.0e-3
 IMU.Frequency: 200

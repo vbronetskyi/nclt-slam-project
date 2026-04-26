@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Husky A200 in forest scene with PhysX articulation drive and ROS2.
+"""Husky A200 in forest scene with PhysX articulation drive and ROS2
 Records RGB-D + IMU data for ORB-SLAM3 evaluation.
 
 publishes: /camera/color/image_raw, /camera/depth/image_rect_raw, /imu/data, /odom, /tf
@@ -54,13 +53,13 @@ from pxr import UsdGeom, UsdLux, UsdPhysics, PhysxSchema, Gf, Sdf, PhysicsSchema
 settings = carb.settings.get_settings()
 settings.set("/rtx/raytracing/backfaceCulling", False)
 settings.set("/rtx/directLighting/backfaceCulling", False)
-# post-processing off (not needed for SLAM)
+# post-processing off (not needed for SLAM)   
 settings.set("/rtx/post/motionblur/enabled", False)
 settings.set("/rtx/post/dof/enabled", False)
 settings.set("/rtx/post/bloom/enabled", False)
 settings.set("/rtx/post/lensFlares/enabled", False)
 settings.set("/rtx/directLighting/sampledLighting/enabled", False)
-# reflections off, indirect diffuse on (light through canopy)
+# reflections off, indirect diffuse on (light thorugh canopy)
 settings.set("/rtx/reflections/enabled", False)
 settings.set("/rtx/indirectDiffuse/enabled", True)
 # fabric off, PhysX needs direct USD sync for articulation control
@@ -182,7 +181,7 @@ def _make_cam_matrix(x, y, z, yaw, pitch=0):
     """camera matrix: look along yaw direction with pitch tilt, up = +Z"""
     cy, sy = math.cos(yaw), math.sin(yaw)
     cp, sp = math.cos(pitch), math.sin(pitch)
-    # Base rotation (yaw only): row0=(sy,-cy,0) row1=(0,0,1) row2=(-cy,-sy,0)
+    # Base rotation (yaw only): row0=(sy,-cy,0) row1=(0,0,1) row2=(-cy,-sy,0)   
     # Add pitch: rotate around camera's local X axis (row0)
     # row1 rotated by pitch: row1*cos(p) + row2*sin(p)
     # row2 rotated by pitch: -row1*sin(p) + row2*cos(p)
@@ -398,7 +397,7 @@ for m in _all_trees:
         continue
     _obstacles.append((m["x"], m["y"], 0.7))
 
-# rocks (with road shift)
+#rocks (with road shift)
 for m in _models:
     if m["type"] == "rock":
         rx, ry = m["x"], m["y"]
@@ -410,7 +409,7 @@ for m in _models:
     elif m["type"] == "barrel":
         _obstacles.append((m["x"], m["y"], 0.5))
     elif m["type"] in ("fallen_oak", "fallen_pine"):
-        # fallen tree scaled 1.5-2x in scene, trunk ~12-16m long
+        # fallen tree scaled 1.5-2x in scene, trunk +-12-16m long
         yaw = m.get("yaw", 0)
         for d in [-7, -5, -3, -1, 0, 1, 3, 5, 7]:
             _obstacles.append((m["x"] + d * math.cos(yaw), m["y"] + d * math.sin(yaw), 0.6))
@@ -471,7 +470,7 @@ ROAD_WPS = [
 
 def find_road_path(robot_x, robot_y, goal_x, goal_y):
     """find sequence of road waypoints from robot to goal"""
-    # find closest wp to robot
+    #find closest wp to robot
     def closest_wp(x, y):
         best_i, best_d = 0, 1e9
         for i, (wx, wy) in enumerate(ROAD_WPS):
@@ -503,7 +502,7 @@ except FileNotFoundError:
 current_path = []
 path_idx = 0
 
-# auto-navigate predefined route
+#auto-navigate predefined route
 _auto_route = None
 _auto_idx = 1  # start from waypoint 1 (waypoint 0 is spawn)
 
@@ -535,11 +534,11 @@ elif args.route == "warmup":
     _auto_route = list(WARMUP_WAYPOINTS)
     print(f"  AUTO ROUTE: warmup aggressive zigzag ({len(_auto_route)} waypoints)")
 
-# Prepend VIO warmup to forest routes if --vio-warmup flag is set
+#Prepend VIO warmup to forest routes if --vio-warmup flag is set
 if args.vio_warmup and _auto_route is not None and args.route in ("north", "south", "road"):
-    # Warmup ends at the last WARMUP_WAYPOINTS point.
+    # Warmup ends at the last WARMUP_WAYPOINTS point
     # Skip initial route waypoints that are behind or at the warmup-end X,
-    # so robot continues forward smoothly instead of doubling back to spawn.
+    #so robot continues forward smoothly instead of doubling back to spawn
     import math as _math
     warmup_end_x = WARMUP_WAYPOINTS[-1][0]
     warmup_end_y = WARMUP_WAYPOINTS[-1][1]
@@ -582,13 +581,13 @@ _rec_img_count = 0
 print(f"  SLAM recording to {_rec_dir}")
 
 try:
-    # NOTE: zigzag init phase removed (exp 21 finding):
+    # zigzag init phase removed (exp 21 finding):
     # - DriveAPI commands didn't actually move the robot (forest uses ArticulationAPI)
     # - Result: 12s of "fake" zigzag where IMU recorded ±2 m/s² wheel vibrations
     #   while GT showed robot static. ORB-SLAM3 built initial map from these
     #   stationary keyframes -> bad triangulation -> +0.13m to +6m extra ATE.
-    # - Init phase only helps VIO (which doesn't work on forest anyway).
-    # Recording starts driving the route immediately.
+    #- Init phase only helps VIO (which doesn't work on forest anyway)
+    # Recording starts driving the route immediately
 
     # With render at 200fps, each app.update() = 1 physics step = 1/200s
     # IMU: every step (200Hz), Camera: every 20th step (10Hz), GT/odom: every step
@@ -621,7 +620,7 @@ try:
                                 f"{_ax:.6f} {_ay:.6f} {_az:.6f} "
                                 f"{_qx:.6f} {_qy:.6f} {_qz:.6f} {_qw:.6f}\n")
 
-        # Navigation + camera + GT only every 20th step (10Hz)
+        #Navigation + camera + GT only every 20th step (10Hz)
         if _step_count % 20 != 0:
             continue
 
@@ -673,10 +672,10 @@ try:
                         os.remove("/tmp/isaac_goal.txt")
                     except:
                         pass
-                    print("  REVERSED ~3s")
+                    print("  REVERSED +-3s")
                 elif goal_txt == "reset":
                     goal_x, goal_y = None, None
-                    # teleport robot back to spawn (set root xform + stop wheels)
+                    #teleport robot back to spawn (set root xform + stop wheels)
                     _husky_translate_op.Set(Gf.Vec3d(-95, -6, _spawn_z))
                     _husky_rotate_op.Set(Gf.Vec3f(0, 0, 0))
                     for _wa in _wheel_vel_attrs:
@@ -807,7 +806,7 @@ try:
             except:
                 pass
 
-        # GT + odometry + IMU recording
+        #GT + odometry + IMU recording
         if _recording and frame_n % 1 == 0:
             pp = _get_husky_pose()
             rx, ry, rz = float(pp[0][0]), float(pp[0][1]), float(pp[0][2])
@@ -840,7 +839,7 @@ try:
                 lin_v = math.hypot(vx, vy)
                 _odom_file.write(f"{ts:.4f},{rx:.6f},{ry:.6f},{rz:.6f},{qx:.6f},{qy:.6f},{qz:.6f},{qw:.6f},{lin_v:.6f},{vyaw:.6f}\n")
 
-                # IMU recorded at 240Hz in the physics step loop above
+                #IMU recorded at 240Hz in the physics step loop above
             _get_husky_pose._prev = (rx, ry, cur_yaw)
 
         if int(sim_time) % 10 == 0 and abs(sim_time - int(sim_time)) < 0.02:
@@ -850,7 +849,7 @@ try:
 except KeyboardInterrupt:
     print("\nstopped")
 
-# close recording files
+#close recording files
 if _recording:
     _gt_file.close()
     _gt_tum_file.close()

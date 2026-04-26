@@ -34,7 +34,7 @@ def partial_progress(goals_log):
         i = int(m.group(1)); t = int(m.group(2))
         if i > reached: reached = i
         if t > total: total = t
-    # send_goals_hybrid:  count "WP N REACHED" lines; total from "WP N/M:"
+    #send_goals_hybrid:  count "WP N REACHED" lines; total from "WP N/M:"
     rc = len(REACHED_RE.findall(txt))
     if rc > reached: reached = rc
     for m in WP_TOTAL_RE.finditer(txt):

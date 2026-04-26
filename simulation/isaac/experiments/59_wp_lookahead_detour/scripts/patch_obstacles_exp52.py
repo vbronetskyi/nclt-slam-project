@@ -11,7 +11,7 @@ with open(SRC) as f:
     code = f.read()
 
 # Exp 52 south obstacles - reuse exp 50's validated ON-route cone walls
-# that sit perpendicular to the robot path, each forcing a real replan.
+# that sit perpendicular to the robot path, each forcing a real replan
 new_south = '''    "south": {
         "cones": [
             # Obstacle A (x=-75, on route @ y~-24.6): 3-cone wall y=-24..-26

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Send Nav2 waypoints sequentially from VIO trajectory (TUM format).
+"""Send Nav2 waypoints sequentially from VIO trajectory (TUM format)
 
 Reads a TUM trajectory file (ts tx ty tz qx qy qz qw), subsamples to
 desired spacing, and sends each as a sequential /navigate_to_pose goal.

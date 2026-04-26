@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Offline WP sanitization: shift or skip waypoints inside obstacle zones.
+"""Offline WP sanitization: shift or skip waypoints inside obstacle zones
 
 Reads the original trajectory CSV + teach occupancy map + known
 obstacle positions (cones, tent), then for each waypoint:
@@ -55,7 +55,7 @@ def load_teach_map(yaml_path):
 def stamp_obstacles(occupied, origin_x, origin_y, res, cones, tent_center, tent_half):
     """Mark runtime obstacles (cones + tent) into the occupancy grid."""
     H, W = occupied.shape
-    # Cones - single cells
+    #Cones - single cells
     for cx, cy in cones:
         c = int((cx - origin_x) / res)
         r = int((cy - origin_y) / res)

@@ -1,18 +1,12 @@
 #!/usr/bin/env python3
-"""
-Husky A200 two-phase navigation with Nav2 in Isaac Sim.
+"""Husky A200 two-phase Nav2 drive in Isaac Sim
 
-Phase 1 (outbound): obstacles present, robot navigates start -> destination.
-Phase 2 (return):   obstacles removed, robot navigates destination -> start.
-
-Isaac Sim publishes sensors (RGB-D, odom, tf, clock) via ROS2 bridge.
-Subscribes to /cmd_vel from Nav2 MPPI controller.
-Localization: ORB-SLAM3 (slam_tf_publisher.py) or GT (--use-gt).
-
-Phase transitions communicated via /tmp/nav2_phase.json:
-  {"phase": "outbound"|"removing"|"return"|"done", "timestamp": ...}
-
-Records GT trajectory to results/navigation/ for analysis.
+outbound leg has obstacles spawned, return leg has them removed.  Isaac
+publishes the usual RGB-D + odom + tf + clock and listens to /cmd_vel
+from the Nav2 MPPI controller.  localisation is either ORB-SLAM3 (via
+slam_tf_publisher.py) or GT with --use-gt.  phase transitions go
+through /tmp/nav2_phase.json and the GT trajectory is dumped to
+results/navigation/
 
 usage:
   # terminal 1: isaac sim
@@ -68,7 +62,7 @@ settings.set("/rtx/indirectDiffuse/enabled", True)
 settings.set("/persistent/omnigraph/updateToUsd", True)
 settings.set("/persistent/omnihydra/useSceneGraphInstancing", False)
 
-# enable ros2 extensions
+#enable ros2 extensions
 manager = omni.kit.app.get_app().get_extension_manager()
 for ext in ["isaacsim.ros2.core", "isaacsim.ros2.nodes",
             "isaacsim.sensors.physics.nodes", "isaacsim.ros2.bridge"]:
@@ -83,7 +77,7 @@ if not eid:
     sys.exit(1)
 print(f"ros2 bridge: {eid}")
 
-# load scene
+#load scene
 HUSKY_USD = "/workspace/simulation/isaac/assets/husky_d435i/husky_d435i.usda"
 SCENE_USD = "/opt/husky_forest_scene.usd"
 
@@ -109,7 +103,7 @@ if _phys.IsValid():
     PhysxSchema.PhysxSceneAPI(_phys).GetTimeStepsPerSecondAttr().Set(200)
     PhysxSchema.PhysxSceneAPI(_phys).CreateSolverTypeAttr().Set("TGS")
 
-# wheel friction
+#wheel friction   
 from pxr import UsdShade
 _wf = UsdShade.Material.Define(stage, "/World/WheelFriction")
 _wfp = UsdPhysics.MaterialAPI.Apply(_wf.GetPrim())
@@ -122,14 +116,14 @@ for wl in ["front_left_wheel_link", "front_right_wheel_link",
     if col.IsValid():
         UsdShade.MaterialBindingAPI.Apply(col).Bind(_wf, materialPurpose="physics")
 
-# IMU frame rotation: imu_link in USD has ~90deg rotation
+# IMU frame rotation: imu_link in USD has +-90deg rotation
 # IMU sensor frame: X=up, Y=right(world-Y), Z=forward(world+X)  (URF)
 # We rotate readings in Python to FLU: X=forward, Y=left, Z=up
 # Rotation matrix URF->FLU:
 #   flu_x(fwd)  = urf_z(fwd)
 #   flu_y(left) = -urf_y(right->left)
 #   flu_z(up)   = urf_x(up)
-# Applied to both ang_vel and lin_acc before writing to file.
+# Applied to both ang_vel and lin_acc before writing to file
 def _imu_urf_to_flu(ax, ay, az):
     """Convert IMU reading from URF (sensor) to FLU (base_link) frame."""
     return az, -ay, ax  # flu_x=urf_z, flu_y=-urf_y, flu_z=urf_x
@@ -176,7 +170,7 @@ def _terrain_height(x, y):
     if rd < 2.0: h -= 0.06*(1.0-rd/2.0)
     return max(h, -0.5)
 
-# spawn position
+#spawn position
 husky_xf = UsdGeom.Xformable(stage.GetPrimAtPath("/World/Husky"))
 husky_xf.ClearXformOpOrder()
 _translate = husky_xf.AddTranslateOp()
@@ -199,15 +193,13 @@ for wn in ["front_left_wheel", "front_right_wheel", "rear_left_wheel", "rear_rig
         drive.GetMaxForceAttr().Set(500.0)
         _wheel_vel_attrs.append(drive.GetTargetVelocityAttr())
 
-# start physics
+#start physics
 timeline = omni.timeline.get_timeline_interface()
 timeline.play()
 for _ in range(300):
     app.update()
 
-# =====================================================================
 # ROS2 OmniGraph: cameras + cmd_vel (AFTER timeline for RenderProduct)
-# =====================================================================
 print("\ncreating ros2 omnigraph...")
 
 CAM_PRIM = "/World/HuskyCamera"
@@ -266,7 +258,7 @@ print("  subscribing: /cmd_vel")
 
 POSE_FILE = "/tmp/isaac_pose.txt"
 IMU_FILE = "/tmp/isaac_imu.txt"
-IMU_BUFFER_SIZE = 100  # ~0.5s at 200Hz physics, ~3s at 30Hz render
+IMU_BUFFER_SIZE = 100  # +-0.5s at 200Hz physics, +-3s at 30Hz render
 _imu_buffer = []
 
 # IMU direct interface (bypasses OmniGraph, reads at physics rate)
@@ -286,9 +278,7 @@ ann_depth.attach([_rp])
 for _ in range(200):
     app.update()
 
-# =====================================================================
 # IMU + Camera frame diagnostics (for Tbc calculation)
-# =====================================================================
 print("\n=== IMU/Camera Frame Diagnostics ===")
 
 # 1. Raw IMU reading at rest
@@ -306,7 +296,7 @@ if _imu_prim.IsValid():
     for r in range(4):
         print(f"  [{_imu_world[r][0]:.4f}, {_imu_world[r][1]:.4f}, {_imu_world[r][2]:.4f}, {_imu_world[r][3]:.4f}]")
 
-# 3. Camera prim world transform
+#3. Camera prim world transform
 _cam_prim_diag = stage.GetPrimAtPath(CAM_PRIM)
 if _cam_prim_diag.IsValid():
     _cam_world = _imu_xf.GetLocalToWorldTransform(_cam_prim_diag)
@@ -332,9 +322,7 @@ if _base_prim_diag.IsValid():
 
 print("=== End Diagnostics ===\n")
 
-# =====================================================================
 # SLAM setup (if --use-slam)
-# =====================================================================
 import subprocess
 from PIL import Image as PILImg
 slam_proc = None
@@ -378,9 +366,7 @@ if not args.no_obstacles:
     for _ in range(30):
         app.update()
 
-# =====================================================================
 # phase management via /tmp/nav2_phase.json
-# =====================================================================
 PHASE_FILE = "/tmp/nav2_phase.json"
 
 def write_phase(phase):
@@ -397,18 +383,14 @@ def read_phase():
 
 write_phase("outbound")
 
-# =====================================================================
 # trajectory recording
-# =====================================================================
 RESULTS_DIR = "/workspace/simulation/isaac/results/navigation"
 os.makedirs(RESULTS_DIR, exist_ok=True)
 traj_file = os.path.join(RESULTS_DIR, f"nav2_trajectory_{args.route}_{int(time.time())}.csv")
 traj_fp = open(traj_file, 'w')
 traj_fp.write("time,phase,gt_x,gt_y,gt_z,gt_yaw,cmd_lin,cmd_ang\n")
 
-# =====================================================================
 # main loop
-# =====================================================================
 print(f"\n=== RUNNING (route={args.route}, duration={args.duration}s) ===")
 print("  waiting for Nav2 cmd_vel on /cmd_vel topic...")
 print(f"  trajectory recording: {traj_file}")
@@ -446,7 +428,7 @@ try:
         sim_time += physics_dt
         step += 1
 
-        # read cmd_vel from ROS2
+        #read cmd_vel from ROS2
         try:
             lin_x = og.Controller.attribute("outputs:linearVelocity", twist_node).get()[0]
             ang_z = og.Controller.attribute("outputs:angularVelocity", twist_node).get()[2]
@@ -470,7 +452,7 @@ try:
         qz_half = math.sin(gt_yaw / 2)
         qw_half = math.cos(gt_yaw / 2)
 
-        # read IMU from PhysX sensor - convert URF->FLU, ring buffer for SLAM
+        #read IMU from PhysX sensor - convert URF->FLU, ring buffer for SLAM
         _imu_reading = _imu_interface.get_sensor_reading(IMU_SENSOR_PATH, read_gravity=True)
         if _imu_reading.is_valid:
             # convert from sensor URF frame to base_link FLU frame
@@ -490,12 +472,12 @@ try:
                 _imu_log_fp.write(
                     f"{sim_time:.6f},{gx:.6f},{gy:.6f},{gz:.6f},"
                     f"{ax:.6f},{ay:.6f},{az:.6f}\n")
-            # print first reading for Tbc verification (should show gravity on Z ≈ +9.81)
+            #print first reading for Tbc verification (should show gravity on Z ≈ +9.81)
             if step == 1:
                 print(f"  IMU first reading (FLU): lin_acc=({ax:.2f}, {ay:.2f}, {az:.2f})"
                       f"  (raw URF: {_imu_reading.lin_acc_x:.2f}, {_imu_reading.lin_acc_y:.2f}, {_imu_reading.lin_acc_z:.2f})")
 
-        # write pose to file for TF relay (every 3rd frame ~ 20Hz)
+        #write pose to file for TF relay (every 3rd frame +- 20Hz)
         if step % 3 == 0:
             with open(POSE_FILE, 'w') as pf:
                 pf.write(f"{gt_x:.6f} {gt_y:.6f} {gt_z:.6f} 0.0 0.0 {qz_half:.6f} {qw_half:.6f}\n")
@@ -508,7 +490,7 @@ try:
         zb = _terrain_height(gt_x-fd*math.cos(gt_yaw), gt_y-fd*math.sin(gt_yaw))
         _cam_op.Set(_make_cam_matrix(cam_x, cam_y, cam_z, gt_yaw, math.atan2(zf-zb, 2*fd)))
 
-        # record trajectory + SLAM frames (every 6th frame ~ 10 Hz)
+        # record trajectory + SLAM frames (every 6th frame +- 10 Hz)
         if step % 6 == 0:
             traj_fp.write(f"{sim_time:.3f},{current_phase},{gt_x:.3f},{gt_y:.3f},{gt_z:.3f},{gt_yaw:.4f},{lin_x:.3f},{ang_z:.3f}\n")
 
@@ -527,7 +509,7 @@ try:
                 except Exception:
                     pass
 
-        # check phase transitions (every 60 frames ~ 1 Hz)
+        # check phase transitions (every 60 frames +- 1 Hz)
         if step % 60 == 0:
             new_phase = read_phase()
             if new_phase != current_phase:

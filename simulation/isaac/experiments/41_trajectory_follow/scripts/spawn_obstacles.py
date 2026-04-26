@@ -1,5 +1,4 @@
-"""
-spawn/remove dynamic obstacles for navigation testing.
+"""spawn/remove dynamic obstacles for navigation testing
 obstacles placed ON route trajectory with space for bypass.
 
 usage:
@@ -20,7 +19,7 @@ def _frange(start, stop, step):
 
 # per-route obstacle definitions
 # Barriers: dense cone walls (0.5m spacing) blocking part of road
-# Robot MUST go around - cannot pass through
+# Robot MUST go around - cannot pass thorugh
 
 OBSTACLES = {
     "road": {
@@ -29,11 +28,11 @@ OBSTACLES = {
             # Route y≈-4.8. Wall from y=-8 to y=-2.5 (0.5m spacing, impassable)
             # Bypass: north side y>-2 (3m free)
             [(-50, y) for y in _frange(-8.0, -2.5, 0.5)],
-            # BARRIER 2 (x=15): dense wall blocks north half
+            #BARRIER 2 (x=15): dense wall blocks north half
             # Route y≈-2.0. Wall from y=-1 to y=+4 (0.5m spacing)
             # Bypass: south side y<-1.5 (4m free)
             [(15, y) for y in _frange(-1.0, 4.0, 0.5)],
-            # BARRIER 3 (x=45): dense wall blocks center
+            #BARRIER 3 (x=45): dense wall blocks center
             # Route y≈-1.2. Wall from y=-3 to y=+1 (0.5m spacing)
             # Bypass: south y<-3.5 (2m) or north y>+1.5 (3m)
             [(45, y) for y in _frange(-3.0, 1.0, 0.5)],

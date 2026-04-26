@@ -1,20 +1,5 @@
 #!/usr/bin/env python3
-"""Gap Navigator driven by teach waypoints.
-
-Pipeline:
-  depth image  ->  GapNavigator.compute_cmd_vel(depth, heading_error)  ->  /cmd_vel
-  teach CSV    ->  subsample at 4 m -> WP sequence
-  map->base_link tf  ->  robot pose (VIO + matcher anchor corrections)
-  robot pose + current WP -> desired_heading_error
-
-Unlike Nav2 based pipelines, there is NO global planner, NO costmap,
-NO teach_map.  Only reactive depth-based obstacle dodging + heading
-toward the next teach WP.  When robot comes within TOLERANCE of the
-current WP, advance to the next one.  On the last 5 WPs, be patient
-(double time budget, never skip).
-
-RESULT line format compatible with exp 73/74/custom:
-  RESULT: reached N/M skipped K duration T s
+"""Gap Navigator driven by teach waypoints
 """
 import argparse, csv, math, sys, time
 from pathlib import Path
@@ -188,7 +173,7 @@ class GapNavTeachFollower(Node):
                 self._advance_wp('skipped')
                 continue
 
-            # ----- Recovery FSM -----
+            # Recovery FSM
             if self.state == 'recover_backup':
                 tw = Twist()
                 tw.linear.x = self.BACKUP_SPEED

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Detailed south route plot: all obstacles w/ real radii, original vs fixed route.
+"""Detailed south route plot: all obstacles w/ real radii, original vs fixed route
 Uses same thinning + radii as run_husky_forest.py for accuracy.
 """
 import json, math, os

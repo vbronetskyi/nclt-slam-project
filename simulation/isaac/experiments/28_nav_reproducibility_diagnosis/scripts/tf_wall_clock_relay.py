@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-TF + Odom relay for Nav2 <- Isaac Sim.
+"""TF + Odom relay for Nav2 <- Isaac Sim
 
 SLAM FRAME MODE: publishes SLAM pose directly as map->base_link.
 No world frame conversion - Nav2 works entirely in SLAM coordinate frame.
@@ -38,7 +37,7 @@ YAW_JUMP_THRESHOLD = 0.3
 
 # slam stale detection (exp 32)
 # Check every N seconds: if odom integrated > STALE_ODOM_THRESHOLD but
-# SLAM moved < STALE_SLAM_MIN_MOVE, SLAM is stale -> dead-reckon via odom.
+# SLAM moved < STALE_SLAM_MIN_MOVE, SLAM is stale -> dead-reckon via odom
 STALE_CHECK_INTERVAL = 2.0
 STALE_ODOM_THRESHOLD = 0.5
 STALE_SLAM_MIN_MOVE = 0.1
@@ -91,7 +90,7 @@ class TFRelay(Node):
         imu_tf.transform.rotation.w = 1.0
         self.static_br.sendTransform([cam_tf, imu_tf])
 
-        # depth -> pointcloud
+        #depth -> pointcloud
         self.fx = self.fy = 320.0
         self.cx, self.cy = 320.0, 240.0
         self.pc_pub = self.create_publisher(PointCloud2, '/depth_points', 10)
@@ -113,7 +112,7 @@ class TFRelay(Node):
         self.create_subscription(Twist, '/cmd_vel', self.cmd_vel_cb, 10)
         self.odom_timer = self.create_timer(0.05, self.odom_integrate_tick)
 
-        # fusion state
+        #fusion state
         self.fused_x = 0.0
         self.fused_y = 0.0
         self.fused_yaw = 0.0
@@ -233,7 +232,7 @@ class TFRelay(Node):
         except (FileNotFoundError, ValueError, IndexError):
             return
 
-        # SLAM camera frame -> 2D nav frame
+        # SLAM camera frame -> 2D nav frame   
         # nav_x = slam_z (forward), nav_y = -slam_x (left)
         slam_yaw_raw = math.atan2(2 * (sqw * sqz + sqx * sqy),
                                    1 - 2 * (sqy * sqy + sqz * sqz))
@@ -264,7 +263,7 @@ class TFRelay(Node):
         predicted_x = self.fused_x + odom_dx
         predicted_y = self.fused_y + odom_dy
 
-        # slam stale detection (exp 32)
+        # slam stale detection (exp 32)   
         # Accumulate cmd_vel integrated motion since last check
         dt_from_last = 0.05  # relay tick rate 20Hz
         self.stale_odom_accum += abs(self.cmd_lin) * dt_from_last
@@ -308,8 +307,8 @@ class TFRelay(Node):
 
         # position fusion
         if self.slam_is_stale:
-            # Pure odom dead-reckoning: advance fused pose via cmd_vel deltas.
-            # `predicted_x/y` already equals fused + odom_delta, so just use it.
+            # Pure odom dead-reckoning: advance fused pose via cmd_vel deltas
+            # `predicted_x/y` already equals fused + odom_delta, so just use it
             self.fused_x = predicted_x
             self.fused_y = predicted_y
         elif slam_jump < JUMP_THRESHOLD:
@@ -333,7 +332,7 @@ class TFRelay(Node):
         self.prev_slam_ny = nav_y
         self.prev_slam_nyaw = nav_yaw
 
-        # log every ~5s
+        #log every +-5s
         self.log_counter += 1
         if self.log_counter % 100 == 0:
             gt_yaw = math.atan2(2 * self.last_qw * self.last_qz,

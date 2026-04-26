@@ -35,7 +35,7 @@ controller_server:
       yaw_goal_tolerance: 3.14
     FollowPath:
       plugin: "nav2_regulated_pure_pursuit_controller::RegulatedPurePursuitController"
-      desired_linear_vel: 0.4                            # v17: cmd 0.4 -> actual ~1.4 m/s (slightly over 1.2 cap but needed to make timely progress)
+      desired_linear_vel: 0.4                            # v17: cmd 0.4 -> actual +-1.4 m/s (slightly over 1.2 cap but needed to make timely progress)
       lookahead_dist: 1.0                                # mid v6 (1.2) and v13 (0.8)
       min_lookahead_dist: 0.4
       max_lookahead_dist: 1.5                            # was 2.0 - slightly capped
@@ -48,7 +48,7 @@ controller_server:
       use_regulated_linear_velocity_scaling: true
       use_cost_regulated_linear_velocity_scaling: false # was true - killed speed in continuous inflated zones
       regulated_linear_scaling_min_radius: 0.9
-      regulated_linear_scaling_min_speed: 0.15          # was 0.3 - allow crawling through passages
+      regulated_linear_scaling_min_speed: 0.15          # was 0.3 - allow crawling thorugh passages
       use_rotate_to_heading: false
       allow_reversing: false
       max_robot_pose_search_dist: 10.0
@@ -134,7 +134,7 @@ planner_server:
     GridBased:
       # v18: SmacPlanner2D considers robot footprint when planning,
       # avoids narrow halo gaps that NavFn would pick (1-cell gaps too
-      # tight for 0.7m robot through inflated zones)
+      # tight for 0.7m robot thorugh inflated zones)
       plugin: "nav2_smac_planner::SmacPlanner2D"
       tolerance: 2.0
       downsample_costmap: false
@@ -182,7 +182,7 @@ velocity_smoother:
     smoothing_frequency: 20.0
     scale_velocities: False
     feedback: "OPEN_LOOP"
-    max_velocity: [0.5, 0.0, 0.6]                        # v17: cmd 0.5 -> ~1.7 m/s actual MAX. controller usually outputs 0.4 (~1.4 actual)
+    max_velocity: [0.5, 0.0, 0.6]                        # v17: cmd 0.5 -> +-1.7 m/s actual MAX. controller usually outputs 0.4 (+-1.4 actual)
     min_velocity: [-0.2, 0.0, -0.6]
     max_accel: [1.5, 0.0, 2.0]                           # back to faster accel
     max_decel: [-2.0, 0.0, -2.0]

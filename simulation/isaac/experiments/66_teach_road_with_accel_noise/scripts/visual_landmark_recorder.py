@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Exp 55 teach-time visual landmark recorder.
+"""Exp 55 teach-time visual landmark recorder
 
-Every ~2 m of VIO displacement, this node captures the current RGB frame,
+Every +-2 m of VIO displacement, this node captures the current RGB frame,
 extracts ORB features, back-projects the keypoints into 3D via the depth
 image, and stores a landmark record. At shutdown the full landmark list
 is pickled to south_landmarks.pkl.
@@ -14,21 +14,6 @@ Inputs (all read from ROS topics - NO GT access):
                                  unmodified tf_relay in GT mode; in the
                                  architecture diagram this corresponds to
                                  the VIO-derived teach pose.
-
-Output:
-  experiments/55_visual_teach_repeat/teach/south_landmarks.pkl
-  experiments/55_visual_teach_repeat/teach/landmarks_debug.png
-
-Each landmark record is a dict:
-  pose:          (x, y, z, qx, qy, qz, qw)   teach camera pose (world frame)
-  descriptors:   (N, 32) uint8              ORB descriptors for accepted kpts
-  keypoints_2d:  (N, 2)  float32            pixel coords (x, y)
-  keypoints_3d_cam: (N, 3) float32          back-projected into camera frame
-  ts:            float                      wall_ts of frame
-  n_features:    int                        = N
-
-The teach pose stored is the **camera** pose, computed by applying the
-static base_link->camera offset to the current robot pose file.
 """
 import argparse
 import math
@@ -68,7 +53,7 @@ def _img_msg_to_depth_mm(msg):
     if msg.encoding == '32FC1':
         buf = np.frombuffer(msg.data, dtype=np.float32)
         mm = (buf.reshape(msg.height, msg.width) * 1000.0)
-        # NaN/Inf (Isaac sometimes emits inf for uncaptured pixels)
+        #NaN/Inf (Isaac sometimes emits inf for uncaptured pixels)
         mm = np.nan_to_num(mm, nan=0.0, posinf=0.0, neginf=0.0)
         return mm.astype(np.uint16)
     raise ValueError(f'unexpected depth encoding {msg.encoding}')
@@ -86,7 +71,7 @@ DEPTH_VAR_MAX_M = 0.30       # tolerate more variance; std computed on non-zero 
 # portion of the image (v > GROUND_Y_THRESHOLD).  Rationale: ground, close
 # shrubs, and the route itself are stable between teach (clean) and repeat
 # (with cones); sky / distant-tree features change between runs because
-# the forest canopy composition, distant-tree visibility and cone placement
+#the forest canopy composition, distant-tree visibility and cone placement
 # vary.  Bottom half (v > 240 on a 480-tall image) also has better depth
 # quality (closer objects, lower variance).
 GROUND_Y_THRESHOLD = 180     # pixels; image height = 480
@@ -96,7 +81,7 @@ GROUND_Y_THRESHOLD = 180     # pixels; image height = 480
 # camera optical frame is RDF (x right, y down, z fwd).  base_link FLU.
 # base->cam (FLU -> RDF at camera origin):
 #   cam_x = -base_y
-#   cam_y = -base_z
+#cam_y = -base_z
 #   cam_z =  base_x
 # Plus static translation in base_link frame: (0.35, 0, 0.18)
 BASE_TO_CAM_TRANSLATION = np.array([0.35, 0.0, 0.18])
@@ -161,7 +146,7 @@ def base_to_cam_world(base_x, base_y, base_z, base_qx, base_qy, base_qz, base_qw
     Returns camera world pose as (x, y, z, qx, qy, qz, qw).
     """
     R_world_base = quat_to_rot(base_qx, base_qy, base_qz, base_qw)
-    # Camera position in world
+    #Camera position in world
     cam_pos_world = np.array([base_x, base_y, base_z]) + \
                     R_world_base @ BASE_TO_CAM_TRANSLATION
     # Camera orientation in world = world_base * base_cam
@@ -277,8 +262,8 @@ class VisualLandmarkRecorder(Node):
 
         # Depth at each kept kpt (mm -> m)
         d_c = self.last_depth[vv, uu].astype(np.float32) / 1000.0
-        # Local 3x3 patch std to reject depth discontinuity (edges), computed
-        # over non-zero pixels only so nan/inf holes don't inflate std.
+        #Local 3x3 patch std to reject depth discontinuity (edges), computed
+        # over non-zero pixels only so nan/inf holes don't inflate std
         d_std = np.zeros_like(d_c)
         for i, (u, v) in enumerate(zip(uu, vv)):
             patch = self.last_depth[v-1:v+2, u-1:u+2].astype(np.float32) / 1000.0

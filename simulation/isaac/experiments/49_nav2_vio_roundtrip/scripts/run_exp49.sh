@@ -1,11 +1,11 @@
 #!/bin/bash
-# Exp 49: Full roundtrip navigation using Nav2 + VIO SLAM localization.
+# Exp 49: Full roundtrip navigation using Nav2 + VIO SLAM localization
 #
-# Based on exp 47 architecture (3-phase with warmup) extended to full roundtrip.
+# Based on exp 47 architecture (3-phase with warmup) extended to full roundtrip
 #
 # Phase 1: Pure pursuit + VIO warmup (200+ frames)
 # Phase 2: Switch TF to SLAM+encoder, start Nav2
-# Phase 3: send_roundtrip_goals.py follows all 797 WPs @ 4m spacing (outbound+turn+return)
+#Phase 3: send_roundtrip_goals.py follows all 797 WPs @ 4m spacing (outbound+turn+return)
 
 set -euo pipefail
 
@@ -74,7 +74,7 @@ for i in $(seq 1 300); do
     sleep 2
 done
 
-# phase 2: switch tf to slam+encoder, start nav2
+#phase 2: switch tf to slam+encoder, start nav2
 echo ""; echo "=== PHASE 2: Switch to VIO localization ==="
 kill $TF_PID 2>/dev/null; sleep 2
 python3 $SCRIPTS/tf_wall_clock_relay.py --slam-encoder > $EXP/logs/tf_slam.log 2>&1 &
@@ -86,7 +86,7 @@ ros2 launch $EXP/config/nav2_launch.py use_sim_time:=false > $EXP/logs/nav2.log 
 NAV2_PID=$!
 echo "Nav2: $NAV2_PID"
 
-# Wait for Nav2 active
+# Wait for Nav2 active   
 for i in $(seq 1 60); do
     if grep -q "Managed nodes are active" $EXP/logs/nav2.log 2>/dev/null; then
         echo "  Nav2 active"
@@ -94,7 +94,7 @@ for i in $(seq 1 60); do
     fi
     sleep 2
 done
-# Set progress timeout high for slow sim
+#Set progress timeout high for slow sim
 ros2 param set /controller_server progress_checker.movement_time_allowance 120.0 2>/dev/null || true
 
 # phase 3: roundtrip goals

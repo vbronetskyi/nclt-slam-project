@@ -1,17 +1,17 @@
 #!/bin/bash
-# Gap Navigator + teach waypoints baseline on route 09_se_ne.
+# Gap Navigator + teach waypoints baseline on route 09_se_ne
 #
 # Pipeline:
 #   Isaac + obstacles
 #   ORB-SLAM3 VIO  (same as ours)
-#   tf_wall_clock_relay_v55 --slam-encoder  (same as ours - our tf)
+#   tf_wall_clock_relay_v55 --slam-encoder  (same as ours - our tf)   
 #   visual_landmark_matcher                  (same as ours - anchor correction)
-#   NO Nav2 stack.
+#   NO Nav2 stack
 #   turnaround_supervisor                    (same as ours - FIRE)
 #   gap_nav_teach_client.py:
 #       sub /camera/depth/image_rect_raw
 #       sub tf (map->base_link)
-#       read teach_outputs/vio_pose_dense.csv, subsample at 4 m
+#read teach_outputs/vio_pose_dense.csv, subsample at 4 m
 #       for each WP: compute heading error to WP, call GapNavigator
 #       compute_cmd_vel(depth, heading_err) -> /cmd_vel
 #       when d < 3 m -> next WP; timeout 180 s per WP (360 s for final 5)

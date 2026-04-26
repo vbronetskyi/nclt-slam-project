@@ -1,7 +1,7 @@
 #!/bin/bash
 # Exp 55 REPEAT run - v53 base (proactive projection + proximity limiter)
 #                    + v55 visual landmark matcher + tf_relay with
-#                      /anchor_correction subscriber.
+#                      /anchor_correction subscriber
 set -eu
 
 E52=/workspace/simulation/isaac/experiments/52_obstacles_v9
@@ -110,7 +110,7 @@ TF=$!; disown $TF; echo "TF(SLAM v55): $TF"
 sleep 3
 
 cat > /tmp/exp55r_matcher.sh <<EOF
-#!/bin/bash
+#!/bin/bash   
 source /opt/ros/jazzy/setup.bash
 export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 export ROS_DOMAIN_ID=85

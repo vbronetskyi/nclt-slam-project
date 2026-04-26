@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Offline WP sanitization: shift or skip waypoints inside obstacle zones.
+"""Offline WP sanitization: shift or skip waypoints inside obstacle zones
 
 Reads the original trajectory CSV + teach occupancy map + known
 obstacle positions (cones, tent), then for each waypoint:
@@ -55,7 +55,7 @@ def load_teach_map(yaml_path):
 def stamp_obstacles(occupied, origin_x, origin_y, res, cones, tent_center, tent_half):
     """Mark runtime obstacles (cones + tent) into the occupancy grid."""
     H, W = occupied.shape
-    # Cones - single cells
+    #Cones - single cells
     for cx, cy in cones:
         c = int((cx - origin_x) / res)
         r = int((cy - origin_y) / res)
@@ -79,7 +79,7 @@ def dist_to_nearest_occupied(x, y, occupied, origin_x, origin_y, res, max_cells=
     c0 = int((x - origin_x) / res)
     if not (0 <= r0 < H and 0 <= c0 < W):
         return float('inf')
-    # BFS outward until first occupied
+    #BFS outward until first occupied
     q = deque([(r0, c0, 0)])
     seen = {(r0, c0)}
     while q:
@@ -142,7 +142,7 @@ def main():
 
     occupied, ox, oy, res = load_teach_map(args.teach_map)
     print(f'Teach map {occupied.shape} @ {res}m, occupied cells: {int(occupied.sum())}')
-    # Augment with known obstacles
+    #Augment with known obstacles
     occupied = stamp_obstacles(occupied, ox, oy, res, CONES, TENT_CENTER, TENT_HALF_EXTENT)
     print(f'After stamping cones+tent: {int(occupied.sum())} occupied cells')
 

@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
-"""
-TF + Odom relay for Nav2 <- Isaac Sim.
+"""TF + Odom relay for Nav2 <- Isaac Sim
 
-Modes:
   --use-gt         GT localization (perfect pose from sim)
   --encoder-imu    Encoder + IMU localization (realistic sensors)
   --slam-frame     SLAM pose in SLAM coordinate frame
@@ -140,7 +138,7 @@ class TFRelay(Node):
         # Override gyro parameters for encoder+IMU mode
         if encoder_imu:
             global GYRO_DEADZONE, GYRO_LPF_ALPHA
-            GYRO_DEADZONE = 0.01  # much lower - real IMU reads ~0.03 rad/s during turns
+            GYRO_DEADZONE = 0.01  # much lower - real IMU reads +-0.03 rad/s during turns
             GYRO_LPF_ALPHA = 0.15  # smoother filtering
 
         # SLAM+encoder fusion state (Level 3)
@@ -299,7 +297,7 @@ class TFRelay(Node):
             T_nav_origin[:3, 3] = [self.last_x, self.last_y, 0.0]
 
             # T_nav_slam: maps SLAM camera poses to nav world poses
-            # nav_pose = T_nav_origin @ T_FLU_from_cam @ inv(T_slam_origin) @ T_slam_current
+            # nav_pose = T_nav_origin @ T_FLU_from_cam @ inv(T_slam_origin) @ T_slam_current   
             T_slam_inv = np.linalg.inv(T_slam)
             self.T_nav_slam = T_nav_origin @ T_FLU_from_cam @ T_slam_inv
             self.get_logger().info(
@@ -336,7 +334,7 @@ class TFRelay(Node):
                 f'SLAM+ENCODER init: ({x:.1f}, {y:.1f}), yaw={gt_yaw:.3f}')
             return
 
-        # Update encoder+compass odometry (always, as fallback)
+        #Update encoder+compass odometry (always, as fallback)
         COMPASS_NOISE = 0.05
         noisy_yaw = gt_yaw + np.random.normal(0, COMPASS_NOISE)
         dx = x - self.prev_gt_x
@@ -370,7 +368,7 @@ class TFRelay(Node):
                     self._slam_frozen_count = 0
             self._prev_slam_pos = (sx, sz)
 
-            # If SLAM frozen for 10+ ticks (~2s), treat as lost
+            # If SLAM frozen for 10+ ticks (+-2s), treat as lost
             if self._slam_frozen_count > 10:
                 slam_ok = False
 
@@ -399,7 +397,7 @@ class TFRelay(Node):
             nav_yaw = self.enc_yaw
             self.using_slam = False
 
-        # Log every ~5s
+        # Log every +-5s   
         self.log_counter += 1
         if self.log_counter % 100 == 0:
             err = math.hypot(nav_x - x, nav_y - y)
@@ -413,7 +411,7 @@ class TFRelay(Node):
                 f'dist={self.enc_total_dist:.0f}m '
                 f'slam_f={self.slam_frames} lost={self.slam_lost}')
 
-        # Publish TF
+        #Publish TF
         nqz = math.sin(nav_yaw / 2)
         nqw = math.cos(nav_yaw / 2)
 
@@ -458,8 +456,8 @@ class TFRelay(Node):
                 f'ENCODER+IMU init: ({x:.1f}, {y:.1f}), yaw={gt_yaw:.3f}')
             return
 
-        # Heading: compass+gyro fusion = GT yaw + noise (~3° std)
-        COMPASS_NOISE = 0.05  # ~3 degrees std
+        # Heading: compass+gyro fusion = GT yaw + noise (+-3° std)
+        COMPASS_NOISE = 0.05  # +-3 degrees std
         noisy_yaw = gt_yaw + np.random.normal(0, COMPASS_NOISE)
 
         # Encoder: compute displacement from GT pose diff (= wheel encoder equivalent)
@@ -480,7 +478,7 @@ class TFRelay(Node):
         self.prev_gt_x = x
         self.prev_gt_y = y
 
-        # Log every ~5s (100 ticks at 20Hz)
+        # Log every +-5s (100 ticks at 20Hz)
         self.log_counter += 1
         if self.log_counter % 100 == 0:
             err = math.hypot(self.enc_x - x, self.enc_y - y)
@@ -567,7 +565,7 @@ class TFRelay(Node):
                                nav_y - self.prev_slam_ny)
         slam_yaw_jump = abs(normalize_angle(nav_yaw - self.prev_slam_nyaw))
 
-        # position fusion
+        #position fusion
         if slam_jump < JUMP_THRESHOLD:
             self.fused_x = SLAM_POS_ALPHA * nav_x + ODOM_POS_ALPHA * predicted_x
             self.fused_y = SLAM_POS_ALPHA * nav_y + ODOM_POS_ALPHA * predicted_y
@@ -589,7 +587,7 @@ class TFRelay(Node):
         self.prev_slam_ny = nav_y
         self.prev_slam_nyaw = nav_yaw
 
-        # log every ~5s
+        #log every +-5s
         self.log_counter += 1
         if self.log_counter % 100 == 0:
             gt_yaw = math.atan2(2 * self.last_qw * self.last_qz,
@@ -623,7 +621,7 @@ class TFRelay(Node):
 
         self.br.sendTransform([t_map_odom, t_odom_base])
 
-        # publish odom
+        #publish odom
         odom = Odometry()
         odom.header.stamp = now
         odom.header.frame_id = 'odom'

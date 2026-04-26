@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Teach-and-repeat in a single Isaac Sim session.
+"""Teach-and-repeat in a single Isaac Sim session
 Phase 1 (teach): drive via GT waypoints, record anchors in-memory.
 Phase 2 (repeat): teleport to start, drive via visual anchor matching.
 
@@ -30,9 +29,7 @@ parser.add_argument("--duration", type=float, default=800.0,
 parser.add_argument("--lookahead", type=float, default=8.0)
 args, _ = parser.parse_known_args()
 
-# =====================================================================
 # Isaac Sim setup (identical to run_husky_teach_repeat.py)
-# =====================================================================
 from isaacsim import SimulationApp
 app = SimulationApp({
     "headless": True,
@@ -179,7 +176,7 @@ for wname in ["front_left_wheel", "front_right_wheel",
         drive.GetMaxForceAttr().Set(500.0)
         _wheel_vel_attrs.append(drive.GetTargetVelocityAttr())
 
-# IMU sensor
+#IMU sensor
 IMU_PATH = "/World/Husky/Geometry/base_link/imu_link"
 IMU_SENSOR_PATH = IMU_PATH + "/imu_sensor"
 _imu_ok, _imu_prim = omni.kit.commands.execute(
@@ -250,7 +247,7 @@ def _terrain_height(x, y):
     if rd < 2.0: h -= 0.06*(1.0-rd/2.0)
     return max(h, -0.5)
 
-# Spawn at first waypoint
+#Spawn at first waypoint
 spawn_x, spawn_y = teach_waypoints[0]
 spawn_yaw = math.atan2(teach_waypoints[1][1]-spawn_y,
                         teach_waypoints[1][0]-spawn_x)
@@ -386,9 +383,7 @@ class DepthAvoidance:
         return speed, ang, False
 
 
-# =====================================================================
 # PHASE 1: TEACH
-# =====================================================================
 print(f"\n{'='*60}")
 print(f"PHASE 1: TEACH - driving {len(teach_waypoints)} waypoints")
 print(f"{'='*60}\n")
@@ -436,7 +431,7 @@ while sim_time < args.duration / 2 and wp_idx < len(teach_waypoints):
         lin_v, ang_v = 1.0, max(-0.6, min(0.6, herr*1.2))
     send_wheels(lin_v, ang_v)
 
-    # Track distance
+    # Track distance   
     if prev_gx is not None:
         s_accum += math.hypot(rx - prev_gx, ry - prev_gy)
     prev_gx, prev_gy = rx, ry
@@ -464,9 +459,7 @@ while sim_time < args.duration / 2 and wp_idx < len(teach_waypoints):
 teach_dur = sim_time - teach_start
 print(f"\nTeach complete: {len(anchors)} anchors, {s_accum:.0f}m, {teach_dur:.0f}s")
 
-# =====================================================================
 # TELEPORT BACK TO START
-# =====================================================================
 print("\nTeleporting to start...")
 stop_wheels()
 for _ in range(60):
@@ -505,9 +498,7 @@ if teleport_err > 5.0:
 # Initialize encoder prev from actual GT position after teleport
 enc_prev_x, enc_prev_y, enc_prev_yaw = p[0], p[1], p[3]
 
-# =====================================================================
 # PHASE 2: REPEAT - odometry-primary + visual correction
-# =====================================================================
 print(f"\n{'='*60}")
 print(f"PHASE 2: REPEAT - {len(anchors)} anchors, odometry-primary")
 print(f"{'='*60}\n")
@@ -570,7 +561,7 @@ follower.initialize_from_anchor(REPEAT_START_ANCHOR)
 odom_s = anchors[REPEAT_START_ANCHOR]["s"]
 odom_anchor_idx = REPEAT_START_ANCHOR
 
-VISUAL_EVERY = 30  # every 30 frames = ~2Hz; visual is soft correction only
+VISUAL_EVERY = 30  # every 30 frames = +-2Hz; visual is soft correction only
 frame_count = 0
 prev_lin = 0.0
 repeat_start = sim_time
@@ -662,11 +653,11 @@ try:
             odom_yaw = math.atan2(math.sin(odom_yaw), math.cos(odom_yaw))
             gyro_yaw = odom_yaw
 
-            # Position from encoder displacement + fused heading
+            #Position from encoder displacement + fused heading   
             odom_x += enc_lin * math.cos(odom_yaw)
             odom_y += enc_lin * math.sin(odom_yaw)
 
-            # Stuck detection from encoder
+            #Stuck detection from encoder
             stuck_enc_integral += enc_lin
         else:
             odom_anchor_idx = 0
@@ -754,7 +745,7 @@ try:
                 print(f"  SKIP #{total_stuck_skips}: a={odom_anchor_idx} s={odom_s:.0f}m")
                 cmd_lin, cmd_ang = last_nav_lin, last_nav_ang
 
-        # Check route completion
+        #Check route completion
         if odom_anchor_idx >= len(anchors) - 2:
             last_a = anchors[-1]
             if math.hypot(odom_x - last_a["x"], odom_y - last_a["y"]) < 5.0:

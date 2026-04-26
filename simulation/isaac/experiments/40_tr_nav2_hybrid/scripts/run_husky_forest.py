@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Husky A200 in forest scene with PhysX articulation drive and ROS2.
+"""Husky A200 in forest scene with PhysX articulation drive and ROS2
 Records RGB-D + IMU data for ORB-SLAM3 evaluation.
 
 publishes: /camera/color/image_raw, /camera/depth/image_rect_raw, /imu/data, /odom, /tf
@@ -54,13 +53,13 @@ settings.set("/rtx/post/dof/enabled", False)
 settings.set("/rtx/post/bloom/enabled", False)
 settings.set("/rtx/post/lensFlares/enabled", False)
 settings.set("/rtx/directLighting/sampledLighting/enabled", False)
-# reflections off, indirect diffuse on (light through canopy)
+# reflections off, indirect diffuse on (light thorugh canopy)
 settings.set("/rtx/reflections/enabled", False)
 settings.set("/rtx/indirectDiffuse/enabled", True)
 # fabric off, PhysX needs direct USD sync for articulation control
 settings.set("/persistent/omnigraph/updateToUsd", True)
 settings.set("/persistent/omnihydra/useSceneGraphInstancing", False)
-# render at 200fps = 1 physics step per app.update() -> real 200Hz IMU
+#render at 200fps = 1 physics step per app.update() -> real 200Hz IMU
 settings.set("/app/runLoops/main/rateLimitFrequency", 200)
 settings.set("/app/runLoops/main/rateLimitEnabled", True)
 
@@ -118,10 +117,10 @@ if _root_joint.IsValid():
     print("  WARNING: root_joint still exists, base may be fixed")
 
 # IMU sensor frame in this USD: UBR (Up-Backward-Right)
-# Verified by imu_cal_test.py:
+#Verified by imu_cal_test.py:
 #   - Stationary: gravity (+9.81) on raw sensor +X => sensor X = UP
 #   - Yaw left (CCW): ang_vel positive on raw sensor +X => sensor X is yaw axis (UP)
-#   - Forward drive: lin_acc on raw sensor -Y => sensor Y = -FORWARD = BACKWARD
+#- Forward drive: lin_acc on raw sensor -Y => sensor Y = -FORWARD = BACKWARD   
 #   - Right-hand rule: UP × FORWARD = LEFT, +X × -Y = -Z, so sensor Z = -LEFT = RIGHT
 #
 # ORB-SLAM3 / our convention: body FLU (X=Forward, Y=Left, Z=Up)
@@ -147,7 +146,7 @@ _imu_ok, _imu_prim = omni.kit.commands.execute(
 )
 print(f"  IMU sensor: {IMU_SENSOR_PATH}")
 
-# wheel friction material
+#wheel friction material
 from pxr import UsdShade
 _wf_mat = UsdShade.Material.Define(stage, "/World/WheelFriction")
 _wf_phys = UsdPhysics.MaterialAPI.Apply(_wf_mat.GetPrim())
@@ -176,8 +175,8 @@ def _make_cam_matrix(x, y, z, yaw, pitch=0):
     """camera matrix: look along yaw direction with pitch tilt, up = +Z"""
     cy, sy = math.cos(yaw), math.sin(yaw)
     cp, sp = math.cos(pitch), math.sin(pitch)
-    # Base rotation (yaw only): row0=(sy,-cy,0) row1=(0,0,1) row2=(-cy,-sy,0)
-    # Add pitch: rotate around camera's local X axis (row0)
+    #Base rotation (yaw only): row0=(sy,-cy,0) row1=(0,0,1) row2=(-cy,-sy,0)
+    # Add pitch: rotate around camera's local X axis (row0)   
     # row1 rotated by pitch: row1*cos(p) + row2*sin(p)
     # row2 rotated by pitch: -row1*sin(p) + row2*cos(p)
     r0x, r0y, r0z = sy, -cy, 0
@@ -309,12 +308,12 @@ print("  camera render product ready")
 from isaacsim.sensors.physics import _sensor as _imu_mod
 _imu_interface = _imu_mod.acquire_imu_sensor_interface()
 
-# no articulation -- base_link is a regular rigid body now
+#no articulation -- base_link is a regular rigid body now
 # wheels controlled via USD DriveAPI, pose via XformCache
 _base_link_prim = stage.GetPrimAtPath(BASE_LINK)
 print(f"  base_link: {_base_link_prim.IsValid()}")
 
-# _wheel_vel_attrs already set up earlier (DriveAPI target velocity)
+#_wheel_vel_attrs already set up earlier (DriveAPI target velocity)
 
 def _get_husky_pose():
     """robot pose from PhysX via XformCache (no articulation)"""
@@ -401,7 +400,7 @@ for m in _models:
     elif m["type"] == "barrel":
         _obstacles.append((m["x"], m["y"], 0.5))
     elif m["type"] in ("fallen_oak", "fallen_pine"):
-        # fallen tree scaled 1.5-2x in scene, trunk ~12-16m long
+        # fallen tree scaled 1.5-2x in scene, trunk +-12-16m long
         yaw = m.get("yaw", 0)
         for d in [-7, -5, -3, -1, 0, 1, 3, 5, 7]:
             _obstacles.append((m["x"] + d * math.cos(yaw), m["y"] + d * math.sin(yaw), 0.6))
@@ -528,9 +527,9 @@ elif args.route == "warmup":
 
 # Prepend VIO warmup to forest routes if --vio-warmup flag is set
 if args.vio_warmup and _auto_route is not None and args.route in ("north", "south", "road"):
-    # Warmup ends at the last WARMUP_WAYPOINTS point.
+    # Warmup ends at the last WARMUP_WAYPOINTS point
     # Skip initial route waypoints that are behind or at the warmup-end X,
-    # so robot continues forward smoothly instead of doubling back to spawn.
+    # so robot continues forward smoothly instead of doubling back to spawn
     import math as _math
     warmup_end_x = WARMUP_WAYPOINTS[-1][0]
     warmup_end_y = WARMUP_WAYPOINTS[-1][1]
@@ -573,13 +572,13 @@ _rec_img_count = 0
 print(f"  SLAM recording to {_rec_dir}")
 
 try:
-    # NOTE: zigzag init phase removed (exp 21 finding):
+    # zigzag init phase removed (exp 21 finding):
     # - DriveAPI commands didn't actually move the robot (forest uses ArticulationAPI)
-    # - Result: 12s of "fake" zigzag where IMU recorded ±2 m/s² wheel vibrations
+    #- Result: 12s of "fake" zigzag where IMU recorded ±2 m/s² wheel vibrations
     #   while GT showed robot static. ORB-SLAM3 built initial map from these
     #   stationary keyframes -> bad triangulation -> +0.13m to +6m extra ATE.
-    # - Init phase only helps VIO (which doesn't work on forest anyway).
-    # Recording starts driving the route immediately.
+    # - Init phase only helps VIO (which doesn't work on forest anyway)
+    # Recording starts driving the route immediately
 
     # With render at 200fps, each app.update() = 1 physics step = 1/200s
     # IMU: every step (200Hz), Camera: every 20th step (10Hz), GT/odom: every step
@@ -629,7 +628,7 @@ try:
                 if goal_txt == "stop":
                     goal_x, goal_y = None, None
                 elif goal_txt == "reverse":
-                    # drive backwards for 3s via DriveAPI wheel velocities
+                    #drive backwards for 3s via DriveAPI wheel velocities
                     goal_x, goal_y = None, None
                     rev_speed = math.degrees(-5.0)  # rad/s backwards
                     for _ in range(180):  # 3 seconds at 60Hz
@@ -648,7 +647,7 @@ try:
                         os.remove("/tmp/isaac_goal.txt")
                     except:
                         pass
-                    print("  REVERSED ~3s")
+                    print("  REVERSED +-3s")
                 elif goal_txt == "reset":
                     goal_x, goal_y = None, None
                     # teleport robot back to spawn (set root xform + stop wheels)
@@ -720,7 +719,7 @@ try:
         else:
             vels = np.array([0.0, 0.0, 0.0, 0.0])
 
-        # set wheel velocity targets via USD DriveAPI (no articulation)
+        #set wheel velocity targets via USD DriveAPI (no articulation)
         for i, _wa in enumerate(_wheel_vel_attrs):
             v = float(vels[0]) if i % 2 == 0 else float(vels[1])  # left=0,2 right=1,3
             _wa.Set(math.degrees(v))

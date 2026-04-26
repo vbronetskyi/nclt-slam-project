@@ -1,7 +1,7 @@
 #!/bin/bash
 # Exp 55 REPEAT run - v53 base (proactive projection + proximity limiter)
 #                    + v55 visual landmark matcher + tf_relay with
-#                      /anchor_correction subscriber.
+#                      /anchor_correction subscriber
 set -eu
 
 E52=/workspace/simulation/isaac/experiments/52_obstacles_v9
@@ -122,8 +122,8 @@ chmod +x /tmp/exp57r_matcher.sh
 nohup bash /tmp/exp57r_matcher.sh > $OUT/landmark_matcher.log 2>&1 &
 MATCHER=$!; disown $MATCHER; echo "LandmarkMatcher (ORB): $MATCHER"
 
-# v57: second anchor channel - depth-ICP matcher.  Publishes to the same
-# /anchor_correction topic; tf_relay accepts whichever was fresher.
+# v57: second anchor channel - depth-ICP matcher.  Publishes to the same   
+# /anchor_correction topic; tf_relay accepts whichever was fresher
 cat > /tmp/exp57r_icp.sh <<EOF
 #!/bin/bash
 source /opt/ros/jazzy/setup.bash

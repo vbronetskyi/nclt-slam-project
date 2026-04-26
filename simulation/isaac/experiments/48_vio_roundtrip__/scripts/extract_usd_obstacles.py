@@ -23,7 +23,7 @@ TYPES = {
     "Houses": ("house", 3.0),
 }
 
-# Walk stage
+#Walk stage
 rock_count = 0
 tree_count = 0
 shrub_count = 0

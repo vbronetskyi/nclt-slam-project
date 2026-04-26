@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Deeper comparisons: stationary bias, per-segment scale, VIO-during-stop."""
+"""Deeper comparisons: stationary bias, per-segment scale, VIO-during-stop
+"""
 import glob
 import math
 import os
@@ -31,7 +32,7 @@ def diag_stationary_bias():
         imu = load_imu(bag)
         gt = load_gt(bag)
 
-        # Build GT velocity per sample
+        #Build GT velocity per sample
         dt = np.diff(gt[:, 0])
         vel = np.sqrt(np.sum(np.diff(gt[:, 1:3], axis=0) ** 2, axis=1)) / dt
         vel = np.concatenate([[0], vel])  # align to gt

@@ -2,10 +2,10 @@
 
 ## Clean run vs end-spin
 
-Route endpoint is WP 94 at GT (-89.1, -11.5) - essentially the spawn
+Route endpoint is WP 94 at GT (-89.1, -11.5) - just the spawn
 zone. Robot drove the full roundtrip and got **closest to WP 94 at 2.91 m**
 after 373 m travelled. After that point it circled the home cluster
-(WP 91-94 all within ~5 m) without closing the final 3 m. Those last
+(WP 91-94 all within +-5 m) without closing the final 3 m. Those last
 15 m of wander are excluded from the per-distance stats because they
 reflect Nav2 goal-cluster ambiguity, not VIO performance along the
 route.
@@ -26,7 +26,7 @@ route.
 | Anti-spin activations | n/a | **32** |
 | ATE mean | - | **1.63 m** |
 | ATE median | - | **1.42 m** |
-| ATE max | - | **4.89 m** (last ~50 m of approach) |
+| ATE max | - | **4.89 m** (last +-50 m of approach) |
 
 This is the first Exp 51 run to complete the full south route roundtrip
 since the experiment began.
@@ -38,12 +38,12 @@ since the experiment began.
 | 0-50 m | 0.47 / 0.95 | 0.50 / 0.97 | outbound, near spawn |
 | 50-100 m | 1.43 / 1.93 | 1.42 / 1.70 | outbound |
 | 100-150 m | 1.59 / 3.24 | 1.95 / 2.47 | outbound turnaround zone |
-| 150-200 m | **5.69 / 7.65** | **1.28 / 1.70** | **v8 cascaded here, v9 clean - 4.5× better** |
+| 150-200 m | **5.69 / 7.65** | **1.28 / 1.70** | **v8 cascaded here, v9 clean - 4.5* better** |
 | 200-250 m | - (v8 stuck) | 1.05 / 1.37 | start of return leg |
 | 250-350 m | - | 1.72 / 3.48 | return leg |
 | 350-400 m | - | **4.28 / 4.89** | final approach (drift grows as robot nears goal cluster) |
 
-The 150-200 m result is the critical one. v8 got stuck in cascading spin
+The 150-200 m result is the key one. v8 got stuck in cascading spin
 here because VIO err > 1.5 m tolerance. v9 with `--tolerance 3.0` and
 anti-spin cleared the same zone at 1.28 m err mean.
 
@@ -53,7 +53,7 @@ anti-spin cleared the same zone at 1.28 m err mean.
   guard was active but not thrashing)
 - **83 more activations during the final 15 m** (home-zone goal cluster
   ambiguity - robot couldn't close the last 3 m without entering a spin
-  cycle, guard kept firing every ~5 s to interrupt)
+  cycle, guard kept firing every +-5 s to interrupt)
 - Each activation: 3 s cooldown with w=0, v=0.15 m/s -> robot creeps
   forward, VIO re-anchors, normal PP resumes
 
@@ -65,9 +65,9 @@ been enough past 300 m (where err started creeping up).
 Two changes from v8, nothing else:
 
 1. **`--tolerance 3.0`** in `send_goals_hybrid.py` (was 1.5)
-   - Breaks the cascade: VIO err 2-3 m doesn't trigger Nav2 "not reached"
+   - Breaks the cascade: VIO err 2-3 m doesn't trigger Nav2 not reached
 2. **Anti-spin guard** in `pure_pursuit_path_follower.py`
-   - Detects `|w| ≥ 0.5, |v| ≤ 0.1, progress < 0.5 m in 5 s`
+   - Detects `|w| >= 0.5, |v| <= 0.1, progress < 0.5 m in 5 s`
    - Forces 3 s cooldown with `w=0, v=0.15` so VIO can re-anchor
 
 Both are **control-loop fixes, not SLAM fixes**. The IMU, ORB-SLAM3
@@ -102,7 +102,7 @@ drift pattern is **not random** - it flips sign at the turnaround:
 Outbound drift is in `+y`, return drift is in `−y` - the direction
 reverses when the robot reverses. That's the classic signature of a
 **yaw mis-alignment in the SE(3)->SE(2) initial transform**: a fixed
-rotational offset projects "forward in body" into "forward + small
+rotational offset projects forward in body into "forward + small
 lateral" in world, so the lateral error tracks motion direction.
 
 Fitting a best-fit rigid transform (Kabsch) between the whole VIO track
@@ -119,8 +119,8 @@ Applying this correction:
 | err median | 1.43 m | 1.31 m |
 | err max | 6.84 m | **4.17 m** (−39%) |
 
-So **~20% of the observed error comes from a one-shot yaw alignment
-bug**, the remaining ~80% is real VIO drift accumulating along the
+So **+-20% of the observed error comes from a one-shot yaw alignment
+bug**, the remaining +-80% is real VIO drift accumulating along the   
 route (mostly the 350-400 m final approach).
 
 ### Why the yaw alignment is off
@@ -128,7 +128,7 @@ route (mostly the 350-400 m final approach).
 `_slam_se3_to_nav` in `tf_wall_clock_relay.py` computes
 `T_nav_slam = T_nav_origin · T_FLU_from_cam · inv(T_slam_origin)` from
 **one** sample at the phase-2 switch. If SLAM's reported pose at that
-instant has ±1° of jitter (which is well within ORB-SLAM3's early
+instant has +-1° of jitter (which is well within ORB-SLAM3's early
 tracking noise, especially during the warmup phase where the robot was
 doing a manoeuvre), this 1° propagates to every future pose as a fixed
 rotation bias. No amount of VIO accuracy later in the run can correct it.
@@ -137,15 +137,15 @@ rotation bias. No amount of VIO accuracy later in the run can correct it.
 
 After yaw correction, residual err is:
 
-- bounded through 250 m (≤1.5 m consistently)
-- grows to ~4 m in the last 50 m (350-400 m)
+- bounded thorugh 250 m (<=1.5 m consistently)
+- grows to +-4 m in the last 50 m (350-400 m)
 
 The final-50m growth correlates with the anti-spin cluster: once Nav2
 starts issuing rotate-in-place commands approaching the home goal
 cluster, VIO orientation uncertainty grows (rotations lose feature
 parallax), the map drifts a bit, and the Nav2 tolerance can't close the
 cascade completely. This is VIO degrading under unfavourable motion,
-not a separate bug.
+not a seperate bug.
 
 ### Recommended fixes for future v10
 
@@ -154,7 +154,7 @@ not a separate bug.
    the single pose at phase-2 switch. Expected: eliminate the 1.8° yaw
    offset -> 20% err reduction across the whole run.
 2. **Better home-zone goal handling**: once robot is within 5 m of
-   final WP, send all remaining WPs rapid-fire or accept "finish" early.
+   final WP, send all remaining WPs rapid-fire or accept finish early.
    Would have saved the 15 m of end-spin.
 
 Neither is an IMU or VIO-proper fix. The core VIO/IMU pipeline is sound.
@@ -162,11 +162,11 @@ Neither is an IMU or VIO-proper fix. The core VIO/IMU pipeline is sound.
 ## Why the end-spin happened
 
 At the end of the return leg, the robot arrives near the start position
-with VIO err 2-3 m. Goal waypoints 91-94 are all within ~5 m of each
+with VIO err 2-3 m. Goal waypoints 91-94 are all within +-5 m of each
 other (the start-zone cluster). With 3 m tolerance, the robot often
 satisfies several waypoints simultaneously or the planner issues short
 paths whose lookahead point sits behind the robot (classic cascade
-trigger). PP then spins to "face" a target that is geometrically behind,
+trigger). PP then spins to face a target that is geometrically behind,
 anti-spin activates, cooldown, resume - repeat. The 106 extra activations
 in this phase are the guard doing its job: preventing total failure but
 unable to resolve the ambiguity because multiple goals share the area.

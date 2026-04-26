@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-TF + Odom relay for Nav2 <- Isaac Sim.
+"""TF + Odom relay for Nav2 <- Isaac Sim
 
 SLAM FRAME MODE: publishes SLAM pose directly as map->base_link.
 No world frame conversion - Nav2 works entirely in SLAM coordinate frame.
@@ -120,8 +119,8 @@ class TFRelay(Node):
         self.filter_initialized = False
         self.log_counter = 0
 
-        # SLAM frame mode: track an offset that gets recomputed when atlas
-        # resets, so waypoints in the original SLAM frame remain valid.
+        #SLAM frame mode: track an offset that gets recomputed when atlas
+        # resets, so waypoints in the original SLAM frame remain valid
         self.slam_offset_x = 0.0
         self.slam_offset_y = 0.0
         self.slam_offset_yaw = 0.0
@@ -320,7 +319,7 @@ class TFRelay(Node):
         self.prev_slam_ny = nav_y
         self.prev_slam_nyaw = nav_yaw
 
-        # log every ~5s
+        # log every +-5s
         self.log_counter += 1
         if self.log_counter % 100 == 0:
             gt_yaw = math.atan2(2 * self.last_qw * self.last_qz,

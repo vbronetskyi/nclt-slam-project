@@ -1,7 +1,7 @@
 #!/bin/bash
-# Exp 45: Build ORB-SLAM3 atlas from the latest GT-fixed recording.
+# Exp 45: Build ORB-SLAM3 atlas from the latest GT-fixed recording
 # Steps:
-#   1. Use latest isaac_slam_* bag
+#1. Use latest isaac_slam_* bag
 #   2. Build TUM dataset (symlinks rgb/depth + assoc + groundtruth.txt)
 #   3. Run ORB-SLAM3 rgbd_tum to create keyframe trajectory + atlas
 #   4. Report ATE + copy outputs to exp 45 logs

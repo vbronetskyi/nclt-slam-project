@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Hybrid: pure pursuit follower for Nav2-planned path.
+"""Hybrid: pure pursuit follower for Nav2-planned path
 
 Subscribes to Nav2 /plan topic, follows the path using smooth pure pursuit.
 Publishes /cmd_vel. No Nav2 controller needed - only planner.
@@ -8,14 +8,6 @@ Rationale (from exp 49 analysis):
   Nav2 DWB/MPPI emit oscillating angular velocity (±0.6 rad/s every 2-3 cycles)
   which breaks ORB feature tracking on curves. Pure pursuit gives smooth
   proportional commands that preserve VIO accuracy (exp 48: 0.49m ATE).
-
-Nav2 stays responsible for:
-  - Global planning (obstacle-aware via depth costmap)
-  - Replanning when obstacles appear
-
-Pure pursuit takes over:
-  - Path following with smooth motion
-  - Angular velocity proportional to heading error (no oscillation)
 """
 import argparse
 import math
@@ -82,7 +74,7 @@ class PurePursuitFollower(Node):
         d_fin = math.hypot(fin.x - rx, fin.y - ry)
 
         # Find lookahead point: first path pose at least LOOKAHEAD away
-        # from robot, starting from current path_idx
+        #from robot, starting from current path_idx
         lookahead_idx = None
         closest_idx = self.path_idx
         closest_d = float('inf')

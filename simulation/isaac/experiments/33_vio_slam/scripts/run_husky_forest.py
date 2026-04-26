@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Husky A200 in forest scene with PhysX articulation drive and ROS2.
+"""Husky A200 in forest scene with PhysX articulation drive and ROS2
 Records RGB-D + IMU data for ORB-SLAM3 evaluation.
 
 publishes: /camera/color/image_raw, /camera/depth/image_rect_raw, /imu/data, /odom, /tf
@@ -44,13 +43,13 @@ from pxr import UsdGeom, UsdLux, UsdPhysics, PhysxSchema, Gf, Sdf, PhysicsSchema
 settings = carb.settings.get_settings()
 settings.set("/rtx/raytracing/backfaceCulling", False)
 settings.set("/rtx/directLighting/backfaceCulling", False)
-# post-processing off (not needed for SLAM)
+# post-processing off (not needed for SLAM)   
 settings.set("/rtx/post/motionblur/enabled", False)
 settings.set("/rtx/post/dof/enabled", False)
 settings.set("/rtx/post/bloom/enabled", False)
 settings.set("/rtx/post/lensFlares/enabled", False)
 settings.set("/rtx/directLighting/sampledLighting/enabled", False)
-# reflections off, indirect diffuse on (light through canopy)
+# reflections off, indirect diffuse on (light thorugh canopy)
 settings.set("/rtx/reflections/enabled", False)
 settings.set("/rtx/indirectDiffuse/enabled", True)
 # fabric off, PhysX needs direct USD sync for articulation control
@@ -107,7 +106,7 @@ if _root_joint.IsValid():
 # IMU sensor frame in this USD: UBR (Up-Backward-Right)
 # Verified by imu_cal_test.py:
 #   - Stationary: gravity (+9.81) on raw sensor +X => sensor X = UP
-#   - Yaw left (CCW): ang_vel positive on raw sensor +X => sensor X is yaw axis (UP)
+#   - Yaw left (CCW): ang_vel positive on raw sensor +X => sensor X is yaw axis (UP)   
 #   - Forward drive: lin_acc on raw sensor -Y => sensor Y = -FORWARD = BACKWARD
 #   - Right-hand rule: UP × FORWARD = LEFT, +X × -Y = -Z, so sensor Z = -LEFT = RIGHT
 #
@@ -258,7 +257,7 @@ og.Controller.edit(
 )
 print("  ros2 graph created")
 
-# wheel drive parameters (velocity control: stiffness=0, high damping)
+#wheel drive parameters (velocity control: stiffness=0, high damping)
 print("  configuring wheel drives...")
 _wheel_vel_attrs = []
 for wname in ["front_left_wheel", "front_right_wheel", "rear_left_wheel", "rear_right_wheel"]:
@@ -388,7 +387,7 @@ for m in _models:
     elif m["type"] == "barrel":
         _obstacles.append((m["x"], m["y"], 0.5))
     elif m["type"] in ("fallen_oak", "fallen_pine"):
-        # fallen tree scaled 1.5-2x in scene, trunk ~12-16m long
+        # fallen tree scaled 1.5-2x in scene, trunk +-12-16m long
         yaw = m.get("yaw", 0)
         for d in [-7, -5, -3, -1, 0, 1, 3, 5, 7]:
             _obstacles.append((m["x"] + d * math.cos(yaw), m["y"] + d * math.sin(yaw), 0.6))
@@ -556,16 +555,16 @@ _rec_img_count = 0
 print(f"  SLAM recording to {_rec_dir}")
 
 try:
-    # NOTE: zigzag init phase removed (exp 21 finding):
+    # zigzag init phase removed (exp 21 finding):
     # - DriveAPI commands didn't actually move the robot (forest uses ArticulationAPI)
     # - Result: 12s of "fake" zigzag where IMU recorded ±2 m/s² wheel vibrations
     #   while GT showed robot static. ORB-SLAM3 built initial map from these
     #   stationary keyframes -> bad triangulation -> +0.13m to +6m extra ATE.
     # - Init phase only helps VIO (which doesn't work on forest anyway).
-    # Recording starts driving the route immediately.
+    # Recording starts driving the route immediately
 
     # With render at 200fps, each app.update() = 1 physics step = 1/200s
-    # IMU: every step (200Hz), Camera: every 20th step (10Hz), GT/odom: every step
+    #IMU: every step (200Hz), Camera: every 20th step (10Hz), GT/odom: every step
     _step_dt = 1.0 / 200.0
     _step_count = 0
 
@@ -631,7 +630,7 @@ try:
                         os.remove("/tmp/isaac_goal.txt")
                     except:
                         pass
-                    print("  REVERSED ~3s")
+                    print("  REVERSED +-3s")
                 elif goal_txt == "reset":
                     goal_x, goal_y = None, None
                     # teleport robot back to spawn (set root xform + stop wheels)
@@ -708,12 +707,12 @@ try:
             v = float(vels[0]) if i % 2 == 0 else float(vels[1])  # left=0,2 right=1,3
             _wa.Set(math.degrees(v))
 
-        # read pose, sync camera
+        #read pose, sync camera
         pp = _get_husky_pose()
         rx, ry, rz = float(pp[0][0]), float(pp[0][1]), float(pp[0][2])
         qw, qx, qy, qz = float(pp[1][0]), float(pp[1][1]), float(pp[1][2]), float(pp[1][3])
         current_yaw = math.atan2(2.0 * (qw * qz + qx * qy), 1.0 - 2.0 * (qy * qy + qz * qz))
-        # sync camera with robot
+        #sync camera with robot
         cam_x = rx + CAM_FWD * math.cos(current_yaw)
         cam_y = ry + CAM_FWD * math.sin(current_yaw)
         cam_z = rz + CAM_UP
@@ -799,7 +798,7 @@ try:
 except KeyboardInterrupt:
     print("\nstopped")
 
-# close recording files
+#close recording files
 if _recording:
     _gt_file.close()
     _gt_tum_file.close()

@@ -26,20 +26,20 @@
 | 150-200 m | 42.69/47.80 | 17.21/26.26 | - stopped | **5.69/7.65** |
 
 v8 reaches farther than v6 stopped at (110 m) but drifts more at 100-150 m.
-Against v4 (which ran the full route), v8 is 3× better at 150-200 m.
+Against v4 (which ran the full route), v8 is 3* better at 150-200 m.
 
 ## Why drift grows past 150 m - NOT IMU
 
 Gyro integration analysis showed the IMU correctly tracks the robot's
 *actual* motion - which becomes very violent past 150 m:
 
-- GT yaw at t=200-250s oscillates ±100° every 10 seconds
+- GT yaw at t=200-250s oscillates +-100° every 10 seconds
 - Actual yaw rate 20-36 °/s (robot physically spinning in place)
 - IMU gz correctly reads these rates
 
 Root cause is a **Nav2 feedback cascade**:
 
-1. Around 150 m, VIO err grows to ~3 m (normal in dense forest)
+1. Around 150 m, VIO err grows to +-3 m (normal in dense forest)
 2. Nav2 `goal-tolerance` is 1.5 m -> thinks robot hasn't reached WP
 3. Nav2 issues rotate-in-place commands (`v=0.07 w=0.80`) as recovery
 4. Robot spins in place -> each rotation adds to VIO uncertainty
@@ -67,7 +67,7 @@ first 100 m, differ after that. Neither clearly wins - v6 stopped at
 
 For the thesis, either is acceptable:
 - v8 is the theoretically correct calibration
-- v6's "wrong" 5.5× value happens to also work
+- v6's wrong 5.5* value happens to also work
 
 The real limiting factor is the Nav2 tolerance feedback, not the IMU
 noise model.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""3 tests to decide if scale drift comes from synthetic IMU or ORB-SLAM3.
+"""3 tests to decide if scale drift comes from synthetic IMU or ORB-SLAM3
 
 Test 1: accel energy - IMU horizontal accel RMS vs GT accel RMS.
 Test 2: position recovery - double-integrate synthetic IMU, compare to GT.
@@ -37,7 +37,7 @@ def test1_accel_rms(imu, gt):
     print(f"  GT horiz accel RMS (during motion): {gt_rms:.3f} m/s²")
     print(f"  Synth horiz accel RMS (body xy):    {synth_rms:.3f} m/s²")
     print(f"  Ratio synth/GT:                     {synth_rms / gt_rms:.3f}")
-    print("  (<0.8 means LPF over-smooths; ~1.0 means accel energy preserved)")
+    print("  (<0.8 means LPF over-smooths; +-1.0 means accel energy preserved)")
     return synth_rms / gt_rms
 
 
@@ -51,10 +51,10 @@ def test2_position_recovery(imu, gt, lpf_window=None):
         imu[:, 1] = np.convolve(imu[:, 1], kernel, mode='same')
         imu[:, 2] = np.convolve(imu[:, 2], kernel, mode='same')
 
-    # Interp GT yaw at IMU rate
+    # Interp GT yaw at IMU rate   
     gt_yaw_interp = np.interp(imu[:, 0], gt[:, 0], gt[:, 4])
 
-    # Use only the time overlap of IMU and GT
+    #Use only the time overlap of IMU and GT
     mask = (imu[:, 0] >= gt[0, 0]) & (imu[:, 0] <= gt[-1, 0])
     imu_c = imu[mask]
     yaw_c = gt_yaw_interp[mask]
@@ -114,7 +114,7 @@ def main():
         print(f"  IMU-integrated path: {path_len:.1f} m")
         print(f"  GT path length:      {gt_dist:.1f} m")
         print(f"  Recovery ratio:      {ratio:.3f}")
-        print("  (~1.0 = IMU energy fine, drift is in VIO; <0.9 or >1.1 = IMU-side bias)")
+        print("  (+-1.0 = IMU energy fine, drift is in VIO; <0.9 or >1.1 = IMU-side bias)")
 
     print()
     print("TEST 3: LPF-window sensitivity of recovery ratio")

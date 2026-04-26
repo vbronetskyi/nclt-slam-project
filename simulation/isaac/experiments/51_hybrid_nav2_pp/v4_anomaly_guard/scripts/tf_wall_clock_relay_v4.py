@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
-"""
-TF + Odom relay for Nav2 <- Isaac Sim.
+"""TF + Odom relay for Nav2 <- Isaac Sim
 
-Modes:
   --use-gt         GT localization (perfect pose from sim)
   --encoder-imu    Encoder + IMU localization (realistic sensors)
   --slam-frame     SLAM pose in SLAM coordinate frame
@@ -41,13 +39,13 @@ YAW_JUMP_THRESHOLD = 0.3
 # Local BA / keyframe culling in ORB-SLAM3 can silently re-optimize map
 # points causing the current frame pose to shift by 10+ m. Detect by
 # single-tick displacement > threshold and freeze briefly so the encoder
-# carries localization until SLAM stabilises past the jump.
+# carries localization until SLAM stabilises past the jump
 #
 # v1 of guard used apparent speed (m/s) which triggered on normal VIO
 # jitter (0.1 m per 50 ms tick = 2 m/s). v2 uses single-tick displacement
 # in meters - normal driving at 0.85 m/s over 50 ms = 0.04 m per tick;
 # even fast rotate-in-place stays well below 0.3 m. Real BA jumps are
-# meters per tick, so this is easy to distinguish.
+# meters per tick, so this is easy to distinguish
 SLAM_GUARD_MAX_JUMP_M = 0.8         # meters per single SLAM update
 SLAM_GUARD_FREEZE_S = 3.0           # seconds SLAM is ignored after anomaly
 SLAM_GUARD_WARMUP_S = 5.0           # grace after init before guard arms
@@ -88,7 +86,7 @@ class SlamAnomalyGuard:
             return x, y, yaw, False
 
         # If the guard has triggered too many times, assume threshold is wrong
-        # for this run and pass SLAM through (better than 5s-interval freezes).
+        # for this run and pass SLAM thorugh (better than 5s-interval freezes)
         if self.activation_count >= SLAM_GUARD_MAX_ACTIVATIONS:
             self.prev_x, self.prev_y = x, y
             self.last_good_x, self.last_good_y, self.last_good_yaw = x, y, yaw
@@ -102,7 +100,7 @@ class SlamAnomalyGuard:
             # Don't update prev_x/y - keep last good values
             return self.last_good_x, self.last_good_y, self.last_good_yaw, True
 
-        # Normal update
+        # Normal update   
         self.prev_x, self.prev_y = x, y
         self.last_good_x, self.last_good_y, self.last_good_yaw = x, y, yaw
         return x, y, yaw, False
@@ -156,7 +154,7 @@ class TFRelay(Node):
         imu_tf.transform.rotation.w = 1.0
         self.static_br.sendTransform([cam_tf, imu_tf])
 
-        # depth -> pointcloud
+        # depth -> pointcloud   
         self.fx = self.fy = 320.0
         self.cx, self.cy = 320.0, 240.0
         self.pc_pub = self.create_publisher(PointCloud2, '/depth_points', 10)
@@ -190,7 +188,7 @@ class TFRelay(Node):
         self.filter_initialized = False
         self.log_counter = 0
 
-        # IMU gyro yaw
+        #IMU gyro yaw
         self.imu_yaw = 0.0
         self.imu_yaw_initialized = False
         self.prev_imu_time = pytime.time()
@@ -210,7 +208,7 @@ class TFRelay(Node):
         # Override gyro parameters for encoder+IMU mode
         if encoder_imu:
             global GYRO_DEADZONE, GYRO_LPF_ALPHA
-            GYRO_DEADZONE = 0.01  # much lower - real IMU reads ~0.03 rad/s during turns
+            GYRO_DEADZONE = 0.01  # much lower - real IMU reads +-0.03 rad/s during turns
             GYRO_LPF_ALPHA = 0.15  # smoother filtering
 
         # SLAM+encoder fusion state (Level 3)
@@ -347,7 +345,7 @@ class TFRelay(Node):
         T_slam[:3, 3] = [sx, sy, sz]
 
         if self.T_nav_slam is None:
-            # First valid SLAM pose: compute alignment
+            #First valid SLAM pose: compute alignment
             # SLAM camera uses OpenCV convention: x=right, y=down, z=forward
             # Nav frame uses FLU convention: x=forward, y=left, z=up
             # T_FLU_from_cam maps camera axes -> FLU body axes:
@@ -407,7 +405,7 @@ class TFRelay(Node):
                 f'SLAM+ENCODER init: ({x:.1f}, {y:.1f}), yaw={gt_yaw:.3f}')
             return
 
-        # Update encoder+compass odometry (always, as fallback)
+        #Update encoder+compass odometry (always, as fallback)
         COMPASS_NOISE = 0.05
         noisy_yaw = gt_yaw + np.random.normal(0, COMPASS_NOISE)
         dx = x - self.prev_gt_x
@@ -431,7 +429,7 @@ class TFRelay(Node):
             self._slam_frozen_count = 0
 
         if slam_ok:
-            # Detect SLAM pose freeze: if SLAM position unchanged while encoder moves
+            #Detect SLAM pose freeze: if SLAM position unchanged while encoder moves
             if self._prev_slam_pos is not None:
                 slam_motion = math.hypot(sx - self._prev_slam_pos[0],
                                           sz - self._prev_slam_pos[1])  # camera xz plane
@@ -441,7 +439,7 @@ class TFRelay(Node):
                     self._slam_frozen_count = 0
             self._prev_slam_pos = (sx, sz)
 
-            # If SLAM frozen for 60+ ticks (~12s), treat as lost
+            # If SLAM frozen for 60+ ticks (+-12s), treat as lost
             # (Nav2 can rotate-in-place long periods - don't fallback prematurely)
             if self._slam_frozen_count > 60:
                 slam_ok = False
@@ -449,7 +447,7 @@ class TFRelay(Node):
         if slam_ok:
             slam_nx, slam_ny, slam_nyaw = self._slam_se3_to_nav(
                 sx, sy, sz, sqx, sqy, sqz, sqw)
-            # Anomaly guard: reject BA-induced map shifts (>2 m/s apparent speed)
+            #Anomaly guard: reject BA-induced map shifts (>2 m/s apparent speed)
             t_now = pytime.time()
             slam_nx, slam_ny, slam_nyaw, is_anomaly = self.slam_guard.check(
                 slam_nx, slam_ny, slam_nyaw, t_now)
@@ -479,7 +477,7 @@ class TFRelay(Node):
             nav_yaw = self.enc_yaw
             self.using_slam = False
 
-        # Log every ~5s
+        # Log every +-5s
         self.log_counter += 1
         if self.log_counter % 100 == 0:
             err = math.hypot(nav_x - x, nav_y - y)
@@ -493,7 +491,7 @@ class TFRelay(Node):
                 f'dist={self.enc_total_dist:.0f}m '
                 f'slam_f={self.slam_frames} lost={self.slam_lost} '
                 f'guard_act={self.slam_guard.activation_count}')
-        # Log each guard activation once (transition from non-activated to activated)
+        #Log each guard activation once (transition from non-activated to activated)
         if not hasattr(self, '_last_guard_count'):
             self._last_guard_count = 0
         if self.slam_guard.activation_count > self._last_guard_count:
@@ -548,8 +546,8 @@ class TFRelay(Node):
                 f'ENCODER+IMU init: ({x:.1f}, {y:.1f}), yaw={gt_yaw:.3f}')
             return
 
-        # Heading: compass+gyro fusion = GT yaw + noise (~3° std)
-        COMPASS_NOISE = 0.05  # ~3 degrees std
+        # Heading: compass+gyro fusion = GT yaw + noise (+-3° std)
+        COMPASS_NOISE = 0.05  # +-3 degrees std
         noisy_yaw = gt_yaw + np.random.normal(0, COMPASS_NOISE)
 
         # Encoder: compute displacement from GT pose diff (= wheel encoder equivalent)
@@ -570,7 +568,7 @@ class TFRelay(Node):
         self.prev_gt_x = x
         self.prev_gt_y = y
 
-        # Log every ~5s (100 ticks at 20Hz)
+        #Log every +-5s (100 ticks at 20Hz)
         self.log_counter += 1
         if self.log_counter % 100 == 0:
             err = math.hypot(self.enc_x - x, self.enc_y - y)
@@ -672,14 +670,14 @@ class TFRelay(Node):
             self.imu_yaw += SLAM_YAW_ALPHA * yaw_error
         self.fused_yaw = self.imu_yaw
 
-        # save prev
+        #save prev
         self.prev_odom_x = self.odom_x
         self.prev_odom_y = self.odom_y
         self.prev_slam_nx = nav_x
         self.prev_slam_ny = nav_y
         self.prev_slam_nyaw = nav_yaw
 
-        # log every ~5s
+        # log every +-5s
         self.log_counter += 1
         if self.log_counter % 100 == 0:
             gt_yaw = math.atan2(2 * self.last_qw * self.last_qz,

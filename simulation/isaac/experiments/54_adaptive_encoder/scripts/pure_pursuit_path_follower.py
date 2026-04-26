@@ -1,23 +1,5 @@
 #!/usr/bin/env python3
-"""Pure pursuit follower with (v9) anti-spin + (v53) proximity speed limiter.
-
-Proximity speed limiter:
-    Subscribes to /global_costmap/costmap. Before every cmd publish,
-    samples costs in a forward arc (0.3–1.5 m ahead of robot, ±0.3 m
-    lateral). Caps cmd.linear.x based on the MAX cost seen:
-
-        cost < 30   -> full speed (MAX_VEL)
-        30 ≤ cost < 70  -> 0.15 m/s (slowdown)
-        70 ≤ cost < 99  -> 0.08 m/s (crawl - near inflation edge)
-        cost ≥ 99 or unknown(-1)  -> 0.03 m/s (near stop)
-
-    Inflation radius is 1.2 m, so cost 30 roughly starts 0.7–0.9 m from
-    the occupied center - robot begins slowing BEFORE contact range.
-    This gives SLAM time to converge and planner time to re-plan, and
-    removes the run 4 failure mode (driving into tent while SLAM
-    drifts).
-
-v9 anti-spin layer is preserved unchanged.
+"""Pure pursuit follower with (v9) anti-spin + (v53) proximity speed limiter
 """
 import argparse
 import math
@@ -54,10 +36,10 @@ class PurePursuitFollower(Node):
         self.PROGRESS_WINDOW_S = 5.0
         self.MIN_PROGRESS_M = 0.5
 
-        # v54 wedge-recovery - robot wedged against obstacle (physical contact).
+        # v54 wedge-recovery - robot wedged against obstacle (physical contact)
         # If we've been emitting cmd.v > 0 for WEDGE_WINDOW_S but GT displacement
         # is < WEDGE_MIN_DISP_M, reverse for WEDGE_BACKUP_S to get clearance,
-        # then PP resumes.
+        # then PP resumes
         self.WEDGE_WINDOW_S = 4.0
         self.WEDGE_MIN_DISP_M = 0.15
         self.WEDGE_BACKUP_S = 2.5
@@ -65,7 +47,7 @@ class PurePursuitFollower(Node):
         self.wedge_backup_until = 0.0
         self.wedge_activations = 0
 
-        # v54 proximity speed profile - real Husky cruise at ~1 m/s,
+        # v54 proximity speed profile - real Husky cruise at +-1 m/s,
         # slow to 0.5 m/s near obstacles, 0.2 m/s at true contact range.
         # Faster cruise ⇒ shorter mission time ⇒ less IMU bias walk ⇒
         # tighter VIO. Simpler 2-tier ruleset instead of 3.
@@ -233,14 +215,14 @@ class PurePursuitFollower(Node):
         cmd.linear.x = self.MAX_VEL * max(0.3, 1.0 - abs(err) / 1.57)
         cmd.angular.z = max(-self.MAX_ANG, min(self.MAX_ANG, self.GAIN_ANG * err))
 
-        # v54 proximity speed limiter - plan-based (main) + emergency fallback.
+        # v54 proximity speed limiter - plan-based (main) + emergency fallback
         # Main: sample along the current plan (which already avoids obstacles).
         # Emergency: check the cell directly under the robot + 0.5 m ahead in
         # heading. If costmap says lethal there, we're physically inside an
         # inflation bubble - stale plan, obstacle just appeared, or drift
         # steered us off path. Slow hard regardless of plan-sample result.
         plan_cost = self._max_cost_ahead(rx, ry, ryaw)
-        # emergency under-robot check: robot cell + one cell 0.5 m forward
+        # emergency under-robot check: robot cell + one cell 0.5 m forward   
         emerg_cost = max(self._costmap_cell(rx, ry),
                          self._costmap_cell(rx + 0.5 * math.cos(ryaw),
                                             ry + 0.5 * math.sin(ryaw)))
@@ -270,7 +252,7 @@ class PurePursuitFollower(Node):
         else:
             self.spin_accum_t = max(0.0, self.spin_accum_t - 0.2)
 
-        # v54 wedge-recovery - physically wedged? Reverse briefly.
+        # v54 wedge-recovery - physically wedged? Reverse briefly
         if t_now < self.wedge_backup_until:
             cmd.angular.z = 0.0
             cmd.linear.x = self.WEDGE_BACKUP_V
@@ -283,7 +265,7 @@ class PurePursuitFollower(Node):
             if (wedge_disp < self.WEDGE_MIN_DISP_M
                     and cmd.linear.x > 0.05
                     and len(self.pos_history) > 30):
-                # confirm cmd has been forward over window
+                #confirm cmd has been forward over window
                 self.wedge_backup_until = t_now + self.WEDGE_BACKUP_S
                 self.wedge_activations += 1
                 self.get_logger().warn(

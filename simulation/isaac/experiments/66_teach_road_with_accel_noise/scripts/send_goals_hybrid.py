@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Hybrid goal sender (v53) with proactive WP projection.
+"""Hybrid goal sender (v53) with proactive WP projection
 
 For every /global_costmap/costmap update:
   - Re-checks all *future* waypoints (current..end) against the costmap.
@@ -61,11 +61,11 @@ class HybridGoalSender(Node):
         self.DETOUR_MAX_COST = 30              # detour candidate cell must have cost < this
         self.LOOKAHEAD_N = 3
 
-        # v59 known obstacles (from patch_obstacles_exp52 for south route).
+        # v59 known obstacles (from patch_obstacles_exp52 for south route)
         # Costmap updates have latency (robot must approach to depth-range
         # before obstacle is marked).  We also hard-check against these
         # known positions so the lookahead fires BEFORE robot gets near.
-        # v65 road route obstacles (from spawn_obstacles.py OBSTACLES['road']):
+        #v65 road route obstacles (from spawn_obstacles.py OBSTACLES['road']):
         # barrier 1 (x=-50, y=-8..-2.5 step 0.5), barrier 2 (x=15, y=-1..4),
         # barrier 3 (x=45, y=-3..1), tent at (-20, 0).
         def _frange(a, b, s):
@@ -84,13 +84,13 @@ class HybridGoalSender(Node):
             'half_y': 1.0,
         }
         # Minimum allowed clearance from any known obstacle - WP center
-        # must be ≥ this many metres from obstacle edge.
+        # must be ≥ this many metres from obstacle edge
         # robot_radius 0.7 + 0.2 margin = 0.9 m from obstacle edge
         self.KNOWN_CLEARANCE_M = 0.9
 
         # v59-fix: use map->base_link tf (SLAM pose, consistent with
-        # pure_pursuit_path_follower) instead of /tmp/isaac_pose.txt (Isaac
-        # GT). Mixing GT with SLAM-frame WPs breaks REACH once drift > TOL.
+        # pure_pursuit_path_follower) instead of /tmp/isaac_pose.txt (Isaac   
+        #GT). Mixing GT with SLAM-frame WPs breaks REACH once drift > TOL.
         self.tf_buf = tf2_ros.Buffer()
         self.tf_listener = tf2_ros.TransformListener(self.tf_buf, self)
 
@@ -176,7 +176,7 @@ class HybridGoalSender(Node):
         H, W = self.costmap.shape
         if not (0 <= r0 < H and 0 <= c0 < W):
             return 0
-        # 3x3 window around cell
+        # 3x3 window around cell   
         peak = 0
         for dr in (-1, 0, 1):
             for dc in (-1, 0, 1):
@@ -237,7 +237,7 @@ class HybridGoalSender(Node):
             if self._cost_at(r, c) < self.PROJ_COST_THRESH:
                 nx, ny = self._xy_from_cell(r, c)
                 # v56-B: if projection shift exceeds cap, leave WP as-is so
-                # robot attempts original path (keeps closer to teach trajectory)
+                #robot attempts original path (keeps closer to teach trajectory)
                 shift = math.hypot(nx - x, ny - y)
                 if shift > self.PROJ_MAX_SHIFT_M:
                     return x, y, True   # "found but keep original"
@@ -359,7 +359,7 @@ class HybridGoalSender(Node):
         return False
 
     def run(self):
-        # Wait for map->base_link tf (listener needs a few spin cycles).
+        #Wait for map->base_link tf (listener needs a few spin cycles)
         for _ in range(40):
             rclpy.spin_once(self, timeout_sec=0.25)
             rx0, ry0 = self._read_robot_pose()

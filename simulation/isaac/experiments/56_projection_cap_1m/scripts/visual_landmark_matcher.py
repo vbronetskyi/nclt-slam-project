@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Exp 55 repeat-time visual landmark matcher.
+"""Exp 55 repeat-time visual landmark matcher
 
 Loads south_landmarks.pkl (captured in teach run), subscribes to the live
-camera topics and VIO pose, and at ~1-2 Hz:
+camera topics and VIO pose, and at +-1-2 Hz:
 
   1. Find candidate teach landmarks within CANDIDATE_RADIUS m of current
      VIO position (in the teach-map world frame - if VIO has drifted, this
@@ -19,12 +19,10 @@ camera topics and VIO pose, and at ~1-2 Hz:
   6. Publish `/anchor_correction` (PoseWithCovarianceStamped).  Covariance
      diagonal from inlier count.
 
-Inputs:
   /camera/color/image_raw, /camera/depth/image_rect_raw
   /tmp/isaac_pose.txt  (current VIO/encoder-blended pose from tf_relay)
   south_landmarks.pkl
 
-Outputs:
   /anchor_correction  geometry_msgs/PoseWithCovarianceStamped
   anchor_matches.csv  log of every attempt
 """
@@ -64,7 +62,7 @@ def _img_msg_to_depth_mm(msg):
         return mm.astype(np.uint16)
     raise ValueError(f'unexpected depth encoding {msg.encoding}')
 
-# Defaults matching the recorder
+# Defaults matching the recorder   
 FX, FY = 320.0, 320.0
 CX, CY = 320.0, 240.0
 K = np.array([[FX, 0, CX], [0, FY, CY], [0, 0, 1]], dtype=np.float32)
@@ -168,7 +166,7 @@ class VisualLandmarkMatcher(Node):
 
         self.orb = cv2.ORB_create(nfeatures=500)
         # crossCheck=True: mutual nearest neighbour filter; gives cleaner
-        # matches than Lowe ratio when one set is much smaller (31 teach vs
+        # matches than Lowe ratio when one set is much smaller (31 teach vs   
         # 500 current).  Tested on self-match (lm 10): 26 clean matches.
         self.matcher = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
 
@@ -250,7 +248,7 @@ class VisualLandmarkMatcher(Node):
         vio_xy = (base_pose[0], base_pose[1])
         ts = time.time()
 
-        # Candidates within radius AND within heading tolerance (reject
+        #Candidates within radius AND within heading tolerance (reject
         # return-path landmarks that would false-match an outbound frame)
         cur_hdg = self._current_heading_rad(base_pose)
         dxy = self.xy - np.array(vio_xy)
@@ -283,7 +281,7 @@ class VisualLandmarkMatcher(Node):
                 continue
             # Cross-check match: teach->current (smaller set first gives
             # better precision with crossCheck=True).  queryIdx=teach,
-            # trainIdx=current.
+            # trainIdx=current
             try:
                 good = self.matcher.match(desc_t, desc_curr)
             except cv2.error:
@@ -316,7 +314,7 @@ class VisualLandmarkMatcher(Node):
             # rvec/tvec -> teach-cam pose as seen from current cam
             R_cur_teach, _ = cv2.Rodrigues(rvec)
             t_cur_teach = tvec.reshape(3)
-            # Invert: current-cam pose in teach-cam frame
+            #Invert: current-cam pose in teach-cam frame
             R_teach_cur = R_cur_teach.T
             t_teach_cur = -R_teach_cur @ t_cur_teach
             # Compose with teach-camera world pose to get current-cam world pose

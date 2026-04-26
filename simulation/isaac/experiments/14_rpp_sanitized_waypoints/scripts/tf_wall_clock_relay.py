@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-TF + Odom relay for Nav2 <- Isaac Sim.
+"""TF + Odom relay for Nav2 <- Isaac Sim
 
 SLAM FRAME MODE: publishes SLAM pose directly as map->base_link.
 No world frame conversion - Nav2 works entirely in SLAM coordinate frame.
@@ -27,7 +26,7 @@ from tf2_ros import TransformBroadcaster, StaticTransformBroadcaster
 POSE_FILE = "/tmp/isaac_pose.txt"
 SPAWN_X, SPAWN_Y = -95.0, -6.0
 
-# fusion parameters
+# fusion parameters   
 SLAM_POS_ALPHA = 0.7
 ODOM_POS_ALPHA = 0.3
 SLAM_YAW_ALPHA = 0.15
@@ -213,7 +212,7 @@ class TFRelay(Node):
             return
 
         # SLAM camera frame -> 2D nav frame
-        # nav_x = slam_z (forward), nav_y = -slam_x (left)
+        #nav_x = slam_z (forward), nav_y = -slam_x (left)
         slam_yaw_raw = math.atan2(2 * (sqw * sqz + sqx * sqy),
                                    1 - 2 * (sqy * sqy + sqz * sqz))
         nav_x = sz
@@ -268,7 +267,7 @@ class TFRelay(Node):
         self.prev_slam_ny = nav_y
         self.prev_slam_nyaw = nav_yaw
 
-        # log every ~5s
+        # log every +-5s
         self.log_counter += 1
         if self.log_counter % 100 == 0:
             gt_yaw = math.atan2(2 * self.last_qw * self.last_qz,

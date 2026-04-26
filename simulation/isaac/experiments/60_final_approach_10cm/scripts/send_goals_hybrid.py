@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Hybrid goal sender (v53) with proactive WP projection.
+"""Hybrid goal sender (v53) with proactive WP projection
 
 For every /global_costmap/costmap update:
   - Re-checks all *future* waypoints (current..end) against the costmap.
@@ -61,7 +61,7 @@ class HybridGoalSender(Node):
         self.DETOUR_MAX_COST = 30              # detour candidate cell must have cost < this
         self.LOOKAHEAD_N = 3
 
-        # v59 known obstacles (from patch_obstacles_exp52 for south route).
+        # v59 known obstacles (from patch_obstacles_exp52 for south route)
         # Costmap updates have latency (robot must approach to depth-range
         # before obstacle is marked).  We also hard-check against these
         # known positions so the lookahead fires BEFORE robot gets near.
@@ -76,15 +76,15 @@ class HybridGoalSender(Node):
             'half_y': 1.0,
         }
         # Minimum allowed clearance from any known obstacle - WP body-edge
-        # must be ≥ this many metres from obstacle edge.
+        # must be ≥ this many metres from obstacle edge
         # v60: tightened from 0.9 -> 0.6 m. Robot half-width 0.5 m + 0.1 m
         # spec margin = WP center ≥ 0.6 m from obstacle edge (with ideal
-        # localisation - real clearance depends on current SLAM drift).
+        # localisation - real clearance depends on current SLAM drift)
         self.KNOWN_CLEARANCE_M = 0.6
 
         # v59-fix: use map->base_link tf (SLAM pose, consistent with
         # pure_pursuit_path_follower) instead of /tmp/isaac_pose.txt (Isaac
-        # GT). Mixing GT with SLAM-frame WPs breaks REACH once drift > TOL.
+        #GT). Mixing GT with SLAM-frame WPs breaks REACH once drift > TOL.
         self.tf_buf = tf2_ros.Buffer()
         self.tf_listener = tf2_ros.TransformListener(self.tf_buf, self)
 
@@ -268,7 +268,7 @@ class HybridGoalSender(Node):
                 if not self.skip_flags[i]:
                     n_skipped_now += 1
                 self.skip_flags[i] = True
-                # keep projected = original (will be skipped anyway)
+                #keep projected = original (will be skipped anyway)
                 self.projected_wps[i] = (ox, oy)
             else:
                 self.skip_flags[i] = False
@@ -389,10 +389,10 @@ class HybridGoalSender(Node):
                 self.skipped += 1
                 continue
 
-            # v59 LOOK-AHEAD + KNOWN-OBSTACLE CHECK:
+            #v59 LOOK-AHEAD + KNOWN-OBSTACLE CHECK:
             # (a) hardcoded check against known cone/tent positions - no
             #     costmap latency, fires regardless of depth visibility;
-            # (b) if costmap is available, also check cell cost.
+            # (b) if costmap is available, also check cell cost
             unsafe_reason = None
             too_close, what = self._wp_too_close_to_known(x, y)
             if too_close:
@@ -443,7 +443,7 @@ class HybridGoalSender(Node):
 
         total = time.time() - self.start_time
         # v60: stop the robot - empty /plan so pp_follower drops its target,
-        # plus a direct zero /cmd_vel so the wheels halt immediately.
+        # plus a direct zero /cmd_vel so the wheels halt immediately
         empty = Path()
         empty.header.frame_id = 'map'
         empty.header.stamp = self.get_clock().now().to_msg()

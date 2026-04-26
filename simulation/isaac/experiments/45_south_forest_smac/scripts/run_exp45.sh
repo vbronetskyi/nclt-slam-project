@@ -2,8 +2,8 @@
 # Exp 45: South forest with Nav2 SmacPlanner2D + velocity smoother
 #
 # Goal: test SmacPlanner2D (footprint-aware planner) against NavFn (exp 44)
-# on south forest route. Both planners had ~47 WP reach; SmacPlanner got
-# 4m further into the NE forest (peak 93m vs 89m) before stalling.
+# on south forest route. Both planners had +-47 WP reach; SmacPlanner got
+# 4m further into the NE forest (peak 93m vs 89m) before stalling
 #
 # Usage:
 #   cd /workspace/simulation/isaac/experiments/45_south_forest_smac

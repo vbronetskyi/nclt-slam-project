@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Husky A200 in forest scene with PhysX articulation drive and ROS2.
+"""Husky A200 in forest scene with PhysX articulation drive and ROS2
 Records RGB-D + IMU data for ORB-SLAM3 evaluation.
 
 publishes: /camera/color/image_raw, /camera/depth/image_rect_raw, /imu/data, /odom, /tf
@@ -44,16 +43,16 @@ from pxr import UsdGeom, UsdLux, UsdPhysics, PhysxSchema, Gf, Sdf, PhysicsSchema
 settings = carb.settings.get_settings()
 settings.set("/rtx/raytracing/backfaceCulling", False)
 settings.set("/rtx/directLighting/backfaceCulling", False)
-# post-processing off (not needed for SLAM)
+#post-processing off (not needed for SLAM)   
 settings.set("/rtx/post/motionblur/enabled", False)
 settings.set("/rtx/post/dof/enabled", False)
 settings.set("/rtx/post/bloom/enabled", False)
 settings.set("/rtx/post/lensFlares/enabled", False)
 settings.set("/rtx/directLighting/sampledLighting/enabled", False)
-# reflections off, indirect diffuse on (light through canopy)
+# reflections off, indirect diffuse on (light thorugh canopy)
 settings.set("/rtx/reflections/enabled", False)
 settings.set("/rtx/indirectDiffuse/enabled", True)
-# fabric off, PhysX needs direct USD sync for articulation control
+# fabric off, PhysX needs direct USD sync for articulation control   
 settings.set("/persistent/omnigraph/updateToUsd", True)
 settings.set("/persistent/omnihydra/useSceneGraphInstancing", False)
 
@@ -101,8 +100,8 @@ _root_joint = stage.GetPrimAtPath("/World/Husky/Physics/root_joint")
 if _root_joint.IsValid():
     print("  WARNING: root_joint still exists, base may be fixed")
 
-# IMU sensor frame in this USD: UBR (Up-Backward-Right)
-# Verified by imu_cal_test.py:
+#IMU sensor frame in this USD: UBR (Up-Backward-Right)
+#Verified by imu_cal_test.py:
 #   - Stationary: gravity (+9.81) on raw sensor +X => sensor X = UP
 #   - Yaw left (CCW): ang_vel positive on raw sensor +X => sensor X is yaw axis (UP)
 #   - Forward drive: lin_acc on raw sensor -Y => sensor Y = -FORWARD = BACKWARD
@@ -160,7 +159,7 @@ def _make_cam_matrix(x, y, z, yaw, pitch=0):
     """camera matrix: look along yaw direction with pitch tilt, up = +Z"""
     cy, sy = math.cos(yaw), math.sin(yaw)
     cp, sp = math.cos(pitch), math.sin(pitch)
-    # Base rotation (yaw only): row0=(sy,-cy,0) row1=(0,0,1) row2=(-cy,-sy,0)
+    #Base rotation (yaw only): row0=(sy,-cy,0) row1=(0,0,1) row2=(-cy,-sy,0)
     # Add pitch: rotate around camera's local X axis (row0)
     # row1 rotated by pitch: row1*cos(p) + row2*sin(p)
     # row2 rotated by pitch: -row1*sin(p) + row2*cos(p)
@@ -177,7 +176,7 @@ def _make_cam_matrix(x, y, z, yaw, pitch=0):
 _cam_transform_op.Set(_make_cam_matrix(-95 + CAM_FWD, -6, 0.2 + CAM_UP, 0))
 print(f"  camera: {CAM_RGB}")
 
-# verify prim paths
+#verify prim paths
 for name, path in [("base_link", BASE_LINK), ("camera", CAM_RGB), ("imu", IMU_PATH)]:
     print(f"  {name}: {stage.GetPrimAtPath(path).IsValid()} ({path})")
 
@@ -385,7 +384,7 @@ for m in _models:
     elif m["type"] == "barrel":
         _obstacles.append((m["x"], m["y"], 0.5))
     elif m["type"] in ("fallen_oak", "fallen_pine"):
-        # fallen tree scaled 1.5-2x in scene, trunk ~12-16m long
+        # fallen tree scaled 1.5-2x in scene, trunk +-12-16m long
         yaw = m.get("yaw", 0)
         for d in [-7, -5, -3, -1, 0, 1, 3, 5, 7]:
             _obstacles.append((m["x"] + d * math.cos(yaw), m["y"] + d * math.sin(yaw), 0.6))
@@ -462,7 +461,7 @@ def find_road_path(robot_x, robot_y, goal_x, goal_y):
     else:
         return [ROAD_WPS[i] for i in range(ri, gi - 1, -1)]
 
-# routes from A* pathfinding (start -> houses -> return)
+#routes from A* pathfinding (start -> houses -> return)
 _ROUTES_FILE = "/tmp/slam_routes.json"
 try:
     with open(_ROUTES_FILE) as _rf:
@@ -514,7 +513,7 @@ elif args.route == "warmup":
 if args.vio_warmup and _auto_route is not None and args.route in ("north", "south", "road"):
     # Warmup ends at the last WARMUP_WAYPOINTS point.
     # Skip initial route waypoints that are behind or at the warmup-end X,
-    # so robot continues forward smoothly instead of doubling back to spawn.
+    # so robot continues forward smoothly instead of doubling back to spawn
     import math as _math
     warmup_end_x = WARMUP_WAYPOINTS[-1][0]
     warmup_end_y = WARMUP_WAYPOINTS[-1][1]
@@ -553,13 +552,13 @@ _rec_img_count = 0
 print(f"  SLAM recording to {_rec_dir}")
 
 try:
-    # NOTE: zigzag init phase removed (exp 21 finding):
+    # zigzag init phase removed (exp 21 finding):
     # - DriveAPI commands didn't actually move the robot (forest uses ArticulationAPI)
-    # - Result: 12s of "fake" zigzag where IMU recorded ±2 m/s² wheel vibrations
+    #- Result: 12s of "fake" zigzag where IMU recorded ±2 m/s² wheel vibrations
     #   while GT showed robot static. ORB-SLAM3 built initial map from these
     #   stationary keyframes -> bad triangulation -> +0.13m to +6m extra ATE.
-    # - Init phase only helps VIO (which doesn't work on forest anyway).
-    # Recording starts driving the route immediately.
+    # - Init phase only helps VIO (which doesn't work on forest anyway)
+    # Recording starts driving the route immediately
 
     while sim_time < args.duration:
         app.update()
@@ -601,7 +600,7 @@ try:
                         os.remove("/tmp/isaac_goal.txt")
                     except:
                         pass
-                    print("  REVERSED ~2s")
+                    print("  REVERSED +-2s")
                 elif goal_txt == "reset":
                     goal_x, goal_y = None, None
                     # teleport robot back to spawn (set root xform + stop wheels)
@@ -673,7 +672,7 @@ try:
         else:
             vels = np.array([0.0, 0.0, 0.0, 0.0])
 
-        # set wheel velocity targets via USD DriveAPI (no articulation)
+        #set wheel velocity targets via USD DriveAPI (no articulation)
         for i, _wa in enumerate(_wheel_vel_attrs):
             v = float(vels[0]) if i % 2 == 0 else float(vels[1])  # left=0,2 right=1,3
             _wa.Set(math.degrees(v))
@@ -693,7 +692,7 @@ try:
         pitch = math.atan2(z_front - z_back, 2 * fwd_d)
         _cam_transform_op.Set(_make_cam_matrix(cam_x, cam_y, cam_z, current_yaw, pitch))
 
-        # save camera at ~10Hz
+        # save camera at +-10Hz
         frame_n = int(sim_time * 60)
         if frame_n % 6 == 0:
             try:
@@ -736,7 +735,7 @@ try:
 
             # ground truth
             _gt_file.write(f"{ts:.4f},{rx:.6f},{ry:.6f},{rz:.6f},{cur_yaw:.6f}\n")
-            # TUM format GT (camera position)
+            #TUM format GT (camera position)
             cam_gt_x = rx + CAM_FWD * math.cos(cur_yaw)
             cam_gt_y = ry + CAM_FWD * math.sin(cur_yaw)
             cam_gt_z = rz + CAM_UP
@@ -752,7 +751,7 @@ try:
                 if vyaw > math.pi: vyaw -= 2 * math.pi
                 if vyaw < -math.pi: vyaw += 2 * math.pi
                 vyaw /= dt
-                # encoder noise
+                #encoder noise
                 vx += rng.uniform(-0.01, 0.01)
                 vy += rng.uniform(-0.01, 0.01)
                 vyaw += rng.uniform(-0.002, 0.002)

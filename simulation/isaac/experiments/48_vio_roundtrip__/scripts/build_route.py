@@ -1,15 +1,5 @@
 #!/usr/bin/env python3
-"""Build the 797-WP dense roundtrip route with USD-aware obstacle avoidance.
-
-Pipeline:
-  1. Load south_anchors_fixed.json (99 outbound WPs, 1.2m clearance)
-  2. Extract USD obstacles (extract_usd_obstacles.py) if /tmp/usd_obstacles.json missing
-  3. Merge gazebo_models + USD obstacles -> clearance check
-  4. Nudge outbound WPs away from violating obstacles (clearance 1.0m)
-  5. Smooth + densify to 0.5m spacing
-  6. Add natural turnaround loop (5 WPs from original route)
-  7. Return = reversed outbound (dense)
-  8. Write to route_memory/south/anchors.json + /tmp/slam_routes.json
+"""Build the 797-WP dense roundtrip route with USD-aware obstacle avoidance
 """
 import json, math, os, sys, subprocess, numpy as np
 
@@ -102,7 +92,7 @@ def main():
     dense_out = [nudge(w, obs) for w in densify(smoothed, 0.5)]
     print(f"Dense outbound: {len(dense_out)}")
 
-    # Natural turnaround loop from ORIGINAL route (before fix)
+    #Natural turnaround loop from ORIGINAL route (before fix)   
     orig = json.load(open("/workspace/simulation/isaac/route_memory/south/anchors_original.json"))
     if isinstance(orig[0], dict):
         orig = [[w["x"], w["y"]] for w in orig]

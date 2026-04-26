@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Feasible-gap navigation constrained by route heading.
+"""Feasible-gap navigation constrained by route heading
 
 Finds real passable gaps between obstacles considering Husky width,
 then picks the best gap aligned with the route direction.

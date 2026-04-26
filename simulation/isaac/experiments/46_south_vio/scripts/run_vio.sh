@@ -1,5 +1,5 @@
 #!/bin/bash
-# Exp 46: Fix VIO for south forest - use EXACT exp 23 calibration + enhanced ORB.
+# Exp 46: Fix VIO for south forest - use EXACT exp 23 calibration + enhanced ORB
 set -euo pipefail
 
 BAGS=/root/bags/husky_real
@@ -73,7 +73,7 @@ bgy = d[bias_mask,5].mean()
 bgz = d[bias_mask,6].mean()
 bax = d[bias_mask,1].mean()
 bay = d[bias_mask,2].mean()
-# Accel: keep gravity on Z (don't subtract az bias since it's gravity)
+#Accel: keep gravity on Z (don't subtract az bias since it's gravity)
 print(f"Bias from t=[{t0+0.5:.2f},{t0+1.5:.2f}]:")
 print(f"  gyro  bias (rad/s): bgx={bgx:+.4f} bgy={bgy:+.4f} bgz={bgz:+.4f}")
 print(f"  accel bias (m/s^2): bax={bax:+.4f} bay={bay:+.4f} (az kept for gravity)")

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Feasible-gap navigation constrained by route heading.
+"""Feasible-gap navigation constrained by route heading
 
 Finds real passable gaps between obstacles considering Husky width,
 then picks the best gap aligned with the route direction.
@@ -118,10 +117,10 @@ class GapNavigator:
         cl = float(np.min(valid)) if len(valid) > 3 else self.MAX_RANGE
         md = float(np.median(valid)) if len(valid) > 3 else self.MAX_RANGE
 
-        # Physical width at gap depth (for scoring, not filtering).
+        # Physical width at gap depth (for scoring, not filtering)
         # Filtering was tested but rejects bypass gaps that are narrowed by
         # roadside vegetation in real depth images. Keep all gaps, let scoring
-        # prefer wider ones.
+        # prefer wider ones
         pw = 2.0 * md * math.tan(aw / 2.0)
 
         return {
@@ -254,7 +253,7 @@ class GapNavigator:
 
         # Early avoidance is checked but only triggers when GAP_MODE would
         # soon activate - don't interfere with normal ROUTE_TRACKING.
-        # The data is logged for analysis but no special command is issued.
+        # The data is logged for analysis but no special command is issued   
 
         if self.mode == "ROUTE_TRACKING":
             ang = np.clip(desired_heading_error * 1.5,

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Husky A200 in forest scene with PhysX articulation drive and ROS2.
+"""Husky A200 in forest scene with PhysX articulation drive and ROS2
 Records RGB-D + IMU data for ORB-SLAM3 evaluation.
 
 publishes: /camera/color/image_raw, /camera/depth/image_rect_raw, /imu/data, /odom, /tf
@@ -48,7 +47,7 @@ settings.set("/rtx/post/dof/enabled", False)
 settings.set("/rtx/post/bloom/enabled", False)
 settings.set("/rtx/post/lensFlares/enabled", False)
 settings.set("/rtx/directLighting/sampledLighting/enabled", False)
-# reflections off, indirect diffuse on (light through canopy)
+# reflections off, indirect diffuse on (light thorugh canopy)
 settings.set("/rtx/reflections/enabled", False)
 settings.set("/rtx/indirectDiffuse/enabled", True)
 # fabric off, PhysX needs direct USD sync for articulation control
@@ -75,7 +74,7 @@ for _ in range(30):
     app.update()
 stage = omni.usd.get_context().get_stage()
 
-# load husky with PhysX articulation (floating base, wheel drive)
+#load husky with PhysX articulation (floating base, wheel drive)
 print("adding Husky A200...")
 robot_prim = stage.DefinePrim("/World/Husky", "Xform")
 robot_prim.GetReferences().AddReference(HUSKY_USD)
@@ -105,7 +104,7 @@ def _imu_urf_to_flu(ux, uy, uz):
     """Convert IMU vector from URF to FLU."""
     return (uz, -uy, ux)  # flu_x=urf_z, flu_y=-urf_y, flu_z=urf_x
 
-# IMU sensor on imu_link
+#IMU sensor on imu_link
 IMU_SENSOR_PATH = IMU_PATH + "/imu_sensor"
 _imu_ok, _imu_prim = omni.kit.commands.execute(
     "IsaacSensorCreateImuSensor",
@@ -280,7 +279,7 @@ print("  camera render product ready")
 from isaacsim.sensors.physics import _sensor as _imu_mod
 _imu_interface = _imu_mod.acquire_imu_sensor_interface()
 
-# no articulation -- base_link is a regular rigid body now
+#no articulation -- base_link is a regular rigid body now
 # wheels controlled via USD DriveAPI, pose via XformCache
 _base_link_prim = stage.GetPrimAtPath(BASE_LINK)
 print(f"  base_link: {_base_link_prim.IsValid()}")
@@ -372,7 +371,7 @@ for m in _models:
     elif m["type"] == "barrel":
         _obstacles.append((m["x"], m["y"], 0.5))
     elif m["type"] in ("fallen_oak", "fallen_pine"):
-        # fallen tree scaled 1.5-2x in scene, trunk ~12-16m long
+        # fallen tree scaled 1.5-2x in scene, trunk +-12-16m long
         yaw = m.get("yaw", 0)
         for d in [-7, -5, -3, -1, 0, 1, 3, 5, 7]:
             _obstacles.append((m["x"] + d * math.cos(yaw), m["y"] + d * math.sin(yaw), 0.6))
@@ -420,7 +419,7 @@ p1 = _get_husky_pose()[0]
 print(f"\nrobot: ({p1[0]:.1f}, {p1[1]:.1f}, {p1[2]:.2f})")
 print(f"running for {args.duration}s... (ctrl+c to stop)\n")
 
-# road waypoints for path following (match convert_gazebo_to_isaac.py)
+#road waypoints for path following (match convert_gazebo_to_isaac.py)
 ROAD_WPS = [
     (-100, -7.0), (-95, -6.0), (-90, -4.5), (-85, -2.8), (-80, -1.5),
     (-75, -0.8), (-70, -0.5), (-65, -1.0), (-60, -2.2), (-55, -3.8),
@@ -449,7 +448,7 @@ def find_road_path(robot_x, robot_y, goal_x, goal_y):
     else:
         return [ROAD_WPS[i] for i in range(ri, gi - 1, -1)]
 
-# routes from A* pathfinding (start -> houses -> return)
+# routes from A* pathfinding (start -> houses -> return)   
 _ROUTES_FILE = "/tmp/slam_routes.json"
 try:
     with open(_ROUTES_FILE) as _rf:
@@ -508,13 +507,13 @@ _rec_img_count = 0
 print(f"  SLAM recording to {_rec_dir}")
 
 try:
-    # NOTE: zigzag init phase removed (exp 21 finding):
-    # - DriveAPI commands didn't actually move the robot (forest uses ArticulationAPI)
+    # zigzag init phase removed (exp 21 finding):
+    #- DriveAPI commands didn't actually move the robot (forest uses ArticulationAPI)
     # - Result: 12s of "fake" zigzag where IMU recorded ±2 m/s² wheel vibrations
     #   while GT showed robot static. ORB-SLAM3 built initial map from these
     #   stationary keyframes -> bad triangulation -> +0.13m to +6m extra ATE.
-    # - Init phase only helps VIO (which doesn't work on forest anyway).
-    # Recording starts driving the route immediately.
+    # - Init phase only helps VIO (which doesn't work on forest anyway)
+    # Recording starts driving the route immediately
 
     while sim_time < args.duration:
         app.update()
@@ -556,10 +555,10 @@ try:
                         os.remove("/tmp/isaac_goal.txt")
                     except:
                         pass
-                    print("  REVERSED ~2s")
+                    print("  REVERSED +-2s")
                 elif goal_txt == "reset":
                     goal_x, goal_y = None, None
-                    # teleport robot back to spawn (set root xform + stop wheels)
+                    # teleport robot back to spawn (set root xform + stop wheels)   
                     _husky_translate_op.Set(Gf.Vec3d(-95, -6, _spawn_z))
                     _husky_rotate_op.Set(Gf.Vec3f(0, 0, 0))
                     for _wa in _wheel_vel_attrs:
@@ -648,7 +647,7 @@ try:
         pitch = math.atan2(z_front - z_back, 2 * fwd_d)
         _cam_transform_op.Set(_make_cam_matrix(cam_x, cam_y, cam_z, current_yaw, pitch))
 
-        # save camera at ~10Hz
+        # save camera at +-10Hz
         frame_n = int(sim_time * 60)
         if frame_n % 6 == 0:
             d_fwd = ann_fwd.get_data() if 'ann_fwd' in dir() else None

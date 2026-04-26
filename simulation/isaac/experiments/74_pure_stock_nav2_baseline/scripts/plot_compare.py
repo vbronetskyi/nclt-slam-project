@@ -2,7 +2,6 @@
 """Canonical-style comparison plots for exp 74 pure-stock-Nav2 baseline
 vs our custom T&R pipeline on route 09_se_ne.
 
-Outputs:
   compare_routes.png              GT trajectories (our custom, pure-stock)
                                   on scene map + props + skipped markers.
   compare_localisation.png        VIO raw + our system's anchor-corrected vs

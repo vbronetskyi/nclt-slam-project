@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Follow recorded teach-run trajectory via Nav2 sequential goals.
+"""Follow recorded teach-run trajectory via Nav2 sequential goals
 On failure: backup, clear costmap, skip to next waypoint.
 """
 import argparse

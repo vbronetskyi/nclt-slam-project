@@ -48,7 +48,7 @@ global_costmap:
           min_obstacle_height: 0.2
           max_obstacle_height: 0.8
           # v59: 5 -> 8 m so obstacles enter costmap earlier and the
-          # look-ahead skip fires before robot gets near.
+          # look-ahead skip fires before robot gets near
           obstacle_max_range: 8.0
           raytrace_max_range: 10.0
           inf_is_valid: false

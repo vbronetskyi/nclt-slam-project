@@ -1,7 +1,7 @@
 #!/bin/bash
-# Exp 51 v2: Hybrid Nav2 planner + PP follower, with ScaleCorrector in tf_relay.
+# Exp 51 v2: Hybrid Nav2 planner + PP follower, with ScaleCorrector in tf_relay   
 # Scale correction: compare encoder dist vs VIO dist over 60s window,
-# apply scale to VIO deltas before blending (fixes VIO scale drift during Nav2 stop-and-go).
+# apply scale to VIO deltas before blending (fixes VIO scale drift during Nav2 stop-and-go)
 set -euo pipefail
 
 EXP=/workspace/simulation/isaac/experiments/51_hybrid_nav2_pp
@@ -71,7 +71,7 @@ for i in $(seq 1 300); do
 done
 echo "VIO warmup: $N frames"
 
-# PHASE 2: Switch to SLAM+encoder (with scale correction) + start Nav2 planner + PP
+#PHASE 2: Switch to SLAM+encoder (with scale correction) + start Nav2 planner + PP   
 echo "=== PHASE 2: Switch to VIO+scale, start Nav2 planner + PP follower ==="
 kill $TF 2>/dev/null; sleep 2
 

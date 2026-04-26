@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Dense VIO+GT recorder with drift gate.
+"""Dense VIO+GT recorder with drift gate
 
-- Reads /tmp/slam_pose.txt (ORB-SLAM3 current pose) at ~10 Hz.
+- Reads /tmp/slam_pose.txt (ORB-SLAM3 current pose) at +-10 Hz.
 - Reads /tmp/isaac_pose.txt (Isaac GT) at the same rate.
 - Writes both to a dense CSV every tick.
 - Every CHECK_INTERVAL_S computes best-fit rotation+translation
@@ -24,7 +24,7 @@ ABORT_FILE = '/tmp/teach_drift_abort.txt'
 STATUS_FILE = '/tmp/teach_drift_status.txt'
 SAMPLE_DT = 0.1
 
-# clean any previous abort marker
+#clean any previous abort marker
 for f in (ABORT_FILE, STATUS_FILE, args.out):
     try: os.remove(f)
     except FileNotFoundError: pass

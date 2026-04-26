@@ -1,5 +1,4 @@
-"""
-Nav2 launch for Husky A200 in Isaac Sim.
+"""Nav2 launch for Husky A200 in Isaac Sim
 Starts: controller_server (MPPI), planner_server, costmap nodes,
         behavior_server, bt_navigator, velocity_smoother, lifecycle_manager.
 Does NOT start localization (ORB-SLAM3 handles map->odom tf separately).
@@ -43,7 +42,7 @@ def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument('use_sim_time', default_value='true'),
 
-        # map server - publishes static SLAM map for global costmap
+        # map server - publishes static SLAM map for global costmap   
         Node(
             package='nav2_map_server',
             executable='map_server',
@@ -61,7 +60,7 @@ def generate_launch_description():
             name='controller_server',
             output='screen',
             parameters=[configured_params],
-            remappings=[('cmd_vel', 'cmd_vel_raw')],  # v15: route through smoother
+            remappings=[('cmd_vel', 'cmd_vel_raw')],  # v15: route thorugh smoother
         ),
 
         Node(
@@ -90,7 +89,7 @@ def generate_launch_description():
 
         # v15: velocity_smoother re-added - controller's RegulatedPurePursuit
         # was hitting 1.7 m/s when desired_linear_vel: 0.5 (Isaac Husky cmd_vel
-        # scaling issue). Smoother enforces hard cap from yaml.
+        # scaling issue). Smoother enforces hard cap from yaml.   
         Node(
             package='nav2_velocity_smoother',
             executable='velocity_smoother',

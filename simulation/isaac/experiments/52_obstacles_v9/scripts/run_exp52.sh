@@ -1,6 +1,6 @@
 #!/bin/bash
 # Exp 52: v9 hybrid pipeline (IMU fix + no loop + NoiseAcc 0.275 + tolerance 3m
-# + anti-spin + home-zone collapse) + 3 static obstacles on south route.
+# + anti-spin + home-zone collapse) + 3 static obstacles on south route
 # Obstacles also baked into nav map (map_with_obstacles.pgm).
 set -eu
 
@@ -14,8 +14,8 @@ python3 $E52/scripts/patch_obstacles_exp52.py
 
 # Nav2 starts with a BLANK static map - robot does not know the obstacle or
 # tree positions in advance (honest teach-and-repeat: real robot can't survey
-# the forest). Nav2 obstacle_layer reads /depth_points at runtime to discover
-# obstacles locally as the robot approaches them.
+#the forest). Nav2 obstacle_layer reads /depth_points at runtime to discover
+# obstacles locally as the robot approaches them
 
 cp $E52/config/south_roundtrip_route.json /workspace/simulation/isaac/route_memory/south/anchors.json
 python3 -c "
@@ -122,7 +122,7 @@ echo "PP: $PP"
 
 # Turnaround supervisor: on turnaround, drops obstacles in Isaac AND
 # hot-swaps Nav2 map_server to the blank map so planner sees clear path
-# on the return leg.
+# on the return leg
 cat > /tmp/exp52_sup.sh <<EOF
 #!/bin/bash
 source /opt/ros/jazzy/setup.bash

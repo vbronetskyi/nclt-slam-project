@@ -69,7 +69,7 @@ echo "=== PHASE 2: Switch to SLAM+encoder (with guard) + Nav2 planner + PP ==="
 # v10 ordering fix: stop the robot FIRST (clear pure pursuit route), wait
 # for it to fully settle, THEN start slam-encoder tf_relay - the alignment
 # averaging window will see a truly stationary robot on its first attempt
-# (no rejected "jittery window" retries).
+# (no rejected "jittery window" retries)
 touch /tmp/isaac_clear_route.txt
 echo "Pure pursuit DISABLED - waiting 5s for robot to settle"
 sleep 5

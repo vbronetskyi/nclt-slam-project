@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Visualize route anchors: map + sample RGB frames."""
+"""Visualize route anchors: map + sample RGB frames
+"""
 import json
 import os
 import cv2

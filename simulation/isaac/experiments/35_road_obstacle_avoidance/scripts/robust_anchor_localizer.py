@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Robust anchor localizer with sequence matching, depth verification,
+"""Robust anchor localizer with sequence matching, depth verification,
 and conservative correction. Replaces anchor_localizer.py for exp 32+.
 """
 import os
@@ -33,7 +32,7 @@ class RobustAnchorLocalizer:
             if os.path.exists(desc_path):
                 self.descriptors[anchor["id"]] = np.load(desc_path)
 
-        # Load depth profiles (if available)
+        #Load depth profiles (if available)
         self.anchor_depths = {}
         for anchor in self.anchors:
             oid = anchor.get("_orig_id", anchor["id"])

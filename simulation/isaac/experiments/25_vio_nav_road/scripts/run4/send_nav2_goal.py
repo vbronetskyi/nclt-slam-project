@@ -1,13 +1,5 @@
 #!/usr/bin/env python3
-"""
-Two-phase waypoint sender for Nav2.
-
-Supports two modes:
-  --slam-frame: load SLAM-frame waypoints from /tmp/slam_waypoints.json
-  default: load world-frame waypoints from /tmp/slam_routes.json
-
-Adaptive speed based on drift from mapped trajectory.
-Waypoint skipping when robot passes waypoint along forward axis.
+"""Two-phase waypoint sender for Nav2
 
 usage:
   source /opt/ros/jazzy/setup.bash
@@ -39,7 +31,7 @@ WAYPOINT_SKIP_MARGIN = 3.0
 CHECK_INTERVAL = 2.0
 WAYPOINT_TIMEOUT = 20.0  # seconds - skip if robot stuck on a waypoint too long
 # Lateral corridor: if robot drifts > MAX_LATERAL_DEV from the waypoint
-# line, send an intermediate goal back onto the path.
+# line, send an intermediate goal back onto the path
 MAX_LATERAL_DEV = 4.0
 RETURN_TO_PATH_DIST = 2.0
 
@@ -105,7 +97,7 @@ class Nav2TwoPhase(Node):
         """Return the list of (x,y) waypoints for the current phase."""
         if self.phase == "outbound":
             return self.outbound_wps
-        # return phase: reverse of outbound as pairs
+        #return phase: reverse of outbound as pairs
         return [(p.pose.position.x, p.pose.position.y) for p in self.return_poses]
 
     def get_lateral_deviation(self, rx, ry):
@@ -393,7 +385,7 @@ class Nav2TwoPhase(Node):
         goal.pose = pose
         goal.pose.header.stamp = self.get_clock().now().to_msg()
 
-        # Remember position at goal send time to detect no-progress false positives
+        # Remember position at goal send time to detect no-progress false positives   
         rx, ry = self.get_robot_pose()
         self._goal_send_rx = rx
         self._goal_send_ry = ry
@@ -476,8 +468,8 @@ class Nav2TwoPhase(Node):
                         self.send_next_goal()
                     return
 
-                # Case 2: robot moved but result reported success far from wp.
-                # Trust that the robot is in the right general area; advance.
+                # Case 2: robot moved but result reported success far from wp
+                # Trust that the robot is in the right general area; advance
                 if real_dist > 5.0:
                     self.get_logger().warn(
                         f'[{self.phase}] wp {self.current_idx+1} FALSE POSITIVE '

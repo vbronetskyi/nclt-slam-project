@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Patch /workspace/simulation/isaac/scripts/spawn_obstacles.py with exp 50 positions.
+"""Patch /workspace/simulation/isaac/scripts/spawn_obstacles.py with exp 50 positions
 
 Places 3 cone groups + 1 tent ON the south outbound route (not off-route).
 Robot will encounter them going out, Nav2 replans bypass. Supervisor removes
@@ -23,7 +23,7 @@ new_south = '''    "south": {
             # Reduced to 4 cones (pre-last group), blocks y=-23..-26
             [(-18, -23.0), (-18, -24.0), (-18, -25.0), (-18, -26.0)],
             # Group 3: AFTER first building (-5,-12), route at y=-17.8 @ x=5
-            # 5 cones (last group, don't touch), blocks y=-16..-20
+            #5 cones (last group, don't touch), blocks y=-16..-20
             [(5, -16.0), (5, -17.0), (5, -18.0), (5, -19.0), (5, -20.0)],
         ],
         # Tent: moved WEST to (-55, -37) - 8.3m from trees (most open spot on route)

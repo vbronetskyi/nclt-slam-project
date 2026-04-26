@@ -1,12 +1,12 @@
 #!/bin/bash
-# Exp 67 REPEAT run on road route -
-# exp 59 pipeline + exp 66 teach artifacts + accel-noise IMU.
+#Exp 67 REPEAT run on road route -
+# exp 59 pipeline + exp 66 teach artifacts + accel-noise IMU
 #
-# Consumes:
+# Consumes:   
 #   /workspace/.../66_teach_road_with_accel_noise/teach/road/
 #       teach_map.yaml, teach_map.pgm, landmarks.pkl, vio_pose_dense.csv
 #
-# Produces:
+#Produces:
 #   results/repeat_run/{isaac,vio,tf_slam,nav2,pp_follower,supervisor,plan_logger,
 #                       landmark_matcher,goals,anchor_matches.csv}.log
 set -eu
@@ -57,7 +57,7 @@ export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 export ROS_DOMAIN_ID=$DOMAIN
 export PYTHONPATH=/workspace/simulation/isaac/scripts:${PYTHONPATH:-}
 
-# Exp 68: --obstacles enabled; spawn_obstacles['road'] puts 17 cones + 1 tent on route.
+# Exp 68: --obstacles enabled; spawn_obstacles['road'] puts 17 cones + 1 tent on route
 # turnaround_supervisor removes them at x≥70 past-margin 2 m (return trip is clean).
 setsid /opt/isaac-sim-6.0.0/python.sh $E68/scripts/run_husky_forest.py \
     --synthetic-imu --route road --obstacles --duration 1500 \
@@ -101,7 +101,7 @@ sleep 5
 kill $TF 2>/dev/null; sleep 2
 
 cat > /tmp/exp68r_tf_slam.sh <<EOF
-#!/bin/bash
+#!/bin/bash   
 source /opt/ros/jazzy/setup.bash
 export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 export ROS_DOMAIN_ID=$DOMAIN

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Exp 55 teach-time visual landmark recorder.
+"""Exp 55 teach-time visual landmark recorder
 
-Every ~2 m of VIO displacement, this node captures the current RGB frame,
+Every +-2 m of VIO displacement, this node captures the current RGB frame,
 extracts ORB features, back-projects the keypoints into 3D via the depth
 image, and stores a landmark record. At shutdown the full landmark list
 is pickled to south_landmarks.pkl.
@@ -14,21 +14,6 @@ Inputs (all read from ROS topics - NO GT access):
                                  unmodified tf_relay in GT mode; in the
                                  architecture diagram this corresponds to
                                  the VIO-derived teach pose.
-
-Output:
-  experiments/55_visual_teach_repeat/teach/south_landmarks.pkl
-  experiments/55_visual_teach_repeat/teach/landmarks_debug.png
-
-Each landmark record is a dict:
-  pose:          (x, y, z, qx, qy, qz, qw)   teach camera pose (world frame)
-  descriptors:   (N, 32) uint8              ORB descriptors for accepted kpts
-  keypoints_2d:  (N, 2)  float32            pixel coords (x, y)
-  keypoints_3d_cam: (N, 3) float32          back-projected into camera frame
-  ts:            float                      wall_ts of frame
-  n_features:    int                        = N
-
-The teach pose stored is the **camera** pose, computed by applying the
-static base_link->camera offset to the current robot pose file.
 """
 import argparse
 import math
@@ -68,7 +53,7 @@ def _img_msg_to_depth_mm(msg):
     if msg.encoding == '32FC1':
         buf = np.frombuffer(msg.data, dtype=np.float32)
         mm = (buf.reshape(msg.height, msg.width) * 1000.0)
-        # NaN/Inf (Isaac sometimes emits inf for uncaptured pixels)
+        # NaN/Inf (Isaac sometimes emits inf for uncaptured pixels)   
         mm = np.nan_to_num(mm, nan=0.0, posinf=0.0, neginf=0.0)
         return mm.astype(np.uint16)
     raise ValueError(f'unexpected depth encoding {msg.encoding}')
@@ -83,12 +68,12 @@ DEPTH_MAX_M = 15.0           # forest trees up to 15 m
 DEPTH_VAR_MAX_M = 0.30       # tolerate more variance; std computed on non-zero only
 
 # v56-A: ground-feature filter.  Only keep ORB keypoints in the bottom
-# portion of the image (v > GROUND_Y_THRESHOLD).  Rationale: ground, close
+# portion of the image (v > GROUND_Y_THRESHOLD).  Rationale: ground, close   
 # shrubs, and the route itself are stable between teach (clean) and repeat
 # (with cones); sky / distant-tree features change between runs because
 # the forest canopy composition, distant-tree visibility and cone placement
 # vary.  Bottom half (v > 240 on a 480-tall image) also has better depth
-# quality (closer objects, lower variance).
+# quality (closer objects, lower variance)
 GROUND_Y_THRESHOLD = 180     # pixels; image height = 480
 
 # Static offset: base_link -> camera_color_optical_frame.
@@ -301,7 +286,7 @@ class VisualLandmarkRecorder(Node):
         desc_final = desc_kept[ok]
         d_c = d_c[ok]
 
-        # Back-project to 3D in camera frame (optical: X right, Y down, Z fwd)
+        #Back-project to 3D in camera frame (optical: X right, Y down, Z fwd)
         x_cam = (uu - CX) * d_c / FX
         y_cam = (vv - CY) * d_c / FY
         z_cam = d_c
@@ -349,7 +334,7 @@ class VisualLandmarkRecorder(Node):
             f'Saved {n} landmarks to {self.out_pkl}  '
             f'mean_kpts={np.mean(nfs):.0f}  min={min(nfs)}  max={max(nfs)}')
 
-        # Debug plot: landmarks + heading arrows + feature-count heatmap
+        #Debug plot: landmarks + heading arrows + feature-count heatmap
         try:
             import matplotlib
             matplotlib.use('Agg')
@@ -372,7 +357,7 @@ class VisualLandmarkRecorder(Node):
             sc = ax.scatter(xs, ys, c=cs, s=45, cmap='viridis', edgecolor='k',
                             linewidth=0.3, zorder=3)
             plt.colorbar(sc, ax=ax, label='# valid 3D keypoints')
-            # heading arrows
+            #heading arrows
             arrow_len = 1.2
             ax.quiver(xs, ys,
                       [arrow_len * math.cos(h) for h in hdgs],

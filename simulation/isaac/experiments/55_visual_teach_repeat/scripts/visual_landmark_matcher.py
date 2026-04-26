@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Exp 55 repeat-time visual landmark matcher.
+"""Exp 55 repeat-time visual landmark matcher
 
 Loads south_landmarks.pkl (captured in teach run), subscribes to the live
-camera topics and VIO pose, and at ~1-2 Hz:
+camera topics and VIO pose, and at +-1-2 Hz:
 
   1. Find candidate teach landmarks within CANDIDATE_RADIUS m of current
      VIO position (in the teach-map world frame - if VIO has drifted, this
@@ -19,12 +19,10 @@ camera topics and VIO pose, and at ~1-2 Hz:
   6. Publish `/anchor_correction` (PoseWithCovarianceStamped).  Covariance
      diagonal from inlier count.
 
-Inputs:
   /camera/color/image_raw, /camera/depth/image_rect_raw
   /tmp/isaac_pose.txt  (current VIO/encoder-blended pose from tf_relay)
   south_landmarks.pkl
 
-Outputs:
   /anchor_correction  geometry_msgs/PoseWithCovarianceStamped
   anchor_matches.csv  log of every attempt
 """
@@ -157,7 +155,7 @@ class VisualLandmarkMatcher(Node):
         self.landmarks = data['landmarks']
         self.base_to_cam_t = np.array(data['base_to_cam_translation'])
         self.base_to_cam_R = np.array(data['base_to_cam_rot'])
-        # Build xy + heading indices (heading extracted from camera yaw in world)
+        #Build xy + heading indices (heading extracted from camera yaw in world)
         self.xy = np.array([[lm['pose'][0], lm['pose'][1]] for lm in self.landmarks])
         self.heading = np.array([self._lm_heading_rad(lm) for lm in self.landmarks])
         self.get_logger().info(
@@ -165,7 +163,7 @@ class VisualLandmarkMatcher(Node):
 
         self.orb = cv2.ORB_create(nfeatures=500)
         # crossCheck=True: mutual nearest neighbour filter; gives cleaner
-        # matches than Lowe ratio when one set is much smaller (31 teach vs
+        #matches than Lowe ratio when one set is much smaller (31 teach vs
         # 500 current).  Tested on self-match (lm 10): 26 clean matches.
         self.matcher = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
 
@@ -277,7 +275,7 @@ class VisualLandmarkMatcher(Node):
             desc_t = lm['descriptors']
             if desc_t is None or len(desc_t) < MIN_MATCHES:
                 continue
-            # Cross-check match: teach->current (smaller set first gives
+            #Cross-check match: teach->current (smaller set first gives
             # better precision with crossCheck=True).  queryIdx=teach,
             # trainIdx=current.
             try:
@@ -309,7 +307,7 @@ class VisualLandmarkMatcher(Node):
                 proj.reshape(-1, 2) - img_pts[inliers[:, 0]], axis=1).mean())
             if err > REPROJ_MAX_PX:
                 continue
-            # rvec/tvec -> teach-cam pose as seen from current cam
+            #rvec/tvec -> teach-cam pose as seen from current cam
             R_cur_teach, _ = cv2.Rodrigues(rvec)
             t_cur_teach = tvec.reshape(3)
             # Invert: current-cam pose in teach-cam frame

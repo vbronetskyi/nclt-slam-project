@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Exp 44: South forest trajectory plot - v1 (sparse WPs) vs v2 (dense WPs)."""
+"""Exp 44: South forest trajectory plot - v1 (sparse WPs) vs v2 (dense WPs)
+"""
 import sys
 sys.path.insert(0, '/workspace/simulation/isaac/scripts')
 from plot_trajectory_map import plot_trajectory_map

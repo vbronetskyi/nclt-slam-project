@@ -43,7 +43,7 @@ controller_server:
       xy_goal_tolerance: 3.0
       yaw_goal_tolerance: 0.5
 
-    # DWB controller - samples velocity space directly, good for skid-steer
+    # DWB controller - samples velocity space directly, good for skid-steer   
     FollowPath:
       plugin: "dwb_core::DWBLocalPlanner"
       min_vel_x: 0.0

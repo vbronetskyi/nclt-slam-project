@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Plot exp 47 - Nav2 + VIO SLAM localization."""
+"""Plot exp 47 - Nav2 + VIO SLAM localization
+"""
 import sys
 sys.path.insert(0, '/workspace/simulation/isaac/scripts')
 from plot_trajectory_map import plot_trajectory_map

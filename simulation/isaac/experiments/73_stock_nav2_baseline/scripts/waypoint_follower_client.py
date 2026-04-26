@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Stock-Nav2 baseline client v2 - via FollowWaypoints action.
+"""Stock-Nav2 baseline client v2 - via FollowWaypoints action
 
 The canonical Nav2 way to "visit a list of waypoints with skip-on-failure"
 is the WaypointFollower action (stop_on_failure: false). Each WP is

@@ -3,7 +3,7 @@
 # on the road, no obstacles, pure-pursuit-style autopilot in
 # run_husky_forest.py. Used by baseline / run_A / run_B / run_C.
 #
-# Args:
+# Args:   
 #   $1  out_dir          - results destination (mandatory)
 #   $2  husky_script     - path to run_husky_forest.py variant to run
 #                          (baseline uses master; run_A/B use modified copies)
@@ -73,7 +73,7 @@ echo "VIO warmup: $N frames"
 # Optional static warmup (run_B) - hold robot still for N sim seconds after VIO ready
 if [ "$WARMUP_S" -gt 0 ]; then
     echo "static warmup $WARMUP_S s ..."
-    # send a /tmp marker that run_husky_forest reads to freeze autopilot
+    #send a /tmp marker that run_husky_forest reads to freeze autopilot
     touch /tmp/isaac_hold_autopilot.txt
     sleep $WARMUP_S
     rm -f /tmp/isaac_hold_autopilot.txt

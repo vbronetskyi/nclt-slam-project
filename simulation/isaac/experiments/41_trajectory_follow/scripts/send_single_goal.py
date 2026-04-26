@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Send single goal to Nav2: reach route endpoint."""
+"""Send single goal to Nav2: reach route endpoint
+"""
 import argparse
 import math
 import time

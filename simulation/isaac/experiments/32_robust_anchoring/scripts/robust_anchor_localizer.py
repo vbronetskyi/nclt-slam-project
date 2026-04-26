@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Robust anchor localizer with sequence matching, depth verification,
+"""Robust anchor localizer with sequence matching, depth verification,
 and conservative correction. Replaces anchor_localizer.py for exp 32+.
 """
 import os
@@ -55,7 +54,7 @@ class RobustAnchorLocalizer:
         self.confirmed_anchor_id = 0
         self.confidence = 0.0
 
-        # Sequence matching
+        #Sequence matching   
         self.SEQUENCE_LENGTH = 5
         self.SEQUENCE_AGREEMENT = 3
         self.frame_votes = []
@@ -66,7 +65,7 @@ class RobustAnchorLocalizer:
         self.CONFIRM_FRAMES = 3
         self.MAX_CORRECTION = 3
 
-        # Matching params
+        # Matching params   
         self.GOOD_RATIO = 0.75
         self.WINDOW_BACK = 3
         self.WINDOW_FWD = 10

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash   
 # Exp 53 REPEAT run: v9 hybrid + teach map + live obstacle_layer + v53 additions:
 #   - PP follower with proximity speed limiter (slows v_max based on
 #     costmap cost ahead of robot)
@@ -88,7 +88,7 @@ VIO=$!; disown $VIO
 echo "VIO: $VIO"
 
 cat > /tmp/exp53r_tf_gt.sh <<'EOF'
-#!/bin/bash
+#!/bin/bash   
 source /opt/ros/jazzy/setup.bash
 export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 export ROS_DOMAIN_ID=85

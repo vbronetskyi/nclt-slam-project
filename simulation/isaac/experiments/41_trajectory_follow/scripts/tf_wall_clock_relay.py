@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-TF + Odom relay for Nav2 <- Isaac Sim.
+"""TF + Odom relay for Nav2 <- Isaac Sim
 
 SLAM FRAME MODE: publishes SLAM pose directly as map->base_link.
 No world frame conversion - Nav2 works entirely in SLAM coordinate frame.
@@ -105,7 +104,7 @@ class TFRelay(Node):
         self.create_subscription(Twist, '/cmd_vel', self.cmd_vel_cb, 10)
         self.odom_timer = self.create_timer(0.05, self.odom_integrate_tick)
 
-        # fusion state
+        #fusion state
         self.fused_x = 0.0
         self.fused_y = 0.0
         self.fused_yaw = 0.0
@@ -240,7 +239,7 @@ class TFRelay(Node):
                                nav_y - self.prev_slam_ny)
         slam_yaw_jump = abs(normalize_angle(nav_yaw - self.prev_slam_nyaw))
 
-        # position fusion
+        #position fusion
         if slam_jump < JUMP_THRESHOLD:
             self.fused_x = SLAM_POS_ALPHA * nav_x + ODOM_POS_ALPHA * predicted_x
             self.fused_y = SLAM_POS_ALPHA * nav_y + ODOM_POS_ALPHA * predicted_y
@@ -262,7 +261,7 @@ class TFRelay(Node):
         self.prev_slam_ny = nav_y
         self.prev_slam_nyaw = nav_yaw
 
-        # log every ~5s
+        # log every +-5s
         self.log_counter += 1
         if self.log_counter % 100 == 0:
             gt_yaw = math.atan2(2 * self.last_qw * self.last_qz,
@@ -296,7 +295,7 @@ class TFRelay(Node):
 
         self.br.sendTransform([t_map_odom, t_odom_base])
 
-        # publish odom
+        #publish odom
         odom = Odometry()
         odom.header.stamp = now
         odom.header.frame_id = 'odom'
@@ -309,7 +308,7 @@ class TFRelay(Node):
 
     def _tick_slam_world(self, now, x, y, z, qx, qy, qz, qw):
         """Old SLAM mode: convert SLAM pose to world frame."""
-        # world -> base_link (GT)
+        #world -> base_link (GT)
         t1 = TransformStamped()
         t1.header.stamp = now
         t1.header.frame_id = 'world'
