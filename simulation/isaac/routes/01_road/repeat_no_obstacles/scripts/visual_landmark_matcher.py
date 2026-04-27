@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Exp 55 repeat-time visual landmark matcher.
+"""Exp 55 repeat-time visual landmark matcher
 
 Loads south_landmarks.pkl (captured in teach run), subscribes to the live
-camera topics and VIO pose, and at ~1-2 Hz:
+camera topics and VIO pose, and at +-1-2 Hz:
 
   1. Find candidate teach landmarks within CANDIDATE_RADIUS m of current
      VIO position (in the teach-map world frame - if VIO has drifted, this
@@ -19,12 +19,10 @@ camera topics and VIO pose, and at ~1-2 Hz:
   6. Publish `/anchor_correction` (PoseWithCovarianceStamped).  Covariance
      diagonal from inlier count.
 
-Inputs:
   /camera/color/image_raw, /camera/depth/image_rect_raw
   /tmp/isaac_pose.txt  (current VIO/encoder-blended pose from tf_relay)
   south_landmarks.pkl
 
-Outputs:
   /anchor_correction  geometry_msgs/PoseWithCovarianceStamped
   anchor_matches.csv  log of every attempt
 """
@@ -74,7 +72,7 @@ DIST = np.zeros((4, 1), dtype=np.float32)
 CANDIDATE_RADIUS_M = 8.0
 MAX_CANDIDATES = 5
 HEADING_TOL_DEG = 90.0   # reject candidates whose teach heading differs by > this
-# v56-A: match only on ground-half of current frame (teach landmarks also
+#v56-A: match only on ground-half of current frame (teach landmarks also
 # restricted to below-horizon pixels)
 GROUND_Y_THRESHOLD = 180
 MIN_MATCHES = 10   # cross-check is highly selective already
@@ -90,7 +88,7 @@ TICK_HZ = 2.0
 # ACCUM_SILENCE_S and the nearest existing landmark is > ACCUM_MIN_DIST_M
 # away, record the current frame's ORB features as a new landmark
 # (camera pose from the current VIO pose).  These grow the landmark set
-# organically within and across repeat runs.
+#organically within and across repeat runs
 ACCUM_ENABLE = True
 ACCUM_SILENCE_S = 5.0          # seconds of no anchor before considering accumulation
 ACCUM_MIN_DIST_M = 5.0         # min distance to nearest existing landmark
@@ -176,7 +174,7 @@ class VisualLandmarkMatcher(Node):
         self.landmarks = data['landmarks']
         self.base_to_cam_t = np.array(data['base_to_cam_translation'])
         self.base_to_cam_R = np.array(data['base_to_cam_rot'])
-        # Build xy + heading indices (heading extracted from camera yaw in world)
+        # Build xy + heading indices (heading extracted from camera yaw in world)   
         self.xy = np.array([[lm['pose'][0], lm['pose'][1]] for lm in self.landmarks])
         self.heading = np.array([self._lm_heading_rad(lm) for lm in self.landmarks])
         self.n_initial_landmarks = len(self.landmarks)
@@ -240,7 +238,7 @@ class VisualLandmarkMatcher(Node):
 
     def _current_heading_rad(self, base_pose):
         qx, qy, qz, qw = base_pose[3:7]
-        # yaw from base_link quaternion in world
+        #yaw from base_link quaternion in world
         R = quat_to_rot(qx, qy, qz, qw)
         fwd = R @ np.array([1.0, 0.0, 0.0])
         return math.atan2(fwd[1], fwd[0])
@@ -283,7 +281,7 @@ class VisualLandmarkMatcher(Node):
         ts = time.time()
 
         # Candidates within radius AND within heading tolerance (reject
-        # return-path landmarks that would false-match an outbound frame)
+        #return-path landmarks that would false-match an outbound frame)   
         cur_hdg = self._current_heading_rad(base_pose)
         dxy = self.xy - np.array(vio_xy)
         d = np.linalg.norm(dxy, axis=1)
@@ -315,8 +313,8 @@ class VisualLandmarkMatcher(Node):
             if desc_t is None or len(desc_t) < MIN_MATCHES:
                 continue
             # Cross-check match: teach->current (smaller set first gives
-            # better precision with crossCheck=True).  queryIdx=teach,
-            # trainIdx=current.
+            #better precision with crossCheck=True).  queryIdx=teach,
+            # trainIdx=current
             try:
                 good = self.matcher.match(desc_t, desc_curr)
             except cv2.error:
@@ -417,7 +415,6 @@ class VisualLandmarkMatcher(Node):
                   f'published_std{std:.2f}_shift{consistency_d:.1f}')
 
         if self.n_published % 20 == 0:
-            # print(f"DEBUG turnaround fire? {fired}")
             self.get_logger().info(
                 f'[MATCH {self.n_published}/{self.n_attempts}] lm#{lm_idx} '
                 f'inliers={n_inliers} err={reproj_err:.2f}px shift={consistency_d:.2f}m')
@@ -484,7 +481,6 @@ class VisualLandmarkMatcher(Node):
         self.xy = np.vstack([self.xy, [vio_xy[0], vio_xy[1]]])
         self.heading = np.append(self.heading, self._lm_heading_rad(new_lm))
         self.n_accumulated += 1
-        # print(f"DEBUG wp_idx={wp_idx} pose={pose}")
         self.get_logger().info(
             f'[ACCUM #{self.n_accumulated}] new landmark at ({vio_xy[0]:.1f},'
             f'{vio_xy[1]:.1f})  n_kpts={new_lm["n_features"]}  '

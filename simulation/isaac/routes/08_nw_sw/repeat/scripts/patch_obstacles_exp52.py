@@ -6,7 +6,7 @@ with open(SRC) as f:
     code = f.read()
 
 # Exp 52 south obstacles - reuse exp 50's validated ON-route cone walls
-# that sit perpendicular to the robot path, each forcing a real replan.
+#that sit perpendicular to the robot path, each forcing a real replan
 new_south = '''    "south": {
         "cones": [
             # Obstacle A (x=-75, on route @ y~-24.6): 3-cone wall y=-24..-26
@@ -16,12 +16,12 @@ new_south = '''    "south": {
             # Obstacle C (x=+5, on route @ y~-17.8): 4-cone wall y=-17..-20
             [(5, -17.0), (5, -18.0), (5, -19.0), (5, -20.0)],
         ],
-        # Tent placed ON route between group 0 (x=-75) and group 1 (x=-18).
+        #Tent placed ON route between group 0 (x=-75) and group 1 (x=-18).
         # Route passes through (-45,-38) outbound - tent sits across the path.
         "tent": (-45.0, -38.0),
     },'''
 
-# Replace south section
+#Replace south section
 pattern = r'    "south": \{\s*\n(.*?\n    \},\n)'
 new_code = re.sub(pattern, new_south + '\n', code, count=1, flags=re.DOTALL)
 

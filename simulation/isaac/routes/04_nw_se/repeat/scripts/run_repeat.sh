@@ -1,14 +1,14 @@
 #!/bin/bash
 # Exp 67 REPEAT run on road route -
-# exp 59 pipeline + exp 66 teach artifacts + accel-noise IMU.
+# exp 59 pipeline + exp 66 teach artifacts + accel-noise IMU
 #
 # Consumes:
 #   /workspace/.../71_teach_04_nw_se_accel_noise/teach/04_nw_se/
 #       teach_map.yaml, teach_map.pgm, landmarks.pkl, vio_pose_dense.csv
 #
 # Produces:
-#   results/repeat_run/{isaac,vio,tf_slam,nav2,pp_follower,supervisor,plan_logger,
-#                       landmark_matcher,goals,anchor_matches.csv}.log
+#results/repeat_run/{isaac,vio,tf_slam,nav2,pp_follower,supervisor,plan_logger,
+#landmark_matcher,goals,anchor_matches.csv}.log
 set -eu
 
 E52=/workspace/simulation/isaac/experiments/52_obstacles_v9
@@ -79,7 +79,7 @@ setsid ./Examples/RGB-D-Inertial/rgbd_inertial_live \
 VIO=$!; disown $VIO; echo "VIO: $VIO"
 
 cat > /tmp/r04r_tf_gt.sh <<EOF
-#!/bin/bash
+#!/bin/bash   
 source /opt/ros/jazzy/setup.bash
 export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 export ROS_DOMAIN_ID=$DOMAIN
@@ -218,7 +218,7 @@ echo "  tail -f $OUT/goals.log          # WP progress"
 
 # WAIT_LOOP_FOR_RESULT - block until goals.log emits RESULT line or timeout.
 # Without this the orchestrator would see run_repeat.sh exit immediately and
-# kill all background sim processes.
+# kill all background sim processes
 ROUTE_TIMEOUT_S=${ROUTE_TIMEOUT_S:-8400}
 START_TS=$(date +%s)
 cleanup_all() {

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Hybrid goal sender (v53) with proactive WP projection.
+"""Hybrid goal sender (v53) with proactive WP projection
 
 For every /global_costmap/costmap update:
   - Re-checks all *future* waypoints (current..end) against the costmap.
@@ -62,7 +62,7 @@ class HybridGoalSender(Node):
         self.LOOKAHEAD_N = 3
 
         # v59 known obstacles (from patch_obstacles_exp52 for south route).
-        # Costmap updates have latency (robot must approach to depth-range
+        # Costmap updates have latency (robot must approach to depth-range   
         # before obstacle is marked).  We also hard-check against these
         # known positions so the lookahead fires BEFORE robot gets near.
         # v65 road route obstacles (from spawn_obstacles.py OBSTACLES['road']):
@@ -84,7 +84,7 @@ class HybridGoalSender(Node):
             'half_y': 1.0,
         }
         # Minimum allowed clearance from any known obstacle - WP center
-        # must be ≥ this many metres from obstacle edge.
+        # must be ≥ this many metres from obstacle edge
         # robot_radius 0.7 + 0.2 margin = 0.9 m from obstacle edge
         self.KNOWN_CLEARANCE_M = 0.9
 
@@ -327,7 +327,7 @@ class HybridGoalSender(Node):
             # v59 continuous lookahead: only abort if VERY close to
             # unsafe target (d<3m) AND known obstacle proximity.  Costmap
             # cost alone can spike from teach-map tree inflation - don't
-            # abort on that.
+            #abort on that
             if d < 3.0:
                 too_close, _ = self._wp_too_close_to_known(px, py)
                 if too_close:
@@ -355,12 +355,11 @@ class HybridGoalSender(Node):
                             f'target unreachable, moving on)')
                         return False
             rclpy.spin_once(self, timeout_sec=0.5)
-        # print(f"DEBUG matches={matches}")
         self.get_logger().warn(f'  WP {i} TIMEOUT (d={d:.1f}m)')
         return False
 
     def run(self):
-        # Wait for map->base_link tf (listener needs a few spin cycles).
+        # Wait for map->base_link tf (listener needs a few spin cycles)
         for _ in range(40):
             rclpy.spin_once(self, timeout_sec=0.25)
             rx0, ry0 = self._read_robot_pose()
@@ -381,7 +380,6 @@ class HybridGoalSender(Node):
             self.current_idx = i
             x, y = self.projected_wps[i]
             if self.skip_flags[i]:
-                # print("DEBUG: entering main loop")
                 self.get_logger().warn(
                     f'WP {i}/{self.n_wps - 1}: SKIP (projection failed)')
                 self.skipped += 1
@@ -390,7 +388,7 @@ class HybridGoalSender(Node):
             # v59 LOOK-AHEAD + KNOWN-OBSTACLE CHECK:
             # (a) hardcoded check against known cone/tent positions - no
             #     costmap latency, fires regardless of depth visibility;
-            # (b) if costmap is available, also check cell cost.
+            # (b) if costmap is available, also check cell cost
             unsafe_reason = None
             too_close, what = self._wp_too_close_to_known(x, y)
             if too_close:
@@ -411,7 +409,6 @@ class HybridGoalSender(Node):
                         self.skipped += 1
                     continue
                 else:
-                    # print(f"DEBUG anchor_state={state}")
                     self.get_logger().warn(
                         f'WP {i}/{self.n_wps - 1}: unsafe ({unsafe_reason}), '
                         f'no detour found - SKIP')
@@ -465,7 +462,6 @@ def main():
     for p in pts[1:]:
         if math.hypot(p[0] - wps[-1][0], p[1] - wps[-1][1]) >= args.spacing:
             wps.append(p)
-    # print(f"DEBUG: entered route {route_name}")
     print(f"Loaded {len(pts)} poses -> {len(wps)} goals @ {args.spacing}m")
 
     rclpy.init()

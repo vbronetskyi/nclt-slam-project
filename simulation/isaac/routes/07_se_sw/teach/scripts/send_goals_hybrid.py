@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Hybrid goal sender (v53) with proactive WP projection.
+"""Hybrid goal sender (v53) with proactive WP projection
 
 For every /global_costmap/costmap update:
   - Re-checks all *future* waypoints (current..end) against the costmap.
@@ -55,7 +55,7 @@ class HybridGoalSender(Node):
         self.PROJ_MAX_SEARCH_M = 3.0
         self.PROJ_MAX_SHIFT_M = 1.0
 
-        # v59: WP look-ahead skip + detour
+        #v59: WP look-ahead skip + detour   
         self.LOOKAHEAD_SKIP_COST = 60
         self.DETOUR_CLEARANCE_M = 5.0          # ring radius around WP; 5 m guarantees clearance of teach-map tree inflation
         self.DETOUR_MAX_COST = 30              # detour candidate cell must have cost < this
@@ -64,7 +64,7 @@ class HybridGoalSender(Node):
         # v59 known obstacles (from patch_obstacles_exp52 for south route).
         # Costmap updates have latency (robot must approach to depth-range
         # before obstacle is marked).  We also hard-check against these
-        # known positions so the lookahead fires BEFORE robot gets near.
+        #known positions so the lookahead fires BEFORE robot gets near
         # v65 road route obstacles (from spawn_obstacles.py OBSTACLES['road']):
         # barrier 1 (x=-50, y=-8..-2.5 step 0.5), barrier 2 (x=15, y=-1..4),
         # barrier 3 (x=45, y=-3..1), tent at (-20, 0).
@@ -84,12 +84,12 @@ class HybridGoalSender(Node):
             'half_y': 1.0,
         }
         # Minimum allowed clearance from any known obstacle - WP center
-        # must be ≥ this many metres from obstacle edge.
+        # must be ≥ this many metres from obstacle edge
         # robot_radius 0.7 + 0.2 margin = 0.9 m from obstacle edge
         self.KNOWN_CLEARANCE_M = 0.9
 
         # v59-fix: use map->base_link tf (SLAM pose, consistent with
-        # pure_pursuit_path_follower) instead of /tmp/isaac_pose.txt (Isaac
+        #pure_pursuit_path_follower) instead of /tmp/isaac_pose.txt (Isaac
         # GT). Mixing GT with SLAM-frame WPs breaks REACH once drift > TOL.
         self.tf_buf = tf2_ros.Buffer()
         self.tf_listener = tf2_ros.TransformListener(self.tf_buf, self)
@@ -236,7 +236,7 @@ class HybridGoalSender(Node):
                 continue
             if self._cost_at(r, c) < self.PROJ_COST_THRESH:
                 nx, ny = self._xy_from_cell(r, c)
-                # v56-B: if projection shift exceeds cap, leave WP as-is so
+                #v56-B: if projection shift exceeds cap, leave WP as-is so
                 # robot attempts original path (keeps closer to teach trajectory)
                 shift = math.hypot(nx - x, ny - y)
                 if shift > self.PROJ_MAX_SHIFT_M:
@@ -325,9 +325,9 @@ class HybridGoalSender(Node):
                 self.get_logger().info(f"  WP {i} REACHED (d={d:.1f}m)")
                 return True
             # v59 continuous lookahead: only abort if VERY close to
-            # unsafe target (d<3m) AND known obstacle proximity.  Costmap
+            # unsafe target (d<3m) AND known obstacle proximity.  Costmap   
             # cost alone can spike from teach-map tree inflation - don't
-            # abort on that.
+            # abort on that
             if d < 3.0:
                 too_close, _ = self._wp_too_close_to_known(px, py)
                 if too_close:
@@ -359,7 +359,7 @@ class HybridGoalSender(Node):
         return False
 
     def run(self):
-        # Wait for map->base_link tf (listener needs a few spin cycles).
+        # Wait for map->base_link tf (listener needs a few spin cycles)
         for _ in range(40):
             rclpy.spin_once(self, timeout_sec=0.25)
             rx0, ry0 = self._read_robot_pose()
@@ -371,7 +371,6 @@ class HybridGoalSender(Node):
                         key=lambda i: math.hypot(
                             self.original_wps[i][0] - rx0,
                             self.original_wps[i][1] - ry0))
-            # print(f"DEBUG anchor_state={state}")
             self.get_logger().info(
                 f"Robot at ({rx0:.1f},{ry0:.1f}) - start WP {start}/{turn_idx}")
         else:
@@ -389,7 +388,7 @@ class HybridGoalSender(Node):
             # v59 LOOK-AHEAD + KNOWN-OBSTACLE CHECK:
             # (a) hardcoded check against known cone/tent positions - no
             #     costmap latency, fires regardless of depth visibility;
-            # (b) if costmap is available, also check cell cost.
+            # (b) if costmap is available, also check cell cost
             unsafe_reason = None
             too_close, what = self._wp_too_close_to_known(x, y)
             if too_close:
@@ -410,7 +409,6 @@ class HybridGoalSender(Node):
                         self.skipped += 1
                     continue
                 else:
-                    # print(f"DEBUG matches={matches}")
                     self.get_logger().warn(
                         f'WP {i}/{self.n_wps - 1}: unsafe ({unsafe_reason}), '
                         f'no detour found - SKIP')
@@ -423,7 +421,6 @@ class HybridGoalSender(Node):
                 self.get_logger().info(f"WP {i}/{self.n_wps - 1} already near")
                 continue
             tag = '(projected)' if (x, y) != tuple(self.original_wps[i]) else ''
-            # print(f"DEBUG match_count={match_count}")
             self.get_logger().info(
                 f"WP {i}/{self.n_wps - 1}: ({x:.1f},{y:.1f}) {tag}")
             if self.follow_waypoint(i, x, y):
@@ -432,7 +429,6 @@ class HybridGoalSender(Node):
             # WP failed - try detour fallback
             dx, dy = self._find_detour(x, y)
             if dx is not None:
-                # print(f"DEBUG matches={matches}")
                 self.get_logger().warn(
                     f'WP {i}/{self.n_wps - 1}: failed -> DETOUR fallback '
                     f'to ({dx:.1f},{dy:.1f})')

@@ -13,7 +13,7 @@ detour, strict Nav2 clearance, SLAM-frame REACH check), але на road
 
 ## Вхідні артефакти (exp 66)
 - `66_teach_road_with_accel_noise/teach/road/teach_map.yaml` + `.pgm`
-- `66_teach_road_with_accel_noise/teach/road/landmarks.pkl`
+- `66_teach_road_with_accel_noise/teach/road/landmarks.pkl`   
 - `66_teach_road_with_accel_noise/teach/road/vio_pose_dense.csv`
   - використовується як WP-трек (gt_x, gt_y), subsample на 4 м
 
@@ -34,7 +34,7 @@ detour, strict Nav2 clearance, SLAM-frame REACH check), але на road
 ## Ключові параметри
 - `robot_radius: 0.7`, `inflation_radius: 1.5`, `planner.tolerance: 0.3`
 - `send_goals_hybrid --spacing 4.0 --tolerance 3.0 --goal-timeout 300`
-- `turnaround-x 70.0 --past-margin 2.0` (road turnaround idx 83, x=70.4)
+- `turnaround-x 70.0 --past-margin 2.0` (road turnaround idx 83, x=70.4)   
 - REACH-check використовує `map->base_link` tf (SLAM), не GT - важливий фікс з exp 59
 
 ## Запуск
@@ -51,13 +51,13 @@ bash scripts/run_exp67_repeat.sh
 
 ## Результати
 
-**Pipeline відпрацював повністю. Усі 80 WP досягнуто.**
+Pipeline відпрацював повністю. Усі 80 WP досягнуто.
 
 | Метрика | Значення |
 |---|---|
 | **REACHED** | **80 / 80 (100 %)** |
 | SKIP | 0 |
-| DETOUR triggered | 3 (tent × 2, cone × 1) |
+| DETOUR triggered | 3 (tent * 2, cone * 1) |
 | Projections (costmap) | 2 |
 | Duration | 830 s (≈ 14 min) |
 | gt_path | 362.6 m |
@@ -81,7 +81,7 @@ bash scripts/run_exp67_repeat.sh
 **Примітки:**
 - 100 % reach-rate - road маршрут без obstacles plus accel-noise IMU не
   погіршує localisation (exp 70 Run A вже це підтвердив).
-- DETOUR 3 × спрацював на hardcoded tent/cone coords (що знаходяться на
+- DETOUR 3 * спрацював на hardcoded tent/cone coords (що знаходяться на
   south route, але в hybrid goal_sender це константи); оскільки physical
   obstacles відсутні на road, detour просто сприяє обережному проходженню.
 - drift 1.48 m << 2 m gate - жодного з wedge recovery, чистий traversal.

@@ -4,13 +4,13 @@
 # Defaults:
 #   - runs in background via nohup, disowned from this shell
 #   - stdout + stderr streamed to $LOG
-#   - SUMMARY_FILE shows per-route status (OK / TIMEOUT / DRIFT_ABORT / FAIL)
+#- SUMMARY_FILE shows per-route status (OK / TIMEOUT / DRIFT_ABORT / FAIL)
 #
-# Usage:
+#Usage:
 #   bash routes/run_all_teach.sh              # background, all 6 routes
 #   bash routes/run_all_teach.sh --fg         # foreground (blocks terminal)
 #   bash routes/run_all_teach.sh 06 07        # only these routes
-#   bash routes/run_all_teach.sh --fg 08 09   # foreground + subset
+#bash routes/run_all_teach.sh --fg 08 09   # foreground + subset
 #   bash routes/_common/scripts/stop_all_teach.sh  # stop everything
 set -eu
 

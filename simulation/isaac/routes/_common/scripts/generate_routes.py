@@ -13,17 +13,17 @@ from plot_trajectory_map import plot_trajectory_map  # noqa
 
 SCENE_JSON = "/workspace/simulation/isaac/routes/_common/scene_obstacles.json"
 CLEAR = 2.0         # target clearance from object edge to robot body
-# MIN_MATCHES = 20  # 12 noisy, 30 too strict
+#MIN_MATCHES = 20  # 12 noisy, 30 too strict
 ROBOT_R = 0.4       # half-width of Husky footprint
 # A* inflates with extra margin so Chaikin corner-cutting still stays ≥ CLEAR+ROBOT_R
 INFL = CLEAR + ROBOT_R      # A*-level inflation; corner-cutting kept mild
 
-# ---- corner anchors (10-15 m inside scene edges) ----
+# corner anchors (10-15 m inside scene edges)
 LT = (-90.0, 35.0)
 RT = (65.0, 35.0)
 LB = (-90.0, -35.0)
 RB = (65.0, -35.0)
-# USD heightfield doesn't extend to the outer SE corner - robot falls through
+# USD heightfield doesn't extend to the outer SE corner - robot falls thorugh
 # when spawned at RB. For routes that START from SE (07, 09) use an inward-
 # shifted spawn point. 04 still ends at RB (arriving from inland, works fine).
 ROUTES = {
@@ -36,7 +36,7 @@ ROUTES = {
 }
 ROUTES_VIA = {}  # unused for now - corners come back
 
-# ---- occupancy grid parameters ----
+# occupancy grid parameters
 GRID_MIN = (-105.0, -50.0)
 GRID_MAX = (80.0, 45.0)
 RES = 0.5           # m per cell (≈ 370 × 190 cells)
@@ -79,7 +79,7 @@ def cell_to_world(cy, cx):
 
 
 def astar(grid, start, goal):
-    # FIXME: spawn-x/y hardcoded, sync with run_repeat.sh
+    # spawn-x/y hardcoded, sync with run_repeat.sh   
     H, W = grid.shape
     s = world_to_cell(*start)
     g = world_to_cell(*goal)
@@ -222,7 +222,6 @@ def main():
     colors = ["#d62728", "#1f77b4", "#2ca02c", "#9467bd", "#ff7f0e", "#17becf"]
 
     def finalize(name, raw, col):
-        # print(f"DEBUG turnaround fire? {fired}")
         print(f"  A* cells: {len(raw)}  raw length: "
               f"{sum(math.hypot(raw[i+1][0]-raw[i][0], raw[i+1][1]-raw[i][1]) for i in range(len(raw)-1)):.1f}m")
         thin = thin_path(raw, step=3.5)
@@ -232,7 +231,6 @@ def main():
         full = chaikin(full, iters=1)
         full = resample_ds(full, ds=0.8)
         wc, at = check_clearance(full, obs)
-        # print(f"DEBUG wp_idx={wp_idx} pose={pose}")
         print(f"  smoothed pts: {len(sm)}  full (with loop+return): {len(full)}  "
               f"min clearance: {wc:.2f} m  loop clearance: {loop_wc:.2f} m  near: {at[2:]:}")
         plan[name] = [[float(x), float(y)] for x, y in full]

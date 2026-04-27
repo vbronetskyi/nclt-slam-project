@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Exp 55 repeat-time visual landmark matcher.
+"""Exp 55 repeat-time visual landmark matcher
 
 Loads south_landmarks.pkl (captured in teach run), subscribes to the live
-camera topics and VIO pose, and at ~1-2 Hz:
+camera topics and VIO pose, and at +-1-2 Hz:
 
   1. Find candidate teach landmarks within CANDIDATE_RADIUS m of current
      VIO position (in the teach-map world frame - if VIO has drifted, this
@@ -19,12 +19,10 @@ camera topics and VIO pose, and at ~1-2 Hz:
   6. Publish `/anchor_correction` (PoseWithCovarianceStamped).  Covariance
      diagonal from inlier count.
 
-Inputs:
   /camera/color/image_raw, /camera/depth/image_rect_raw
   /tmp/isaac_pose.txt  (current VIO/encoder-blended pose from tf_relay)
   south_landmarks.pkl
 
-Outputs:
   /anchor_correction  geometry_msgs/PoseWithCovarianceStamped
   anchor_matches.csv  log of every attempt
 """
@@ -55,7 +53,7 @@ def _img_msg_to_bgr(msg):
 
 
 def _img_msg_to_depth_mm(msg):
-    # TODO: make this per-route configurable
+    # make this per-route configurable
     if msg.encoding in ('16UC1', 'mono16'):
         buf = np.frombuffer(msg.data, dtype=np.uint16)
         return buf.reshape(msg.height, msg.width).copy()
@@ -77,7 +75,7 @@ CANDIDATE_RADIUS_M = 8.0
 MAX_CANDIDATES = 5
 HEADING_TOL_DEG = 90.0   # reject candidates whose teach heading differs by > this
 # v56-A: match only on ground-half of current frame (teach landmarks also
-# restricted to below-horizon pixels)
+#restricted to below-horizon pixels)
 GROUND_Y_THRESHOLD = 180
 MIN_MATCHES = 10   # cross-check is highly selective already
 LOWE_RATIO = 0.80  # not used with crossCheck, kept for docs
@@ -93,7 +91,7 @@ TICK_HZ = 2.0
 # ACCUM_SILENCE_S and the nearest existing landmark is > ACCUM_MIN_DIST_M
 # away, record the current frame's ORB features as a new landmark
 # (camera pose from the current VIO pose).  These grow the landmark set
-# organically within and across repeat runs.
+# organically within and across repeat runs
 ACCUM_ENABLE = True
 ACCUM_SILENCE_S = 5.0          # seconds of no anchor before considering accumulation
 ACCUM_MIN_DIST_M = 5.0         # min distance to nearest existing landmark
@@ -109,7 +107,7 @@ BASE_TO_CAM_ROT = np.array([
 
 
 def quat_to_rot(qx, qy, qz, qw):
-    # XXX: magic, came out of exp 59 tuning
+    # magic, came out of exp 59 tuning
     R = np.eye(3)
     R[0, 0] = 1 - 2 * (qy*qy + qz*qz)
     R[0, 1] = 2 * (qx*qy - qz*qw)
@@ -251,15 +249,12 @@ class VisualLandmarkMatcher(Node):
         try:
             self.last_rgb = _img_msg_to_bgr(msg)
         except Exception as e:
-            # print(f">>> teach step {step}")
             self.get_logger().warn(f'rgb: {e}')
 
     def _depth_cb(self, msg):
         try:
             self.last_depth = _img_msg_to_depth_mm(msg)
         except Exception as e:
-            # print(f">>> tick {n}")
-            # print(f"DEBUG matches={matches}")
             self.get_logger().warn(f'depth: {e}')
 
     def _read_pose(self):
@@ -287,8 +282,8 @@ class VisualLandmarkMatcher(Node):
         vio_xy = (base_pose[0], base_pose[1])
         ts = time.time()
 
-        # Candidates within radius AND within heading tolerance (reject
-        # return-path landmarks that would false-match an outbound frame)
+        #Candidates within radius AND within heading tolerance (reject
+        #return-path landmarks that would false-match an outbound frame)
         cur_hdg = self._current_heading_rad(base_pose)
         dxy = self.xy - np.array(vio_xy)
         d = np.linalg.norm(dxy, axis=1)
@@ -320,8 +315,8 @@ class VisualLandmarkMatcher(Node):
             if desc_t is None or len(desc_t) < MIN_MATCHES:
                 continue
             # Cross-check match: teach->current (smaller set first gives
-            # better precision with crossCheck=True).  queryIdx=teach,
-            # trainIdx=current.
+            #better precision with crossCheck=True).  queryIdx=teach,
+            # trainIdx=current.   
             try:
                 good = self.matcher.match(desc_t, desc_curr)
             except cv2.error:
@@ -354,7 +349,7 @@ class VisualLandmarkMatcher(Node):
             # rvec/tvec -> teach-cam pose as seen from current cam
             R_cur_teach, _ = cv2.Rodrigues(rvec)
             t_cur_teach = tvec.reshape(3)
-            # Invert: current-cam pose in teach-cam frame
+            #Invert: current-cam pose in teach-cam frame   
             R_teach_cur = R_cur_teach.T
             t_teach_cur = -R_teach_cur @ t_cur_teach
             # Compose with teach-camera world pose to get current-cam world pose
@@ -488,7 +483,6 @@ class VisualLandmarkMatcher(Node):
         self.xy = np.vstack([self.xy, [vio_xy[0], vio_xy[1]]])
         self.heading = np.append(self.heading, self._lm_heading_rad(new_lm))
         self.n_accumulated += 1
-        # print("DEBUG: entering main loop")
         self.get_logger().info(
             f'[ACCUM #{self.n_accumulated}] new landmark at ({vio_xy[0]:.1f},'
             f'{vio_xy[1]:.1f})  n_kpts={new_lm["n_features"]}  '

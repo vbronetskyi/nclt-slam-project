@@ -1,5 +1,5 @@
 #!/bin/bash
-# Wrapper: run teach; retry up to N times on drift abort.
+# Wrapper: run teach; retry up to N times on drift abort
 set -eu
 ROUTE=${1:-07_se_sw}
 MAX_RETRIES=${MAX_RETRIES:-3}

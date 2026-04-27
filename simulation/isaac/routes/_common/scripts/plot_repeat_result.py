@@ -1,15 +1,5 @@
 #!/usr/bin/env python3
-"""Per-route repeat RESULT plot.
-
-Draws on one canvas:
-  - scene_obstacles (trees/rocks/houses) from scene_obstacles.json
-  - teach planned WPs (routes.json, red dashed)
-  - repeat GT actual trajectory (traj_gt.csv from repeat_run, solid green)
-  - obstacles (props/cones/tent) from spawn_obstacles.OBSTACLES
-  - skipped WP markers (red X) parsed from goals.log
-  - 10m supervisor trigger ring + turnaround label
-
-Saves to routes/<NN>/repeat/results/repeat_run/repeat_result.png.
+"""Per-route repeat RESULT plot
 """
 import csv, json, re, sys
 from pathlib import Path
@@ -70,7 +60,7 @@ def parse_result_line(goals_log):
 
 
 def plot_result(name, out_png):
-    # TODO: make this per-route configurable
+    # make this per-route configurable
     base = Path(f'/workspace/simulation/isaac/routes/{name}/repeat/results/repeat_run')
     teach_pts = json.load(open('/workspace/simulation/isaac/routes/_common/routes.json'))[name]
     traj = load_traj_gt(base / 'traj_gt.csv')
@@ -101,7 +91,7 @@ def plot_result(name, out_png):
         ax.plot([], [], marker='x', color='#b91c1c', linestyle='None',
                 markersize=11, markeredgewidth=2.5, label=f'Skipped WP ({len(skips)})')
 
-    # turnaround
+    # turnaround   
     tx, ty = TURNAROUND[name]
     ax.add_patch(Circle((tx, ty), 10, facecolor='none', edgecolor='#ff8c00',
                         linewidth=1.5, linestyle=':', alpha=0.9, zorder=5,

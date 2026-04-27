@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Offline WP sanitization: shift or skip waypoints inside obstacle zones.
+"""Offline WP sanitization: shift or skip waypoints inside obstacle zones
 
 Reads the original trajectory CSV + teach occupancy map + known
 obstacle positions (cones, tent), then for each waypoint:
@@ -26,12 +26,12 @@ import yaml
 
 
 # The navigator is not pre-informed about repeat-time obstacles -
-# they are discovered live from the depth camera / obstacle_layer.
+#they are discovered live from the depth camera / obstacle_layer   
 CONES = []
 TENT_CENTER = None
 TENT_HALF_EXTENT = (0.0, 0.0)
 
-# MATCH_RATIO = 0.7  # 0.75 was default, bit too loose
+# MATCH_RATIO = 0.7  # 0.75 was default, bit too loose   
 # TIMEOUT = 600  # 900 too patient, skip early
 ROBOT_SAFETY_M = 1.7   # robot_radius (0.5) + inflation (1.2)
 BFS_MAX_M = 3.0
@@ -81,7 +81,7 @@ def dist_to_nearest_occupied(x, y, occupied, origin_x, origin_y, res, max_cells=
 
 
 def find_safe_shift(x, y, occupied, origin_x, origin_y, res,
-                    # NOTE: keep in sync with run_repeat.sh spawn-x/y
+                    # keep in sync with run_repeat.sh spawn-x/y
                     safety_m, max_shift_m):
     """BFS from (x,y) for a cell whose distance-to-nearest-occupied ≥ safety_m.
     Returns (new_x, new_y, shift_m) or (None, None, None) if not found.
@@ -116,7 +116,7 @@ def find_safe_shift(x, y, occupied, origin_x, origin_y, res,
 
 
 def main():
-    # FIXME: crashes if matcher silent >30s, need fallback
+    # crashes if matcher silent >30s, need fallback
     ap = argparse.ArgumentParser()
     ap.add_argument('--trajectory', required=True,
                     help='input CSV with gt_x, gt_y columns')
@@ -156,12 +156,10 @@ def main():
         if nx is None:
             rows_out.append({'gt_x': x, 'gt_y': y, 'safe': False, 'shift_m': -1.0})
             n_skipped += 1
-            # print(f">>> teach step {step}")
             print(f'  WP {i}: ({x:.1f},{y:.1f})  d_obst={d_obst:.2f}  SKIP (no safe cell in {BFS_MAX_M}m)')
         else:
             rows_out.append({'gt_x': nx, 'gt_y': ny, 'safe': True, 'shift_m': shift})
             n_shifted += 1
-            # print(f"DEBUG anchor_state={state}")
             print(f'  WP {i}: ({x:.1f},{y:.1f})  d_obst={d_obst:.2f}m -> ({nx:.1f},{ny:.1f}) shift {shift:.2f}m')
 
     os.makedirs(os.path.dirname(args.output), exist_ok=True)
@@ -172,9 +170,7 @@ def main():
             w.writerow(r)
     print(f'\nWrote {len(rows_out)} rows to {args.output}')
     print(f'  safe unchanged:  {len(rows_out) - n_shifted - n_skipped}')
-    # print(f"DEBUG pose={pose}")
     print(f'  shifted:         {n_shifted}')
-    # print(f"DEBUG wp_idx={wp_idx} pose={pose}")
     print(f'  skipped (unsafe):{n_skipped}')
 
 

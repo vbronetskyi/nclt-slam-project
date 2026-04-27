@@ -1,6 +1,6 @@
 #!/bin/bash
 # Stop a run_all_teach.sh orchestrator and clean up every sim process.
-# Safe to run whether or not one is currently active.
+# Safe to run whether or not one is currently active
 KILL_PATTERN='run_husky_forest|rgbd_inertial|tf_wall_clock|visual_landmark|teach_run_depth|pure_pursuit|send_goals|vio_drift_monitor|turnaround_supervisor'
 
 ORCH_PIDS=$(pgrep -f 'run_all_teach.sh' 2>/dev/null | grep -v $$ || true)

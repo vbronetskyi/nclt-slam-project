@@ -3,33 +3,18 @@
 *[thesis root](../../../README.md) > [simulation](../../README.md) > isaac > routes*
 
 
-Six corner-to-corner routes through the Isaac Sim forest world, driven twice
-each: once to collect the reference teach trajectory + visual landmarks, then
+Six corner-to-corner routes thorugh the Isaac Sim forest world, driven twice
+each: once to collect the reference teach trajectory + visual landmarks, then   
 again with dynamic obstacles blocking the outbound leg. Total ≈ 1850 m
 driven across all repeats.
 
 Routes 01–03 are earlier single-segment runs (road / north-forest / south)
 kept for comparison. The new campaign is 04–09.
 
-## Layout of the six new routes
-
-```
-     NW (-105, +35)                   NE (+65, +35)
-         +───────── 06_nw_ne ─────────+
-         │                            │
-        08_nw_sw       05_ne_sw      09_se_ne
-         │    ╲         ╱    ╲        │
-         │     ╲       ╱      ╲       │
-         │      ╲ 04_nw_se   ╱        │
-         │       ╲         ╱          │
-         +────── 07_se_sw ────────────+
-     SW (-90, -35)                    SE (+65, -35)
-```
-
 Each is an **out-and-back** run: start at a corner, drive to the opposite
 corner or adjacent corner, turn around (smooth hairpin, r = 1.5 m), come back
-to the spawn. Diagonals (04, 05) and parallel-edge runs (06, 07) are ~390 m
-round-trip; short edges (08, 09) are ~145 m.
+to the spawn. Diagonals (04, 05) and parallel-edge runs (06, 07) are +-390 m
+round-trip; short edges (08, 09) are +-145 m.
 
 ## Teach + Repeat results
 
@@ -39,11 +24,11 @@ round-trip; short edges (08, 09) are ~145 m.
 | **02_north_forest**  | deep forest           | 395 m | 0.38 / 0.91 m   | 7 cones + 1 tent  | **49 / 97** (51 %) | 48 min |
 | **03_south**         | south loop            | n/a\* | n/a\*           | 9 cones + 1 tent  | **85 / 96** (89 %) | 35 min |
 | **04_nw_se**         | NW -> SE diagonal      | 373 m | 0.64 / 1.10 m   | 7 cones + 1 tent  | **53 / 92** (58 %) | 65 min |
-| **05_ne_sw**         | NE -> SW diagonal      | 393 m | 0.48 / 0.99 m   | 6 props (bench, 3×barrel, concrete, dumpster) | **77 / 96** (80 %) | 46 min |
-| **06_nw_ne**         | top edge (NW -> NE)    | 382 m | 0.65 / 1.18 m   | 6 props (firehydrant, 3×cardbox, railing, dumpster) | **56 / 94** (60 %) | 64 min |
-| **07_se_sw**         | bottom edge (SE -> SW) | 386 m | 0.42 / 1.00 m   | 7 props (3×trashcan, 2×barrel, concrete, bench) | **70 / 95** (74 %) | 87 min |
-| **08_nw_sw**         | left edge (NW -> SW)   | 149 m | 0.34 / 0.72 m   | 5 props (2×trashcan, concrete, dumpster, bench) | **31 / 36** (86 %) | 16 min |
-| **09_se_ne**         | right edge (SE -> NE)  | 146 m | 0.40 / 0.64 m   | 5 props (2×cardbox, dumpster, 2×barrel) | **29 / 36** (81 %) | 12 min |
+| **05_ne_sw**         | NE -> SW diagonal      | 393 m | 0.48 / 0.99 m   | 6 props (bench, 3*barrel, concrete, dumpster) | **77 / 96** (80 %) | 46 min |
+| **06_nw_ne**         | top edge (NW -> NE)    | 382 m | 0.65 / 1.18 m   | 6 props (firehydrant, 3*cardbox, railing, dumpster) | **56 / 94** (60 %) | 64 min |
+| **07_se_sw**         | bottom edge (SE -> SW) | 386 m | 0.42 / 1.00 m   | 7 props (3*trashcan, 2*barrel, concrete, bench) | **70 / 95** (74 %) | 87 min |
+| **08_nw_sw**         | left edge (NW -> SW)   | 149 m | 0.34 / 0.72 m   | 5 props (2*trashcan, concrete, dumpster, bench) | **31 / 36** (86 %) | 16 min |
+| **09_se_ne**         | right edge (SE -> NE)  | 146 m | 0.40 / 0.64 m   | 5 props (2*cardbox, dumpster, 2*barrel) | **29 / 36** (81 %) | 12 min |
 
 \* _03_south teach used an earlier pipeline version that logged the TF
 relay only in GT mode (no `drift_monitor.log`), so no teach drift
@@ -52,7 +37,7 @@ numbers were recorded. The repeat metrics further down still compute GT-based fi
 All six runs reached the final waypoint, covered the full outbound and
 return leg, and left the scene without collisions (depth-camera detours).
 
-The "repeat result" column above is the pipeline's own accounting - it
+The repeat result column above is the pipeline's own accounting - it
 counts WPs the pipeline believed it reached, from SLAM-corrected pose.
 The table in [Evaluation metrics](#evaluation-metrics) below adds three
 independent GT-based measures that don't rely on the pipeline's own
@@ -79,10 +64,10 @@ Note: the 02_north_forest 51% and 04_nw_se 58% are the weakest runs. deep forest
 
 Without this direction-split the metric gives a false 100 % for runs
 that go out and never return - return WPs sit at the same xy as
-spawn-area outbound WPs and would register as "visited" by the robot's
+spawn-area outbound WPs and would register as visited by the robot's
 starting pose.  The directional split forces return WPs to be reached
 **after** the turnaround, which is what point-to-point round-trip
-actually requires.
+actually requires.   
 
 ### (2) Endpoint success   - **primary success metric**
 
@@ -93,9 +78,9 @@ Point-to-point navigation is the goal. Two sub-metrics:
 - **Return error** = `|GT(t_end) − spawn_xy|`. Distance from the robot's
   last GT position to the spawn - did it come back?
 
-Both use `ENDPOINT_TOL = 10 m` as the "success" threshold (paper-tier
+Both use `ENDPOINT_TOL = 10 m` as the success threshold (paper-tier
 GNSS-like precision for a UGV deployed outdoors). Strong pass = < 5 m.
-A run counts as an *endpoint success* only if **both** are ≤ 10 m.
+A run counts as an *endpoint success* only if **both** are <= 10 m.
 
 ### (3) Localization drift   (VIO + IMU fusion quality)
 
@@ -106,7 +91,7 @@ the line `err=N.Nm` on that log line is `|nav − GT|`.
 Reported as `mean / p95 / max` across all ticks. Lower is better.
 This is the direct measurement of how well RGB-D + IMU + anchor
 correction localize the robot in the map frame - a core claim of the
-title "Visual-Inertial ... Using RGB-D and IMU Fusion".
+title Visual-Inertial ... Using RGB-D and IMU Fusion.
 
 ### Success definitions
 
@@ -116,28 +101,28 @@ title "Visual-Inertial ... Using RGB-D and IMU Fusion".
 - `return_success` = robot's final GT position at end-of-run is within
   **10 m** of the spawn (returned home).
 
-A coverage floor of **≥ 50 %** is required for `return_success` to count,
-so the "robot stood at spawn the whole time" false positive on stock
+A coverage floor of **>= 50 %** is required for `return_success` to count,
+so the robot stood at spawn the whole time false positive on stock
 baselines on 01/02 does not inflate their numbers.
 
 ### per-stack run tables
 
 Each table = one stack, all 9 routes. Columns:
 
-- reach = min GT distance to turnaround (m), x if ≤ 10 m
-- **return** = GT distance from last sample to spawn (m), x if ≤ 10 m
-  and coverage ≥ 50 %
+- reach = min GT distance to turnaround (m), x if <= 10 m
+- **return** = GT distance from last sample to spawn (m), x if <= 10 m
+  and coverage >= 50 %
 - **coverage** = fraction of teach WPs (4 m spacing) within 3 m of any
   GT sample
 - **path** = total GT path length driven by the robot (integrated from
   consecutive GT samples; m)
 - dur = duration of the recorded trajectory in sim-time (s);
-  Isaac runs at 18–30 % of wall clock, so wall-time is 3–5× longer
+  Isaac runs at 18–30 % of wall clock, so wall-time is 3–5* longer
 - **drift** = `|published_pose − GT|` mean / p95 / max (m)
 
 Success thresholds:
-- **reach** success = `min GT distance to turnaround ≤ 10 m`
-- **return** success = `GT end distance to spawn ≤ 10 m` AND coverage ≥ 50 %
+- **reach** success = `min GT distance to turnaround <= 10 m`
+- **return** success = `GT end distance to spawn <= 10 m` AND coverage >= 50 %
 
 #### Our custom T&R (VIO-Inertial + matcher + Nav2 planner + detour-ring)
 
@@ -221,8 +206,8 @@ columns (reach / return / coverage) are the faithful signal._
 ### Interpretation
 
 - **Reach success**: our stack arrives at the far goal on **every one
-  of 9 routes** (reach ≤ 10 m, average reach = 3.0 m). This is the
-  strongest claim the system makes about the "point-to-point" half of
+  of 9 routes** (reach <= 10 m, average reach = 3.0 m). This is the
+  strongest claim the system makes about the point-to-point half of
   the task title.
 - **Return success**: 4 / 9 routes close the loop within 10 m. Three
   more (01, 06, 07) miss by 0.2 – 4.7 m; only 02 and 05 genuinely fail
@@ -290,8 +275,8 @@ exact command line):
 ### Obstacle-placement rules
 
 - between 20 % and 80 % of the outbound leg
-- ≥ 15 m from spawn (let VIO warm up)
-- ≥ 10 m from turnaround (supervisor's trigger zone)
+- >= 15 m from spawn (let VIO warm up)
+- >= 10 m from turnaround (supervisor's trigger zone)
 - **non-traversable**: `UsdPhysics.CollisionAPI` + `MeshCollisionAPI
   (approximation=convexHull)` on every mesh of every referenced asset USD.
 - varied per route: benches, barrels, concrete blocks, dumpsters,

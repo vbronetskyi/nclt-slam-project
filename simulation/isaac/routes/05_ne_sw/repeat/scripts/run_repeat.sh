@@ -1,6 +1,6 @@
 #!/bin/bash
 # Exp 67 REPEAT run on road route -
-# exp 59 pipeline + exp 66 teach artifacts + accel-noise IMU.
+# exp 59 pipeline + exp 66 teach artifacts + accel-noise IMU
 #
 # Consumes:
 #   /workspace/.../71_teach_05_ne_sw_accel_noise/teach/05_ne_sw/
@@ -60,7 +60,7 @@ export PYTHONPATH=/workspace/simulation/isaac/scripts:${PYTHONPATH:-}
 # ensure /tmp/slam_routes.json has 05_ne_sw
 python3 /workspace/simulation/isaac/routes/_common/scripts/register_routes.py
 
-# --obstacles enables spawn_obstacles["05_ne_sw"] - 3 cone groups + tent
+#--obstacles enables spawn_obstacles["05_ne_sw"] - 3 cone groups + tent
 setsid /opt/isaac-sim-6.0.0/python.sh /workspace/simulation/isaac/scripts/common/run_husky_forest.py \
     --synthetic-imu --route 05_ne_sw --obstacles --duration 4500 \
     --spawn-x 65.00 --spawn-y 35.00 --spawn-yaw -2.6204 \
@@ -218,7 +218,7 @@ echo "  tail -f $OUT/goals.log          # WP progress"
 
 # WAIT_LOOP_FOR_RESULT - block until goals.log emits RESULT line or timeout.
 # Without this the orchestrator would see run_repeat.sh exit immediately and
-# kill all background sim processes.
+# kill all background sim processes
 ROUTE_TIMEOUT_S=${ROUTE_TIMEOUT_S:-8400}
 START_TS=$(date +%s)
 cleanup_all() {

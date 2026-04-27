@@ -50,7 +50,7 @@ class HybridGoalSender(Node):
         self.KNOWN_CONES = []
         self.KNOWN_TENT = None
         # Minimum allowed clearance from any known obstacle - WP center
-        # must be ≥ this many metres from obstacle edge.
+        # must be ≥ this many metres from obstacle edge   
         # robot_radius 0.7 + 0.2 margin = 0.9 m from obstacle edge
         self.KNOWN_CLEARANCE_M = 0.9
 
@@ -221,7 +221,7 @@ class HybridGoalSender(Node):
         self.costmap_info = msg.info
         self.costmap = np.array(msg.data, dtype=np.int8).reshape(
             msg.info.height, msg.info.width)
-        # Re-project all WPs from current index forward
+        #Re-project all WPs from current index forward   
         n_changed = 0
         n_skipped_now = 0
         for i in range(self.current_idx, self.n_wps):
@@ -293,13 +293,12 @@ class HybridGoalSender(Node):
                 time.sleep(0.5); continue
             d = math.hypot(px - rx, py - ry)
             if d < self.TOLERANCE:
-                # print(f"DEBUG pose={pose}")
                 self.get_logger().info(f"  WP {i} REACHED (d={d:.1f}m)")
                 return True
             # v59 continuous lookahead: only abort if VERY close to
             # unsafe target (d<3m) AND known obstacle proximity.  Costmap
             # cost alone can spike from teach-map tree inflation - don't
-            # abort on that.
+            # abort on that
             if d < 3.0:
                 too_close, _ = self._wp_too_close_to_known(px, py)
                 if too_close:
@@ -331,7 +330,7 @@ class HybridGoalSender(Node):
         return False
 
     def run(self):
-        # Wait for map->base_link tf (listener needs a few spin cycles).
+        # Wait for map->base_link tf (listener needs a few spin cycles)
         for _ in range(40):
             rclpy.spin_once(self, timeout_sec=0.25)
             rx0, ry0 = self._read_robot_pose()
@@ -352,7 +351,6 @@ class HybridGoalSender(Node):
             self.current_idx = i
             x, y = self.projected_wps[i]
             if self.skip_flags[i]:
-                # print(f"DEBUG matches={matches}")
                 self.get_logger().warn(
                     f'WP {i}/{self.n_wps - 1}: SKIP (projection failed)')
                 self.skipped += 1
@@ -361,10 +359,10 @@ class HybridGoalSender(Node):
             # v59 LOOK-AHEAD + KNOWN-OBSTACLE CHECK:
             # (a) hardcoded check against known cone/tent positions - no
             #     costmap latency, fires regardless of depth visibility;
-            # (b) if costmap is available, also check cell cost.
+            # (b) if costmap is available, also check cell cost
             # Final WPs bypass this guard (ghost inflation after FIRE is
             # spurious - obstacles were removed; follow_waypoint keeps
-            # replanning until it succeeds or the 2× timeout elapses).
+            # replanning until it succeeds or the 2× timeout elapses)
             is_final_wp = (i >= self.n_wps - 5)
             unsafe_reason = None
             if not is_final_wp:
@@ -378,7 +376,6 @@ class HybridGoalSender(Node):
             if unsafe_reason is not None:
                 dx, dy = self._find_detour(x, y)
                 if dx is not None:
-                    # print(f"DEBUG matches={matches}")
                     self.get_logger().warn(
                         f'WP {i}/{self.n_wps - 1}: unsafe ({unsafe_reason}) '
                         f'-> DETOUR to ({dx:.1f},{dy:.1f})')
@@ -405,7 +402,7 @@ class HybridGoalSender(Node):
             if self.follow_waypoint(i, x, y):
                 self.reached += 1
                 continue
-            # WP failed - try detour fallback
+            #WP failed - try detour fallback
             dx, dy = self._find_detour(x, y)
             if dx is not None:
                 self.get_logger().warn(
@@ -422,7 +419,6 @@ class HybridGoalSender(Node):
             f"RESULT: reached {self.reached}/{self.n_wps} "
             f"skipped {self.skipped} duration {total:.0f}s "
             f"projections={self.n_projections} skip_by_proj={self.n_skips_by_proj}")
-        # print("DEBUG: entering main loop")
         self.get_logger().info('=' * 50)
 
 

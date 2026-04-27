@@ -14,7 +14,7 @@ with open(SRC) as f:
 # that sit perpendicular to the robot path, each forcing a real replan.
 new_south = '''    "south": {
         "cones": [
-            # Obstacle A (x=-75, on route @ y~-24.6): 3-cone wall y=-24..-26
+            #Obstacle A (x=-75, on route @ y~-24.6): 3-cone wall y=-24..-26
             [(-75, -24.0), (-75, -25.0), (-75, -26.0)],
             # Obstacle B (x=-18, on route @ y~-24.0): 2-cone wall y=-24..-25
             [(-18, -24.0), (-18, -25.0)],

@@ -1,11 +1,11 @@
 #!/bin/bash
-# Teach pass for a single route (exp 59 pipeline, GT-as-tf for teach)
-# with dense VIO logger + drift gate (abort if drift > 2 m after 30 s).
+# Teach pass for a single route (exp 59 pipeline, GT-as-tf for teach)   
+# with dense VIO logger + drift gate (abort if drift > 2 m after 30 s)
 #
 # Exit codes:
-#   0  - route completed successfully
+#   0  - route completed succesfully
 #   2  - drift gate aborted (caller should retry)
-#   1  - other error
+#1  - other error
 set -eu
 
 ROUTE=${1:-08_nw_sw}
@@ -135,7 +135,7 @@ cleanup_all() {
 }
 trap cleanup_all EXIT
 
-# Wait loop: either ROUTE COMPLETE, drift abort, or duration timeout.
+# Wait loop: either ROUTE COMPLETE, drift abort, or duration timeout
 ROUTE_TIMEOUT_S=8100
 START_TS=$(date +%s)
 while true; do

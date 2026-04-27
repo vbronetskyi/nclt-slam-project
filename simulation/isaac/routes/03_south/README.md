@@ -7,7 +7,7 @@
 
 - Spawn: (-94.9, -6.0)
 - Turnaround: (69.7, -5.1)
-- **Teach path length (one-way-ish)**: ~320 m
+- **Teach path length (one-way-ish)**: +-320 m
 - **Obstacles at repeat**: 9 cones (3 groups) + 1 tent on outbound
 
 ## teach run
@@ -39,8 +39,8 @@ Per-stack artefacts under `results/repeat_run/` (symlink to
 ## baseline comparison
 
 Three stacks, same teach WP list (4 m spacing), same obstacles, same simulator.
-- **reach** = min GT distance to turnaround (x ≤ 10 m)
-- **return** = GT end-pose distance to spawn (x ≤ 10 m, coverage ≥ 50 %)
+- **reach** = min GT distance to turnaround (x <= 10 m)
+- **return** = GT end-pose distance to spawn (x <= 10 m, coverage >= 50 %)
 - coverage = teach WPs within 3 m of any GT sample
 - **drift** = `|published_pose − GT|` mean / p95 / max (m)
 

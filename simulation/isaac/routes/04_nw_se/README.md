@@ -6,7 +6,7 @@
 ## route layout
 - **Spawn**: (-90.0, 35.0)
 - Turnaround: (65, -35)
-- **Planned length**: 482 waypoints, ~373 m total roundtrip
+- **Planned length**: 482 waypoints, +-373 m total roundtrip
 - **Label**: NW -> SE diagonal
 
 ## teach run (already completed)
@@ -34,8 +34,8 @@ Teach artifacts (in dataset folder):
    listed in `spawn_obstacles.OBSTACLES["04_nw_se"]` on the outbound path.
 2. ORB-SLAM3 RGB-D-Inertial VIO starts from bag live-recording.
 3. `tf_wall_clock_relay_v55.py --slam-encoder` publishes map->base_link TF
-   derived from VIO + encoder fallback; align committed at spawn from 50
-   GT samples.
+   derived from VIO + encoder fallback; align committed at spawn from 50   
+   GT samples.   
 4. `visual_landmark_matcher.py` matches live ORB frame vs `landmarks.pkl`
    -> `/anchor_correction` for drift correction.
 5. **Nav2 planner-only** (no controller): `planner_server` + `map_server`
@@ -57,10 +57,10 @@ Teach artifacts (in dataset folder):
   - group 1: 2 cone(s), first at (-65.0, 28.0)
   - group 2: 2 cone(s), first at (4.0, -19.0)
   - group 3: 3 cone(s), first at (40.0, -27.0)
-- **1 tent** at (-39.4, -4.5) - 2×1.8 m body
+- **1 tent** at (-39.4, -4.5) - 2*1.8 m body
 
-Placement strategy: obstacles between ~20% and ~80% of the outbound leg,
-minimum ~15 m from spawn (so VIO can warmup), minimum ~10 m from turnaround
+Placement strategy: obstacles between +-20% and +-80% of the outbound leg,
+minimum +-15 m from spawn (so VIO can warmup), minimum +-10 m from turnaround
 (so supervisor fires before robot reaches them on the return).
 
 Overview with obstacles: [`plan_obstacles.png`](results/repeat_run/plan_obstacles.png)
@@ -97,8 +97,8 @@ Raw logs (in `results/repeat_run/`): `goals.log`, `anchor_matches.csv`,
 ## Baseline comparison
 
 Three stacks, same teach WP list (4 m spacing), same obstacles, same simulator.
-- reach = min GT distance to turnaround (x ≤ 10 m)
-- return = GT end-pose distance to spawn (x ≤ 10 m, coverage ≥ 50 %)
+- reach = min GT distance to turnaround (x <= 10 m)
+- return = GT end-pose distance to spawn (x <= 10 m, coverage >= 50 %)
 - **coverage** = teach WPs within 3 m of any GT sample
 - **drift** = `|published_pose − GT|` mean / p95 / max (m)
 

@@ -22,7 +22,7 @@ detour, strict Nav2 clearance, SLAM-frame REACH check), але на road
 2. ORB-SLAM3 RGB-D-I VIO (vio_th160.yaml)
 3. **Phase 1** - GT-tf warmup (200 frames), робот стоїть
 - Phase 2 - swap to SLAM-tf v55 (`tf_wall_clock_relay_v55.py --slam-encoder`)
-5. **visual_landmark_matcher** - матчить ORB поточного кадру з teach `landmarks.pkl`,
+5. **visual_landmark_matcher** - матчить ORB поточного кадру з teach `landmarks.pkl`,   
    публікує `/anchor_correction` для tf_relay
 6. **Nav2 planner_server + map_server** (planner-only, без controller) на teach_map
 - pure_pursuit_path_follower - споживає `/plan`, видає `/cmd_vel`
@@ -51,13 +51,13 @@ bash scripts/run_exp67_repeat.sh
 
 ## Результати
 
-**Pipeline відпрацював повністю. Усі 80 WP досягнуто.**
+Pipeline відпрацював повністю. Усі 80 WP досягнуто.
 
 | Метрика | Значення |
 |---|---|
 | **REACHED** | **80 / 80 (100 %)** |
 | SKIP | 0 |
-| DETOUR triggered | 3 (tent × 2, cone × 1) |
+| DETOUR triggered | 3 (tent * 2, cone * 1) |
 | Projections (costmap) | 2 |
 | Duration | 830 s (≈ 14 min) |
 | gt_path | 362.6 m |
@@ -81,7 +81,7 @@ bash scripts/run_exp67_repeat.sh
 **Примітки:**
 - 100 % reach-rate - road маршрут без obstacles plus accel-noise IMU не
   погіршує localisation (exp 70 Run A вже це підтвердив).
-- DETOUR 3 × спрацював на hardcoded tent/cone coords (що знаходяться на
+- DETOUR 3 * спрацював на hardcoded tent/cone coords (що знаходяться на
   south route, але в hybrid goal_sender це константи); оскільки physical
   obstacles відсутні на road, detour просто сприяє обережному проходженню.
 - drift 1.48 m << 2 m gate - жодного з wedge recovery, чистий traversal.
@@ -106,5 +106,5 @@ drift < 1.5 m. Thesis baseline готовий.
 - `results/repeat_run/run_info.txt` - REC bag path
 
 ## Наступні кроки
-- (Optional) Exp 68: додати obstacles на road route для тестування detour-heavy сценарію
+- (Optional) Exp 68: додати obstacles на road route для тестування detour-heavy сценарію   
 - (Optional) Exp 69: повтор на south/north routes з accel-noise IMU для cross-route validation

@@ -115,11 +115,9 @@ def main():
     if not rgb_files:
         print(f'ERROR: no RGB frames in {args.bag_dir}/camera_rgb/')
         return 1
-    # print(f"DEBUG pose={pose}")
-    # print(f"DEBUG turnaround fire? {fired}")
     print(f'Found {len(rgb_files)} RGB frames in bag')
 
-    # Map teach landmark timestamp -> nearest RGB frame
+    #Map teach landmark timestamp -> nearest RGB frame
     import csv
     os.makedirs(args.out_dir, exist_ok=True)
     log_path = os.path.join(args.out_dir, 'checkpoint_a_matches.csv')
@@ -132,7 +130,7 @@ def main():
         attempts = 0
         for li in range(0, len(lms), args.sample_every):
             lm = lms[li]
-            # For each teach landmark, the RGB frame with ts closest to lm['ts'] is
+            #For each teach landmark, the RGB frame with ts closest to lm['ts'] is
             # our test image.  Pairing: filenames are sim_time floats.
             ts = lm['ts']
             # Find nearest rgb file
@@ -178,8 +176,6 @@ def main():
                  f'  median offset:       {np.median(offsets):.3f} m\n' if offsets
                  else '')
         sf.write(f'  PASS: {"YES" if pass_frac >= 0.9 else "NO (< 90%)"}\n')
-    # print(f">>> tick {n}")
-    # print(f"DEBUG: entered route {route_name}")
     print(open(summary).read())
     return 0 if pass_frac >= 0.9 else 1
 

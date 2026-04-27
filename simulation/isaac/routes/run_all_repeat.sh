@@ -3,7 +3,7 @@
 # Defaults: background via nohup, stdout -> /workspace/simulation/isaac/routes/_common/runs/<ts>.log.
 #
 # Usage:
-#   bash routes/run_all_repeat.sh               # all 6, background
+#   bash routes/run_all_repeat.sh              # all 6, background
 #   bash routes/run_all_repeat.sh --fg          # foreground (blocks)
 #   bash routes/run_all_repeat.sh 05 06         # subset (short name expansion)
 #   bash routes/_common/scripts/stop_all_teach.sh   # stop (shared stop script also kills repeat)

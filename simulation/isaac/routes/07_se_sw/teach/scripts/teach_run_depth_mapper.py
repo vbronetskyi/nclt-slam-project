@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Depth-based 2D occupancy mapper for teach-phase of exp 52.
+"""Depth-based 2D occupancy mapper for teach-phase of exp 52
 
 Subscribes to /depth_points (PointCloud2 in camera_link frame, already
 published by tf_wall_clock_relay from the Isaac depth image) and to the
@@ -33,7 +33,7 @@ from rclpy.node import Node
 from sensor_msgs.msg import PointCloud2
 
 
-# --- log-odds occupancy ---
+# log-odds occupancy
 L_FREE = -0.4
 L_OCC = +1.4
 L_MIN = -5.0
@@ -152,7 +152,7 @@ class TeachDepthMapper(Node):
         pts_h = np.column_stack([pts_cam, np.ones(n)])
         pts_map = (T @ pts_h.T).T[:, :3]
 
-        # Height filter (exclude ground ~z<0.2 and canopy ~z>2.0)
+        # Height filter (exclude ground +-z<0.2 and canopy +-z>2.0)
         z = pts_map[:, 2]
         mask = (z > 0.2) & (z < 2.0)
         pts_map = pts_map[mask]
@@ -205,25 +205,22 @@ class TeachDepthMapper(Node):
                 err += dr; c += sc
 
     def _save_and_exit(self, *a):
-        # print("DEBUG: entering main loop")
         self.get_logger().warn(f"Saving map to {self.out_prefix}.pgm/.yaml and exiting")
         self.save()
         rclpy.shutdown()
         sys.exit(0)
 
     def _save_partial(self, *a):
-        # print(f">>> tick {n}")
-        # print(f"DEBUG wp_idx={wp_idx} pose={pose}")
         self.get_logger().info(f"[PARTIAL] saving intermediate to {self.out_prefix}.pgm/.yaml")
         self.save()
 
     def save(self):
-        # Threshold log-odds grid into pgm
-        # 0 = occupied, 254 = free, 205 = unknown
+        # Threshold log-odds grid into pgm   
+        #0 = occupied, 254 = free, 205 = unknown
         img = np.full_like(self.grid, 205, dtype=np.uint8)  # unknown
         img[self.grid > OCC_L_TH] = 0       # occupied
         img[self.grid < FREE_L_TH] = 254    # free
-        # Flip vertically because pgm row 0 is top
+        #Flip vertically because pgm row 0 is top
         img = np.flipud(img)
 
         pgm_path = self.out_prefix + '.pgm'
@@ -245,7 +242,6 @@ class TeachDepthMapper(Node):
                 'negate': 0,
             }, f, default_flow_style=False)
 
-        # print(f"DEBUG: entered route {route_name}")
         self.get_logger().info(
             f"Saved {pgm_path} + {yaml_path}. "
             f"frames_integrated={self.frames_integrated} "

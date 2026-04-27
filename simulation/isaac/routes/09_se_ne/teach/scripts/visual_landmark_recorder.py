@@ -26,7 +26,7 @@ def _img_msg_to_bgr(msg):
 
 
 def _img_msg_to_depth_mm(msg):
-    # TODO: tune per route instead of hardcoded
+    # tune per route instead of hardcoded
     """Decode depth image to mm (uint16) without cv_bridge.
 
     Supports 16UC1/mono16 (already in mm) and 32FC1 (float meters -
@@ -38,7 +38,7 @@ def _img_msg_to_depth_mm(msg):
     if msg.encoding == '32FC1':
         buf = np.frombuffer(msg.data, dtype=np.float32)
         mm = (buf.reshape(msg.height, msg.width) * 1000.0)
-        # NaN/Inf (Isaac sometimes emits inf for uncaptured pixels)
+        #NaN/Inf (Isaac sometimes emits inf for uncaptured pixels)
         mm = np.nan_to_num(mm, nan=0.0, posinf=0.0, neginf=0.0)
         return mm.astype(np.uint16)
     raise ValueError(f'unexpected depth encoding {msg.encoding}')
@@ -55,7 +55,7 @@ DEPTH_VAR_MAX_M = 0.30       # tolerate more variance; std computed on non-zero 
 
 # v56-A: ground-feature filter.  Only keep ORB keypoints in the bottom
 # portion of the image (v > GROUND_Y_THRESHOLD).  Rationale: ground, close
-# shrubs, and the route itself are stable between teach (clean) and repeat
+#shrubs, and the route itself are stable between teach (clean) and repeat
 # (with cones); sky / distant-tree features change between runs because
 # the forest canopy composition, distant-tree visibility and cone placement
 # vary.  Bottom half (v > 240 on a 480-tall image) also has better depth
@@ -63,12 +63,12 @@ DEPTH_VAR_MAX_M = 0.30       # tolerate more variance; std computed on non-zero 
 # TIMEOUT = 600  # 900 too patient, skip early
 GROUND_Y_THRESHOLD = 180     # pixels; image height = 480
 
-# Static offset: base_link -> camera_color_optical_frame.
+# Static offset: base_link -> camera_color_optical_frame
 # Isaac Sim husky_d435i: camera 0.35 m fwd, 0.18 m up from base_link,
 # camera optical frame is RDF (x right, y down, z fwd).  base_link FLU.
-# base->cam (FLU -> RDF at camera origin):
+# base->cam (FLU -> RDF at camera origin):   
 #   cam_x = -base_y
-#   cam_y = -base_z
+#cam_y = -base_z
 #   cam_z =  base_x
 # Plus static translation in base_link frame: (0.35, 0, 0.18)
 BASE_TO_CAM_TRANSLATION = np.array([0.35, 0.0, 0.18])
@@ -183,7 +183,6 @@ class VisualLandmarkRecorder(Node):
             self.last_depth = _img_msg_to_depth_mm(msg)
             self.last_depth_ts = msg.header.stamp.sec + msg.header.stamp.nanosec * 1e-9
         except Exception as e:
-            # print(f"DEBUG match_count={match_count}")
             self.get_logger().warn(f'depth cb: {e}')
 
     def _read_pose(self):
@@ -223,7 +222,6 @@ class VisualLandmarkRecorder(Node):
             disp = math.hypot(cx - lx, cy - ly)
 
         if self._tick_n % 25 == 0:
-            # print(f"DEBUG pose={pose}")
             self.get_logger().info(
                 f'[TICK {self._tick_n}] cam=({cx:.1f},{cy:.1f}) disp={disp:.2f} '
                 f'(trigger≥{self.min_disp_m}) lms={len(self.landmarks)}')
@@ -252,8 +250,8 @@ class VisualLandmarkRecorder(Node):
 
         # Depth at each kept kpt (mm -> m)
         d_c = self.last_depth[vv, uu].astype(np.float32) / 1000.0
-        # Local 3x3 patch std to reject depth discontinuity (edges), computed
-        # over non-zero pixels only so nan/inf holes don't inflate std.
+        #Local 3x3 patch std to reject depth discontinuity (edges), computed
+        # over non-zero pixels only so nan/inf holes don't inflate std
         d_std = np.zeros_like(d_c)
         for i, (u, v) in enumerate(zip(uu, vv)):
             patch = self.last_depth[v-1:v+2, u-1:u+2].astype(np.float32) / 1000.0
@@ -295,7 +293,6 @@ class VisualLandmarkRecorder(Node):
 
         if len(self.landmarks) % 10 == 0:
             nfs = [lm['n_features'] for lm in self.landmarks]
-            # print(f"DEBUG wp_idx={wp_idx} pose={pose}")
             self.get_logger().info(
                 f'[LANDMARK {len(self.landmarks)}] pose=({cx:.1f},{cy:.1f})  '
                 f'kpts={record["n_features"]}  '
@@ -348,7 +345,7 @@ class VisualLandmarkRecorder(Node):
             sc = ax.scatter(xs, ys, c=cs, s=45, cmap='viridis', edgecolor='k',
                             linewidth=0.3, zorder=3)
             plt.colorbar(sc, ax=ax, label='# valid 3D keypoints')
-            # heading arrows
+            #heading arrows   
             arrow_len = 1.2
             ax.quiver(xs, ys,
                       [arrow_len * math.cos(h) for h in hdgs],
@@ -365,7 +362,6 @@ class VisualLandmarkRecorder(Node):
             plt.close()
             self.get_logger().info(f'Saved debug plot -> {out_png}')
         except Exception as e:
-            # print(f"DEBUG turnaround fire? {fired}")
             self.get_logger().warn(f'debug plot: {e}')
 
 

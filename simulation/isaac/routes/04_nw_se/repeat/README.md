@@ -51,13 +51,13 @@ bash scripts/run_exp67_repeat.sh
 
 ## Результати
 
-**Pipeline відпрацював повністю. Усі 80 WP досягнуто.**
+Pipeline відпрацював повністю. Усі 80 WP досягнуто.
 
 | Метрика | Значення |
 |---|---|
 | **REACHED** | **80 / 80 (100 %)** |
 | SKIP | 0 |
-| DETOUR triggered | 3 (tent × 2, cone × 1) |
+| DETOUR triggered | 3 (tent * 2, cone * 1) |
 | Projections (costmap) | 2 |
 | Duration | 830 s (≈ 14 min) |
 | gt_path | 362.6 m |
@@ -78,10 +78,10 @@ bash scripts/run_exp67_repeat.sh
 | anchor rate | 15 % | 22.6 % |
 | duration | 35 min | **14 min** |
 
-**Примітки:**
+**Примітки:**   
 - 100 % reach-rate - road маршрут без obstacles plus accel-noise IMU не
   погіршує localisation (exp 70 Run A вже це підтвердив).
-- DETOUR 3 × спрацював на hardcoded tent/cone coords (що знаходяться на
+- DETOUR 3 * спрацював на hardcoded tent/cone coords (що знаходяться на
   south route, але в hybrid goal_sender це константи); оскільки physical
   obstacles відсутні на road, detour просто сприяє обережному проходженню.
 - drift 1.48 m << 2 m gate - жодного з wedge recovery, чистий traversal.

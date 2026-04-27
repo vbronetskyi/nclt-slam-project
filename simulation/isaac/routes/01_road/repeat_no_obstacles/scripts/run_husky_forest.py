@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3   
 import os, sys, argparse, time, math, json
 import numpy as np
 
@@ -45,16 +45,16 @@ from pxr import UsdGeom, UsdLux, UsdPhysics, PhysxSchema, Gf, Sdf, PhysicsSchema
 settings = carb.settings.get_settings()
 settings.set("/rtx/raytracing/backfaceCulling", False)
 settings.set("/rtx/directLighting/backfaceCulling", False)
-# post-processing off (not needed for SLAM)
+#post-processing off (not needed for SLAM)
 settings.set("/rtx/post/motionblur/enabled", False)
 settings.set("/rtx/post/dof/enabled", False)
 settings.set("/rtx/post/bloom/enabled", False)
 settings.set("/rtx/post/lensFlares/enabled", False)
 settings.set("/rtx/directLighting/sampledLighting/enabled", False)
-# reflections off, indirect diffuse on (light through canopy)
+# reflections off, indirect diffuse on (light thorugh canopy)
 settings.set("/rtx/reflections/enabled", False)
 settings.set("/rtx/indirectDiffuse/enabled", True)
-# fabric off, PhysX needs direct USD sync for articulation control
+#fabric off, PhysX needs direct USD sync for articulation control
 settings.set("/persistent/omnigraph/updateToUsd", True)
 settings.set("/persistent/omnihydra/useSceneGraphInstancing", False)
 # render at 200fps = 1 physics step per app.update() -> real 200Hz IMU
@@ -65,7 +65,7 @@ HUSKY_USD = "/workspace/simulation/isaac/assets/husky_d435i/husky_d435i.usda"
 SCENE_USD = "/opt/husky_forest_scene.usd"
 RENDERS = "/workspace/simulation/isaac/assets/renders/maps"
 
-# enable ros2
+# enable ros2   
 manager = omni.kit.app.get_app().get_extension_manager()
 for ext in ["isaacsim.ros2.core", "isaacsim.ros2.nodes",
             "isaacsim.sensors.physics.nodes", "isaacsim.ros2.bridge"]:
@@ -81,7 +81,7 @@ for _ in range(30):
     app.update()
 stage = omni.usd.get_context().get_stage()
 
-# Shrub fix (scene-audit):
+#Shrub fix (scene-audit):
 # /World/ShrubCol/sc_* colliders were hardcoded at z=0.20 in the baked USD.
 # Real terrain varies ±0.5 m -> shrubs visibly floated up to 70 cm above ground.
 # Two corrections at runtime:
@@ -153,7 +153,7 @@ if _shrub_root.IsValid():
 # /World/Cover is empty in the baked scene.  Scatter ferns/grass/leaves around
 # every tree at runtime - purpose=render (no collision, driveable) - so ORB
 # has extra visual features on forest floor.  Deterministic seed so teach and
-# repeat scatter in the same positions.
+# repeat scatter in the same positions
 _cover_root = stage.GetPrimAtPath("/World/Cover")
 if _cover_root and _cover_root.IsValid():
     _tree_root = stage.GetPrimAtPath("/World/Trees")
@@ -174,7 +174,7 @@ if _cover_root and _cover_root.IsValid():
             _tt = UsdGeom.Xformable(_tree).ComputeLocalToWorldTransform(
                 Usd.TimeCode.Default()).ExtractTranslation()
             _tx, _ty = float(_tt[0]), float(_tt[1])
-            for _ in range(3):  # 3 cover items per tree ⇒ ~400 over 130 trees
+            for _ in range(3):  # 3 cover items per tree ⇒ +-400 over 130 trees
                 _dx = _rng.uniform(-5, 5)
                 _dy = _rng.uniform(-5, 5)
                 _cx, _cy = _tx + _dx, _ty + _dy
@@ -191,9 +191,9 @@ if _cover_root and _cover_root.IsValid():
         print(f"  cover: {_cov_idx} ferns/grass/leaves scattered (render-only, no collision)")
 
 # RoadsideTrees fix: rtcol_* (Cylinder trunk colliders) are hardcoded at
-# z=2.0 absolute in the baked USD.  With terrain varying ±0.5 m, the
+#z=2.0 absolute in the baked USD.  With terrain varying ±0.5 m, the
 # bottom of the cylinder floats or buries.  Re-translate so the cylinder
-# sits on real terrain (center z = terrain_z + height/2 = terrain_z + 2.0).
+#sits on real terrain (center z = terrain_z + height/2 = terrain_z + 2.0).
 _rtcol_root = stage.GetPrimAtPath("/World/RoadsideTrees")
 if _rtcol_root and _rtcol_root.IsValid():
     _n_rt_fix = 0
@@ -249,7 +249,7 @@ if _root_joint.IsValid():
 
 # IMU sensor frame in this USD: UBR (Up-Backward-Right)
 # Verified by imu_cal_test.py:
-#   - Stationary: gravity (+9.81) on raw sensor +X => sensor X = UP
+#- Stationary: gravity (+9.81) on raw sensor +X => sensor X = UP
 #   - Yaw left (CCW): ang_vel positive on raw sensor +X => sensor X is yaw axis (UP)
 #   - Forward drive: lin_acc on raw sensor -Y => sensor Y = -FORWARD = BACKWARD
 #   - Right-hand rule: UP × FORWARD = LEFT, +X × -Y = -Z, so sensor Z = -LEFT = RIGHT
@@ -409,7 +409,6 @@ og.Controller.edit(
         ],
     },
 )
-# print(f"DEBUG matches={matches}")
 print("  ros2 graph created")
 
 # wheel drive parameters (velocity control: stiffness=0, high damping)
@@ -423,10 +422,9 @@ for wname in ["front_left_wheel", "front_right_wheel", "rear_left_wheel", "rear_
         drive.GetStiffnessAttr().Set(0.0)
         drive.GetMaxForceAttr().Set(500.0)
         _wheel_vel_attrs.append(drive.GetTargetVelocityAttr())
-        # print(f"DEBUG wp_idx={wp_idx} pose={pose}")
         print(f"    {wname}: damping=100000, maxForce=500")
 
-# start simulation
+#start simulation
 print(f"\nstarting simulation ({args.duration}s)...")
 timeline = omni.timeline.get_timeline_interface()
 timeline.play()
@@ -483,7 +481,7 @@ def _get_husky_full_quat():
 p0 = _get_husky_pose()[0]
 print(f"  position: ({p0[0]:.1f}, {p0[1]:.1f}, {p0[2]:.2f})")
 
-# collision list (matches thinning from convert_gazebo_to_isaac.py)
+#collision list (matches thinning from convert_gazebo_to_isaac.py)
 _obstacles = []
 with open("/tmp/gazebo_models.json") as _f:
     _models = json.load(_f)
@@ -506,7 +504,7 @@ def _road_y(x):
 
 # terrain height function (must match convert_gazebo_to_isaac.py)
 def _terrain_height(x, y):
-    # FIXME: crashes if matcher silent >30s, need fallback
+    # crashes if matcher silent >30s, need fallback
     h = 0.0
     h += 0.5 * math.sin(x * 0.018 + 0.5) * math.cos(y * 0.022 + 1.2)
     h += 0.35 * math.sin(x * 0.035 + 2.1) * math.sin(y * 0.03 + 0.7)
@@ -556,7 +554,7 @@ for m in _models:
     elif m["type"] == "barrel":
         _obstacles.append((m["x"], m["y"], 0.5))
     elif m["type"] in ("fallen_oak", "fallen_pine"):
-        # fallen tree scaled 1.5-2x in scene, trunk ~12-16m long
+        # fallen tree scaled 1.5-2x in scene, trunk +-12-16m long
         yaw = m.get("yaw", 0)
         for d in [-7, -5, -3, -1, 0, 1, 3, 5, 7]:
             _obstacles.append((m["x"] + d * math.cos(yaw), m["y"] + d * math.sin(yaw), 0.6))
@@ -573,7 +571,7 @@ from geometry_msgs.msg import Twist
 rclpy.init()
 node = rclpy.create_node("husky_sim")
 
-# cmd_vel subscriber
+#cmd_vel subscriber
 latest_cmd = [Twist()]
 def cmd_cb(msg):
     latest_cmd[0] = msg
@@ -653,7 +651,7 @@ _auto_route = None
 _auto_idx = 1  # start from waypoint 1 (waypoint 0 is spawn)
 
 # Warmup waypoints - first 12 road S-curve waypoints (proven to work on exp18)
-# Smooth S-curve from spawn east, gives VIO IMU init time on natural road motion
+#Smooth S-curve from spawn east, gives VIO IMU init time on natural road motion
 WARMUP_WAYPOINTS = [
     (-90, -4.5), (-85, -2.8), (-80, -1.5), (-75, -0.8),
     (-70, -0.5), (-65, -1.0), (-60, -2.2), (-55, -3.8),
@@ -682,9 +680,9 @@ elif args.route == "warmup":
 
 # Prepend VIO warmup to forest routes if --vio-warmup flag is set
 if args.vio_warmup and _auto_route is not None and args.route in ("north", "south", "road"):
-    # Warmup ends at the last WARMUP_WAYPOINTS point.
+    #Warmup ends at the last WARMUP_WAYPOINTS point
     # Skip initial route waypoints that are behind or at the warmup-end X,
-    # so robot continues forward smoothly instead of doubling back to spawn.
+    # so robot continues forward smoothly instead of doubling back to spawn
     import math as _math
     warmup_end_x = WARMUP_WAYPOINTS[-1][0]
     warmup_end_y = WARMUP_WAYPOINTS[-1][1]
@@ -708,7 +706,7 @@ wheel_r = 0.165   # husky wheel radius
 track = 0.555     # husky track width
 goal_x, goal_y = None, None
 
-# recording setup
+#recording setup
 import time as _time
 _rec_dir = f"/root/bags/husky_real/isaac_slam_{int(_time.time())}"
 os.makedirs(f"{_rec_dir}/camera_rgb", exist_ok=True)
@@ -748,11 +746,11 @@ _synth_prev_quat = None
 _synth_prev_time = None
 _synth_prev_omega = None
 # Exp 51 v2 IMU fix: standstill detection. PhysX contact-solver jitter causes
-# ~0.1mm position noise per 5ms step; double-differentiation amplifies this
+# +-0.1mm position noise per 5ms step; double-differentiation amplifies this
 # to ±1.1 m/s² phantom accel. A real IMU on a stationary robot reads pure
 # gravity + sensor noise, NOT position jitter - so we detect standstill and
 # bypass the derivative chain.
-# v7 alternative (PhysX velocity API for accel) had lower noise but 7%
+#v7 alternative (PhysX velocity API for accel) had lower noise but 7%
 # systematic path deficit -> VIO drifted worse than v6. Position-double-diff
 # is noisier per-sample but mean-energy correct (ratio 1.026 vs v7's 0.93),
 # which is what ORB-SLAM3 BA actually needs. Use with vio_th160.yaml
@@ -809,7 +807,7 @@ def _compute_synth_imu(pos_arg, quat_xyzw, pos_for_vel, t):
         accel_body = R_now.inv().apply(accel_world_g)
         # exp 70 Run A: consistent Phidgets 1042 noise + bias in motion too
         # (master omitted this - ORB-SLAM3 BA weights NoiseAcc from yaml;
-        # mismatch between regimes is a likely source of straight-line scale drift)
+        #mismatch between regimes is a likely source of straight-line scale drift)
         accel_body = accel_body + rng.normal(0, _SYNTH_ACCEL_STD, 3) + _SYNTH_ACCEL_BIAS
 
     omega_noisy = omega_body + rng.normal(0, _SYNTH_GYRO_STD, 3) + _SYNTH_GYRO_BIAS
@@ -826,12 +824,12 @@ _rec_img_count = 0
 print(f"  SLAM recording to {_rec_dir}")
 
 try:
-    # NOTE: zigzag init phase removed (exp 21 finding):
+    # zigzag init phase removed (exp 21 finding):
     # - DriveAPI commands didn't actually move the robot (forest uses ArticulationAPI)
     # - Result: 12s of "fake" zigzag where IMU recorded ±2 m/s² wheel vibrations
     #   while GT showed robot static. ORB-SLAM3 built initial map from these
     #   stationary keyframes -> bad triangulation -> +0.13m to +6m extra ATE.
-    # - Init phase only helps VIO (which doesn't work on forest anyway).
+    #- Init phase only helps VIO (which doesn't work on forest anyway)
     # Recording starts driving the route immediately.
 
     # With render at 200fps, each app.update() = 1 physics step = 1/200s
@@ -905,7 +903,7 @@ try:
 
         # auto-route: advance to next waypoint when arrived
         if _auto_route is not None and goal_x is None and _auto_idx < len(_auto_route):
-            # Pure pursuit lookahead: pick WP ~2m ahead along path (not just next by index)
+            # Pure pursuit lookahead: pick WP +-2m ahead along path (not just next by index)
             pp_ = _get_husky_pose()[0]
             _rx0, _ry0 = float(pp_[0]), float(pp_[1])
             LOOKAHEAD = 2.0
@@ -932,7 +930,7 @@ try:
                 if goal_txt == "stop":
                     goal_x, goal_y = None, None
                 elif goal_txt == "reverse":
-                    # drive backwards for 3s via DriveAPI wheel velocities
+                    #drive backwards for 3s via DriveAPI wheel velocities
                     goal_x, goal_y = None, None
                     rev_speed = math.degrees(-5.0)  # rad/s backwards
                     for _ in range(180):  # 3 seconds at 60Hz
@@ -951,7 +949,7 @@ try:
                         os.remove("/tmp/isaac_goal.txt")
                     except:
                         pass
-                    print("  REVERSED ~3s")
+                    print("  REVERSED +-3s")
                 elif goal_txt == "reset":
                     goal_x, goal_y = None, None
                     # teleport robot back to spawn (set root xform + stop wheels)
@@ -1006,7 +1004,7 @@ try:
                 while err < -math.pi: err += 2 * math.pi
 
                 # Pure pursuit speed - scaled for VIO camera matching
-                # cmd 0.25 × Husky 3.4× scaling = ~0.85 m/s actual
+                # cmd 0.25 × Husky 3.4× scaling = +-0.85 m/s actual
                 max_speed = 0.25
                 if abs(err) > 0.5:
                     # Large error: slow and sharp turn
@@ -1073,7 +1071,7 @@ try:
                         os.replace("/tmp/isaac_cam_fwd.tmp.jpg", "/tmp/isaac_cam_fwd.jpg")
                     except (FileNotFoundError, OSError):
                         pass
-                    # save to recording dir
+                    #save to recording dir
                     if _recording:
                         img.save(f"{_rec_dir}/camera_rgb/{sim_time:.4f}.jpg", quality=90)
                         d_depth = ann_depth.get_data() if 'ann_depth' in dir() else None

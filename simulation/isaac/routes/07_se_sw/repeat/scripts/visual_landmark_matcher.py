@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Exp 55 repeat-time visual landmark matcher.
+"""Exp 55 repeat-time visual landmark matcher
 
 Loads south_landmarks.pkl (captured in teach run), subscribes to the live
-camera topics and VIO pose, and at ~1-2 Hz:
+camera topics and VIO pose, and at +-1-2 Hz:
 
   1. Find candidate teach landmarks within CANDIDATE_RADIUS m of current
      VIO position (in the teach-map world frame - if VIO has drifted, this
@@ -19,12 +19,10 @@ camera topics and VIO pose, and at ~1-2 Hz:
   6. Publish `/anchor_correction` (PoseWithCovarianceStamped).  Covariance
      diagonal from inlier count.
 
-Inputs:
   /camera/color/image_raw, /camera/depth/image_rect_raw
   /tmp/isaac_pose.txt  (current VIO/encoder-blended pose from tf_relay)
   south_landmarks.pkl
 
-Outputs:
   /anchor_correction  geometry_msgs/PoseWithCovarianceStamped
   anchor_matches.csv  log of every attempt
 """
@@ -90,7 +88,7 @@ TICK_HZ = 2.0
 # ACCUM_SILENCE_S and the nearest existing landmark is > ACCUM_MIN_DIST_M
 # away, record the current frame's ORB features as a new landmark
 # (camera pose from the current VIO pose).  These grow the landmark set
-# organically within and across repeat runs.
+#organically within and across repeat runs
 ACCUM_ENABLE = True
 # ICP_THRESHOLD = 1.5  # was 2.0 too wide, caught ground points
 # SKIP_RADIUS = 4.0  # 3.0 too tight, missed behind-obstacle WPs
@@ -108,7 +106,7 @@ BASE_TO_CAM_ROT = np.array([
 
 
 def quat_to_rot(qx, qy, qz, qw):
-    # FIXME: crashes if matcher silent >30s, need fallback
+    # crashes if matcher silent >30s, need fallback
     R = np.eye(3)
     R[0, 0] = 1 - 2 * (qy*qy + qz*qz)
     R[0, 1] = 2 * (qx*qy - qz*qw)
@@ -123,7 +121,7 @@ def quat_to_rot(qx, qy, qz, qw):
 
 
 def rot_to_quat(R):
-    # TODO: tune per route instead of hardcoded
+    # tune per route instead of hardcoded
     tr = R[0, 0] + R[1, 1] + R[2, 2]
     if tr > 0:
         s = 0.5 / math.sqrt(tr + 1.0)
@@ -251,15 +249,12 @@ class VisualLandmarkMatcher(Node):
         try:
             self.last_rgb = _img_msg_to_bgr(msg)
         except Exception as e:
-            # print(f"DEBUG wp_idx={wp_idx} pose={pose}")
             self.get_logger().warn(f'rgb: {e}')
 
     def _depth_cb(self, msg):
         try:
             self.last_depth = _img_msg_to_depth_mm(msg)
         except Exception as e:
-            # print(f"DEBUG pose={pose}")
-            # print(f"DEBUG matches={matches}")
             self.get_logger().warn(f'depth: {e}')
 
     def _read_pose(self):
@@ -299,7 +294,7 @@ class VisualLandmarkMatcher(Node):
         cand_idx = [i for i in idx_sorted[:MAX_CANDIDATES * 3]
                     if d[i] < CANDIDATE_RADIUS_M and hdg_err[i] < hdg_tol]
         cand_idx = cand_idx[:MAX_CANDIDATES]
-        # v56: ground-filter disabled after run 1 showed anchor rate dropped
+        #v56: ground-filter disabled after run 1 showed anchor rate dropped
         # 13% -> 5% and false-positive matches increased.  Keep full-frame ORB.
         gray = cv2.cvtColor(self.last_rgb, cv2.COLOR_BGR2GRAY)
         kpts_curr, desc_curr = self.orb.detectAndCompute(gray, None)
@@ -321,7 +316,7 @@ class VisualLandmarkMatcher(Node):
                 continue
             # Cross-check match: teach->current (smaller set first gives
             # better precision with crossCheck=True).  queryIdx=teach,
-            # trainIdx=current.
+            # trainIdx=current
             try:
                 good = self.matcher.match(desc_t, desc_curr)
             except cv2.error:
@@ -357,7 +352,7 @@ class VisualLandmarkMatcher(Node):
             # Invert: current-cam pose in teach-cam frame
             R_teach_cur = R_cur_teach.T
             t_teach_cur = -R_teach_cur @ t_cur_teach
-            # Compose with teach-camera world pose to get current-cam world pose
+            #Compose with teach-camera world pose to get current-cam world pose
             teach_pose = lm['pose']
             R_world_teach = quat_to_rot(
                 teach_pose[3], teach_pose[4], teach_pose[5], teach_pose[6])
@@ -379,7 +374,7 @@ class VisualLandmarkMatcher(Node):
             return
 
         n_inliers, reproj_err, anchor_pose, lm_idx = best
-        # Consistency check
+        # Consistency check   
         dx = anchor_pose[0] - vio_xy[0]
         dy = anchor_pose[1] - vio_xy[1]
         consistency_d = math.hypot(dx, dy)
@@ -390,7 +385,7 @@ class VisualLandmarkMatcher(Node):
             self._maybe_accumulate(base_pose, kpts_curr, desc_curr, pts_curr_2d, ts)
             return
 
-        # Build covariance: inlier count -> anchor std
+        # Build covariance: inlier count -> anchor std   
         if n_inliers >= 25:
             std = 0.05
         elif n_inliers >= 15:
@@ -488,7 +483,6 @@ class VisualLandmarkMatcher(Node):
         self.xy = np.vstack([self.xy, [vio_xy[0], vio_xy[1]]])
         self.heading = np.append(self.heading, self._lm_heading_rad(new_lm))
         self.n_accumulated += 1
-        # print(f"DEBUG anchor_state={state}")
         self.get_logger().info(
             f'[ACCUM #{self.n_accumulated}] new landmark at ({vio_xy[0]:.1f},'
             f'{vio_xy[1]:.1f})  n_kpts={new_lm["n_features"]}  '

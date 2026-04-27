@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Hybrid goal sender (v53) with proactive WP projection.
+"""Hybrid goal sender (v53) with proactive WP projection
 
 For every /global_costmap/costmap update:
   - Re-checks all *future* waypoints (current..end) against the costmap.
@@ -61,10 +61,10 @@ class HybridGoalSender(Node):
         self.DETOUR_MAX_COST = 30              # detour candidate cell must have cost < this
         self.LOOKAHEAD_N = 3
 
-        # v59 known obstacles (from patch_obstacles_exp52 for south route).
-        # Costmap updates have latency (robot must approach to depth-range
+        # v59 known obstacles (from patch_obstacles_exp52 for south route)
+        #Costmap updates have latency (robot must approach to depth-range
         # before obstacle is marked).  We also hard-check against these
-        # known positions so the lookahead fires BEFORE robot gets near.
+        # known positions so the lookahead fires BEFORE robot gets near
         # v65 road route obstacles (from spawn_obstacles.py OBSTACLES['road']):
         # barrier 1 (x=-50, y=-8..-2.5 step 0.5), barrier 2 (x=15, y=-1..4),
         # barrier 3 (x=45, y=-3..1), tent at (-20, 0).
@@ -84,7 +84,7 @@ class HybridGoalSender(Node):
             'half_y': 1.0,
         }
         # Minimum allowed clearance from any known obstacle - WP center
-        # must be ≥ this many metres from obstacle edge.
+        # must be ≥ this many metres from obstacle edge   
         # robot_radius 0.7 + 0.2 margin = 0.9 m from obstacle edge
         self.KNOWN_CLEARANCE_M = 0.9
 
@@ -254,7 +254,7 @@ class HybridGoalSender(Node):
         self.costmap_info = msg.info
         self.costmap = np.array(msg.data, dtype=np.int8).reshape(
             msg.info.height, msg.info.width)
-        # Re-project all WPs from current index forward
+        #Re-project all WPs from current index forward   
         n_changed = 0
         n_skipped_now = 0
         for i in range(self.current_idx, self.n_wps):
@@ -322,13 +322,12 @@ class HybridGoalSender(Node):
                 time.sleep(0.5); continue
             d = math.hypot(px - rx, py - ry)
             if d < self.TOLERANCE:
-                # print(f"DEBUG matches={matches}")
                 self.get_logger().info(f"  WP {i} REACHED (d={d:.1f}m)")
                 return True
             # v59 continuous lookahead: only abort if VERY close to
             # unsafe target (d<3m) AND known obstacle proximity.  Costmap
             # cost alone can spike from teach-map tree inflation - don't
-            # abort on that.
+            # abort on that
             if d < 3.0:
                 too_close, _ = self._wp_too_close_to_known(px, py)
                 if too_close:
@@ -356,7 +355,6 @@ class HybridGoalSender(Node):
                             f'target unreachable, moving on)')
                         return False
             rclpy.spin_once(self, timeout_sec=0.5)
-        # print(f">>> teach step {step}")
         self.get_logger().warn(f'  WP {i} TIMEOUT (d={d:.1f}m)')
         return False
 
@@ -387,10 +385,10 @@ class HybridGoalSender(Node):
                 self.skipped += 1
                 continue
 
-            # v59 LOOK-AHEAD + KNOWN-OBSTACLE CHECK:
+            #v59 LOOK-AHEAD + KNOWN-OBSTACLE CHECK:
             # (a) hardcoded check against known cone/tent positions - no
             #     costmap latency, fires regardless of depth visibility;
-            # (b) if costmap is available, also check cell cost.
+            # (b) if costmap is available, also check cell cost
             unsafe_reason = None
             too_close, what = self._wp_too_close_to_known(x, y)
             if too_close:

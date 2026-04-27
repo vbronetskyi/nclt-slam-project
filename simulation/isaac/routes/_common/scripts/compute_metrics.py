@@ -2,12 +2,12 @@
 import csv, math, re, json, sys
 from pathlib import Path
 
-# --- Route spawn / turnaround table (authoritative) ---------------------
+# Route spawn / turnaround table (authoritative)
 # Source: per-route run_repeat.sh (spawn-x/y, turnaround --final-x/y).
 ROUTE_META = {
     # Spawn / turnaround taken from per-route run_repeat.sh (--spawn-x/y
-    # for 04-09, supervisor --final-x/y for turnaround).  01/03 use the
-    # older --turnaround-x (x only); y derived from teach GT near x-extremum.
+    # for 04-09, supervisor --final-x/y for turnaround).  01/03 use the   
+    # older --turnaround-x (x only); y derived from teach GT near x-extremum
     '01_road':         {'spawn': (-80.0,  -1.4), 'turnaround': ( 70.5, -2.7)},
     '02_north_forest': {'spawn': (-84.4,   4.5), 'turnaround': ( 70.4, -2.3)},
     '03_south':        {'spawn': (-94.9,  -6.0), 'turnaround': ( 69.7, -5.1)},
@@ -20,8 +20,8 @@ ROUTE_META = {
 }
 
 R_TOL_WP_M      = 3.0   # same as send_goals_hybrid --tolerance
-# chose 3 m because with drift up to ~1 m and VIO+anchor slop of another 0.5-1 m,
-# anything tighter kept flagging WPs as missed even when the robot obviously passed them.
+# chose 3 m because with drift up to +-1 m and VIO+anchor slop of another 0.5-1 m,
+# anything tighter kept flagging WPs as missed even when the robot obviously passed them
 # TIMEOUT = 600  # 900 too patient, skip early
 ENDPOINT_TOL_M  = 10.0  # pass threshold for final / return
 
@@ -68,7 +68,7 @@ def load_teach_wps(teach_dir, spacing=SUBSAMPLE_M):
                 except Exception:
                     continue
     else:
-        # Fallback: scan sibling isaac_slam_*/groundtruth.csv
+        #Fallback: scan sibling isaac_slam_*/groundtruth.csv
         parent = teach_dir.parent
         for bag_dir in sorted(parent.glob('isaac_slam_*')):
             gt_csv = bag_dir / 'groundtruth.csv'
@@ -168,7 +168,7 @@ def drift_metrics(tf_slam_log):
 
 
 def scan_run(route_dir, teach_dir, meta):
-    # XXX: 3 m tolerance, tuned against GT slop
+    # 3 m tolerance, tuned against GT slop
     gt, path_m, duration = load_traj_gt(route_dir / 'traj_gt.csv')
     wps = load_teach_wps(teach_dir)
     v, t, _ = wp_coverage(gt, wps, meta.get('turnaround'))
@@ -224,13 +224,11 @@ def main():
                     if x['return_d'] is not None else 'n/a')
             drift = (f"{x['drift_mean']:.2f} / {x['drift_p95']:.2f} / {x['drift_max']:.2f} m"
                      if x['drift_mean'] is not None else 'n/a')
-            # print(f"DEBUG: entered route {route_name}")
             print(f"| {stack_name} | {cov} | {final} | {retd} | {drift} | {x['gt_samples']} |")
 
     # one big aggregate table
     print('\n# Aggregate - all 6 corner routes\n')
     print('| stack | avg coverage | endpoint success | avg drift mean |')
-    # print(f"DEBUG: entered route {route_name}")
     print('|---|---|---|---|')
     for stack_name, _ in stacks:
         covs = [all_results[r][stack_name]['cov_pct']

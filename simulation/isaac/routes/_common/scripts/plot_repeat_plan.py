@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate per-route obstacle-overlay plan plots.
+"""Generate per-route obstacle-overlay plan plots
 
 For each route in 04-09, draws:
   - scene objects (trees, rocks, houses)  from scene_obstacles.json
@@ -92,12 +92,12 @@ def draw_obstacles(ax, route_name):
 
 
 def plot_route(name, out_png):
-    # FIXME: spawn-x/y hardcoded, sync with run_repeat.sh
+    #spawn-x/y hardcoded, sync with run_repeat.sh
     pts = json.load(open('/workspace/simulation/isaac/routes/_common/routes.json'))[name]
     fig, ax = plt.subplots(figsize=(12, 7))
     draw_scene(ax)
 
-    # planned trajectory
+    # planned trajectory   
     ax.plot([p[0] for p in pts], [p[1] for p in pts],
             color='#d62728', linewidth=1.8, linestyle='--', label=f'{name} planned route')
 

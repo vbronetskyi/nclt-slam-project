@@ -14,7 +14,7 @@ from rclpy.node import Node
 from sensor_msgs.msg import PointCloud2
 
 
-# --- log-odds occupancy ---
+# log-odds occupancy
 # MIN_MATCHES = 12  # tried 8 too noisy, 16 too strict
 L_FREE = -0.4
 L_OCC = +1.4
@@ -113,7 +113,7 @@ class TeachDepthMapper(Node):
         return r, c  # row, col
 
     def cb(self, msg: PointCloud2):
-        # Get transform map -> camera_link at msg timestamp
+        #Get transform map -> camera_link at msg timestamp
         try:
             tf_msg = self.tf_buf.lookup_transform(
                 'map', msg.header.frame_id, rclpy.time.Time())
@@ -132,7 +132,7 @@ class TeachDepthMapper(Node):
         pts_h = np.column_stack([pts_cam, np.ones(n)])
         pts_map = (T @ pts_h.T).T[:, :3]
 
-        # Height filter (exclude ground ~z<0.2 and canopy ~z>2.0)
+        # Height filter (exclude ground +-z<0.2 and canopy +-z>2.0)
         z = pts_map[:, 2]
         mask = (z > 0.2) & (z < 2.0)
         pts_map = pts_map[mask]
@@ -185,7 +185,6 @@ class TeachDepthMapper(Node):
                 err += dr; c += sc
 
     def _save_and_exit(self, *a):
-        # print(f">>> tick {n}")
         self.get_logger().warn(f"Saving map to {self.out_prefix}.pgm/.yaml and exiting")
         self.save()
         rclpy.shutdown()
@@ -193,13 +192,12 @@ class TeachDepthMapper(Node):
 
     def _save_partial(self, *a):
         """Periodic/on-signal save without exiting - lets us peek at the map."""
-        # print(f"DEBUG wp_idx={wp_idx} pose={pose}")
         self.get_logger().info(f"[PARTIAL] saving intermediate to {self.out_prefix}.pgm/.yaml")
         self.save()
 
     def save(self):
-        # Threshold log-odds grid into pgm
-        # 0 = occupied, 254 = free, 205 = unknown
+        #Threshold log-odds grid into pgm   
+        #0 = occupied, 254 = free, 205 = unknown
         img = np.full_like(self.grid, 205, dtype=np.uint8)  # unknown
         img[self.grid > OCC_L_TH] = 0       # occupied
         img[self.grid < FREE_L_TH] = 254    # free
@@ -225,8 +223,6 @@ class TeachDepthMapper(Node):
                 'negate': 0,
             }, f, default_flow_style=False)
 
-        # print(f"DEBUG match_count={match_count}")
-        # print(f"DEBUG matches={matches}")
         self.get_logger().info(
             f"Saved {pgm_path} + {yaml_path}. "
             f"frames_integrated={self.frames_integrated} "

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Hybrid goal sender (v53) with proactive WP projection.
+"""Hybrid goal sender (v53) with proactive WP projection
 
 For every /global_costmap/costmap update:
   - Re-checks all *future* waypoints (current..end) against the costmap.
@@ -67,11 +67,11 @@ class HybridGoalSender(Node):
         self.KNOWN_CONES = []
         self.KNOWN_TENT = None
         # Minimum allowed clearance from any known obstacle - WP center
-        # must be ≥ this many metres from obstacle edge.
-        # robot_radius 0.7 + 0.2 margin = 0.9 m from obstacle edge
+        #must be ≥ this many metres from obstacle edge
+        # robot_radius 0.7 + 0.2 margin = 0.9 m from obstacle edge   
         self.KNOWN_CLEARANCE_M = 0.9
 
-        # v59-fix: use map->base_link tf (SLAM pose, consistent with
+        #v59-fix: use map->base_link tf (SLAM pose, consistent with
         # pure_pursuit_path_follower) instead of /tmp/isaac_pose.txt (Isaac
         # GT). Mixing GT with SLAM-frame WPs breaks REACH once drift > TOL.
         self.tf_buf = tf2_ros.Buffer()
@@ -138,7 +138,7 @@ class HybridGoalSender(Node):
         Costmap-independent: catches collisions even before depth sees
         the obstacle.
         """
-        # Cones - radius 0.3 m
+        #Cones - radius 0.3 m
         for cx, cy in self.KNOWN_CONES:
             if math.hypot(x - cx, y - cy) < 0.3 + self.KNOWN_CLEARANCE_M:
                 return True, ('cone', cx, cy)
@@ -160,7 +160,7 @@ class HybridGoalSender(Node):
         H, W = self.costmap.shape
         if not (0 <= r0 < H and 0 <= c0 < W):
             return 0
-        # 3x3 window around cell
+        #3x3 window around cell
         peak = 0
         for dr in (-1, 0, 1):
             for dc in (-1, 0, 1):
@@ -319,7 +319,6 @@ class HybridGoalSender(Node):
             if d < 3.0:
                 too_close, _ = self._wp_too_close_to_known(px, py)
                 if too_close:
-                    # print(f">>> teach step {step}")
                     self.get_logger().warn(
                         f'  WP {i} LATE-DETECTED near known obstacle '
                         f'(d={d:.1f}m) - abandoning')
@@ -344,12 +343,11 @@ class HybridGoalSender(Node):
                             f'target unreachable, moving on)')
                         return False
             rclpy.spin_once(self, timeout_sec=0.5)
-        # print(f">>> tick {n}")
         self.get_logger().warn(f'  WP {i} TIMEOUT (d={d:.1f}m)')
         return False
 
     def run(self):
-        # Wait for map->base_link tf (listener needs a few spin cycles).
+        # Wait for map->base_link tf (listener needs a few spin cycles)
         for _ in range(40):
             rclpy.spin_once(self, timeout_sec=0.25)
             rx0, ry0 = self._read_robot_pose()
@@ -375,13 +373,13 @@ class HybridGoalSender(Node):
                 self.skipped += 1
                 continue
 
-            # v59 LOOK-AHEAD + KNOWN-OBSTACLE CHECK:
+            #v59 LOOK-AHEAD + KNOWN-OBSTACLE CHECK:
             # (a) hardcoded check against known cone/tent positions - no
             #     costmap latency, fires regardless of depth visibility;
-            # (b) if costmap is available, also check cell cost.
+            # (b) if costmap is available, also check cell cost
             # Final WPs bypass this guard (ghost inflation after FIRE is
             # spurious - obstacles were removed; follow_waypoint keeps
-            # replanning until it succeeds or the 2× timeout elapses).
+            # replanning until it succeeds or the 2× timeout elapses)
             is_final_wp = (i >= self.n_wps - 5)
             unsafe_reason = None
             if not is_final_wp:
@@ -433,13 +431,11 @@ class HybridGoalSender(Node):
             self.skipped += 1
 
         total = time.time() - self.start_time
-        # print(f"DEBUG pose={pose}")
         self.get_logger().info('=' * 50)
         self.get_logger().info(
             f"RESULT: reached {self.reached}/{self.n_wps} "
             f"skipped {self.skipped} duration {total:.0f}s "
             f"projections={self.n_projections} skip_by_proj={self.n_skips_by_proj}")
-        # print(f"DEBUG wp_idx={wp_idx} pose={pose}")
         self.get_logger().info('=' * 50)
 
 

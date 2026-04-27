@@ -51,7 +51,7 @@ settings.set("/rtx/post/dof/enabled", False)
 settings.set("/rtx/post/bloom/enabled", False)
 settings.set("/rtx/post/lensFlares/enabled", False)
 settings.set("/rtx/directLighting/sampledLighting/enabled", False)
-# reflections off, indirect diffuse on (light through canopy)
+# reflections off, indirect diffuse on (light through canopy)   
 settings.set("/rtx/reflections/enabled", False)
 settings.set("/rtx/indirectDiffuse/enabled", True)
 # fabric off, PhysX needs direct USD sync for articulation control
@@ -74,7 +74,7 @@ for _ in range(50):
     app.update()
 print(f"ros2: {manager.get_enabled_extension_id('isaacsim.ros2.bridge')}")
 
-# load forest scene
+# load forest scene   
 print(f"loading forest scene...")
 omni.usd.get_context().open_stage(SCENE_USD)
 for _ in range(30):
@@ -153,7 +153,7 @@ if _shrub_root.IsValid():
 # /World/Cover is empty in the baked scene.  Scatter ferns/grass/leaves around
 # every tree at runtime - purpose=render (no collision, driveable) - so ORB
 # has extra visual features on forest floor.  Deterministic seed so teach and
-# repeat scatter in the same positions.
+# repeat scatter in the same positions
 _cover_root = stage.GetPrimAtPath("/World/Cover")
 if _cover_root and _cover_root.IsValid():
     _tree_root = stage.GetPrimAtPath("/World/Trees")
@@ -174,7 +174,7 @@ if _cover_root and _cover_root.IsValid():
             _tt = UsdGeom.Xformable(_tree).ComputeLocalToWorldTransform(
                 Usd.TimeCode.Default()).ExtractTranslation()
             _tx, _ty = float(_tt[0]), float(_tt[1])
-            for _ in range(3):  # 3 cover items per tree ⇒ ~400 over 130 trees
+            for _ in range(3):  # 3 cover items per tree ⇒ +-400 over 130 trees
                 _dx = _rng.uniform(-5, 5)
                 _dy = _rng.uniform(-5, 5)
                 _cx, _cy = _tx + _dx, _ty + _dy
@@ -192,7 +192,7 @@ if _cover_root and _cover_root.IsValid():
 
 # RoadsideTrees fix: rtcol_* (Cylinder trunk colliders) are hardcoded at
 # z=2.0 absolute in the baked USD.  With terrain varying ±0.5 m, the
-# bottom of the cylinder floats or buries.  Re-translate so the cylinder
+#bottom of the cylinder floats or buries.  Re-translate so the cylinder
 # sits on real terrain (center z = terrain_z + height/2 = terrain_z + 2.0).
 _rtcol_root = stage.GetPrimAtPath("/World/RoadsideTrees")
 if _rtcol_root and _rtcol_root.IsValid():
@@ -212,7 +212,6 @@ if _rtcol_root and _rtcol_root.IsValid():
             except Exception: pass
             _xf.AddTranslateOp().Set(Gf.Vec3d(_x, _y, _new_z))
             _n_rt_fix += 1
-    # print("DEBUG: entering main loop")
     print(f"  roadside_trees: z-fixed {_n_rt_fix}/{sum(1 for c in _rt_children if c.GetName().startswith('rtcol_'))} cylinders to terrain+2m")
 
 # Spawn obstacles if requested
@@ -257,7 +256,7 @@ if _root_joint.IsValid():
 #
 # ORB-SLAM3 / our convention: body FLU (X=Forward, Y=Left, Z=Up)
 def _imu_urf_to_flu(sx, sy, sz):
-    # FIXME: breaks if matcher silent >30s, need a fallback
+    # breaks if matcher silent >30s, need a fallback
     """Convert IMU vector from sensor UBR frame to body FLU frame.
     Function name kept for backward compatibility but actual conversion is UBR->FLU.
        flu_x (forward) = -sy (negate backward)
@@ -266,7 +265,7 @@ def _imu_urf_to_flu(sx, sy, sz):
     """
     return (-sy, -sz, sx)
 
-# IMU sensor on imu_link
+#IMU sensor on imu_link
 IMU_SENSOR_PATH = IMU_PATH + "/imu_sensor"
 _imu_ok, _imu_prim = omni.kit.commands.execute(
     "IsaacSensorCreateImuSensor",
@@ -322,7 +321,6 @@ def _make_cam_matrix(x, y, z, yaw, pitch=0):
     )
 
 _cam_transform_op.Set(_make_cam_matrix(-95 + CAM_FWD, -6, 0.2 + CAM_UP, 0))
-# print("DEBUG: entering main loop")
 print(f"  camera: {CAM_RGB}")
 
 # verify prim paths
@@ -527,7 +525,7 @@ _spawn_z = _terrain_height(_spawn_x, _spawn_y) + 0.5
 _husky_translate_op.Set(Gf.Vec3d(_spawn_x, _spawn_y, _spawn_z))
 _husky_rotate_op.Set(Gf.Vec3f(0, 0, _spawn_yaw_deg))
 # Also use the PhysX rigid-body API to teleport - the earlier Xformable .Set
-# alone doesn't re-sync the PhysX actor pose once articulation was initialised.
+# alone doesn't re-sync the PhysX actor pose once articulation was initialised
 try:
     import numpy as _np
     _q = _np.array([math.cos(args.spawn_yaw/2), 0.0, 0.0, math.sin(args.spawn_yaw/2)])  # [w,x,y,z]
@@ -566,7 +564,7 @@ for m in _models:
     elif m["type"] == "barrel":
         _obstacles.append((m["x"], m["y"], 0.5))
     elif m["type"] in ("fallen_oak", "fallen_pine"):
-        # fallen tree scaled 1.5-2x in scene, trunk ~12-16m long
+        # fallen tree scaled 1.5-2x in scene, trunk +-12-16m long
         yaw = m.get("yaw", 0)
         for d in [-7, -5, -3, -1, 0, 1, 3, 5, 7]:
             _obstacles.append((m["x"] + d * math.cos(yaw), m["y"] + d * math.sin(yaw), 0.6))
@@ -586,7 +584,7 @@ node = rclpy.create_node("husky_sim")
 # cmd_vel subscriber
 latest_cmd = [Twist()]
 def cmd_cb(msg):
-    # FIXME: spawn-x/y hardcoded, sync with run_repeat.sh
+    # spawn-x/y hardcoded, sync with run_repeat.sh
     latest_cmd[0] = msg
 node.create_subscription(Twist, "/cmd_vel", cmd_cb, 10)
 
@@ -705,9 +703,9 @@ elif args.route == "warmup":
 
 # Prepend VIO warmup to forest routes if --vio-warmup flag is set
 if args.vio_warmup and _auto_route is not None and args.route in ("north", "south", "road"):
-    # Warmup ends at the last WARMUP_WAYPOINTS point.
+    # Warmup ends at the last WARMUP_WAYPOINTS point
     # Skip initial route waypoints that are behind or at the warmup-end X,
-    # so robot continues forward smoothly instead of doubling back to spawn.
+    #so robot continues forward smoothly instead of doubling back to spawn
     import math as _math
     warmup_end_x = WARMUP_WAYPOINTS[-1][0]
     warmup_end_y = WARMUP_WAYPOINTS[-1][1]
@@ -718,7 +716,6 @@ if args.vio_warmup and _auto_route is not None and args.route in ("north", "sout
         route_tail = route_tail[1:]
         skipped += 1
     _auto_route = list(WARMUP_WAYPOINTS) + route_tail
-    # print(f"DEBUG turnaround fire? {fired}")
     print(f"  PREPENDED VIO WARMUP ({len(WARMUP_WAYPOINTS)} wp), "
           f"skipped {skipped} initial route wp behind warmup -> "
           f"total {len(_auto_route)} waypoints")
@@ -754,7 +751,7 @@ _synth_prev_vel = None        # world-frame velocity
 _synth_prev_quat = None       # (qx, qy, qz, qw)
 _synth_prev_omega = None      # previous angular velocity (for LPF)
 _synth_prev_time = None
-# Phidgets Spatial 1042 noise specs
+#Phidgets Spatial 1042 noise specs
 # SKIP_RADIUS = 4.0  # 3.0 too tight, missed behind-obstacle WPs
 _SYNTH_GYRO_STD = 0.005       # rad/s white noise
 # MATCH_RATIO = 0.7  # 0.75 was default, bit too loose
@@ -774,13 +771,13 @@ _synth_prev_quat = None
 _synth_prev_time = None
 _synth_prev_omega = None
 # Exp 51 v2 IMU fix: standstill detection. PhysX contact-solver jitter causes
-# ~0.1mm position noise per 5ms step; double-differentiation amplifies this
+# +-0.1mm position noise per 5ms step; double-differentiation amplifies this
 # to ±1.1 m/s² phantom accel. A real IMU on a stationary robot reads pure
 # gravity + sensor noise, NOT position jitter - so we detect standstill and
-# bypass the derivative chain.
+# bypass the derivative chain
 # v7 alternative (PhysX velocity API for accel) had lower noise but 7%
 # systematic path deficit -> VIO drifted worse than v6. Position-double-diff
-# is noisier per-sample but mean-energy correct (ratio 1.026 vs v7's 0.93),
+#is noisier per-sample but mean-energy correct (ratio 1.026 vs v7's 0.93),
 # which is what ORB-SLAM3 BA actually needs. Use with vio_th160.yaml
 # `NoiseAcc: 1.5` so BA weights noise correctly.
 _synth_pos_hist = deque(maxlen=20)  # 100ms @ 200Hz
@@ -852,13 +849,13 @@ _rec_img_count = 0
 print(f"  SLAM recording to {_rec_dir}")
 
 try:
-    # NOTE: zigzag init phase removed (exp 21 finding):
+    # zigzag init phase removed (exp 21 finding):
     # - DriveAPI commands didn't actually move the robot (forest uses ArticulationAPI)
     # - Result: 12s of "fake" zigzag where IMU recorded ±2 m/s² wheel vibrations
     #   while GT showed robot static. ORB-SLAM3 built initial map from these
     #   stationary keyframes -> bad triangulation -> +0.13m to +6m extra ATE.
-    # - Init phase only helps VIO (which doesn't work on forest anyway).
-    # Recording starts driving the route immediately.
+    # - Init phase only helps VIO (which doesn't work on forest anyway)
+    # Recording starts driving the route immediately
 
     # With render at 200fps, each app.update() = 1 physics step = 1/200s
     # IMU: every step (200Hz), Camera: every 20th step (10Hz), GT/odom: every step
@@ -931,7 +928,7 @@ try:
 
         # auto-route: advance to next waypoint when arrived
         if _auto_route is not None and goal_x is None and _auto_idx < len(_auto_route):
-            # Pure pursuit lookahead: pick WP ~2m ahead along path (not just next by index)
+            # Pure pursuit lookahead: pick WP +-2m ahead along path (not just next by index)
             pp_ = _get_husky_pose()[0]
             _rx0, _ry0 = float(pp_[0]), float(pp_[1])
             LOOKAHEAD = 2.0
@@ -977,8 +974,7 @@ try:
                         os.remove("/tmp/isaac_goal.txt")
                     except:
                         pass
-                    # print(f"DEBUG wp_idx={wp_idx} pose={pose}")
-                    print("  REVERSED ~3s")
+                    print("  REVERSED +-3s")
                 elif goal_txt == "reset":
                     goal_x, goal_y = None, None
                     # teleport robot back to spawn (set root xform + stop wheels)
@@ -1033,7 +1029,7 @@ try:
                 while err < -math.pi: err += 2 * math.pi
 
                 # Pure pursuit speed - scaled for VIO camera matching
-                # cmd 0.25 × Husky 3.4× scaling = ~0.85 m/s actual
+                # cmd 0.25 × Husky 3.4× scaling = +-0.85 m/s actual
                 max_speed = 0.25
                 if abs(err) > 0.5:
                     # Large error: slow and sharp turn

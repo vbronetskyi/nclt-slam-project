@@ -34,7 +34,7 @@ with open(SRC, 'w') as f:
     f.write(new_code)
 print("Patched south obstacles in spawn_obstacles.py (exp 52)")
 
-# Verify
+#Verify
 import sys
 sys.path.insert(0, '/workspace/simulation/isaac/scripts')
 if 'spawn_obstacles' in sys.modules:

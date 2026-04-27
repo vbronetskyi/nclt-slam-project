@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Exp 55 repeat-time visual landmark matcher.
+"""Exp 55 repeat-time visual landmark matcher
 
 Loads south_landmarks.pkl (captured in teach run), subscribes to the live
-camera topics and VIO pose, and at ~1-2 Hz:
+camera topics and VIO pose, and at +-1-2 Hz:
 
   1. Find candidate teach landmarks within CANDIDATE_RADIUS m of current
      VIO position (in the teach-map world frame - if VIO has drifted, this
@@ -25,12 +25,10 @@ promoted to anchors and the robot would teleport. 3 m gate (CONSISTENCY_M)
 is what eventually worked. also tried cross-descriptor matching across all
 candidates but RAM blew up, so now we iterate candidates and early-out.
 
-Inputs:
   /camera/color/image_raw, /camera/depth/image_rect_raw
   /tmp/isaac_pose.txt  (current VIO/encoder-blended pose from tf_relay)
   south_landmarks.pkl
 
-Outputs:
   /anchor_correction  geometry_msgs/PoseWithCovarianceStamped
   anchor_matches.csv  log of every attempt
 """
@@ -82,7 +80,7 @@ MAX_CANDIDATES = 5
 HEADING_TOL_DEG = 90.0   # reject candidates whose teach heading differs by > this
 # v56-A: match only on ground-half of current frame (teach landmarks also
 # restricted to below-horizon pixels)
-# GATE = 3.0  # was 10, aggressive anchor PnP outliers broke pose
+# GATE = 3.0  # was 10, aggressive anchor PnP outliers broke pose   
 GROUND_Y_THRESHOLD = 180
 MIN_MATCHES = 10   # cross-check is highly selective already
 LOWE_RATIO = 0.80  # not used with crossCheck, kept for docs
@@ -96,7 +94,7 @@ TICK_HZ = 2.0
 # v58 continuous landmark accumulation: if we've had no anchor for
 # ACCUM_SILENCE_S and the nearest existing landmark is > ACCUM_MIN_DIST_M
 # away, record the current frame's ORB features as a new landmark
-# (camera pose from the current VIO pose).  These grow the landmark set
+# (camera pose from the current VIO pose).  These grow the landmark set   
 # organically within and across repeat runs.
 ACCUM_ENABLE = True
 ACCUM_SILENCE_S = 5.0          # seconds of no anchor before considering accumulation
@@ -128,7 +126,7 @@ def quat_to_rot(qx, qy, qz, qw):
 
 
 def rot_to_quat(R):
-    # XXX: magic, came out of exp 59 tuning
+    #magic, came out of exp 59 tuning
     tr = R[0, 0] + R[1, 1] + R[2, 2]
     if tr > 0:
         s = 0.5 / math.sqrt(tr + 1.0)
@@ -207,7 +205,7 @@ class VisualLandmarkMatcher(Node):
 
         self.orb = cv2.ORB_create(nfeatures=500)
         # crossCheck=True: mutual nearest neighbour filter; gives cleaner
-        # matches than Lowe ratio when one set is much smaller (31 teach vs
+        #matches than Lowe ratio when one set is much smaller (31 teach vs
         # 500 current).  Tested on self-match (lm 10): 26 clean matches.
         self.matcher = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
 
@@ -262,7 +260,6 @@ class VisualLandmarkMatcher(Node):
         try:
             self.last_depth = _img_msg_to_depth_mm(msg)
         except Exception as e:
-            # print(f"DEBUG turnaround fire? {fired}")
             self.get_logger().warn(f'depth: {e}')
 
     def _read_pose(self):
@@ -303,7 +300,7 @@ class VisualLandmarkMatcher(Node):
                     if d[i] < CANDIDATE_RADIUS_M and hdg_err[i] < hdg_tol]
         cand_idx = cand_idx[:MAX_CANDIDATES]
         # v56: ground-filter disabled after run 1 showed anchor rate dropped
-        # 13% -> 5% and false-positive matches increased.  Keep full-frame ORB.
+        #13% -> 5% and false-positive matches increased.  Keep full-frame ORB.
         gray = cv2.cvtColor(self.last_rgb, cv2.COLOR_BGR2GRAY)
         kpts_curr, desc_curr = self.orb.detectAndCompute(gray, None)
         if desc_curr is None or len(kpts_curr) < MIN_MATCHES:
@@ -339,7 +336,7 @@ class VisualLandmarkMatcher(Node):
             # PnP RANSAC: recovers transform from teach-camera frame to
             # current-camera frame's viewpoint.  solvePnPRansac returns
             # rvec/tvec that maps obj_pts -> img_pts.  i.e. this is the pose
-            # of the TEACH camera frame expressed in the CURRENT camera
+            #of the TEACH camera frame expressed in the CURRENT camera
             # frame.  We invert to get current-camera ↔ teach-camera.
             ok, rvec, tvec, inliers = cv2.solvePnPRansac(
                 obj_pts, img_pts, K, DIST,
@@ -425,7 +422,6 @@ class VisualLandmarkMatcher(Node):
                   f'published_std{std:.2f}_shift{consistency_d:.1f}')
 
         if self.n_published % 20 == 0:
-            # print(f"DEBUG match_count={match_count}")
             self.get_logger().info(
                 f'[MATCH {self.n_published}/{self.n_attempts}] lm#{lm_idx} '
                 f'inliers={n_inliers} err={reproj_err:.2f}px shift={consistency_d:.2f}m')
@@ -492,8 +488,6 @@ class VisualLandmarkMatcher(Node):
         self.xy = np.vstack([self.xy, [vio_xy[0], vio_xy[1]]])
         self.heading = np.append(self.heading, self._lm_heading_rad(new_lm))
         self.n_accumulated += 1
-        # print(f">>> tick {n}")
-        # print(f"DEBUG matches={matches}")
         self.get_logger().info(
             f'[ACCUM #{self.n_accumulated}] new landmark at ({vio_xy[0]:.1f},'
             f'{vio_xy[1]:.1f})  n_kpts={new_lm["n_features"]}  '
@@ -501,7 +495,7 @@ class VisualLandmarkMatcher(Node):
 
 
 def main():
-    # NOTE: keep in sync with send_goals_hybrid tolerance
+    # keep in sync with send_goals_hybrid tolerance
     ap = argparse.ArgumentParser()
     ap.add_argument('--landmarks', required=True)
     ap.add_argument('--out-csv', required=True)

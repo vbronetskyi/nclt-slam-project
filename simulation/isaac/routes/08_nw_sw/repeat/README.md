@@ -24,7 +24,7 @@ detour, strict Nav2 clearance, SLAM-frame REACH check), але на road
 4. Phase 2 - swap to **SLAM-tf v55** (`tf_wall_clock_relay_v55.py --slam-encoder`)
 5. **visual_landmark_matcher** - матчить ORB поточного кадру з teach `landmarks.pkl`,
    публікує `/anchor_correction` для tf_relay
-6. Nav2 planner_server + map_server (planner-only, без controller) на teach_map
+6. Nav2 planner_server + map_server (planner-only, без controller) на teach_map   
 7. pure_pursuit_path_follower - споживає `/plan`, видає `/cmd_vel`
 8. **turnaround_supervisor** - фіксує разворот на x=70 м
 9. **plan_logger** - зберігає усі планери у `plans/*.json`
@@ -46,18 +46,18 @@ bash scripts/run_exp67_repeat.sh
 - `results/repeat_run/{isaac,vio,tf_slam,nav2,pp_follower,supervisor,plan_logger,
   landmark_matcher,goals}.log`
 - `results/repeat_run/anchor_matches.csv` - всі спроби matcher
-- `results/repeat_run/plans/*.json` - dump кожного плану Nav2
+- `results/repeat_run/plans/*.json` - dump кожного плану Nav2   
 - `results/repeat_run/run_info.txt` - REC bag path
 
 ## Результати
 
-**Pipeline відпрацював повністю. Усі 80 WP досягнуто.**
+Pipeline відпрацював повністю. Усі 80 WP досягнуто.
 
 | Метрика | Значення |
 |---|---|
 | **REACHED** | **80 / 80 (100 %)** |
 | SKIP | 0 |
-| DETOUR triggered | 3 (tent × 2, cone × 1) |
+| DETOUR triggered | 3 (tent * 2, cone * 1) |
 | Projections (costmap) | 2 |
 | Duration | 830 s (≈ 14 min) |
 | gt_path | 362.6 m |
@@ -81,7 +81,7 @@ bash scripts/run_exp67_repeat.sh
 **Примітки:**
 - 100 % reach-rate - road маршрут без obstacles plus accel-noise IMU не
   погіршує localisation (exp 70 Run A вже це підтвердив).
-- DETOUR 3 × спрацював на hardcoded tent/cone coords (що знаходяться на
+- DETOUR 3 * спрацював на hardcoded tent/cone coords (що знаходяться на
   south route, але в hybrid goal_sender це константи); оскільки physical
   obstacles відсутні на road, detour просто сприяє обережному проходженню.
 - drift 1.48 m << 2 m gate - жодного з wedge recovery, чистий traversal.

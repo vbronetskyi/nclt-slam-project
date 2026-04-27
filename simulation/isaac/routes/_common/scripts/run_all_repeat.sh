@@ -8,10 +8,10 @@
 #   2. wipe /dev/shm/fastrtps_* and /tmp flag/pose/obstacle files
 #   3. run the route's run_repeat.sh under a wall-clock timeout
 #   4. capture exit code + duration -> /tmp/run_all_repeat_summary.txt
-# SIGINT/TERM: trap re-runs cleanup before exiting.
+# SIGINT/TERM: trap re-runs cleanup before exiting
 #
 # Usage:
-#   ROS_DOMAIN_ID=85 bash run_all_repeat.sh                 # all 04..09
+#ROS_DOMAIN_ID=85 bash run_all_repeat.sh                 # all 04..09
 #   bash run_all_repeat.sh 05_ne_sw                         # single route
 #   OUTER_TIMEOUT_S=9000 bash run_all_repeat.sh 07_se_sw
 set -u
@@ -68,11 +68,11 @@ on_interrupt() {
 }
 trap on_interrupt INT TERM
 
-echo "================================================================"
+echo ""
 echo "RUN_ALL_REPEAT  started $(date +'%F %T')"
 echo "routes: ${ROUTES[*]}"
 echo "timeout/route: ${OUTER_TIMEOUT_S}s   cooldown: ${COOLDOWN_S}s"
-echo "================================================================"
+echo ""
 
 for R in "${ROUTES[@]}"; do
     BASE=/workspace/simulation/isaac/routes/$R/repeat
@@ -83,9 +83,9 @@ for R in "${ROUTES[@]}"; do
         continue
     fi
     echo ""
-    echo "================================================================"
+    echo ""
     echo "=== REPEAT $R  start $(date +'%T') ==="
-    echo "================================================================"
+    echo ""
 
     kill_all_sim
     sleep "$COOLDOWN_S"
@@ -117,7 +117,7 @@ done
 
 kill_all_sim
 echo ""
-echo "================================================================"
+echo ""
 echo "ALL REPEATS DONE  $(date +'%F %T')"
-echo "================================================================"
+echo ""
 cat "$SUMMARY_FILE"

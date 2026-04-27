@@ -6,7 +6,7 @@
 ## Route layout
 - Spawn: (65.0, 35.0)
 - **Turnaround**: (-90, -35)
-- **Planned length**: 510 waypoints, ~393 m total roundtrip
+- **Planned length**: 510 waypoints, +-393 m total roundtrip
 - Label: NE -> SW diagonal
 
 ## teach run (already completed)
@@ -49,18 +49,18 @@ Teach artifacts (in dataset folder):
 8. `turnaround_supervisor.py --final-x -90 --final-y -35 --near-radius 10.0`
    - when robot reaches <10 m from turnaround, writes
    `/tmp/isaac_remove_obstacles.txt` -> Isaac drops all obstacles. **Return
-   leg is obstacle-free.**
+   leg is obstacle-free.**   
 
 ### Obstacle placement (05_ne_sw)
 
 - **6 quality props** (Isaac asset library):
-  - 3× barrel_medium @ (-4.8, 2.1), (-4.8, 3.3), (-4.8, 4.5)
-  - 1× **bench** @ (32.9, 11.4)
-  - 1× concrete_block_a @ (-44.2, -4.0)
-  - 1× **dumpster_small** @ (-82.8, -7.3)
+  - 3* barrel_medium @ (-4.8, 2.1), (-4.8, 3.3), (-4.8, 4.5)
+  - 1* **bench** @ (32.9, 11.4)
+  - 1* concrete_block_a @ (-44.2, -4.0)
+  - 1* **dumpster_small** @ (-82.8, -7.3)
 
-Placement strategy: obstacles between ~20% and ~80% of the outbound leg,
-minimum ~15 m from spawn (so VIO can warmup), minimum ~10 m from turnaround
+Placement strategy: obstacles between +-20% and +-80% of the outbound leg,
+minimum +-15 m from spawn (so VIO can warmup), minimum +-10 m from turnaround
 (so supervisor fires before robot reaches them on the return).
 
 Overview with obstacles: [`plan_obstacles.png`](results/repeat_run/plan_obstacles.png)
@@ -97,8 +97,8 @@ Raw logs (in `results/repeat_run/`): `goals.log`, `anchor_matches.csv`,
 ## baseline comparison
 
 Three stacks, same teach WP list (4 m spacing), same obstacles, same simulator.
-- **reach** = min GT distance to turnaround (x ≤ 10 m)
-- **return** = GT end-pose distance to spawn (x ≤ 10 m, coverage ≥ 50 %)
+- **reach** = min GT distance to turnaround (x <= 10 m)
+- **return** = GT end-pose distance to spawn (x <= 10 m, coverage >= 50 %)
 - coverage = teach WPs within 3 m of any GT sample
 - **drift** = `|published_pose − GT|` mean / p95 / max (m)
 

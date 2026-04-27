@@ -11,7 +11,7 @@
 #      10–40 min, the retry wrapper allows up to 3× internal attempts)
 #   4. capture exit code + duration, move on to the next
 # On SIGINT/SIGTERM the trap re-runs cleanup before exiting so nothing is
-# left orphaned.
+# left orphaned
 #
 # Usage:
 #   ROS_DOMAIN_ID=85 bash run_all_teach.sh
@@ -77,12 +77,12 @@ on_interrupt() {
 }
 trap on_interrupt INT TERM
 
-echo "================================================================"
+echo ""
 echo "RUN_ALL_TEACH  started $(date +'%F %T')"
 echo "routes: ${ROUTES[*]}"
 echo "timeout/route: ${OUTER_TIMEOUT_S}s   cooldown: ${COOLDOWN_S}s"
 echo "summary: $SUMMARY_FILE"
-echo "================================================================"
+echo ""
 
 for R in "${ROUTES[@]}"; do
     BASE=/workspace/simulation/isaac/routes/$R/teach
@@ -94,9 +94,9 @@ for R in "${ROUTES[@]}"; do
     fi
 
     echo ""
-    echo "================================================================"
+    echo ""
     echo "=== ROUTE $R  start $(date +'%T') ==="
-    echo "================================================================"
+    echo ""
 
     kill_all_sim
     sleep "$COOLDOWN_S"
@@ -106,7 +106,7 @@ for R in "${ROUTES[@]}"; do
     START=$(date +%s)
 
     # Run the teach in its own process group (setsid) so we can kill the
-    # entire subtree on signal. Stream stdout to the orchestrator stdout
+    #entire subtree on signal. Stream stdout to the orchestrator stdout
     # and to $LOG via `tee`; use &+wait so the trap actually fires.
     setsid bash -c "timeout ${OUTER_TIMEOUT_S}s bash '$SCRIPT' '$R' 2>&1 | tee '$LOG'" &
     RUNNER_PID=$!
@@ -132,7 +132,7 @@ done
 
 kill_all_sim
 echo ""
-echo "================================================================"
+echo ""
 echo "ALL ROUTES DONE  $(date +'%F %T')"
-echo "================================================================"
+echo ""
 cat "$SUMMARY_FILE"

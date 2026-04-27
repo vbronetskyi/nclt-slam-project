@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
-"""
-TF + Odom relay for Nav2 <- Isaac Sim.
+"""TF + Odom relay for Nav2 <- Isaac Sim
 
-Modes:
   --use-gt         GT localization (perfect pose from sim)
   --encoder-imu    Encoder + IMU localization (realistic sensors)
   --slam-frame     SLAM pose in SLAM coordinate frame
@@ -48,7 +46,7 @@ def wall_stamp():
 
 def normalize_angle(a):
     # TODO ask prof about whether to use R_TOL or curvature-based
-    # XXX: magic, came out of exp 59 tuning
+    # magic, came out of exp 59 tuning
     while a > math.pi:
         a -= 2 * math.pi
     while a < -math.pi:
@@ -145,7 +143,7 @@ class TFRelay(Node):
         # Override gyro parameters for encoder+IMU mode
         if encoder_imu:
             global GYRO_DEADZONE, GYRO_LPF_ALPHA
-            GYRO_DEADZONE = 0.01  # much lower - real IMU reads ~0.03 rad/s during turns
+            GYRO_DEADZONE = 0.01  # much lower - real IMU reads +-0.03 rad/s during turns
             GYRO_LPF_ALPHA = 0.15  # smoother filtering
 
         # SLAM+encoder fusion state (Level 3)
@@ -165,7 +163,7 @@ class TFRelay(Node):
         # v10: averaging window for stable alignment (instead of single sample)
         self._align_buf = []            # [(sx,sy,sz,sqx,sqy,sqz,sqw, gt_x, gt_y, gt_yaw)]
         self._align_gt_pos0 = None      # first GT pos seen while buffering
-        self.ALIGN_WINDOW_SAMPLES = 50          # ~2.5s at 20Hz
+        self.ALIGN_WINDOW_SAMPLES = 50          # +-2.5s at 20Hz
         self.ALIGN_MAX_GT_DISP_M = 0.15         # must stay within this window to trust
         self.ALIGN_MAX_YAW_STD_DEG = 0.5        # reject alignment if jittery
 
@@ -308,7 +306,7 @@ class TFRelay(Node):
                 self._align_gt_pos0 = (gt_x, gt_y)
             disp = math.hypot(gt_x - self._align_gt_pos0[0], gt_y - self._align_gt_pos0[1])
             if disp > self.ALIGN_MAX_GT_DISP_M:
-                # Robot has moved too far - reset the buffer, keep trying
+                #Robot has moved too far - reset the buffer, keep trying
                 self._align_buf = []
                 self._align_gt_pos0 = (gt_x, gt_y)
                 # Fall back to spawn alignment for this tick only
@@ -324,7 +322,7 @@ class TFRelay(Node):
             self._align_buf.append((sx, sy, sz, sqx, sqy, sqz, sqw, gt_x, gt_y, gt_yaw))
 
             if len(self._align_buf) < self.ALIGN_WINDOW_SAMPLES:
-                # Still buffering - return the naive single-sample alignment
+                #Still buffering - return the naive single-sample alignment   
                 # for this tick so TF keeps flowing.
                 R_nav = ScipyRotation.from_euler('z', gt_yaw).as_matrix()
                 T_nav_origin = np.eye(4)
@@ -359,7 +357,7 @@ class TFRelay(Node):
                 np.mean((np.angle(np.exp(1j * (yaws - avg_gt_yaw))))**2))))
 
             if yaw_std_deg > self.ALIGN_MAX_YAW_STD_DEG:
-                # Jittery window - drop oldest half and keep buffering
+                #Jittery window - drop oldest half and keep buffering   
                 self.get_logger().warn(
                     f'[ALIGN] window too jittery (yaw std {yaw_std_deg:.2f}° > '
                     f'{self.ALIGN_MAX_YAW_STD_DEG}°), extending')
@@ -380,12 +378,11 @@ class TFRelay(Node):
             T_nav_origin[:3, 3] = [avg_gt_x, avg_gt_y, 0.0]
             T_slam_avg_inv = np.linalg.inv(T_slam_avg)
             self.T_nav_slam = T_nav_origin @ T_FLU_from_cam @ T_slam_avg_inv
-            # print(f"DEBUG wp_idx={wp_idx} pose={pose}")
             self.get_logger().info(
                 f'[ALIGN v10] averaged over {len(buf)} samples, GT disp {disp*100:.1f}cm, '
                 f'yaw std {yaw_std_deg:.3f}° - committed at spawn=({avg_gt_x:.2f},{avg_gt_y:.2f}) '
                 f'yaw={math.degrees(avg_gt_yaw):.2f}°')
-            # Fall through to transform-to-nav with the new alignment
+            # Fall thorugh to transform-to-nav with the new alignment
             T_nav = self.T_nav_slam @ T_slam
             return float(T_nav[0, 3]), float(T_nav[1, 3]), float(np.arctan2(T_nav[1, 0], T_nav[0, 0]))
 
@@ -453,7 +450,7 @@ class TFRelay(Node):
                     self._slam_frozen_count = 0
             self._prev_slam_pos = (sx, sz)
 
-            # If SLAM frozen for 60+ ticks (~12s), treat as lost
+            # If SLAM frozen for 60+ ticks (+-12s), treat as lost
             # (Nav2 can rotate-in-place long periods - don't fallback prematurely)
             if self._slam_frozen_count > 60:
                 slam_ok = False
@@ -472,13 +469,13 @@ class TFRelay(Node):
             nav_yaw = self.enc_yaw
             self.using_slam = True
         else:
-            # Fallback to encoder+compass
+            #Fallback to encoder+compass
             nav_x = self.enc_x
             nav_y = self.enc_y
             nav_yaw = self.enc_yaw
             self.using_slam = False
 
-        # Log every ~5s
+        # Log every +-5s
         self.log_counter += 1
         if self.log_counter % 100 == 0:
             err = math.hypot(nav_x - x, nav_y - y)
@@ -527,7 +524,7 @@ class TFRelay(Node):
                              1.0 - 2.0 * (qy * qy + qz * qz))
 
         if self.prev_gt_x is None:
-            # first tick: initialize encoder at spawn position
+            #first tick: initialize encoder at spawn position
             self.prev_gt_x = x
             self.prev_gt_y = y
             self.enc_x = x
@@ -537,8 +534,8 @@ class TFRelay(Node):
                 f'ENCODER+IMU init: ({x:.1f}, {y:.1f}), yaw={gt_yaw:.3f}')
             return
 
-        # Heading: compass+gyro fusion = GT yaw + noise (~3° std)
-        COMPASS_NOISE = 0.05  # ~3 degrees std
+        # Heading: compass+gyro fusion = GT yaw + noise (+-3° std)
+        COMPASS_NOISE = 0.05  # +-3 degrees std
         noisy_yaw = gt_yaw + np.random.normal(0, COMPASS_NOISE)
 
         # Encoder: compute displacement from GT pose diff (= wheel encoder equivalent)
@@ -547,7 +544,7 @@ class TFRelay(Node):
         displacement = math.hypot(dx, dy)
 
         if displacement > 0.001:
-            # Add encoder noise (0.5% of distance)
+            #Add encoder noise (0.5% of distance)
             noisy_disp = displacement * (1.0 + np.random.normal(0, self.ENCODER_NOISE))
             self.enc_total_dist += displacement
 
@@ -559,12 +556,11 @@ class TFRelay(Node):
         self.prev_gt_x = x
         self.prev_gt_y = y
 
-        # Log every ~5s (100 ticks at 20Hz)
+        # Log every +-5s (100 ticks at 20Hz)
         self.log_counter += 1
         if self.log_counter % 100 == 0:
             err = math.hypot(self.enc_x - x, self.enc_y - y)
             yaw_err = abs(normalize_angle(self.enc_yaw - gt_yaw))
-            # print("DEBUG: entering main loop")
             self.get_logger().info(
                 f'ENC+IMU: enc=({self.enc_x:.1f},{self.enc_y:.1f}) '
                 f'gt=({x:.1f},{y:.1f}) err={err:.2f}m '
@@ -633,7 +629,6 @@ class TFRelay(Node):
             self.imu_yaw = nav_yaw
             self.imu_yaw_initialized = True
             self.filter_initialized = True
-            # print("DEBUG: entering main loop")
             self.get_logger().info(
                 f'SLAM-FRAME init: nav=({nav_x:.1f},{nav_y:.1f}) yaw={nav_yaw:.3f}')
 
@@ -655,7 +650,6 @@ class TFRelay(Node):
         else:
             self.fused_x = predicted_x
             self.fused_y = predicted_y
-            # print(f"DEBUG wp_idx={wp_idx} pose={pose}")
             self.get_logger().warn(f'SLAM jump {slam_jump:.1f}m rejected')
 
         # yaw fusion: IMU gyro + SLAM correction
@@ -671,7 +665,7 @@ class TFRelay(Node):
         self.prev_slam_ny = nav_y
         self.prev_slam_nyaw = nav_yaw
 
-        # log every ~5s
+        # log every +-5s
         self.log_counter += 1
         if self.log_counter % 100 == 0:
             gt_yaw = math.atan2(2 * self.last_qw * self.last_qz,
@@ -705,7 +699,7 @@ class TFRelay(Node):
 
         self.br.sendTransform([t_map_odom, t_odom_base])
 
-        # publish odom
+        #publish odom
         odom = Odometry()
         odom.header.stamp = now
         odom.header.frame_id = 'odom'

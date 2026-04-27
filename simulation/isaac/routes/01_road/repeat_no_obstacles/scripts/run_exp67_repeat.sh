@@ -1,6 +1,6 @@
 #!/bin/bash
 # Exp 67 REPEAT run on road route -
-# exp 59 pipeline + exp 66 teach artifacts + accel-noise IMU.
+# exp 59 pipeline + exp 66 teach artifacts + accel-noise IMU
 #
 # Consumes:
 #   /workspace/.../66_teach_road_with_accel_noise/teach/road/
@@ -56,7 +56,7 @@ source /tmp/ros_env.sh 2>/dev/null || true
 export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 export ROS_DOMAIN_ID=$DOMAIN
 
-# Note: no --obstacles flag - road teach was obstacle-free, so repeat stays clean.
+# no --obstacles flag - road teach was obstacle-free, so repeat stays clean
 setsid /opt/isaac-sim-6.0.0/python.sh $E67/scripts/run_husky_forest.py \
     --synthetic-imu --route road_nav2 --duration 1500 \
     </dev/null > $OUT/isaac.log 2>&1 &
@@ -161,7 +161,7 @@ nohup bash /tmp/exp67r_sup.sh > $OUT/supervisor.log 2>&1 &
 SUP=$!; disown $SUP; echo "Supervisor: $SUP"
 
 cat > /tmp/exp67r_plan.sh <<EOF
-#!/bin/bash
+#!/bin/bash   
 source /opt/ros/jazzy/setup.bash
 export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 export ROS_DOMAIN_ID=$DOMAIN

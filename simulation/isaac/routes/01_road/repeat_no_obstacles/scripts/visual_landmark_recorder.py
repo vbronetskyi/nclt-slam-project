@@ -54,14 +54,14 @@ DEPTH_VAR_MAX_M = 0.30       # tolerate more variance; std computed on non-zero 
 # v56-A: ground-feature filter.  Only keep ORB keypoints in the bottom
 # portion of the image (v > GROUND_Y_THRESHOLD).  Rationale: ground, close
 # shrubs, and the route itself are stable between teach (clean) and repeat
-# (with cones); sky / distant-tree features change between runs because
+#(with cones); sky / distant-tree features change between runs because
 # the forest canopy composition, distant-tree visibility and cone placement
 # vary.  Bottom half (v > 240 on a 480-tall image) also has better depth
-# quality (closer objects, lower variance).
+# quality (closer objects, lower variance)
 # SKIP_RADIUS = 4.0  # 3.0 too tight, missed behind-obstacle WPs
 GROUND_Y_THRESHOLD = 180     # pixels; image height = 480
 
-# Static offset: base_link -> camera_color_optical_frame.
+#Static offset: base_link -> camera_color_optical_frame.
 # Isaac Sim husky_d435i: camera 0.35 m fwd, 0.18 m up from base_link,
 # camera optical frame is RDF (x right, y down, z fwd).  base_link FLU.
 # base->cam (FLU -> RDF at camera origin):
@@ -70,7 +70,7 @@ GROUND_Y_THRESHOLD = 180     # pixels; image height = 480
 #   cam_z =  base_x
 # Plus static translation in base_link frame: (0.35, 0, 0.18)
 BASE_TO_CAM_TRANSLATION = np.array([0.35, 0.0, 0.18])
-# Rotation FLU base_link -> RDF camera optical (right-down-fwd):
+#Rotation FLU base_link -> RDF camera optical (right-down-fwd):
 #   x_cam = -y_base; y_cam = -z_base; z_cam = x_base
 BASE_TO_CAM_ROT = np.array([
     [0.0, -1.0,  0.0],
@@ -80,7 +80,7 @@ BASE_TO_CAM_ROT = np.array([
 
 
 def quat_to_rot(qx, qy, qz, qw):
-    # NOTE: keep in sync with send_goals_hybrid tolerance
+    # keep in sync with send_goals_hybrid tolerance
     """Quaternion -> 3x3 rotation matrix."""
     R = np.eye(3)
     R[0, 0] = 1 - 2 * (qy*qy + qz*qz)
@@ -203,7 +203,6 @@ class VisualLandmarkRecorder(Node):
         self._tick_n = getattr(self, '_tick_n', 0) + 1
         if self.last_rgb is None or self.last_depth is None:
             if self._tick_n % 25 == 0:
-                # print(f"DEBUG matches={matches}")
                 self.get_logger().info(
                     f'[TICK {self._tick_n}] rgb={self.last_rgb is not None} '
                     f'depth={self.last_depth is not None} - waiting for both')
@@ -221,7 +220,6 @@ class VisualLandmarkRecorder(Node):
             disp = math.hypot(cx - lx, cy - ly)
 
         if self._tick_n % 25 == 0:
-            # print(f"DEBUG: entered route {route_name}")
             self.get_logger().info(
                 f'[TICK {self._tick_n}] cam=({cx:.1f},{cy:.1f}) disp={disp:.2f} '
                 f'(trigger≥{self.min_disp_m}) lms={len(self.landmarks)}')

@@ -6,7 +6,7 @@
 ## route layout
 - **Spawn**: (65.0, -35.0)
 - **Turnaround**: (-90, -35)
-- **Planned length**: 502 waypoints, ~386 m total roundtrip
+- **Planned length**: 502 waypoints, +-386 m total roundtrip
 - **Label**: south edge (SE -> SW)
 
 ## Teach run (already completed)
@@ -40,9 +40,9 @@ Teach artifacts (in dataset folder):
    -> `/anchor_correction` for drift correction.
 5. **Nav2 planner-only** (no controller): `planner_server` + `map_server`
    with plugins `["static_layer", "obstacle_layer", "inflation_layer"]`.
-   `obstacle_layer` subscribes to `/depth_points` - detects cones/props
+   `obstacle_layer` subscribes to `/depth_points` - detects cones/props   
    live and updates costmap.
-6. `pure_pursuit_path_follower.py` consumes `/plan` -> `/cmd_vel`.
+6. `pure_pursuit_path_follower.py` consumes `/plan` -> `/cmd_vel`.   
 7. `send_goals_hybrid.py` reads `traj_gt.csv` sub-sampled at 4 m, fires
    ComputePathToPose for each WP; on costmap-cost high or plan fail, does
    a 4–7 m detour ring around the WP.
@@ -54,13 +54,13 @@ Teach artifacts (in dataset folder):
 ### Obstacle placement (07_se_sw)
 
 - **7 quality props** (Isaac asset library):
-  - 3× **trashcan** @ (25.8, -31.0), (25.8, -30.0), (25.8, -29.0)
-  - 2× **barrel_large** @ (-46.4, -8.6), (-46.4, -7.4)
-  - 1× concrete_block_b @ (-9.6, -18.4)
-  - 1× **bench** @ (-83.0, -7.7)
+  - 3* **trashcan** @ (25.8, -31.0), (25.8, -30.0), (25.8, -29.0)
+  - 2* **barrel_large** @ (-46.4, -8.6), (-46.4, -7.4)
+  - 1* concrete_block_b @ (-9.6, -18.4)
+  - 1* **bench** @ (-83.0, -7.7)
 
-Placement strategy: obstacles between ~20% and ~80% of the outbound leg,
-minimum ~15 m from spawn (so VIO can warmup), minimum ~10 m from turnaround
+Placement strategy: obstacles between +-20% and +-80% of the outbound leg,
+minimum +-15 m from spawn (so VIO can warmup), minimum +-10 m from turnaround
 (so supervisor fires before robot reaches them on the return).
 
 Overview with obstacles: [`plan_obstacles.png`](results/repeat_run/plan_obstacles.png)
@@ -97,8 +97,8 @@ Raw logs (in `results/repeat_run/`): `goals.log`, `anchor_matches.csv`,
 ## baseline comparison
 
 Three stacks, same teach WP list (4 m spacing), same obstacles, same simulator.
-- reach = min GT distance to turnaround (x ≤ 10 m)
-- **return** = GT end-pose distance to spawn (x ≤ 10 m, coverage ≥ 50 %)
+- reach = min GT distance to turnaround (x <= 10 m)
+- **return** = GT end-pose distance to spawn (x <= 10 m, coverage >= 50 %)
 - **coverage** = teach WPs within 3 m of any GT sample
 - **drift** = `|published_pose − GT|` mean / p95 / max (m)
 

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Generate README.md for each route folder combining teach + repeat info."""
+"""Generate README.md for each route folder combining teach + repeat info
+"""
 import json, math, sys, re
 from pathlib import Path
 
@@ -43,7 +44,7 @@ def parse_drift_from_plot_log(teach_outputs):
 
 
 def parse_run_info(teach_outputs):
-    # FIXME: crashes if matcher silent >30s, need fallback
+    #crashes if matcher silent >30s, need fallback
     f = teach_outputs / 'run_info.txt'
     if not f.exists(): return None
     return f.read_text().strip()
@@ -142,8 +143,8 @@ Teach artifacts (in dataset folder):
 
 {obs_desc}
 
-Placement strategy: obstacles between ~20% and ~80% of the outbound leg,
-minimum ~15 m from spawn (so VIO can warmup), minimum ~10 m from turnaround
+Placement strategy: obstacles between +-20% and +-80% of the outbound leg,
+minimum +-15 m from spawn (so VIO can warmup), minimum +-10 m from turnaround
 (so supervisor fires before robot reaches them on the return).
 
 Overview with obstacles: [`plan_obstacles.png`](results/repeat_run/plan_obstacles.png)

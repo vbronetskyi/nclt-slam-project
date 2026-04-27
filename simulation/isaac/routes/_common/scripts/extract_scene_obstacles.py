@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Extract ALL collision objects from the Isaac Sim scene USD directly.
+"""Extract ALL collision objects from the Isaac Sim scene USD directly
 
 Authoritative source: /opt/husky_forest_scene.usd. Avoids missing objects
 that /tmp/gazebo_models.json lacks (e.g. /World/RoadsideTrees, which are
@@ -71,7 +71,7 @@ def main():
                 continue  # mesh without collision? still - keep rtcol_* variant
         final.append({"type": o["type"], "x": o["x"], "y": o["y"], "r": o["r"]})
 
-    # summary
+    #summary
     from collections import Counter
     c = Counter(o["type"] for o in final)
     print(f"extracted {len(final)} collision objects:")

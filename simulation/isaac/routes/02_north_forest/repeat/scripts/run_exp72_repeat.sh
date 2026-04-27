@@ -1,6 +1,6 @@
 #!/bin/bash
 # Exp 67 REPEAT run on road route -
-# exp 59 pipeline + exp 66 teach artifacts + accel-noise IMU.
+# exp 59 pipeline + exp 66 teach artifacts + accel-noise IMU
 #
 # Consumes:
 #   /workspace/.../71_teach_north_forest_accel_noise/teach/north_forest/
@@ -57,7 +57,7 @@ export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 export ROS_DOMAIN_ID=$DOMAIN
 export PYTHONPATH=/workspace/simulation/isaac/scripts:${PYTHONPATH:-}
 
-# Exp 72: --obstacles enables spawn_obstacles["north_forest"] - 2 cone groups + tent + 3-cone group.
+# Exp 72: --obstacles enables spawn_obstacles["north_forest"] - 2 cone groups + tent + 3-cone group
 setsid /opt/isaac-sim-6.0.0/python.sh $E72/scripts/run_husky_forest.py \
     --synthetic-imu --route north_forest --obstacles --duration 4500 \
     </dev/null > $OUT/isaac.log 2>&1 &

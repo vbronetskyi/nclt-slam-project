@@ -1,23 +1,5 @@
 #!/usr/bin/env python3
-"""Pure pursuit follower with (v9) anti-spin + (v53) proximity speed limiter.
-
-Proximity speed limiter:
-    Subscribes to /global_costmap/costmap. Before every cmd publish,
-    samples costs in a forward arc (0.3–1.5 m ahead of robot, ±0.3 m
-    lateral). Caps cmd.linear.x based on the MAX cost seen:
-
-        cost < 30   -> full speed (MAX_VEL)
-        30 ≤ cost < 70  -> 0.15 m/s (slowdown)
-        70 ≤ cost < 99  -> 0.08 m/s (crawl - near inflation edge)
-        cost ≥ 99 or unknown(-1)  -> 0.03 m/s (near stop)
-
-    Inflation radius is 1.2 m, so cost 30 roughly starts 0.7–0.9 m from
-    the occupied center - robot begins slowing BEFORE contact range.
-    This gives SLAM time to converge and planner time to re-plan, and
-    removes the run 4 failure mode (driving into tent while SLAM
-    drifts).
-
-v9 anti-spin layer is preserved unchanged.
+"""Pure pursuit follower with (v9) anti-spin + (v53) proximity speed limiter
 """
 import argparse
 import math
@@ -46,7 +28,7 @@ class PurePursuitFollower(Node):
         self.MAX_ANG = 0.8
         self.GOAL_TOL = goal_tol
 
-        # v9 anti-spin
+        # v9 anti-spin   
         self.SPIN_W_THRESH = 0.5
         self.SPIN_V_THRESH = 0.05
         self.SPIN_LIMIT_S = 5.0
@@ -54,7 +36,7 @@ class PurePursuitFollower(Node):
         self.PROGRESS_WINDOW_S = 5.0
         self.MIN_PROGRESS_M = 0.5
 
-        # v55 wedge recovery (from exp 54): if we've been emitting v>0 for
+        #v55 wedge recovery (from exp 54): if we've been emitting v>0 for   
         # WEDGE_WINDOW_S but robot displacement < WEDGE_MIN_DISP_M, reverse
         # for WEDGE_BACKUP_S.  Gets us out of contact with obstacles when
         # PP drives robot into infeasible inflation.
@@ -65,10 +47,10 @@ class PurePursuitFollower(Node):
         self.wedge_backup_until = 0.0
         self.wedge_activations = 0
 
-        # v53 proximity speed limiter - ego-tube shaped to robot half-footprint.
+        # v53 proximity speed limiter - ego-tube shaped to robot half-footprint
         # Narrow arc: only trigger when the robot's body path genuinely
-        # intersects an inflated obstacle cell, not when a tree 0.5 m to the
-        # side happens to sit in the teach map.
+        #intersects an inflated obstacle cell, not when a tree 0.5 m to the
+        # side happens to sit in the teach map
         # v55 speed profile (user spec):  cruise 0.8 m/s,  0.4 near obstacle,
         # 0.15 at true contact range.
         self.PROX_SAMPLE_DIST = [0.3, 0.7, 1.1]     # longer arc for 0.8 m/s stopping
@@ -141,7 +123,7 @@ class PurePursuitFollower(Node):
                 x = rx + df * cos_y + dl * cos_p
                 y = ry + df * sin_y + dl * sin_p
                 c = self._costmap_cell(x, y)
-                # Unknown (-1) treated as potential obstacle (conservative)
+                #Unknown (-1) treated as potential obstacle (conservative)
                 if c < 0:
                     c = self.PROX_COST_LETHAL
                 if c > max_cost:
@@ -202,7 +184,7 @@ class PurePursuitFollower(Node):
         cmd.linear.x = self.MAX_VEL * max(0.3, 1.0 - abs(err) / 1.57)
         cmd.angular.z = max(-self.MAX_ANG, min(self.MAX_ANG, self.GAIN_ANG * err))
 
-        # v55 proximity 2-tier: SLOW (0.4) near obstacle, LETHAL (0.15) at contact
+        #v55 proximity 2-tier: SLOW (0.4) near obstacle, LETHAL (0.15) at contact
         prox_cost = self._max_cost_ahead(rx, ry, ryaw)
         v_cap = self.MAX_VEL
         prox_label = ''

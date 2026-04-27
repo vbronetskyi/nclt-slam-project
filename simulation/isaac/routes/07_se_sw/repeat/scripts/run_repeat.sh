@@ -1,12 +1,12 @@
 #!/bin/bash
-# Exp 67 REPEAT run on road route -
-# exp 59 pipeline + exp 66 teach artifacts + accel-noise IMU.
+#Exp 67 REPEAT run on road route -
+# exp 59 pipeline + exp 66 teach artifacts + accel-noise IMU
 #
 # Consumes:
 #   /workspace/.../71_teach_07_se_sw_accel_noise/teach/07_se_sw/
 #       teach_map.yaml, teach_map.pgm, landmarks.pkl, vio_pose_dense.csv
-#
-# Produces:
+#   
+# Produces:   
 #   results/repeat_run/{isaac,vio,tf_slam,nav2,pp_follower,supervisor,plan_logger,
 #                       landmark_matcher,goals,anchor_matches.csv}.log
 set -eu
@@ -218,7 +218,7 @@ echo "  tail -f $OUT/goals.log          # WP progress"
 
 # WAIT_LOOP_FOR_RESULT - block until goals.log emits RESULT line or timeout.
 # Without this the orchestrator would see run_repeat.sh exit immediately and
-# kill all background sim processes.
+#kill all background sim processes
 ROUTE_TIMEOUT_S=${ROUTE_TIMEOUT_S:-8400}
 START_TS=$(date +%s)
 cleanup_all() {

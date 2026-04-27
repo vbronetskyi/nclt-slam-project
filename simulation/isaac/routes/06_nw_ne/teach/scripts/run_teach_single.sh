@@ -1,9 +1,9 @@
 #!/bin/bash
 # Teach pass for a single route (exp 59 pipeline, GT-as-tf for teach)
-# with dense VIO logger + drift gate (abort if drift > 2 m after 30 s).
+# with dense VIO logger + drift gate (abort if drift > 2 m after 30 s)
 #
 # Exit codes:
-#   0  - route completed successfully
+#   0  - route completed succesfully
 #   2  - drift gate aborted (caller should retry)
 #   1  - other error
 set -eu
@@ -111,7 +111,7 @@ nohup bash /tmp/06_depth.sh > $OUT/teach_depth_mapper.log 2>&1 &
 DEPTH=$!; disown $DEPTH; echo "DepthMapper: $DEPTH"
 
 cat > /tmp/06_lm.sh <<EOF
-#!/bin/bash
+#!/bin/bash   
 source /opt/ros/jazzy/setup.bash
 export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 export ROS_DOMAIN_ID=$DOMAIN
@@ -135,7 +135,7 @@ cleanup_all() {
 }
 trap cleanup_all EXIT
 
-# Wait loop: either ROUTE COMPLETE, drift abort, or duration timeout.
+# Wait loop: either ROUTE COMPLETE, drift abort, or duration timeout
 ROUTE_TIMEOUT_S=8100
 START_TS=$(date +%s)
 while true; do

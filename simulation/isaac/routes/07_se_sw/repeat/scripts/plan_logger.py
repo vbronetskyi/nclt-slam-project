@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Log every Nav2 /plan as CSV (x,y per pose).
+"""Log every Nav2 /plan as CSV (x,y per pose)
 
 For each incoming Path message: write `plan_XXXX.csv` with columns
   seq, wall_ts, x, y

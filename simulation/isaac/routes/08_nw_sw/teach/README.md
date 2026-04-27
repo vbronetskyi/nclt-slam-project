@@ -11,8 +11,8 @@ blended return of 10 pts), mirror outbound for the return leg.
 - total waypoints: 205 (102 outbound + turnaround arc + mirrored return)
 - total path length (incl. return): **163.7 m**
 - spawn: x=-90.00, y=+35.00, yaw=-2.092 rad (-120°)
-- min clearance from any scene-object edge: **≥ 2.1 m** (robot r=0.4 m, so
-  physical body-to-obstacle gap ≥ 1.7 m)
+- min clearance from any scene-object edge: **>= 2.1 m** (robot r=0.4 m, so
+  physical body-to-obstacle gap >= 1.7 m)
 - obstacle list (532 prims) from `_common/scene_obstacles.json`, extracted
   directly from `/opt/husky_forest_scene.usd`
 
@@ -40,7 +40,7 @@ blended return of 10 pts), mirror outbound for the return leg.
 ## How to run
 ```bash
 ROS_DOMAIN_ID=85 bash scripts/run_teach_single.sh
-#   (or) scripts/run_teach_with_retry.sh   - retries up to 3× on drift abort
+#   (or) scripts/run_teach_with_retry.sh   - retries up to 3* on drift abort
 ```
 
 ## Outputs (teach/08_nw_sw/ after a successful run)

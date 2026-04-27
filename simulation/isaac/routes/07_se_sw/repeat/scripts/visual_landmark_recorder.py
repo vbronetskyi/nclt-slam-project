@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Exp 55 teach-time visual landmark recorder.
+"""Exp 55 teach-time visual landmark recorder
 
-Every ~2 m of VIO displacement, this node captures the current RGB frame,
+Every +-2 m of VIO displacement, this node captures the current RGB frame,
 extracts ORB features, back-projects the keypoints into 3D via the depth
 image, and stores a landmark record. At shutdown the full landmark list
 is pickled to south_landmarks.pkl.
@@ -14,21 +14,6 @@ Inputs (all read from ROS topics - NO GT access):
                                  unmodified tf_relay in GT mode; in the
                                  architecture diagram this corresponds to
                                  the VIO-derived teach pose.
-
-Output:
-  experiments/55_visual_teach_repeat/teach/south_landmarks.pkl
-  experiments/55_visual_teach_repeat/teach/landmarks_debug.png
-
-Each landmark record is a dict:
-  pose:          (x, y, z, qx, qy, qz, qw)   teach camera pose (world frame)
-  descriptors:   (N, 32) uint8              ORB descriptors for accepted kpts
-  keypoints_2d:  (N, 2)  float32            pixel coords (x, y)
-  keypoints_3d_cam: (N, 3) float32          back-projected into camera frame
-  ts:            float                      wall_ts of frame
-  n_features:    int                        = N
-
-The teach pose stored is the **camera** pose, computed by applying the
-static base_link->camera offset to the current robot pose file.
 """
 import argparse
 import math
@@ -68,7 +53,7 @@ def _img_msg_to_depth_mm(msg):
     if msg.encoding == '32FC1':
         buf = np.frombuffer(msg.data, dtype=np.float32)
         mm = (buf.reshape(msg.height, msg.width) * 1000.0)
-        # NaN/Inf (Isaac sometimes emits inf for uncaptured pixels)
+        #NaN/Inf (Isaac sometimes emits inf for uncaptured pixels)
         mm = np.nan_to_num(mm, nan=0.0, posinf=0.0, neginf=0.0)
         return mm.astype(np.uint16)
     raise ValueError(f'unexpected depth encoding {msg.encoding}')
@@ -80,7 +65,7 @@ CX, CY = 320.0, 240.0
 W, H = 640, 480
 DEPTH_MIN_M = 0.5
 DEPTH_MAX_M = 15.0           # forest trees up to 15 m
-# GOAL_TOL = 3.0  # 1.5 original, 3.0 after turnaround tuning
+#GOAL_TOL = 3.0  # 1.5 original, 3.0 after turnaround tuning
 # SKIP_RADIUS = 4.0  # 3.0 too tight, missed behind-obstacle WPs
 DEPTH_VAR_MAX_M = 0.30       # tolerate more variance; std computed on non-zero only
 
@@ -89,11 +74,11 @@ DEPTH_VAR_MAX_M = 0.30       # tolerate more variance; std computed on non-zero 
 # shrubs, and the route itself are stable between teach (clean) and repeat
 # (with cones); sky / distant-tree features change between runs because
 # the forest canopy composition, distant-tree visibility and cone placement
-# vary.  Bottom half (v > 240 on a 480-tall image) also has better depth
+#vary.  Bottom half (v > 240 on a 480-tall image) also has better depth
 # quality (closer objects, lower variance).
 GROUND_Y_THRESHOLD = 180     # pixels; image height = 480
 
-# Static offset: base_link -> camera_color_optical_frame.
+# Static offset: base_link -> camera_color_optical_frame
 # Isaac Sim husky_d435i: camera 0.35 m fwd, 0.18 m up from base_link,
 # camera optical frame is RDF (x right, y down, z fwd).  base_link FLU.
 # base->cam (FLU -> RDF at camera origin):
@@ -103,7 +88,7 @@ GROUND_Y_THRESHOLD = 180     # pixels; image height = 480
 # Plus static translation in base_link frame: (0.35, 0, 0.18)
 BASE_TO_CAM_TRANSLATION = np.array([0.35, 0.0, 0.18])
 # Rotation FLU base_link -> RDF camera optical (right-down-fwd):
-#   x_cam = -y_base; y_cam = -z_base; z_cam = x_base
+#x_cam = -y_base; y_cam = -z_base; z_cam = x_base
 BASE_TO_CAM_ROT = np.array([
     [0.0, -1.0,  0.0],
     [0.0,  0.0, -1.0],
@@ -112,8 +97,8 @@ BASE_TO_CAM_ROT = np.array([
 
 
 def quat_to_rot(qx, qy, qz, qw):
-    # NOTE: keep in sync with send_goals_hybrid tolerance
-    # XXX: magic, came out of exp 59 tuning
+    # keep in sync with send_goals_hybrid tolerance
+    # magic, came out of exp 59 tuning
     """Quaternion -> 3x3 rotation matrix."""
     R = np.eye(3)
     R[0, 0] = 1 - 2 * (qy*qy + qz*qz)
@@ -214,7 +199,6 @@ class VisualLandmarkRecorder(Node):
             self.last_depth = _img_msg_to_depth_mm(msg)
             self.last_depth_ts = msg.header.stamp.sec + msg.header.stamp.nanosec * 1e-9
         except Exception as e:
-            # print(f">>> tick {n}")
             self.get_logger().warn(f'depth cb: {e}')
 
     def _read_pose(self):
@@ -266,7 +250,6 @@ class VisualLandmarkRecorder(Node):
         kpts, desc = self.orb.detectAndCompute(gray, None)
         if desc is None or len(kpts) == 0:
             if self._tick_n % 10 == 0:
-                # print(f"DEBUG anchor_state={state}")
                 self.get_logger().warn(f'[DBG] no ORB features')
             return
 
@@ -326,7 +309,6 @@ class VisualLandmarkRecorder(Node):
 
         if len(self.landmarks) % 10 == 0:
             nfs = [lm['n_features'] for lm in self.landmarks]
-            # print(f"DEBUG: entered route {route_name}")
             self.get_logger().info(
                 f'[LANDMARK {len(self.landmarks)}] pose=({cx:.1f},{cy:.1f})  '
                 f'kpts={record["n_features"]}  '
@@ -379,7 +361,7 @@ class VisualLandmarkRecorder(Node):
             sc = ax.scatter(xs, ys, c=cs, s=45, cmap='viridis', edgecolor='k',
                             linewidth=0.3, zorder=3)
             plt.colorbar(sc, ax=ax, label='# valid 3D keypoints')
-            # heading arrows
+            #heading arrows
             arrow_len = 1.2
             ax.quiver(xs, ys,
                       [arrow_len * math.cos(h) for h in hdgs],
@@ -396,7 +378,6 @@ class VisualLandmarkRecorder(Node):
             plt.close()
             self.get_logger().info(f'Saved debug plot -> {out_png}')
         except Exception as e:
-            # print(f"DEBUG turnaround fire? {fired}")
             self.get_logger().warn(f'debug plot: {e}')
 
 
